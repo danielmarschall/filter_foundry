@@ -1,0 +1,1 @@
+#ifdef MAC_ENV	#include <resources.h>	#include <memory.h>		#define GETRESOURCE Get1Resource	#define RELEASERESOURCE ReleaseResource	#define GETRESOURCESIZE GetHandleSize	#define LOCKRESOURCE HLock	#define UNLOCKRESOURCE HUnlock#else#endif

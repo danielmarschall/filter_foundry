@@ -1,0 +1,9 @@
+LIBRARY RESOURCE
+EXPORTS
+  _BeginUpdateResourceA
+  _BeginUpdateResourceW
+  _EndUpdateResource
+  _UpdateResourceA
+  _UpdateResourceW
+  _GetRsrcDataA
+  _GetRsrcDataW

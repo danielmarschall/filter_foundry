@@ -1,0 +1,83 @@
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by  
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License  
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Building the Filter Foundry plugin for Photoshop
+------------------------------------------------
+
+Notes on source code
+
+Source code, makefiles and IDE projects under GPL license are provided for MPW (Classic & Carbon PowerPC targets),
+CodeWarrior 7 (Classic & Carbon PowerPC, Win32, 68K targets) and mingw32 (Win32 target).
+
+A Photoshop SDK is required (available from Adobe Systems, http://www.adobe.com/).
+The SDK was also distributed with Photoshop 6.0 and earlier. 
+
+The source was built with SDK 6.0 but earlier versions of the SDK can be used.
+(If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
+to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace with
+a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency" from PiPL_common.r.)
+
+Before attempting to build, you must edit the makefiles ("FilterFoundry.make" for MPW, "Makefile" for mingw32),
+or change your CodeWarrior project's access paths, to reflect the SDK's installed location.
+
+In order to build the Carbon plugin with an SDK prior to version 7.0, it is necessary to edit
+the SDK file :PhotoshopAPI:Resources:PIPL.r as follows:
+1. find the line "case CodePowerPC:"
+2. duplicate the next 15 lines
+3. in the copy only, change "case CodePowerPC:" to "case CodePowerPCbundle:"
+   and change the 5 occurrences of "pwpc" to "ppcb"
+   
+This code has not been tested with the Photoshop v7.0 SDK.
+
+
+Mac notes
+
+The Mac build requires Apple's MoreFiles library, which can be obtained via
+http://developer.apple.com/samplecode/Sample_Code/Files/MoreFiles.htm
+
+Before building with MPW, create the "debug" directory:
+	newfolder debug
+
+Depending on how the source files were extracted, it may be necessary to set
+the correct Mac file types before attempting to build. In MPW, this can be done as follows. 
+First set the current directory to the Filter Foundry source directory, then:
+	setfile -t TEXT -c 'MPS ' Å.[chrly] Å.make Å.rc ::common:tt:Å ::common:adobeplugin:Å
+This can also be necessary after regenerating parser.c and lexer.c.
+These files are generated from the parser and lexical analyser definitions, parser.y and lexer.l,
+by a UNIX (not MPW!) command such as:
+	make parser.c lexer.c
+Pre-generated versions of these files (and y.tab.h, which is a byproduct) are included
+in the source archive.
+
+If building with MPW, finished binaries are left in the "debug" directory; these should be used
+for testing and debugging, as they can be re-built and re-run without having to restart Photoshop.
+
+The finished "universal" binary, which contains separate executables for Classic and Carbon,
+is left in the "dist" directory. 
+   
+   
+Development systems
+
+While a CodeWarrior 7 project is provided, MPW and mingw32 are recommended 
+as they produce much smaller executables.
+
+These industrial strength development tools can be freely downloaded from
+http://developer.apple.com/tools/mpw-tools/ and http://www.mingw.org/ respectively.
+
+Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
+MPW runs on PowerPC and 68K Macs under Mac OS 9 or earlier, or Classic mode under OS X.
+

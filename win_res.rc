@@ -1,0 +1,5 @@
+/* wrapper file for Windows resource compiler input
+   Copyright (C) 2003-4 Toby Thain <toby@telegraphics.com.au> */
+
+#include "PiPL.rc"
+#include "ui_win.rc"

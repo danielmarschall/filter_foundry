@@ -1,0 +1,196 @@
+/*
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by  
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License  
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+#include "PIResDefines.h"
+#include "PIActions.h"
+
+#include "ui.h"
+#include "version.h"
+
+#define LC(a,b,c,d)		#d, #c, #b, #a
+
+#define VENDORID LC(8,B,I,M)
+#define NULLID 0L
+
+/* LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL */
+
+16000  PiPL  DISCARDABLE
+BEGIN
+	0x0001, 		/* Reserved (for Photoshop) */
+	0L, 			/* kCurrentPiPLVersion */
+	8L, 			/* Property Count */
+	
+	VENDORID, LC(c,a,t,g), NULLID, 13L, "\014Telegraphics\0\0\0", /* PString */
+	VENDORID, LC(n,a,m,e), NULLID, 18L, "\021Filter Foundry...\0\0", /* PString */
+
+	/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
+	VENDORID, LC(h,s,t,m), NULLID, 41L, /* = 14 + sizeof(c string) */
+		0L,								/* version */
+		LC(f,i,F,o),					/* Class ID, always required.  Can be Suite ID. */
+		LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
+		AETE_ID,						/* Dictionary ('AETE') resource ID. */
+		"Telegraphics FilterFoundry\0\0\0\0", /* Unique scope string, C format, long padded.
+												 Always required in Photoshop 5.0 and later. */
+#include "PiPL_body.rc"
+		
+END
+
+16000  RCDATA  DISCARDABLE
+BEGIN
+	0x0001, 		/* Reserved (for Photoshop) */
+	0L, 			/* kCurrentPiPLVersion */
+	5L, 			/* Property Count */
+	
+#include "PiPL_body.rc"
+		
+END
+
+/*	Dictionary (scripting) resource */
+/* also see ui.h */
+
+/*
+#define NO_REPLY		\
+	noReply,			\
+	"",					\
+	replyRequired,	singleItem,	notEnumerated,	notTightBindingFunction,	\
+	reserved,		reserved,	reserved,		reserved,					\
+	reserved,		reserved,	reserved,		reserved,					\
+	verbEvent,		reserved,	reserved,		reserved
+#define IMAGE_DIRECT_PARAMETER	\
+	typeImageReference,			\
+	"",							\
+	flagsOptionalEnumeratedChangesDirect
+#define flagsOptionalEnumeratedChangesDirect	\
+	directParamOptional,	singleItem,	enumerated,	changesState,	\
+	reserved,				reserved,	reserved,	reserved,		\
+	reserved,				reserved,	reserved,	reserved,		\
+	reserved,				reserved,	reserved,	reserved
+#define flagsSingleParameter					\
+	required,			singleItem,		notEnumerated,	reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	prepositionParam,	notFeminine,	notMasculine,	singular
+#define flagsSingleProperty						\
+	reserved,			singleItem,		notEnumerated,	readWrite,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	noApostrophe,		notFeminine,	notMasculine,	singular
+*/
+#define RC_NO_REPLY \
+	LC(n,u,l,l),	/*noReply*/ \
+	"\0", \
+	"\000\000"		/* 00 000 000|00 000 000 */
+#define RC_IMAGE_DIRECT_PARAM \
+	LC(#,I,m,R),	/*typeImageReference*/ \
+	"\0", \
+	"\260\000"		/* 10 110 000|00 000 000 */
+	
+#define FLAGS_SINGLE_PROP	"\020\000" /* 00 010 000|00 000 000 */
+#define FLAGS_1_OPT_PARAM	"\200\000" /* 10 000 000|00 000 000 */
+
+#define RC_typeChar			LC(T,E,X,T)
+#define RC_typeInteger		LC(l,o,n,g)
+
+/* Nota Bene: UNLIKE the Macintosh format of the 'aete' resource,
+   the Windows resource does NOT have word alignment constraints
+   after its embedded strings. */
+
+AETE_ID aete
+{
+	0x0001, 		/* Reserved (for Photoshop) */
+
+	"\1\0", english, roman,				/* aete version and language specifiers */
+
+	1, /*suites*/
+		"\014Telegraphics",				/* vendor suite name */
+		"\0",							/* optional description */
+		LC(t,E,L,E),					/* suite ID */
+		1,								/* suite code, must be 1 */
+		1,								/* suite level, must be 1 */
+
+		1, /*events*/					/* structure for filters */
+
+			"\015FilterFoundry",        /* event name               */
+			"\0",                       /* event description        */
+			LC(f,i,F,o),                /* event class              */
+			LC(f,i,F,o),                /* event ID                 */
+			RC_NO_REPLY,
+			RC_IMAGE_DIRECT_PARAM,
+			12,
+				"\001R", LC(x,p,r,R), RC_typeChar, "\024R channel expression", FLAGS_1_OPT_PARAM,
+				"\001G", LC(x,p,r,G), RC_typeChar, "\024G channel expression", FLAGS_1_OPT_PARAM,
+				"\001B", LC(x,p,r,B), RC_typeChar, "\024B channel expression", FLAGS_1_OPT_PARAM,
+				"\001A", LC(x,p,r,A), RC_typeChar, "\024A channel expression", FLAGS_1_OPT_PARAM,
+				"\004ctl0", LC(c,T,l,0), RC_typeInteger, "\016ctl(0) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl1", LC(c,T,l,1), RC_typeInteger, "\016ctl(1) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl2", LC(c,T,l,2), RC_typeInteger, "\016ctl(2) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl3", LC(c,T,l,3), RC_typeInteger, "\016ctl(3) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl4", LC(c,T,l,4), RC_typeInteger, "\016ctl(4) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl5", LC(c,T,l,5), RC_typeInteger, "\016ctl(5) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl6", LC(c,T,l,6), RC_typeInteger, "\016ctl(6) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl7", LC(c,T,l,7), RC_typeInteger, "\016ctl(7) setting", FLAGS_1_OPT_PARAM,
+
+		0, /*classes*/					/* non-filter plug-in class here */
+
+		0, /* comparison ops (not supported) */
+
+		0, /* any enumerations */
+
+	0L /* padding */
+}
+
+/* Version info resource
+   see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/wcesdkr/html/_Tools_VERSIONINFO_Resource.asp
+   and http://msdn.microsoft.com/library/default.asp?url=/library/en-us/tools/tools/versioninfo_resource.asp */
+
+#include "winver.h"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION	VI_VERS_NUM
+ PRODUCTVERSION	VI_VERS_NUM
+ FILEFLAGSMASK	0x3fL
+ FILEFLAGS		VI_FLAGS
+ FILEOS			VOS__WINDOWS32
+ FILETYPE		VFT_DLL
+ FILESUBTYPE	VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "04090000"
+        BEGIN
+            VALUE "Comments",			VI_COMMENTS
+            VALUE "CompanyName",		"Telegraphics Pty Ltd, www.telegraphics.com.au\0"
+            VALUE "FileDescription",	"Filter Foundry plugin for Photoshop(R)\0"
+            VALUE "FileVersion",		VERSION_STR "\0"
+            VALUE "InternalName",		"FilterFoundry\0"
+            VALUE "LegalCopyright",		"Copyright (C) 2005 Toby Thain\0"
+            VALUE "License",			"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\0"
+            /*VALUE "LegalTrademarks",	"\0"*/
+            VALUE "OriginalFilename",	"FilterFoundry.8bi\0"
+            /*VALUE "PrivateBuild",		"\0"*/
+            VALUE "ProductName",		"Filter Foundry\0"
+            VALUE "ProductVersion",		VERSION_STR "\0"
+            /*VALUE "SpecialBuild",		"\0"*/
+        END
+    END
+    BLOCK "VarFileInfo" /* see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/wcesdkr/html/_tools_VarFileInfo_Block.asp */
+    BEGIN
+        VALUE "Translation", 0x0809, 1200	/* UK English, Unicode */
+    END
+END

@@ -1,0 +1,33 @@
+/*
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by  
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License  
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),	/* Filter module */
+VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion,latestFilterVersion, /* Version Number */
+VENDORID, LC(w,x,8,6), NULLID, 11L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+VENDORID, LC(m,o,d,e), NULLID, 2L, flagSupportsGrayScale+flagSupportsRGBColor+flagSupportsMultichannel,0,
+/* FilterCaseInfo - in all cases:
+	   inStraightData,
+	   outStraightData,
+	   doNotWriteOutsideSelection,
+	   doesNotFilterLayerMasks,
+	   worksWithBlankData,
+	   doNotCopySourceToDestination */
+VENDORID, LC(f,i,c,i), NULLID, 28L,
+	"\001\001\003\000","\001\001\003\000","\001\001\003\000","\001\001\003\000",
+	"\001\001\003\000","\001\001\003\000","\001\001\003\000"

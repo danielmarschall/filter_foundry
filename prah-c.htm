@@ -1,0 +1,1366 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"><title>prah.c</title></head>
+
+<body>
+
+<p><small>//-------------------------------------------------------------------------------<br>
+//<br>
+//    File:<br>
+//        prah.c<br>
+//<br>
+<br>
+<br>
+#include "PIDefines.h"<br>
+<br>
+#ifdef __PIMWCWMacPPC__<br>
+    #include "prah-PPC.ch"<br>
+#elif defined(__PIMWCWMac68K__)<br>
+    #include "prah-68k.ch"<br>
+    // We're using Metrowerks and they have an A4 library, so set that up:<br>
+    #include &lt;SetupA4.h&gt;<br>
+    #include &lt;A4Stuff.h&gt;<br>
+    <br>
+    #define UseA4 // We've now defined this for quick checks later.<br>
+#else<br>
+    #include "prah.h"<br>
+#endif<br>
+<br>
+#include &lt;math.h&gt;<br>
+#include &lt;stdio.h&gt;<br>
+#include &lt;stdlib.h&gt;<br>
+<br>
+#include &lt;math.h&gt;<br>
+<br>
+<br>
+// Peker til tabellen<br>
+//prcomplex *sincos_tab;<br>
+//-------------------------------------------------------------------------------<br>
+//    Prototypes.<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+// Everything comes in and out of ENTRYPOINT. It must be first routine in source:<br>
+MACPASCAL void ENTRYPOINT (const short selector,<br>
+                        FilterRecord
+*filterParamBlock,<br>
+                        long
+*data,<br>
+                        short
+*result);<br>
+void InitGlobals (Ptr globalPtr);
+            // Initialize globals.<br>
+void ValidateParameters (GPtr globals);        //
+Validates (inits) parameters.<br>
+<br>
+void DoStart (GPtr globals);
+                //
+Main routine.<br>
+void DoParameters (GPtr globals);<br>
+void DoPrepare (GPtr globals);<br>
+void DoContinue (GPtr globals);<br>
+void DoFinish (GPtr globals);<br>
+<br>
+void StartWithAdvanceState (GPtr globals);<br>
+<br>
+void prah (GPtr globals, const Boolean doProgress);<br>
+<br>
+void CalcProxyScaleFactor (Rect proxyScaleRect, Rect *proxyRect, short *scaleFactor);<br>
+boolean ParametersTest(GPtr globals);<br>
+<br>
+void ZoomInRect (GPtr globals, Boolean mask);<br>
+void ZoomOutRect (GPtr globals, Boolean mask);<br>
+<br>
+void StartNoAdvanceState (GPtr globals);<br>
+void DoInitialRect (GPtr globals);<br>
+Boolean DoNextRect (GPtr globals);<br>
+//void Ret(GPtr globals);<br>
+<br>
+void BuildProxy (GPtr globals);<br>
+void scaleRect(Rect *l, short n, short d);<br>
+void shrinkRect(Rect *l, short x, short y);<br>
+void copyRect(Rect *l, const Rect *r);<br>
+                <br>
+//-------------------------------------------------------------------------------<br>
+//    Globals -- Define global variables for plug-in scope.<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+// Windows global for plug-in (considered a Dynamically Linked Library).<br>
+// Leave NULL for Macintosh; many cross-platform library utilities require<br>
+// something passed in for hDllInstance:<br>
+Handle hDllInstance = NULL;<br>
+<br>
+//-------------------------------------------------------------------------------<br>
+//    ENTRYPOINT Export -- Export our entrypoint<br>
+//<br>
+//    Have to export our info for PPCGlue stub which needs a descriptor
+built<br>
+//    to be called from within a 68k code fragment.<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+#ifdef __PIMacPPC__
+                        //
+For "fat" PowerMac plug-ins<br>
+<br>
+    enum<br>
+    {<br>
+        uppEntryProcInfo = kPascalStackBased<br>
+            | RESULT_SIZE(0)<br>
+            |
+STACK_ROUTINE_PARAMETER(1, SIZE_CODE(sizeof(short)))<br>
+            |
+STACK_ROUTINE_PARAMETER(2, SIZE_CODE(sizeof(FilterRecord *)))<br>
+            |
+STACK_ROUTINE_PARAMETER(3, SIZE_CODE(sizeof(long *)))<br>
+            |
+STACK_ROUTINE_PARAMETER(4, SIZE_CODE(sizeof(short *)))<br>
+    };<br>
+<br>
+    #if PRAGMA_EXPORT_SUPPORTED <br>
+        #pragma export on<br>
+    #endif<br>
+<br>
+    RoutineDescriptor main_PPC = BUILD_ROUTINE_DESCRIPTOR(uppEntryProcInfo,
+main);<br>
+<br>
+    #if PRAGMA_EXPORT_SUPPORTED<br>
+        #pragma export reset<br>
+    #endif<br>
+<br>
+#endif<br>
+<br>
+//-------------------------------------------------------------------------------<br>
+//<br>
+//    ENTRYPOINT / main<br>
+//<br>
+//    All calls to the plug-in module come through this routine.<br>
+//    It must be placed first in the resource. To achieve this,<br>
+//    most development systems require this be the first routine<br>
+//    in the source.<br>
+//<br>
+//    The entrypoint will be "pascal void" for Macintosh,<br>
+//    "void" for Windows.<br>
+//<br>
+//    Inputs:<br>
+//        const short selector
+                        Host
+provides selector indicating<br>
+//
+                                                    what
+command to do.<br>
+//<br>
+//        FilterRecord *filterParamBlock
+                Host
+provides pointer to parameter<br>
+//
+                                                    block
+containing pertinent data<br>
+//
+                                                    and
+callbacks from the host.<br>
+//
+                                                    See
+PIFilter.h.<br>
+//<br>
+//    Outputs:<br>
+//        FilterRecord *filterParamBlock
+                Host
+provides pointer to parameter<br>
+//
+                                                    block
+containing pertinent data<br>
+//
+                                                    and
+callbacks from the host.<br>
+//
+                                                    See
+PIFilter.h.<br>
+//<br>
+//        long *data
+                                    Use
+this to store a handle to our<br>
+//
+                                                    global
+parameters structure, which<br>
+//
+                                                    is
+maintained by the host between<br>
+//
+                                                    calls
+to the plug-in.<br>
+//<br>
+//        short *result
+                                Return
+error result or noErr. Some<br>
+//
+                                                    errors
+are handled by the host, some<br>
+//
+                                                    are
+silent, and some you must handle.<br>
+//
+                                                    See
+PIGeneral.h.<br>
+//<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+MACPASCAL void ENTRYPOINT (const short selector,<br>
+                        FilterRecord
+*filterParamBlock,<br>
+                        long
+*data,<br>
+                        short
+*result)<br>
+{<br>
+    //---------------------------------------------------------------------------<br>
+    //    (1) Enter code resource if Mac 68k.<br>
+    //---------------------------------------------------------------------------<br>
+    <br>
+    #ifdef UseA4
+                //
+Are we in 68k Mac MW?<br>
+        EnterCodeResource();     //
+A4-globals<br>
+    #endif<br>
+    <br>
+    //---------------------------------------------------------------------------<br>
+    //    (2) Check for about box request.<br>
+    //<br>
+    //     The about box is a special request; the
+parameter block is not filled<br>
+    //     out, none of the callbacks or standard data
+is available. Instead,<br>
+    //     the parameter block points to an
+AboutRecord, which is used<br>
+    //     on Windows.<br>
+    //---------------------------------------------------------------------------<br>
+<br>
+    if (selector == filterSelectorAbout)<br>
+    {<br>
+        DoAbout((AboutRecordPtr)filterParamBlock);<br>
+    }<br>
+    else<br>
+    { // do the rest of the process as normal:<br>
+<br>
+        //-----------------------------------------------------------------------<br>
+        //    (3) Initialize function
+and global pointers.<br>
+        //<br>
+        //     Initialize function
+pointer routine dispatcher. We use this to jump<br>
+        //     to the different
+routines, instead of a long obnoxious switch<br>
+        //     statement. All
+routines are expected to have the same prototype<br>
+        //     of "void
+RoutineName (globals)". Returns any errors in gResult.<br>
+        //<br>
+        //     WARNING: These
+better be in the order of the selector AND there<br>
+        //     better be a routine
+for every selector call.<br>
+        //-----------------------------------------------------------------------<br>
+        <br>
+        static const FProc routineForSelector [] =<br>
+        {<br>
+            /* filterSelectorAbout
+             DoAbout, */<br>
+            /*
+filterSelectorParameters */    DoParameters,<br>
+            /*
+filterSelectorPrepare */        DoPrepare,<br>
+            /* filterSelectorStart
+*/        DoStart,<br>
+            /*
+filterSelectorContinue */    DoContinue,<br>
+            /* filterSelectorFinish
+*/        DoFinish<br>
+        };<br>
+        <br>
+        Ptr globalPtr = NULL;
+        // Pointer for global structure<br>
+        GPtr globals = NULL;
+         // actual globals<br>
+<br>
+        //-----------------------------------------------------------------------<br>
+        //    (4) Allocate and initalize
+globals.<br>
+        //<br>
+        //     AllocateGlobals
+requires the pointer to result, the pointer to the<br>
+        //     parameter block, a
+pointer to the handle procs, the size of our local<br>
+        //     "Globals"
+structure, a pointer to the long *data, a Function<br>
+        //     Proc (FProc) to the
+InitGlobals routine. It automatically sets-up,<br>
+        //     initializes the
+globals (if necessary), results result to 0, and<br>
+        //     returns with a valid
+pointer to the locked globals handle or NULL.<br>
+        //-----------------------------------------------------------------------<br>
+        <br>
+        globalPtr = AllocateGlobals ((uint32)result,<br>
+                                    (uint32)filterParamBlock,<br>
+                                    filterParamBlock-&gt;handleProcs,<br>
+                                    sizeof(Globals),<br>
+                                    data,<br>
+                                    InitGlobals);<br>
+        <br>
+        if (globalPtr == NULL)<br>
+        { // Something bad happened if we couldn't
+allocate our pointer.<br>
+        // Fortunately, everything's already been
+cleaned up,<br>
+        // so all we have to do is report an error.<br>
+        <br>
+        *result = memFullErr;<br>
+        return;<br>
+        }<br>
+        <br>
+        // Get our "globals" variable
+assigned as a Global Pointer struct with the<br>
+        // data we've returned:<br>
+        globals = (GPtr)globalPtr;<br>
+<br>
+        //-----------------------------------------------------------------------<br>
+        //    (5) Dispatch selector.<br>
+        //-----------------------------------------------------------------------<br>
+<br>
+        if (selector &gt; filterSelectorAbout
+&amp;&amp; selector &lt;= filterSelectorFinish)<br>
+            (routineForSelector[selector-1])(globals);
+// dispatch using jump table<br>
+        else<br>
+            gResult =
+filterBadParameters;<br>
+            <br>
+        //-----------------------------------------------------------------------<br>
+        //    (6) Unlock data, and exit
+resource.<br>
+        //<br>
+        //    Result is automatically
+returned in *result, which is<br>
+        //    pointed to by gResult.<br>
+        //-----------------------------------------------------------------------
+    <br>
+        <br>
+        // unlock handle pointing to parameter block
+and data so it can move<br>
+        // if memory gets shuffled:<br>
+        if ((Handle)*data != NULL)<br>
+            PIUnlockHandle((Handle)*data);<br>
+    <br>
+    } // about selector special        <br>
+    <br>
+    #ifdef UseA4
+            // Are we in 68k Mac
+MW?<br>
+        ExitCodeResource(); // A4-globals<br>
+    #endif<br>
+    <br>
+} // end ENTRYPOINT<br>
+<br>
+//-------------------------------------------------------------------------------<br>
+//<br>
+//    InitGlobals<br>
+//    <br>
+//    Initalize any global values here. Called only once when global<br>
+//    space is reserved for the first time.<br>
+//<br>
+//    Inputs:<br>
+//        Ptr globalPtr
+        Standard pointer to a global structure.<br>
+//<br>
+//    Outputs:<br>
+//        Initializes any global values with their
+defaults.<br>
+//<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+<br>
+<br>
+void InitGlobals (Ptr globalPtr)<br>
+{    <br>
+    // create "globals" as a our struct global pointer so that
+any<br>
+    // macros work:<br>
+    GPtr globals = (GPtr)globalPtr;<br>
+    <br>
+    // Initialize global variables:<br>
+    ValidateParameters (globals);<br>
+    <br>
+} // end InitGlobals<br>
+<br>
+//-------------------------------------------------------------------------------<br>
+//<br>
+//    ValidateParameters<br>
+//<br>
+//    Initialize parameters to default values.<br>
+//<br>
+//    Inputs:<br>
+//        GPtr globals
+        Pointer to global structure.<br>
+//<br>
+//-------------------------------------------------------------------------------<br>
+<br>
+void ValidateParameters (GPtr globals)<br>
+{<br>
+    if (gStuff-&gt;parameters == NULL)<br>
+    { // We haven't created these yet.<br>
+<br>
+        gStuff-&gt;parameters = PINewHandle ((long)
+sizeof (TParameters));<br>
+<br>
+        if (gStuff-&gt;parameters != NULL)<br>
+        { // Got it. Fill out the fields.
+    <br>
+            <a name="gKanal1=128;">gKanal1=128;</a><br>
+            gKanal2=128;<br>
+            gKanal3=128;<br>
+            gKanal4=128;
+        <br>
+            <br>
+            gUseAdvance = false;<br>
+            gZoomFactor=6;
+        <br>
+            gHostIsPremiereWin =
+IsWindows(HostIsPremiere());<br>
+        }<br>
+        else<br>
+        { // Oops. Couldn't allocate memory.<br>
+                <br>
+            gResult = memFullErr;<br>
+            return;<br>
+        }<br>
+    } // parameters<br>
+    <br>
+} // end ValidateParameters<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+/*****************************************************************************/<br>
+/* Inicializace vstupních parametrů filtru - neproběhne při volání "Poslední
+Filtr"*/<br>
+<br>
+void DoParameters (GPtr globals)<br>
+{    <br>
+    ValidateParameters (globals);<br>
+    if (gStuff-&gt;parameters != NULL) <br>
+    {<br>
+    }<br>
+    gQueryForParameters = TRUE;<br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Výpočet potřebné paměti pro funkci filtru */<br>
+<br>
+<a name="void DoPrepare (GPtr globals){">void DoPrepare (GPtr globals)<br>
+{</a><br>
+    short     rowWidth = 0;<br>
+    short     total = 0;<br>
+    long    oneRow = 0;<br>
+    long    inOutRow = 0;<br>
+    long    inOutAndMask = 0;<br>
+    <br>
+    gStuff-&gt;bufferSpace = 0;    <br>
+    ValidateParameters (globals);<br>
+    total = gStuff-&gt;imageSize.v;<br>
+    rowWidth = gStuff-&gt;imageSize.h;    <br>
+    oneRow = rowWidth * (gStuff-&gt;planes);<br>
+    inOutRow = oneRow * 2; <br>
+    inOutAndMask = inOutRow + rowWidth; <br>
+    while (((inOutAndMask * gRowSkip) &lt;
+(gStuff-&gt;maxSpace-gStuff-&gt;bufferSpace)) &amp;&amp; (gRowSkip &lt; total))
+gRowSkip++;<br>
+    gStuff-&gt;maxSpace = gRowSkip * inOutAndMask + gStuff-&gt;bufferSpace;
+<br>
+    <br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Zobrazení UI a začátek filtrace */<br>
+<br>
+void DoStart (GPtr globals)<br>
+{    <br>
+<br>
+    Rect    imageRect;<br>
+        return;<br>
+    ValidateParameters (globals); // Pokud nejsou inicializovány parametry
+filtru, tak je inicializuje<br>
+    // lze použít Advance ?<br>
+    gUseAdvance = AdvanceStateAvailable () &amp;&amp;<br>
+                DisplayPixelsAvailable
+() &amp;&amp;<br>
+                !gHostIsPremiereWin;<br>
+                                            //
+Adobe Premiere for Windows doesn't do AdvanceState right<br>
+    ReadScriptParams (globals);
+                //
+Přečte předchozí nastavení filtru<br>
+<br>
+    if (gQueryForParameters) <br>
+    {<br>
+        DoUI (globals);
+                        //
+Zobrazí UI<br>
+        gQueryForParameters = FALSE;<br>
+    }<br>
+    else<br>
+    {<br>
+        imageRect.top = 0;//pokud je filtr vyvolán bez
+UI - inicializace rozmeru I/O oblastí<br>
+        imageRect.left = 0;<br>
+        imageRect.bottom = gStuff-&gt;imageSize.v;<br>
+        imageRect.right = gStuff-&gt;imageSize.h;<br>
+        copyRect(&amp;gStuff-&gt;filterRect,
+&amp;imageRect); <br>
+        copyRect(&amp;gStuff-&gt;inRect,
+&amp;imageRect);        <br>
+<br>
+        gStuff-&gt;inLoPlane = gStuff-&gt;outLoPlane =
+0;<br>
+        gStuff-&gt;inHiPlane = gStuff-&gt;outHiPlane =
+gStuff-&gt;planes - 1;<br>
+        copyRect(&amp;gStuff-&gt;maskRect,
+&amp;gStuff-&gt;filterRect);<br>
+        gStuff-&gt;inputRate = long2fixed(1L);<br>
+        gStuff-&gt;maskRate = gStuff-&gt;inputRate; <br>
+        gStuff-&gt;inputPadding =
+plugInWantsEdgeReplication;<br>
+        gStuff-&gt;outputPadding =
+gStuff-&gt;inputPadding;<br>
+        gStuff-&gt;maskPadding =
+gStuff-&gt;inputPadding;<br>
+    <br>
+        gResult = AdvanceState ();<br>
+        DoZoomRect (globals,false);<br>
+//        Ret(globals);<br>
+        <br>
+    }<br>
+    if (gResult != noErr) return;<br>
+    <br>
+    if (gUseAdvance) StartWithAdvanceState(globals);<br>
+}<br>
+    <br>
+/*****************************************************************************/<br>
+/* Pokračování filtrace - pokud se filtruje po částech - not Advance */<br>
+<br>
+void DoContinue (GPtr globals)<br>
+{<br>
+    if (TestAbort () || gResult != noErr)<br>
+    {<br>
+        gResult = userCanceledErr;<br>
+        return;<br>
+    }<br>
+    if (!gUseAdvance)<br>
+    {<br>
+        Prah(globals,true); <br>
+        if (!DoNextRect (globals))<br>
+            {<br>
+                PISetRect
+(&amp;gStuff-&gt;inRect, 0, 0, 0, 0);<br>
+                PISetRect
+(&amp;gStuff-&gt;outRect, 0, 0, 0, 0);<br>
+                PISetRect
+(&amp;gStuff-&gt;maskRect, 0, 0, 0, 0);<br>
+            }<br>
+    }<br>
+    else<br>
+    { <br>
+        PISetRect (&amp;gStuff-&gt;inRect, 0, 0, 0, 0);<br>
+        PISetRect (&amp;gStuff-&gt;outRect, 0, 0, 0,
+0);<br>
+        PISetRect (&amp;gStuff-&gt;maskRect, 0, 0, 0,
+0);<br>
+    } <br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Úklid po filtru a zápis nastavení parametrů filtru */<br>
+<br>
+void DoFinish (GPtr globals)<br>
+{<br>
+    WriteScriptParams (globals); <br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Filtrace celeho obrazu najednou */<br>
+<br>
+void StartWithAdvanceState (GPtr globals)<br>
+{<br>
+    int16 row;<br>
+    int32 total;<br>
+<br>
+    total = gStuff-&gt;filterRect.bottom - gStuff-&gt;filterRect.top;<br>
+    gStuff-&gt;inLoPlane = gStuff-&gt;outLoPlane = 0;<br>
+    gStuff-&gt;inHiPlane = gStuff-&gt;outHiPlane = gStuff-&gt;planes - 1;<br>
+    <br>
+    /* Pokud chceme použít kanály*/<br>
+    #if useAlpha<br>
+    if (!gStuff-&gt;isFloating)<br>
+    {<br>
+        gStuff-&gt;wantsAbsolute = true;<br>
+        <br>
+        if (gStuff-&gt;inLayerPlanes !=0 &amp;&amp;
+gStuff-&gt;inTransparencyMask != 0)<br>
+            gStuff-&gt;inHiPlane =
+gStuff-&gt;absLayerPlanes - 1 +<br>
+                                gStuff-&gt;absTransparencyMask
++<br>
+                                gStuff-&gt;absLayerMasks
++<br>
+                                gStuff-&gt;absInvertedLayerMasks
++<br>
+                                gStuff-&gt;absNonLayerPlanes;<br>
+        <br>
+        if (gStuff-&gt;outLayerPlanes !=0 &amp;&amp;
+gStuff-&gt;outTransparencyMask !=0)<br>
+            gStuff-&gt;outHiPlane =
+gStuff-&gt;outLayerPlanes - 1 +<br>
+                                gStuff-&gt;outTransparencyMask
++<br>
+                                gStuff-&gt;outLayerMasks
++<br>
+                                gStuff-&gt;outInvertedLayerMasks
++<br>
+                                gStuff-&gt;outNonLayerPlanes;<br>
+    }<br>
+    #endif<br>
+    gStuff-&gt;inRect.left = gStuff-&gt;outRect.left =
+gStuff-&gt;maskRect.left = gStuff-&gt;filterRect.left = 0;<br>
+    gStuff-&gt;inRect.right = gStuff-&gt;outRect.right =
+gStuff-&gt;maskRect.right = gStuff-&gt;filterRect.right = gStuff-&gt;imageSize.h;<br>
+    gStuff-&gt;inputRate = long2fixed (1L);<br>
+    gStuff-&gt;maskRate = long2fixed (1L);<br>
+    for (row = 0; row &lt; gStuff-&gt;imageSize.v; row += gRowSkip)<br>
+    {<br>
+        if (TestAbort () || gResult != noErr)<br>
+        {<br>
+            gResult =
+userCanceledErr;<br>
+            goto done;<br>
+        }<br>
+        gStuff-&gt;inRect.top = gStuff-&gt;outRect.top
+= gStuff-&gt;maskRect.top = gStuff-&gt;filterRect.top=row;<br>
+        gStuff-&gt;inRect.bottom =
+gStuff-&gt;outRect.bottom = gStuff-&gt;maskRect.bottom = gStuff-&gt;filterRect.bottom=row
++ gRowSkip;<br>
+        gResult = AdvanceState ();    <br>
+        if (gResult != noErr)<br>
+            goto done;
+        <br>
+        Prah (globals, true);<br>
+        }<br>
+done:<br>
+    PISetRect (&amp;gStuff-&gt;inRect, 0, 0, 0, 0);<br>
+    PISetRect (&amp;gStuff-&gt;outRect, 0, 0, 0, 0);<br>
+    PISetRect (&amp;gStuff-&gt;maskRect, 0, 0, 0, 0);<br>
+}<br>
+<br>
+<br>
+/******************************************************/<br>
+/* provedení filtrace
+            */<br>
+<br>
+<br>
+<br>
+void Prah(GPtr globals, Boolean doProgress )<br>
+{<br>
+    short i, j;<br>
+    int plane;<br>
+    int prah[4];<br>
+<br>
+    const short total = gStuff-&gt;filterRect.bottom -
+gStuff-&gt;filterRect.top;    //celkový pocet výstupního řádků<br>
+    const short outColumns= gStuff-&gt;outRect.right -
+gStuff-&gt;outRect.left; //pocet sloupců výstupního obrázku<br>
+    const short outRows = gStuff-&gt;outRect.bottom -
+gStuff-&gt;outRect.top;    // pocet řádků výstupního obrázku<br>
+    const short outPlanes = gStuff-&gt;outHiPlane - gStuff-&gt;outLoPlane +
+1; //pocet kanálů výstupního obrázku<br>
+    const short inColumns = gStuff-&gt;imageSize.h;
+                            //pocet
+sloupců vstupniho obrázku<br>
+    const short inRows = gStuff-&gt;imageSize.v;
+                        //pocet
+řádků vstupniho obrázku<br>
+    const short inPlanes = gStuff-&gt;inHiPlane - gStuff-&gt;inLoPlane + 1;
+        //pocet kanálů vstupniho obrázku<br>
+    <br>
+unsigned8 *srcPtr = (unsigned8 *) gStuff-&gt;inData;    //ukazatel na
+vstupní obrázek<br>
+    unsigned8 *dstPtr = (unsigned8 *) gStuff-&gt;outData;
+    //ukazatel na výstupní obrázek<br>
+    unsigned8 *mskPtr = (unsigned8 *) gStuff-&gt;maskData;
+    //ukazatel na masku vstupního obrázku<br>
+    Boolean maskPixel = false;<br>
+<br>
+    <br>
+<a name="prah[0]=gKanal1;//nastavení jednotlivých prahů">
+   prah[0]=gKanal1;//nastavení jednotlivých prahů</a><br>
+    prah[1]=gKanal2;<br>
+    prah[2]=gKanal3;<br>
+    prah[3]=gKanal4;<br>
+    for (i=0; i &lt; inRows; i++)<br>
+    {<br>
+        srcPtr = (unsigned8 *) gStuff-&gt;inData + (i *
+inColumns * inPlanes);//nastav na první pixel v řádku i<br>
+        dstPtr = (unsigned8 *) gStuff-&gt;outData + (i
+* inColumns * inPlanes);//nastav na první pixel v řádku i<br>
+        mskPtr = (unsigned8 *) gStuff-&gt;maskData + (i
+* inColumns);    //nastav na první pixel v řádku    i<br>
+            <br>
+        if (doProgress) UpdateProgress ((long)
+(gStuff-&gt;outRect.top + i) - gStuff-&gt;filterRect.top,(long) total);<br>
+        for(j=0;j&lt;inColumns;j++)<br>
+        {<br>
+            <br>
+            maskPixel = (!mskPtr
+[0]); //načtení masky<br>
+            if (!maskPixel)
+    //pokud není maska uprav<br>
+            {<br>
+                for
+(plane = 0; plane &lt; inPlanes; plane++) <br>
+                {<br>
+                if(srcPtr[plane]&gt;prah[plane])
+srcPtr[plane]=255;<br>
+                else
+srcPtr[plane]=0; <br>
+                }<br>
+            }<br>
+            else //pokud je tak
+neupravuj<br>
+            {<br>
+                for
+(plane = 0; plane &lt; inPlanes; plane++) dstPtr [plane] = srcPtr [plane];
+        <br>
+            }
+                    <br>
+            srcPtr +=
+inPlanes;//nastav na další pixel v řádku i<br>
+            dstPtr +=
+inPlanes;//nastav na další pixel v řádku i<br>
+            mskPtr++; //nastav na
+další pixel v řádku i<br>
+        }
+            <br>
+    }<br>
+}<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+/*****************************************************************************/<br>
+/* Výpočet a úpravy rozměrů obrázku pro potřeby UI */<br>
+<br>
+void CalcGlobalProxies (GPtr globals)<br>
+{<br>
+    Rect    imageRect,imageRect1;<br>
+    int16    selCenterH, selCenterV;<br>
+    int16    selLength, selWidth;<br>
+    int16    length, width;<br>
+    int16    length2, width2;<br>
+    length = (gOrigProxyRect.bottom - gOrigProxyRect.top); // zobrazovaná
+výška<br>
+    length2 = length / 2;<br>
+    width = (gOrigProxyRect.right - gOrigProxyRect.left); // zobrazovaná
+šířka<br>
+    width2 = width / 2;<br>
+    selLength = gStuff-&gt;imageSize.v; // Vybraná výška<br>
+    selWidth = gStuff-&gt;imageSize.h; // Vybraná šířka<br>
+    //Vycentrování preview<br>
+    selCenterV = (selLength / 2);<br>
+    selCenterH = (selWidth / 2);<br>
+    imageRect.top = selCenterV - (length2); <br>
+    imageRect.left = selCenterH - (width2);<br>
+    imageRect.bottom = imageRect.top+length;<br>
+    imageRect.right = imageRect.left+width;<br>
+    imageRect1.top = 0;<br>
+    imageRect1.left = 0;<br>
+    imageRect1.bottom = gStuff-&gt;imageSize.v;<br>
+    imageRect1.right = gStuff-&gt;imageSize.h;<br>
+copyRect(&amp;gProxyScaleRect, &amp;imageRect);<br>
+    copyRect(&amp;gStuff-&gt;inRect, &amp;imageRect1);<br>
+    copyRect(&amp;gStuff-&gt;outRect, &amp;imageRect);<br>
+}<br>
+<br>
+void SetupFilterRecordForProxy (GPtr globals, Rect proxyScaleRect, short scaleFactor)<br>
+{<br>
+    #ifdef __PIMWCW__<br>
+        #pragma unused (proxyScaleRect)<br>
+        #pragma unused (scaleFactor)<br>
+    #endif<br>
+    gStuff-&gt;inLoPlane = gStuff-&gt;outLoPlane = 0;<br>
+    gStuff-&gt;inHiPlane = gStuff-&gt;outHiPlane = gStuff-&gt;planes - 1;<br>
+    copyRect(&amp;gStuff-&gt;maskRect, &amp;gStuff-&gt;filterRect);<br>
+    gStuff-&gt;inputRate = long2fixed(1L);<br>
+    gStuff-&gt;maskRate = gStuff-&gt;inputRate; <br>
+    gStuff-&gt;inputPadding = plugInWantsEdgeReplication;<br>
+    gStuff-&gt;outputPadding = gStuff-&gt;inputPadding;<br>
+    gStuff-&gt;maskPadding = gStuff-&gt;inputPadding;<br>
+    gResult = AdvanceState ();<br>
+}<br>
+    <br>
+void CalcProxyScaleFactor (Rect proxyScaleRect, Rect *proxyRect, short *scaleFactor)<br>
+{<br>
+    short filterHeight;<br>
+    short filterWidth;<br>
+    short itemHeight;<br>
+    short itemWidth;<br>
+<br>
+    Point fraction;<br>
+<br>
+    shrinkRect (proxyRect, kGutter, kGutter);
+         // for the border<br>
+    filterHeight = (proxyScaleRect.bottom - proxyScaleRect.top);<br>
+    filterWidth = (proxyScaleRect.right - proxyScaleRect.left);<br>
+    itemHeight = (proxyRect-&gt;bottom - proxyRect-&gt;top);<br>
+    itemWidth = (proxyRect-&gt;right - proxyRect-&gt;left);<br>
+    if (itemHeight &gt; filterHeight) itemHeight = filterHeight;<br>
+    if (itemWidth &gt; filterWidth) itemWidth = filterWidth;<br>
+    fraction.h = ((filterWidth + itemWidth) / itemWidth)-1;<br>
+    fraction.v = ((filterHeight + itemHeight) / itemHeight)-1;<br>
+    if (fraction.h &gt; fraction.v) *scaleFactor = fraction.h;<br>
+    else *scaleFactor = fraction.v;<br>
+    copyRect (proxyRect, &amp;proxyScaleRect);    <br>
+    scaleRect (proxyRect, 1, *scaleFactor);<br>
+}<br>
+<br>
+<br>
+/****************************************************************************/<br>
+/* Hlavní rutina Zoomování preview */<br>
+void DoZoomRect (GPtr globals,Boolean mask)<br>
+{    <br>
+<br>
+    if (gResult == userCanceledErr) return;<br>
+        <br>
+    if (gRepFactor &lt;= 1 &amp;&amp; gRepFactor &gt; 0)<br>
+        ZoomOutRect (globals, mask);<br>
+    else if (gRepFactor &gt; 1)<br>
+        ZoomInRect (globals, mask);
+        <br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Zoom in. Zvětšení gRepFactor &gt;= 1 */<br>
+/*****************************************************************************/<br>
+<br>
+void ZoomInRect (GPtr globals, Boolean mask)<br>
+{<br>
+    short offsetOutColumns, offsetOutRows;<br>
+    short centerInColumns, centerInRows;<br>
+    short offsetInColumns, offsetInRows;<br>
+    short difColumns, difRows;    <br>
+    short proxyCenterCol, proxyCenterRow;<br>
+    short proxyOffsetCol, proxyOffsetRow;<br>
+    int srcX,srcY ;<br>
+    int i,j,ii,jj,max,polo,plane;<br>
+    unsigned8 *dstPtr;<br>
+    unsigned8 *mskPtr;<br>
+    unsigned8 *mskPtr2;<br>
+    const short outColumns= gStuff-&gt;outRect.right -
+gStuff-&gt;outRect.left;<br>
+    const short outRows = gStuff-&gt;outRect.bottom -
+gStuff-&gt;outRect.top;    <br>
+    const short outPlanes = gStuff-&gt;outHiPlane - gStuff-&gt;outLoPlane +
+1;<br>
+    const short inColumns = gStuff-&gt;imageSize.h;<br>
+    const short inRows = gStuff-&gt;imageSize.v;<br>
+    const short inPlanes =gStuff-&gt;outHiPlane - gStuff-&gt;outLoPlane +
+1;<br>
+    double pomoc;    <br>
+    Boolean maskPixel = false;<br>
+    <br>
+    offsetOutColumns = outColumns / 2;<br>
+    offsetOutRows = outRows / 2;<br>
+    centerInColumns = inColumns / 2;<br>
+    centerInRows = inRows / 2;<br>
+    offsetInColumns = (short)(inColumns * gRepFactor / 2);<br>
+    offsetInRows = (short)(inRows * gRepFactor / 2);<br>
+    difColumns        = offsetInColumns
+- offsetOutColumns;<br>
+    difRows = offsetInRows - offsetOutRows;<br>
+difColumns /= (short)gRepFactor;<br>
+    difRows /=(short)gRepFactor;<br>
+    gPozice.x=gSPozice.x+(short)gDif.x;<br>
+    if (gPozice.x&gt; difColumns) gPozice.x=difColumns;<br>
+    if (gPozice.x&lt;-difColumns) gPozice.x=-difColumns;<br>
+    gPozice.y=gSPozice.y+(short)gDif.y;<br>
+    if (gPozice.y&gt; difRows) gPozice.y=difRows;<br>
+    if (gPozice.y&lt;-difRows) gPozice.y=-difRows;<br>
+    proxyCenterCol = gOrigProxyRect.left + ((gOrigProxyRect.right -
+gOrigProxyRect.left) / 4);<br>
+    proxyCenterRow = gOrigProxyRect.top + ((gOrigProxyRect.bottom -
+gOrigProxyRect.top) / 4);<br>
+    proxyOffsetCol = outColumns / 2;<br>
+    proxyOffsetRow = outRows / 2;<br>
+<br>
+    <br>
+    max=(int)sqrt((inRows/2)*(inRows/2)+(inColumns/2)*(inColumns/2));<br>
+    for (i = 0; i &lt; outRows; i ++)<br>
+    {<br>
+        i--;<br>
+        for(ii = 1;ii&lt;=gRepFactor;ii++)<br>
+        {<br>
+            i++;<br>
+            if(i==outRows) break;<br>
+            mskPtr2= (unsigned8
+*)gSHOWmask + (i * outColumns);<br>
+            dstPtr = (unsigned8
+*)gStuff-&gt;outData + (i * outColumns * outPlanes);
+        <br>
+            mskPtr = (unsigned8
+*)gFFTmask + (- gPozice.x + difColumns + (((int)(i/gRepFactor) + difRows - gPozice.y ) *
+inColumns));<br>
+            srcX= - gPozice.x +
+difColumns + (((int)(i/gRepFactor) + difRows - gPozice.y ) * inColumns);<br>
+            srcY=srcX-((short)(srcX/inColumns))*inColumns;
+        <br>
+            for (j = 0; j &lt;
+outColumns; j ++)<br>
+            {<br>
+                j--;<br>
+                for
+(jj = 1;jj&lt;=gRepFactor;jj++)<br>
+                {<br>
+                    if
+(gIMaska) mskPtr2[0] = 255-mskPtr[0];<br>
+                    else
+mskPtr2[0]=255;<br>
+                <br>
+                    if(!mask)<br>
+                    {<br> 
+                        if (mskPtr[0]) for(plane=0;plane&lt;inPlanes;plane++) 
+dstPtr[plane]=((gInten*gFFTdata[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane]/100)+(100-gInten)*gFFTdata2[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane]/100); 
+                                            <br>
+                        else
+        for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr[plane]=gFFTdata[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane];<br>
+                    }<br>
+                    mskPtr2++;<br>
+                    dstPtr
++=outPlanes;<br>
+                    j++;<br>
+                    if
+(j==outColumns) break;<br>
+                }<br>
+                srcY
+++;<br>
+                mskPtr++;<br>
+            }<br>
+        }<br>
+    }<br>
+    <br>
+    gProxyRect.left = proxyCenterCol - proxyOffsetCol &gt;
+gOrigProxyRect.left<br>
+                    ?
+proxyCenterCol - proxyOffsetCol : gOrigProxyRect.left;<br>
+    gProxyRect.right = proxyCenterCol + proxyOffsetCol &lt;
+gOrigProxyRect.right<br>
+                    ?
+proxyCenterCol + proxyOffsetCol : gOrigProxyRect.right;<br>
+    gProxyRect.top = proxyCenterRow - proxyOffsetRow &gt;
+gOrigProxyRect.top<br>
+                    ?
+proxyCenterRow - proxyOffsetRow : gOrigProxyRect.top;<br>
+    gProxyRect.bottom = proxyCenterRow + proxyOffsetRow &lt;
+gOrigProxyRect.bottom<br>
+                    ?
+proxyCenterRow + proxyOffsetRow : gOrigProxyRect.bottom;<br>
+}<br>
+    <br>
+/*****************************************************************************/<br>
+/* Zoom Out. Zmenšení gRepFactor between 0...1. */<br>
+<br>
+void ZoomOutRect (GPtr globals,    Boolean mask)<br>
+{<br>
+    const unsigned8 kUIBackcolor = 191;<br>
+    short offsetOutColumns, offsetOutRows;<br>
+    short startOutColumns, startOutRows, endOutColumns, endOutRows;<br>
+    const short outColumns= gStuff-&gt;outRect.right -
+gStuff-&gt;outRect.left;<br>
+    const short outRows = gStuff-&gt;outRect.bottom -
+gStuff-&gt;outRect.top;    <br>
+    const short outPlanes = gStuff-&gt;outHiPlane - gStuff-&gt;outLoPlane +
+1;<br>
+    const short inColumns = gStuff-&gt;imageSize.h;<br>
+    const short inRows = gStuff-&gt;imageSize.v;<br>
+    const short inPlanes = gStuff-&gt;inHiPlane - gStuff-&gt;inLoPlane + 1;<br>
+    short centerInColumns, centerInRows;<br>
+    short offsetInColumns, offsetInRows;<br>
+    short difColumns, difRows;<br>
+short offset = 0;<br>
+    short proxyCenterCol, proxyCenterRow;<br>
+    short proxyOffsetCol, proxyOffsetRow;<br>
+    float HFactor = 0;<br>
+float VFactor = 0;<br>
+    double pomoc; <br>
+    unsigned8 *dstPtr;<br>
+    unsigned8 *mskPtr;<br>
+    unsigned8 *mskPtr2;<br>
+    int i,j,srcX,srcY,max,polo,plane;<br>
+    Boolean maskPixel = false;<br>
+    <br>
+    offsetOutColumns = outColumns / 2;<br>
+    offsetOutRows = outRows / 2;<br>
+    startOutColumns = 0;<br>
+    startOutRows = 0;<br>
+    endOutColumns = outColumns-1;<br>
+    endOutRows = outRows-1;<br>
+    centerInColumns = inColumns / 2;<br>
+    centerInRows = inRows / 2;<br>
+    offsetInColumns = (short)(inColumns * gRepFactor / 2);<br>
+    offsetInRows = (short)(inRows * gRepFactor / 2);<br>
+    difColumns        = offsetInColumns
+- offsetOutColumns;<br>
+    difRows = offsetInRows - offsetOutRows;<br>
+<br>
+    <br>
+<br>
+    if (difColumns&lt;0) <br>
+    {<br>
+        difColumns++;<br>
+        startOutColumns-=difColumns;<br>
+        difColumns--;<br>
+        endOutColumns+=difColumns;<br>
+        difColumns=0;<br>
+    }<br>
+    if (difRows&lt;0) <br>
+    {<br>
+        difRows++;<br>
+        startOutRows-=difRows;<br>
+        difRows--;<br>
+        endOutRows+=difRows;<br>
+        difRows=0;<br>
+    }<br>
+    gPozice.x=gSPozice.x+(short)gDif.x;<br>
+    if (gPozice.x&gt; difColumns) gPozice.x=difColumns;<br>
+    if (gPozice.x&lt;-difColumns) gPozice.x=-difColumns;<br>
+    gPozice.y=gSPozice.y+(short)gDif.y;<br>
+    if (gPozice.y&gt; difRows) gPozice.y=difRows;<br>
+    if (gPozice.y&lt;-difRows) gPozice.y=-difRows;<br>
+    proxyCenterCol = gOrigProxyRect.left + ((gOrigProxyRect.right -
+gOrigProxyRect.left) / 2);<br>
+    proxyCenterRow = gOrigProxyRect.top + ((gOrigProxyRect.bottom -
+gOrigProxyRect.top) / 2);<br>
+    proxyOffsetCol = (short)((outColumns * gRepFactor) / 2);<br>
+    proxyOffsetRow = (short)((outRows * gRepFactor) / 2);<br>
+    if (!mask)<br>
+    {<br>
+        for (i = 0;i &lt; startOutRows;i ++)<br>
+        {<br>
+            dstPtr = (unsigned8 *)
+gStuff-&gt;outData + (i * outColumns* outPlanes);<br>
+            mskPtr2= (unsigned8 *)
+gSHOWmask + (i * outColumns);<br>
+            for (j = 0; j &lt;
+outColumns; j ++)<br>
+        {<br>
+            for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr [plane] = kUIBackcolor;<br>
+            mskPtr2[0]=255;<br>
+            dstPtr +=outPlanes;<br>
+            mskPtr2++;<br>
+            }<br>
+        }<br>
+    }<br>
+    max=(int)sqrt((inRows/2)*(inRows/2)+(inColumns/2)*(inColumns/2));<br>
+    for (i = startOutRows;i &lt; endOutRows; i ++)<br>
+    {<br>
+        srcX =
+(short)((-gPozice.x+difColumns)/gRepFactor) + ((i - startOutRows +
+(short)((-gPozice.y+difRows)/gRepFactor) + offset) * inColumns );<br>
+        dstPtr = (unsigned8 *) gStuff-&gt;outData + (i
+* outColumns* outPlanes);<br>
+    mskPtr2= (unsigned8 *) gSHOWmask + (i * outColumns);<br>
+        mskPtr = (unsigned8 *) gFFTmask +
+(short)((-gPozice.x+difColumns)/gRepFactor) + ((i - startOutRows + (short)((-gPozice.y +
+difRows)/gRepFactor) + offset) * inColumns);<br>
+        HFactor=0;<br>
+        for (j = 0; j &lt; startOutColumns;j ++)<br>
+        {<br>
+            for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr [plane] = kUIBackcolor;<br>
+            mskPtr2[0]=255;<br>
+            dstPtr += outPlanes;<br>
+            mskPtr2++;<br>
+        }<br>
+        srcY=srcX-((short)(srcX/inColumns))*inColumns;
+        <br>
+        for (j = startOutColumns;j &lt; endOutColumns;
+j ++)<br>
+        {
+            <br>
+            if (gIMaska) mskPtr2[0]
+= 255-mskPtr[0];<br>
+            else mskPtr2[0]=255;<br>
+        <br>
+            if(!mask)<br>
+            {<br> 
+                if(mskPtr[0]) for(plane=0;plane&lt;inPlanes;plane++) dstPtr[plane]=((gInten*gFFTdata[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane]/100)+(100-gInten)*gFFTdata2[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane]/100); 
+                                            <br>
+                else
+        for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr[plane]=gFFTdata[((srcX/inColumns)*inColumns+srcY)*inPlanes+plane];<br>
+                <br>
+            }<br>
+            dstPtr +=outPlanes;<br>
+            srcY ++;<br>
+            mskPtr++;<br>
+            mskPtr2++;<br>
+            HFactor +=
+((1/gRepFactor)-1);<br>
+            while(HFactor&gt;=0.5)<br>
+{<br>
+                HFactor-=1;<br>
+                srcY
+++;<br>
+                mskPtr++;<br>
+}<br>
+        }<br>
+        if(!mask)<br>
+        {<br>
+            for (j = endOutColumns;
+j &lt; outColumns; j ++)<br>
+            {<br>
+                for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr [plane] = kUIBackcolor;<br>
+                mskPtr2[0]=255;<br>
+            <br>
+                dstPtr
++= outPlanes;<br>
+                mskPtr2++;<br>
+            }<br>
+        }<br>
+        VFactor += ((1/gRepFactor)-1);<br>
+        while(VFactor&gt;=0.5)<br>
+        {<br>
+            VFactor-=1;<br>
+            offset+=1;<br>
+        }<br>
+    }<br>
+    if(!mask)<br>
+    {<br>
+        for (i = endOutRows; i &lt; outRows; i ++)<br>
+        {<br>
+            dstPtr = (unsigned8 *)
+gStuff-&gt;outData + (i * outColumns* outPlanes);<br>
+            mskPtr2= (unsigned8 *)
+gSHOWmask + (i * outColumns);<br>
+<br>
+            for (j = 0; j &lt;
+outColumns; j ++)<br>
+            {<br>
+                for(plane=0;plane&lt;inPlanes;plane++)
+dstPtr [plane] = kUIBackcolor;    <br>
+                mskPtr2[0]=255;<br>
+                dstPtr
++= outPlanes;<br>
+                mskPtr2++;<br>
+            }<br>
+        }<br>
+    }<br>
+<br>
+<br>
+    gProxyRect.left = proxyCenterCol - proxyOffsetCol &gt;
+gOrigProxyRect.left<br>
+                    ?
+proxyCenterCol - proxyOffsetCol : gOrigProxyRect.left;<br>
+    gProxyRect.right = proxyCenterCol + proxyOffsetCol &lt;
+gOrigProxyRect.right<br>
+                    ?
+proxyCenterCol + proxyOffsetCol : gOrigProxyRect.right;<br>
+    gProxyRect.top = proxyCenterRow - proxyOffsetRow &gt;
+gOrigProxyRect.top<br>
+                    ?
+proxyCenterRow - proxyOffsetRow : gOrigProxyRect.top;<br>
+    gProxyRect.bottom = proxyCenterRow + proxyOffsetRow &lt;
+gOrigProxyRect.bottom;<br>
+}<br>
+    <br>
+/*****************************************************************************/<br>
+/* Zooms in by one factor (parts of 1.0 until 1.0, then 1.0, 2.0, etc. */<br>
+<br>
+void ZoomIn (short *zoom)<br>
+{<br>
+    if (*zoom &gt;= kNumZooms)<br>
+        *zoom += kNumZooms;<br>
+    else (*zoom)++;<br>
+}<br>
+<br>
+void ZoomOut (short *zoom)<br>
+{<br>
+    if (*zoom &gt;= (kNumZooms*2))<br>
+        *zoom -= kNumZooms;<br>
+    else (*zoom)--;<br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* Takes an enumeration and returns corresponding zoom size */<br>
+<br>
+short GetZoomFactor (GPtr globals)<br>
+{<br>
+    short    sub = 0;<br>
+    short    returnValue = noErr;<br>
+    <br>
+    /* check for zoomFactor bounds */<br>
+    <br>
+    if (gZoomFactor &lt;= kMinZoom)<br>
+    {<br>
+        gZoomFactor = kMinZoom;<br>
+        returnValue = hitLowBounds;<br>
+    }<br>
+    else if (gZoomFactor &gt;= kMaxZoom)<br>
+    {<br>
+        gZoomFactor = kMaxZoom;<br>
+        returnValue = hitHighBounds;<br>
+    }<br>
+    <br>
+    sub = gZoomFactor % kNumZooms;<br>
+    <br>
+    switch (sub)<br>
+        {<br>
+            case 1:<br>
+                gRepFactor
+= (float)0.25;<br>
+                break;<br>
+            case 2:<br>
+                gRepFactor
+= (float)0.33;<br>
+                break;<br>
+            case 3:<br>
+                gRepFactor
+= (float)0.50;<br>
+                break;<br>
+            case 4:<br>
+                gRepFactor
+= (float)0.66;<br>
+                break;<br>
+            case 5:<br>
+                gRepFactor
+= (float)0.80;<br>
+                break;<br>
+            default:<br>
+                gRepFactor
+= (float)0;<br>
+                break;<br>
+        }<br>
+        gRepFactor += gZoomFactor / kNumZooms;<br>
+    return returnValue;<br>
+}<br>
+<br>
+<br>
+void scaleRect(Rect *l, short n, short d) {<br>
+    l-&gt;left = (l-&gt;left * n) / d;<br>
+    l-&gt;top = (l-&gt;top * n) / d;<br>
+    l-&gt;right = (l-&gt;right * n) / d;<br>
+    l-&gt;bottom = (l-&gt;bottom * n) / d;<br>
+}<br>
+<br>
+void shrinkRect(Rect *l, short x, short y) {<br>
+    l-&gt;left += x;<br>
+    l-&gt;top += y;<br>
+    l-&gt;right -= x;<br>
+    l-&gt;bottom -= y;<br>
+}<br>
+<br>
+void copyRect(Rect *l, const Rect *r) {<br>
+    l-&gt;left = r-&gt;left;<br>
+    l-&gt;top = r-&gt;top;<br>
+    l-&gt;right = r-&gt;right;<br>
+    l-&gt;bottom = r-&gt;bottom;<br>
+}<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+/******************************************************************************/<br>
+/* NEPOUŽITO - Pokud se filtruje po částech */<br>
+<br>
+void StartNoAdvanceState (GPtr globals)<br>
+{<br>
+    DoInitialRect(globals);<br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* NEPOUŽITO - inicializace první filtrované části - filtrování po částech */<br>
+<br>
+void DoInitialRect (GPtr globals)<br>
+{<br>
+    int32 total;<br>
+    total = gStuff-&gt;filterRect.bottom - gStuff-&gt;filterRect.top;<br>
+    gStuff-&gt;inLoPlane = gStuff-&gt;outLoPlane = 0;<br>
+    gStuff-&gt;inHiPlane = gStuff-&gt;outHiPlane = gStuff-&gt;planes - 1;<br>
+    <br>
+    /* Použítí Alfa kanálů */<br>
+    #if useAlpha<br>
+    if (!gStuff-&gt;isFloating)<br>
+    {<br>
+        gStuff-&gt;wantsAbsolute = true;<br>
+        if (gStuff-&gt;inLayerPlanes !=0 &amp;&amp;
+gStuff-&gt;inTransparencyMask != 0)<br>
+            gStuff-&gt;inHiPlane =
+gStuff-&gt;absLayerPlanes - 1 +<br>
+                                gStuff-&gt;absTransparencyMask
++<br>
+                                gStuff-&gt;absLayerMasks
++<br>
+                                gStuff-&gt;absInvertedLayerMasks
++<br>
+                                gStuff-&gt;absNonLayerPlanes;<br>
+        <br>
+        if (gStuff-&gt;outLayerPlanes !=0 &amp;&amp;
+gStuff-&gt;outTransparencyMask !=0)<br>
+            gStuff-&gt;outHiPlane =
+gStuff-&gt;outLayerPlanes - 1 +<br>
+                                gStuff-&gt;outTransparencyMask
++<br>
+                                gStuff-&gt;outLayerMasks
++<br>
+                                gStuff-&gt;outInvertedLayerMasks
++<br>
+                                gStuff-&gt;outNonLayerPlanes;<br>
+    }<br>
+    #endif<br>
+    gStuff-&gt;inputRate = long2fixed (1L);<br>
+    gStuff-&gt;maskRate = long2fixed (1L);<br>
+    gStuff-&gt;maskPadding = gStuff-&gt;outputPadding =
+gStuff-&gt;inputPadding = 255;<br>
+    gStuff-&gt;inRect = gStuff-&gt;outRect = gStuff-&gt;maskRect =
+gStuff-&gt;filterRect;<br>
+    gStuff-&gt;inRect.bottom = gStuff-&gt;outRect.bottom =
+gStuff-&gt;maskRect.bottom = gStuff-&gt;inRect.top + gRowSkip;<br>
+}<br>
+<br>
+/*****************************************************************************/<br>
+/* NEPOUŽITO - Dotaz na další část */<br>
+<br>
+Boolean DoNextRect (GPtr globals)<br>
+{<br>
+    gStuff-&gt;inRect.top += gRowSkip; // next batch<br>
+    gStuff-&gt;inRect.bottom += gRowSkip; // next batch<br>
+    gStuff-&gt;outRect = gStuff-&gt;maskRect = gStuff-&gt;inRect;<br>
+    <br>
+    return gStuff-&gt;inRect.top &lt; gStuff-&gt;filterRect.bottom;<br>
+}<br>
+<br>
+<br>
+</small></p>
+</body></html>

@@ -1,0 +1,1 @@
+%RGB-1.0121045038140150160170src(x,y+cos(x*ctl(0))/(c-ctl(1))+b,z)src(x,y+cos(x*ctl(0))/(c-ctl(2))-r,z)src(x,y+cos(x*ctl(0))/(c-ctl(3)),z)a

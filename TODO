@@ -1,0 +1,6 @@
+FilterFoundry
+Copyright (C) 2003 Toby Thain <toby@telegraphics.com.au>
+
+TO DO
+- "Make" function to package a standalone filter
+- FFL import, read compiled 8BFs
