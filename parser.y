@@ -33,7 +33,7 @@ int yylex(void); // hack. correct prototype is buried in lex output
 //#endif
 
 #include "node.h"
-#include "parser.h"
+#include "y.tab.h"
 
 void yyerror(char*);
 

@@ -17,18 +17,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "world.h"
 
-#include "carbonstuff.h"
-
-#include "spconfig.h"
 #include "PIFilter.h"
 
 #include "entry.h"
-#include "choosefile.h"
 
+#include "choosefile.h"
 #include "ui.h"
 #include "file_compat.h"
 #include "symtab.h"
@@ -36,8 +31,8 @@
 
 enum{
 	TAB = 011,
-	LF = 012,
-	CR = 015,
+	LF  = 012,
+	CR  = 015,
 
 	CHUNK_ROWS = 64,
 

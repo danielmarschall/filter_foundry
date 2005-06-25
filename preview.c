@@ -24,7 +24,6 @@
 #include "piproperties.h"
 
 #include "node.h"
-#include "parser.h"
 #include "funcs.h"
 #include "y.tab.h"
 #include "choosefile.h"

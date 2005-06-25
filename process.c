@@ -17,14 +17,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "carbonstuff.h"
-#include "pifilter.h"
-
 #include "ff.h"
 #include "symtab.h"
 #include "node.h"
 #include "funcs.h"
-#include "parser.h"
+#include "y.tab.h"
 
 extern value_type var[];
 extern int nplanes,varused[],srcradused;

@@ -89,8 +89,6 @@
 #ifndef RC_INVOKED
 #ifndef Rez
 
-	#include "world.h"
-	
 	#include "piabout.h"
 	#include "pifilter.h"
 	

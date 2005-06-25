@@ -65,15 +65,16 @@
 			 1.1b6 - fix key (hash) calculation for standalones to obey Adobe's stated rules
 			 1.1b7 - aaaargh fix stupid hex handling bug in lexer
 			 1.1b8 - remove dbg call in lexer (it's late :( )
+24-Jun-2005: 1.1b9 - Mach-O build for CS2/Mac
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1b8"
-#define VERSION_NUM 1,0x10,beta,8
+#define VERSION_STR "1.1b9"
+#define VERSION_NUM 1,0x10,beta,9
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,8
+#define VI_VERS_NUM 1,1,0,9
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta of scripting support.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

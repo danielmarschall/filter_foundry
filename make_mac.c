@@ -110,6 +110,9 @@ OSErr doresources(FSSpec *srcplug, short dstvol,long dstdir,StringPtr dstname){
 }
 
 #if 0
+// FIXME: The Mach-O build (for CS2/Mac) definitely will need something similar to the following!
+// but without bothering with the MacOSClassic parts
+
 OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname){
 	short dstvol = sfr->sfFile.vRefNum;
 	long bundledir,contentsdir,macosdir,macoscdir;

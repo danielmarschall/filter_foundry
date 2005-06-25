@@ -21,8 +21,9 @@
 //#include <sound.h>
 
 #include "ff.h"
+
 #include "node.h"
-#include "parser.h"
+#include "y.tab.h"
 #include "scripting.h"
 
 struct node *tree[4];
@@ -32,7 +33,7 @@ value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4],*defaultexpr[]={"r","g","b","a"};
 
 #ifdef MAC_ENV
-	/* fake this Windows-only global */
+	/* fake this global on Mac (in Windows build, it's defined in dllmain.c) */
 	Handle hDllInstance = NULL;
 #endif
 
@@ -146,7 +147,7 @@ void DoPrepare(FilterRecordPtr pb){
 	int i;
 
 	for(i=4;i--;){
-		if(expr[i]||tree[i]) DBG("expr[] or tree[] nonzero in Prepare!");
+		if(expr[i]||tree[i]) DBG("expr[] or tree[] non-NULL in Prepare!");
 		expr[i] = NULL;
 		tree[i] = NULL;
 	}
