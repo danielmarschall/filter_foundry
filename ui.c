@@ -292,10 +292,16 @@ void maindlginit(DIALOGREF dp){
 	}
 	
 #ifdef WIN_ENV
-	// can't build standalone filter on less than NT platform :-(
-	// due to absence of resource editing API (UpdateResource etc)
-	if(!isWin32NT())
-		HideDialogItem(dp,MAKEITEM);
+  // can't build standalone filter on less than NT platform :-(
+  // due to absence of resource editing API (UpdateResource etc)
+  if(!isWin32NT())
+    HideDialogItem(dp,MAKEITEM);
+#endif
+
+#ifdef MACMACHO
+  // FIXME: can't make standalone Mach-O bundle plugin yet
+  // most of the code is written (see make_mac.c)
+  HideDialogItem(dp,MAKEITEM);
 #endif
 
 	updatedialog(dp);

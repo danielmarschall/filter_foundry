@@ -116,7 +116,7 @@ dist/gpl.html :
 # ---------- compile rules ----------
 
 obj/%.o : %.c
-	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS) -fpascal-strings
 obj_w32/%.o : %.c
 	$(MINGW_CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
 
