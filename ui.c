@@ -301,7 +301,7 @@ void maindlginit(DIALOGREF dp){
 #ifdef MACMACHO
   // FIXME: can't make standalone Mach-O bundle plugin yet
   // most of the code is written (see make_mac.c)
-  HideDialogItem(dp,MAKEITEM);
+  //HideDialogItem(dp,MAKEITEM);
 #endif
 
 	updatedialog(dp);
@@ -347,7 +347,10 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
 #ifdef WIN_ENV
-			PLstrcat(fname,(StringPtr)"\p.8bf");
+      PLstrcat(fname,(StringPtr)"\p.8bf");
+#endif
+#ifdef MACMACHO
+      PLstrcat(fname,(StringPtr)"\p.plugin");
 #endif
 			if( putfile("\pMake standalone filter",fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr ) )

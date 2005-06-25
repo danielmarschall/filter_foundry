@@ -31,95 +31,167 @@
 OSErr wrstr(FILEREF rn,char *s);
 OSErr dopkginfo(FILEREF rn);
 OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname);
-OSErr doresources(FSSpec *srcplug, short dstvol,long dstdir,StringPtr dstname);
+OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopyfss);
 OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname);
+OSErr copyplist(FSSpec *fss, short dstvol,long dstdir);
 
 OSErr wrstr(FILEREF rn,char *s){
 	long count = strlen(s);
 	return FSWrite(rn,&count,s);
 }
 
-OSErr doresources(FSSpec *srcplug, short dstvol,long dstdir,StringPtr dstname){
+OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	short srcrn,dstrn;
 	Handle hpipl,h;
 	long origsize,newsize;
 	OSErr e = noErr;
 	Str255 title;
+  FSRef inref,outref;
 
-	if( -1 != (srcrn = FSpOpenResFile(srcplug,fsCurPerm)) ){
+#ifdef MACMACHO
+  // work with resources in data fork
+  if( !(e = FSpMakeFSRef(srcplug,&inref))
+    &&!(e = FSOpenResourceFile(&inref,0/*forkNameLength*/,NULL/*forkName*/,fsRdPerm,&srcrn))
+    &&!(e = FSpMakeFSRef(rsrccopy,&outref))
+    && (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn)) )
+      CloseResFile(srcrn);
+#else
+  // ordinary resource fork files
+  srcrn = FSpOpenResFile(srcplug,fsRdPerm);
+  if(srcrn != -1){
+    dstrn = FSpOpenResFile(rsrccopy,fsWrPerm);
+    if(dstrn == -1){
+      e = ResError();
+      CloseResFile(srcrn);
+    }
+  }else e = ResError();
+#endif
+
+	if(!e){
 
 		hpipl = Get1Resource('DATA',16000);
-
-		if( -1 != (dstrn = HOpenResFile(dstvol,dstdir,dstname,fsWrPerm)) ){
 		
-			/* create a new PiPL resource for the standalone plugin,
-			   with updated title and category strings */
+		/* create a new PiPL resource for the standalone plugin,
+		   with updated title and category strings */
+	
+		if(h = Get1Resource('PiPL',16000)){
+			RemoveResource(h);
+			
+			DetachResource(hpipl);
+
+			PLstrcpy(title,gdata->parm.title);
+			if(gdata->parm.popDialog) 
+				PLstrcat(title,"\pÉ");
+
+			origsize = GetHandleSize(hpipl);
+			SetHandleSize(hpipl,origsize+0x300); /* some slop for fixup to work with */
+			HLock(hpipl);
+			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title);
+			HUnlock(hpipl);
+			SetHandleSize(hpipl,newsize);
+			
+			AddResource(hpipl,'PiPL',16000,"\p");
+		}
+
+		/* do a similar trick with the terminology resource,
+		   so the scripting system can distinguish the standalone plugin */
+
+		if(h = Get1Resource(typeAETE,AETE_ID)){
+			origsize = GetHandleSize(h);
+			SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
+			HLock(h);
+			newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
+			HUnlock(h);
+			SetHandleSize(h,newsize);
+			
+			ChangedResource(h);
+		}
+
+		if( !(e = ResError()) ){
 		
-			if(h = Get1Resource('PiPL',16000)){
-				RemoveResource(h);
-				
-				DetachResource(hpipl);
-
-				PLstrcpy(title,gdata->parm.title);
-				if(gdata->parm.popDialog) 
-					PLstrcat(title,"\pÉ");
-
-				origsize = GetHandleSize(hpipl);
-				SetHandleSize(hpipl,origsize+0x300); /* some slop for fixup to work with */
-				HLock(hpipl);
-				newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title);
-				HUnlock(hpipl);
-				SetHandleSize(hpipl,newsize);
-				
-				AddResource(hpipl,'PiPL',16000,"\p");
-			}
-
-			/* do a similar trick with the terminology resource,
-			   so the scripting system can distinguish the standalone plugin */
-
-			if(h = Get1Resource(typeAETE,AETE_ID)){
-				origsize = GetHandleSize(h);
-				SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
-				HLock(h);
-				newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
-				HUnlock(h);
-				SetHandleSize(h,newsize);
-				
-				ChangedResource(h);
-			}
-
-			if( !(e = ResError()) ){
+			/* now add PARM resource */
 			
-				/* now add PARM resource */
-				
-				if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
-					AddResource(h,'PARM',PARM_ID,"\p");
-					e = ResError();
-				}
+			if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
+				AddResource(h,'PARM',PARM_ID,"\p");
+				e = ResError();
 			}
-			
-			CloseResFile(dstrn);
-
-		}else e = ResError();
-
+		}
+		
+		CloseResFile(dstrn);
 		CloseResFile(srcrn);
-
-	}else e = ResError();
+	}
 	
 	return e;
 }
 
-#if 0
-// FIXME: The Mach-O build (for CS2/Mac) definitely will need something similar to the following!
-// but without bothering with the MacOSClassic parts
+int copyletters(char *dst,StringPtr src){
+  int i,n=0;
+  for(i=src[0];i--;)
+    if(isalpha(*++src)){
+      *dst++ = *src;
+      ++n;
+    }
+  return n;
+}
+
+// Info.plist in new standalone copy needs to be edited
+// at least the CFBundleIdentifier property must be unique
+
+OSErr copyplist(FSSpec *fss, short dstvol,long dstdir){
+  static char *key = "com.telegraphics.FilterFoundry";
+  static unsigned char *fname="\pInfo.plist";
+  char *buf,*save,*p;
+  short rn,dstrn,i,n,m;
+  long eof,count;
+  OSErr e;
+  
+  if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){
+    if( !(e = HOpenDF(dstvol,dstdir,fname,fsWrPerm,&dstrn)) ){
+      if(!(e = FSpOpenDF(fss,fsRdPerm,&rn))){
+        if( !(e = GetEOF(rn,&eof)) && (buf = malloc(eof+1024)) ){
+          if(!(e = FSRead(rn,&eof,buf))){
+            buf[eof] = 0;
+            if( (p = strnstr(buf,key,eof)) && (save = malloc(eof-(p-buf)+1)) ){
+              p += strlen(key);
+              // store text after matched string
+              strcpy(save,p);
+    
+              *p++ = '.';
+              n = copyletters(p,gdata->parm.category);
+              p += n;
+              if(n) *p++ = '.';
+              m = copyletters(p,gdata->parm.title);
+              p += m;
+              if(!m){
+                // generate a random ASCII identifier
+                srand(TICKCOUNT());
+                for(i=8;i--;) *p++ = 'a' + (rand() % 26);
+              }
+              strcpy(p,save);
+    
+              count = strlen(buf);
+              e = FSWrite(dstrn,&count,buf);
+    
+              free(save);
+            }else e = paramErr; // not found?? shouldn't happen
+          }
+          free(buf);
+        }
+        FSClose(rn);
+      }
+      FSClose(dstrn);
+    }
+    if(e) HDelete(dstvol,dstdir,fname);
+  }
+  return e;
+}
 
 OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname){
 	short dstvol = sfr->sfFile.vRefNum;
-	long bundledir,contentsdir,macosdir,macoscdir;
+	long bundledir,contentsdir,macosdir,rsrcdir;
 	DInfo fndrInfo;
 	OSErr e;
-	Str255 temp;
-	FSSpec fss,macosfss,macoscfss;
+	FSSpec fss,macosfss,rsrcfss,rsrccopyfss;
 
 	if( !(e = FSpDirCreate(&sfr->sfFile,sfr->sfScript,&bundledir)) ){
 		if(!(e = FSpGetDInfo(&sfr->sfFile,&fndrInfo)) ){
@@ -128,40 +200,39 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr p
 		}
 		if( !(e = DirCreate(dstvol,bundledir,"\pContents",&contentsdir)) ){
 			if( !(e = DirCreate(dstvol,contentsdir,"\pMacOS",&macosdir)) ){
-				if( !(e = DirCreate(dstvol,contentsdir,"\pMacOSClassic",&macoscdir)) ){
+				if( !(e = DirCreate(dstvol,contentsdir,"\pResources",&rsrcdir)) ){
 
-					/* directories created ; now we need to copy the Info.plist file, and the two binaries */
+					/* directories created ; now we need to copy the Info.plist file, resource file, and executable */
 
-					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss))
-					 && !(e = FileCopy(fss.vRefNum,fss.parID,fss.name, dstvol,contentsdir,NULL, NULL,NULL,0,false)) ){
-						PLstrcpy(temp,"\p::MacOSClassic:");
-						PLstrcat(temp,plugname);
-						if( !(e = FSMakeFSSpec(plugvol,plugdir,temp,&macoscfss))
-						 && !(e = FileCopy(macoscfss.vRefNum,macoscfss.parID,macoscfss.name, dstvol,macoscdir,NULL, NULL,NULL,0,false)) ){
-							PLstrcpy(temp,"\p::MacOS:");
-							PLstrcat(temp,plugname);
-							if( !(e = FSMakeFSSpec(plugvol,plugdir,temp,&macosfss))
-							 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) ){
-								/* now we add PARM resources to each binary, and edit PiPLs */
-								doresources(&macosfss, dstvol,macosdir,plugname);
-								doresources(&macoscfss, dstvol,macoscdir,plugname);
-							}
-							else HDelete(0,macoscdir,plugname);
-						}else HDelete(0,contentsdir,"\pInfo.plist");
-					} 
-					
-					if(e) HDelete(0,contentsdir,"\pMacOSClassic");
+					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::MacOS:FilterFoundry",&macosfss))
+					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) ){
+						/* now we add PARM resources to each binary, and edit PiPLs */
+            if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
+               && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
+               && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) ){
+                
+						   if( !(e = doresources(&rsrcfss, &rsrccopyfss))
+              && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) ){
+                e = copyplist(&fss,dstvol,contentsdir);
+                
+                if(e) FSpDelete(&rsrccopyfss);
+               }
+                
+              if(e) HDelete(dstvol,macosdir,"\pFilterFoundry");
+						}
+						if(e) HDelete(dstvol,rsrcdir,plugname);
+					}
+					if(e) HDelete(dstvol,contentsdir,"\pResources");
 				}
-				if(e) HDelete(0,contentsdir,"\pMacOS");
+				if(e) HDelete(dstvol,contentsdir,"\pMacOS");
 			}
-			if(e) HDelete(0,bundledir,"\pContents");
+			if(e) HDelete(dstvol,bundledir,"\pContents");
 		}
 		if(e) FSpDelete(&sfr->sfFile);
 	}
 		
 	return e;
 }
-#endif
 
 OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname){
 	OSErr e;
@@ -169,14 +240,14 @@ OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringP
 
 	e = FSpDelete(&sfr->sfFile);
 	if(e && e != fnfErr){
-		alertuser("Can't replace the existing plugin. Try a different name or location.","");
+		alertuser("Can't replace the existing file. Try a different name or location.","");
 		return userCanceledErr;
 	}
 
 	if( !(e = FileCopy(plugvol,plugdir,plugname, sfr->sfFile.vRefNum,sfr->sfFile.parID,NULL, sfr->sfFile.name,NULL,0,false)) 
 	&& !(e = FSMakeFSSpec(plugvol,plugdir,plugname,&origfss)) )
 		/* now we add PARM resources, and edit PiPL */
-		e = doresources(&origfss, sfr->sfFile.vRefNum,sfr->sfFile.parID,sfr->sfFile.name);
+		e = doresources(&origfss, &sfr->sfFile);
 
 	return e;
 }
@@ -188,7 +259,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 	Str255 plugname;
 	
 	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname)))
-		e = make_singlefile(sfr,plugvol,plugdir,plugname); //make_bundle(sfr,plugvol,plugdir,plugname);
+#ifdef MACMACHO
+    e = make_bundle(sfr,plugvol,plugdir,plugname);
+#else
+		e = make_singlefile(sfr,plugvol,plugdir,plugname);
+#endif
 
 	if(e && e != userCanceledErr) 
 		alertuser("Could not create standalone plugin.","");

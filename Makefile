@@ -91,6 +91,7 @@ osx : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist
 
 $(BUNDLE) :
 	mkdir -p $@
+	/Developer/Tools/SetFile -t TEXT -c ttxt dist/examples/*.afs
 	/Developer/Tools/SetFile -a B $(BUNDLE)
 
 # insert correct executable name and version string in bundle's Info.plist
