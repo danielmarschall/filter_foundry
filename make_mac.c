@@ -19,6 +19,7 @@
 
 #include <plstringfuncs.h>
 #include <ASRegistry.h>
+#include <ctype.h>
 
 #include "ff.h"
 
@@ -34,6 +35,13 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr p
 OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopyfss);
 OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname);
 OSErr copyplist(FSSpec *fss, short dstvol,long dstdir);
+int copyletters(char *dst,StringPtr src);
+
+// prototype for a function included in Carbon's stdlib and declared in /usr/include/string.h
+// but missing from MPW Universal header string.h
+#ifndef _STRING_H_
+	char    *strnstr(const char *, const char *, size_t);
+#endif
 
 OSErr wrstr(FILEREF rn,char *s){
 	long count = strlen(s);
@@ -46,7 +54,6 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	long origsize,newsize;
 	OSErr e = noErr;
 	Str255 title;
-  FSRef inref,outref;
 
 #ifdef MACMACHO
   // work with resources in data fork

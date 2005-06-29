@@ -47,7 +47,7 @@ REZHEADERS = -i {PSAPI}Photoshop: -i {PSAPI}Resources:
 
 OBJ_CLASSIC = main.cl.x ui_mac.cl.x ui.cl.x ui_build.cl.x ¶
 	preview.cl.x read.cl.x save.cl.x make_mac.cl.x load_mac.cl.x make.cl.x scripting.cl.x ¶
-	parser.cl.x lexer.cl.x node.cl.x symtab.cl.x funcs.cl.x process.cl.x trigtab.cl.x ¶
+	y.tab.cl.x lex.yy.cl.x node.cl.x symtab.cl.x funcs.cl.x process.cl.x trigtab.cl.x ¶
 	{COMMONT}dbg_mac.cl.x {COMMONT}str.cl.x {COMMONT}ui_compat_mac.cl.x ¶
 	{COMMONT}choosefile_nav.cl.x {COMMONT}sprintf_tiny.cl.x ¶
 	::MoreFiles:Sources:MoreFilesExtras.cl.x ¶
@@ -57,7 +57,7 @@ OBJ_CLASSIC = main.cl.x ui_mac.cl.x ui.cl.x ui_build.cl.x ¶
 
 OBJ_CARBON =  main.ca.x ui_mac.ca.x ui.ca.x ui_build.ca.x ¶
 	preview.ca.x read.ca.x save.ca.x make_mac.ca.x load_mac.ca.x make.ca.x scripting.ca.x ¶
-	parser.ca.x lexer.ca.x node.ca.x symtab.ca.x funcs.ca.x process.ca.x trigtab.ca.x ¶
+	y.tab.ca.x lex.yy.ca.x node.ca.x symtab.ca.x funcs.ca.x process.ca.x trigtab.ca.x ¶
 	{COMMONT}dbg_mac.ca.x {COMMONT}str.ca.x {COMMONT}ui_compat_mac.ca.x ¶
 	{COMMONT}choosefile_nav.ca.x {COMMONT}sprintf_tiny.ca.x ¶
 	::MoreFiles:Sources:MoreFilesExtras.ca.x ¶
@@ -73,24 +73,24 @@ REZFILES = ui_mac.r scripting.r
 	echo '#define __IDSTRING(a,b)' > 'sys/cdefs.h'
 	echo '#define __P(protos)     protos          /* full-blown ANSI C */' >> 'sys/cdefs.h'
 
-parser.c Ä parser.y 
-	echo "parser.c is out of date; in UNIX, 'make parser.c' before retrying MPW build"
-lexer.c Ä lexer.l
-	echo "lexer.c is out of date; in UNIX, 'make lexer.c' before retrying MPW build"
+y.tab.c Ä parser.y 
+	echo "y.tab.c is out of date; in UNIX, 'make y.tab.c' before retrying MPW build"
+lex.yy.c Ä lexer.l
+	echo "lex.yy.c is out of date; in UNIX, 'make lex.yy.c' before retrying MPW build"
 
-parser.cl.x ÄÄ 'sys/cdefs.h'
-parser.ca.x ÄÄ 'sys/cdefs.h'
+y.tab.cl.x ÄÄ 'sys/cdefs.h'
+y.tab.ca.x ÄÄ 'sys/cdefs.h'
 
-funcs.cl.x ÄÄ parser.c
-funcs.ca.x ÄÄ parser.c
-lexer.cl.x ÄÄ parser.c
-lexer.ca.x ÄÄ parser.c
-node.cl.x ÄÄ parser.c
-node.ca.x ÄÄ parser.c
-preview.cl.x ÄÄ parser.c
-preview.ca.x ÄÄ parser.c
-ui.cl.x ÄÄ parser.c
-ui.ca.x ÄÄ parser.c
+funcs.cl.x ÄÄ y.tab.h
+funcs.ca.x ÄÄ y.tab.h
+lex.yy.cl.x ÄÄ y.tab.h
+lex.yy.ca.x ÄÄ y.tab.h
+node.cl.x ÄÄ y.tab.h
+node.ca.x ÄÄ y.tab.h
+preview.cl.x ÄÄ y.tab.h
+preview.ca.x ÄÄ y.tab.h
+ui.cl.x ÄÄ y.tab.h
+ui.ca.x ÄÄ y.tab.h
 
 # look for include files in these directories
 ACCESSPATHS = -i :,{PSHEADERS},"{COMMONT}","{COMMONA}",::MoreFiles:CHeaders:,::MoreFiles:Sources:

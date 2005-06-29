@@ -121,3 +121,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason);
 Boolean readPARMresource(HMODULE hm,char **reason);
 
 void dbglasterror(char*);
+
+// from parser.y
+struct node *parseexpr(char *s);
