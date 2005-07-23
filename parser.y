@@ -27,15 +27,16 @@
 #define true 1
 #endif
 
+#include "node.h"
+#include "y.tab.h"
+
 //#ifdef MAC_ENV
 int yyparse(void);
 int yylex(void); // hack. correct prototype is buried in lex output
 //#endif
-
-#include "node.h"
-#include "y.tab.h"
-
 void yyerror(char*);
+int pushflag(int x);
+struct node *parseexpr(char *s);
 
 #define DPARSE 
 
@@ -45,8 +46,6 @@ char *errstr;
 enum{ PARENSTACK = 100 };
 
 int inarglist[PARENSTACK],arglistptr; // keep track of whether a comma is an function argument separator, or operator
-
-int pushflag(int x);
 
 int pushflag(int x){
 	if(arglistptr < (PARENSTACK-1))

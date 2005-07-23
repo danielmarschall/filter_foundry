@@ -46,9 +46,12 @@ OSErr saveparams(Handle h){
 	long est;
 	static char afs_sig[] = "%RGB-1.0\n";
 	
-	est = strlen(expr[0])+strlen(expr[1])+strlen(expr[2])+strlen(expr[3]);
-	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 1024 /*slop*/ ;
+	if(!h) DBG("saveparams: Null handle!");
 	
+	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
+	
+	PIUNLOCKHANDLE(h); // should not be necessary
 	if( !(e = PISETHANDLESIZE(h,est)) && (p = start = PILOCKHANDLE(h,false)) ){
 		p = cat(p,afs_sig);
 		
@@ -59,29 +62,33 @@ OSErr saveparams(Handle h){
 		}
 		
 		/* expressions */
-		if(!e)
-			for( i=0 ; i<4 ; ++i ){
-				if(r = expr[i])
-					for( n = strlen(r) ; n ; n -= chunk ){
-						chunk = n>CHOPLINES ? CHOPLINES : n;
-						for( j = chunk,q = outbuf ; j-- ; )
-							if(*r == CR){
-								*q++ = '\\';
-								*q++ = 'r';
-								++r;
-							}else 
-								*q++ = *r++;
-						*q++ = '\n';
-						*q = 0;
-						p = cat(p,outbuf);
-					}
-				else
-					p = cat(p,"(null expr)\n"); // this shouldn't happen
-				*p++ = '\n';
-			}
+		for( i=0 ; i<4 ; ++i ){
+			if(r = expr[i])
+				for( n = strlen(r) ; n ; n -= chunk ){
+					chunk = n>CHOPLINES ? CHOPLINES : n;
+					for( j = chunk,q = outbuf ; j-- ; )
+						if(*r == CR){
+							*q++ = '\\';
+							*q++ = 'r';
+							++r;
+						}else 
+							*q++ = *r++;
+					*q++ = '\n';
+					*q = 0;
+					p = cat(p,outbuf);
+				}
+			else
+				p = cat(p,"(null expr)\n"); // this shouldn't happen
+			*p++ = '\n';
+		}
+
+//		*p = 0; dbg(start);
+
 		PIUNLOCKHANDLE(h);
-		if(!e)
-			e = PISETHANDLESIZE(h,p - start);
+		e = PISETHANDLESIZE(h,p - start); // could ignore this error, maybe
+	}else{char s[100];
+		//alertuser("saveparams","couldn't resize (or lock) parameters!");
+		//sprintf(s,"est=%d e=%d ",est,e);dbg(s);
 	}
 err:
 	return e;

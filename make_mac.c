@@ -56,6 +56,7 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	Str255 title;
 
 #ifdef MACMACHO
+  FSRef inref,outref;
   // work with resources in data fork
   if( !(e = FSpMakeFSRef(srcplug,&inref))
     &&!(e = FSOpenResourceFile(&inref,0/*forkNameLength*/,NULL/*forkName*/,fsRdPerm,&srcrn))

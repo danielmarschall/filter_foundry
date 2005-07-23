@@ -64,6 +64,8 @@ char *get_cstring(PIReadDescriptor token){
 	return str;
 }
 
+/* return true if dialog should be shown */
+
 Boolean ReadScriptParamsOnRead(void)
 {
 	PIReadDescriptor token;
@@ -72,14 +74,14 @@ Boolean ReadScriptParamsOnRead(void)
 	DescriptorKeyIDArray array = { NULLID };
 	int32 flags;
 	OSErr stickyError;
-	Boolean returnValue = true;
+	//Boolean returnValue = true;
 	long v;
 	
 	if (DescriptorAvailable(NULL)){ /* playing back.  Do our thing. */
 		token = OpenReader(array);
 		if (token){
 			while (PIGetKey(token, &key, &type, &flags)){
-				switch (key){
+				switch (key){char s[10];
 					case PARAM_R_KEY: expr[0] = get_cstring(token); break;
 					case PARAM_G_KEY: expr[1] = get_cstring(token); break;
 					case PARAM_B_KEY: expr[2] = get_cstring(token); break;
@@ -90,6 +92,7 @@ Boolean ReadScriptParamsOnRead(void)
 							PIGetInt(token,&v); 
 							slider[key] = v; 
 						}
+						//sprintf(s,"%d:%d",key,v);dbg(s);
 						break;
 				}
 			}
@@ -108,11 +111,10 @@ Boolean ReadScriptParamsOnRead(void)
 			}
 		}
 		
-		returnValue = gpb->descriptorParameters->playInfo == plugInDialogDisplay;
-		/* return TRUE if want to show our Dialog */		
+		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */		
 	}
 	
-	return returnValue;
+	return true;
 }
 
 OSErr WriteScriptParamsOnRead(void)

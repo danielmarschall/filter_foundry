@@ -31,6 +31,11 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 	char linebuf[MAXLINE+1],curexpr[MAXEXPR+1],*p,*dataend,*q;
 	int c,linecnt,lineptr,exprcnt;
 
+	if(!h){
+		*reason = "readparams: Null parameter handle.";
+		return false;
+	}
+
 	p = PILOCKHANDLE(h,false);
 	dataend = p + PIGETHANDLESIZE(h);
 //sprintf(s,"readparams: Input data size = %d",dataend-p); dbg(s);

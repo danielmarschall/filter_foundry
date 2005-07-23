@@ -33,8 +33,7 @@ value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4],*defaultexpr[]={"r","g","b","a"};
 
 #ifdef MAC_ENV
-	/* fake this global on Mac (in Windows build, it's defined in dllmain.c) */
-	Handle hDllInstance = NULL;
+#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
 extern struct sym_rec predefs[];
@@ -43,7 +42,7 @@ extern int nplanes,varused[],srcradused;
 globals_t *gdata;
 FilterRecordPtr gpb;
 
-void checkandinitparams(long *data,Handle params);
+int checkandinitparams(Handle params);
 
 DLLEXPORT MACPASCAL 
 void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
@@ -68,7 +67,7 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 		break;
 	case filterSelectorParameters:
 //		dbg("filterSelectorParameters");
-		wantdialog = true; // was: true;
+		wantdialog = true;
 		break;
 	case filterSelectorPrepare:
 //		dbg("filterSelectorPrepare");
@@ -77,14 +76,20 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 		break;
 	case filterSelectorStart: 
 //		dbg("filterSelectorStart");
-		if(!pb->parameters)
-			pb->parameters = PINEWHANDLE(0);
 
-		checkandinitparams(data,pb->parameters);
+		if(!pb->parameters){
+			//dbg("pb->parameters = PINEWHANDLE(0)"),
+			pb->parameters = PINEWHANDLE(0); /* initialise the parameter handle that Photoshop keeps for us */
+			if(!pb->parameters) dbg("filterSelectorStart NULL handle @ PINEWHANDLE(0)");
+		}
 
+		wantdialog |= checkandinitparams(pb->parameters);
+
+		/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
-				/* update parameters */
+				//dbg("maindialog OK!");
+				/* update stored parameters from new user settings */
 				saveparams(pb->parameters);
 			}else
 				e = userCanceledErr;
@@ -115,18 +120,18 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 	ExitCodeResource();
 }
 
-void checkandinitparams(long *data,Handle params){
-	char *reasonstr;
-	int i;
-	char *reason;
+int checkandinitparams(Handle params){
+	char *reasonstr,*reason;
+	int i,f;
 	
-	if(!(params && readparams(params,false,&reasonstr))){
+	if( !(params && readparams(params,false,&reasonstr)) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
 		if(readPARMresource(hDllInstance,&reason))
 			gdata->standalone = true;
 		else{
+			//dbg("checkandinitparams: setting DEFAULTS!");
 			/* no scripted parameters - dialog wanted */
 			for(i=0;i<8;++i)
 				slider[i] = i*10+100;
@@ -135,12 +140,14 @@ void checkandinitparams(long *data,Handle params){
 		}
 	}
 		
-	if( ! ReadScriptParamsOnRead() )
-		saveparams(gpb->parameters); /* save the scripted params */
+	f = true;//ReadScriptParamsOnRead(); /* look for anything from the scripting engine */
 
-	/* check for NULL expression pointers (?) */
+	/* sanity check for NULL expression pointers (?) */
 	for(i=4;i--;)
 		if(!expr[i]) expr[i] = my_strdup(defaultexpr[i]);
+
+	saveparams(params); /* keep what we got */
+	return f;
 }
 
 void DoPrepare(FilterRecordPtr pb){
@@ -151,6 +158,8 @@ void DoPrepare(FilterRecordPtr pb){
 		expr[i] = NULL;
 		tree[i] = NULL;
 	}
+	
+//	pb->maxSpace = 256L<<10; /* nominal memory, neither here nor there */
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){

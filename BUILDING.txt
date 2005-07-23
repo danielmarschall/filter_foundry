@@ -20,7 +20,7 @@ Building the Filter Foundry plugin for Photoshop
 
 Notes on source code
 
-Source code, makefiles and IDE projects under GPL license are provided for MPW (Classic & Carbon PowerPC targets),
+Source code, makefiles and IDE projects under GPL license are provided for MPW (Classic & Carbon PowerPC targets), 
 CodeWarrior 7 (Classic & Carbon PowerPC, Win32, 68K targets) and mingw32 (Win32 target).
 
 A Photoshop SDK is required (available from Adobe Systems, http://www.adobe.com/).
@@ -56,10 +56,10 @@ Depending on how the source files were extracted, it may be necessary to set
 the correct Mac file types before attempting to build. In MPW, this can be done as follows. 
 First set the current directory to the Filter Foundry source directory, then:
 	setfile -t TEXT -c 'MPS ' Å.[chrly] Å.make Å.rc ::common:tt:Å ::common:adobeplugin:Å
-This can also be necessary after regenerating parser.c and lexer.c.
+This can also be necessary after regenerating y.tab.c and lex.yy.c.
 These files are generated from the parser and lexical analyser definitions, parser.y and lexer.l,
 by a UNIX (not MPW!) command such as:
-	make parser.c lexer.c
+	make y.tab.c lex.yy.c
 Pre-generated versions of these files (and y.tab.h, which is a byproduct) are included
 in the source archive.
 
