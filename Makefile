@@ -100,7 +100,7 @@ $(BUNDLE)/Contents/Info.plist : Info.plist version.h
 		cat $< | sed s/VERSION_STR/$$V/ | sed s/EXEC/$(EXEC)/ > $@
 
 clean :
-	rm -fr obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) lex.yy.[ch] y.tab.[ch]
+	rm -fr *.[ox] obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) lex.yy.[ch] y.tab.[ch]
 
 
 dist : $(DISTARCHIVE)
