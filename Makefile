@@ -106,8 +106,8 @@ clean :
 
 dist : $(DISTARCHIVE)
 
-$(DISTARCHIVE) : $(PLUGIN_W32) dist/README.html dist/gpl.html
-	zip -j -9 $@ $^
+$(DISTARCHIVE) : $(PLUGIN_W32) dist/README.txt dist/gpl.html dist/examples/*.afs
+	zip -j -9 -r $@ $^
 	ls -l $@
 
 dist/gpl.html : 

@@ -1,5 +1,5 @@
 FilterFoundry
-Copyright (C) 2003-4 Toby Thain <toby@telegraphics.com.au>
+Copyright (C) 2003-5 Toby Thain <toby@telegraphics.com.au>
 
 This is a Photoshop filter plugin compatible with Adobe's Filter Factory.
 
