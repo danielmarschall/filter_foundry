@@ -1,1 +1,0 @@
-int c;void f(a,b){	c = min(a,b);}void g(a,b){	c = a;	if ( b < c)		c = b;}

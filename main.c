@@ -1,5 +1,5 @@
 /*
-	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -93,8 +93,8 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 				saveparams(pb->parameters);
 			}else
 				e = userCanceledErr;
-			wantdialog = false;
 		}
+		wantdialog = false;
 
 		if(!e){
 			if(setup(pb)){
@@ -124,7 +124,7 @@ int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
 	int i,f;
 	
-	if( !(params && readparams(params,false,&reasonstr)) ){
+	if( f = !(params && readparams(params,false,&reasonstr)) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
@@ -139,8 +139,6 @@ int checkandinitparams(Handle params){
 				expr[i] = my_strdup(defaultexpr[i]);
 		}
 	}
-		
-	f = true;//ReadScriptParamsOnRead(); /* look for anything from the scripting engine */
 
 	/* sanity check for NULL expression pointers (?) */
 	for(i=4;i--;)

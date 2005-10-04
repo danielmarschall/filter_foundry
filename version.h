@@ -1,5 +1,5 @@
 /*
-	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -68,17 +68,18 @@
 24-Jun-2005: 1.1b9 - Mach-O build for CS2/Mac
 25-Jun-2005: 1.1b10 - can make 'standalone' Mach-O bundles
 22-Jul-2005: 1.1b11 - merge changes to fix parameter bug reported by Demitrios Vassaras
+03-Oct-2005: 1.1f1 - fix dialog behaviour on repeated filter application
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1b11"
-#define VERSION_NUM 1,0x10,beta,11
+#define VERSION_STR "1.1f1"
+#define VERSION_NUM 1,0x10,final,11
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,11
-#define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
-#define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
+#define VI_VERS_NUM 1,1,0,1
+#define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
+#define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
 /* wildcard signature in resources */
 #define ANY '    '

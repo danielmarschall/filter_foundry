@@ -1,5 +1,5 @@
-# This file is part of ICOFormat, a File Format plugin for Adobe Photoshop
-# Copyright (C) 2004-5 Toby Thain, toby@telegraphics.com.au
+# This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+# Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by  
@@ -100,7 +100,8 @@ $(BUNDLE)/Contents/Info.plist : Info.plist version.h
 		cat $< | sed s/VERSION_STR/$$V/ | sed s/EXEC/$(EXEC)/ > $@
 
 clean :
-	rm -fr *.[ox] obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) lex.yy.[ch] y.tab.[ch]
+	rm -fr *.[ox] obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) \
+	       gentab trigtab.c lex.yy.[ch] y.tab.[ch] temp
 
 
 dist : $(DISTARCHIVE)
