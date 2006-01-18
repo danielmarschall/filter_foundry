@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -18,15 +18,21 @@
 */
 /* PiPL resource (Carbon Mach-O) */
 
-#include "MacTypes.r"
+#include "mactypes.r"
+#include "AEDataModel.r"
 
-#include "pigeneral.r"
+#include "PIResDefines.h"	// Defines plug-in versions.
+#include "PiPL.r"
 
+#include "ui.h"
 #include "version.h"
 
 resource 'PiPL' (16000, purgeable)
 {
 	{
+		Category { "Telegraphics" },
+		Name { "Filter Foundry…" },
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 #include "PiPL_common.r"
 		CodeMachO { 0, 0, "" },
 	}

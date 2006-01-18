@@ -113,7 +113,7 @@ Boolean ReadScriptParamsOnRead(void)
 		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */		
 	}
 	
-	return true;
+	return false;
 }
 
 OSErr WriteScriptParamsOnRead(void)

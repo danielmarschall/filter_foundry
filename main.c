@@ -122,7 +122,7 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
-	int i,f;
+	int i,f,showdialog;
 	
 	if( f = !(params && readparams(params,false,&reasonstr)) ){
 		/* either the parameter handle was uninitialised,
@@ -131,21 +131,24 @@ int checkandinitparams(Handle params){
 		if(readPARMresource(hDllInstance,&reason))
 			gdata->standalone = true;
 		else{
-			//dbg("checkandinitparams: setting DEFAULTS!");
-			/* no scripted parameters - dialog wanted */
+			// no saved settings (not standalone)
 			for(i=0;i<8;++i)
 				slider[i] = i*10+100;
 			for(i=4;i--;)
 				expr[i] = my_strdup(defaultexpr[i]);
 		}
 	}
+	
+	// let scripting system change parameters, if we're scripted
+	// user may want to force display of dialog during scripting playback 
+	showdialog = ReadScriptParamsOnRead();
 
 	/* sanity check for NULL expression pointers (?) */
 	for(i=4;i--;)
 		if(!expr[i]) expr[i] = my_strdup(defaultexpr[i]);
 
 	saveparams(params); /* keep what we got */
-	return f;
+	return f || showdialog;
 }
 
 void DoPrepare(FilterRecordPtr pb){

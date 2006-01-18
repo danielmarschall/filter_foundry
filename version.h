@@ -62,22 +62,24 @@
 				   - use monospaced font in Win expr text controls
 			 1.1b4 - fix crash blooper in make.c (fixpipl)
 11-Feb-2005: 1.1b5 - cosmetic fixes in Mac dialog (right justify slider text, etc)
-			 1.1b6 - fix key (hash) calculation for standalones to obey Adobe's stated rules
+			 1.1b6 - fix aete key (hash) calculation for standalones to obey Adobe's stated rules
 			 1.1b7 - aaaargh fix stupid hex handling bug in lexer
 			 1.1b8 - remove dbg call in lexer (it's late :( )
 24-Jun-2005: 1.1b9 - Mach-O build for CS2/Mac
 25-Jun-2005: 1.1b10 - can make 'standalone' Mach-O bundles
 22-Jul-2005: 1.1b11 - merge changes to fix parameter bug reported by Demitrios Vassaras
 03-Oct-2005: 1.1f1 - fix dialog behaviour on repeated filter application
+18-Jan-2006: 1.1f2 - fix CS2/Mac build (missing fields in PiPL);
+                     scripting parameters were being ignored (!!)
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1f1"
-#define VERSION_NUM 1,0x10,final,11
+#define VERSION_STR "1.1f2"
+#define VERSION_NUM 1,0x10,final,2
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,1
+#define VI_VERS_NUM 1,1,0,2
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
