@@ -29,16 +29,14 @@ MINGW_CC = i386-mingw32msvc-gcc
 DLLWRAP  = i386-mingw32msvc-dllwrap
 WINDRES  = i386-mingw32msvc-windres
 
-# use GNU flex and bison
-# these lines can be commented to use system lex and yacc
-# although this may result in a larger overall executable
+# use GNU flex and bison (comment out to use system lex and yacc)
 LEX = flex
 YACC = bison -y
 YFLAGS = -d
 
 PSAPI = ../PhotoshopAPI
 
-CFLAGS += -Wall -O2
+CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -I$(PSAPI)/Pica_sp -I$(PSAPI)/Photoshop -I$(PSAPI)/General \
 	-I../common/adobeplugin -I../common/tt
 
@@ -74,7 +72,7 @@ $(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -DMACMACHO -Dmacintosh \
 	-I../MoreFiles/CHeaders -I../MoreFiles/Sources
 
 # Win32 plugin DLL to build
-PLUGIN_W32 = $(EXEC).8bi
+PLUGIN_W32 = $(EXEC).8bf
 DISTARCHIVE = dist/$(EXEC)-win.zip
 
 $(PLUGIN_W32) : CPPFLAGS += -DWIN_ENV

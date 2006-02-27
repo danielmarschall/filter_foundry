@@ -65,15 +65,12 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
 BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
-	static long *pdata; // keep "data" pointer around
-	static HICON cicon;
 	static Point origscroll;
 	static Boolean panning = false;
 
-	int item,cmd,i;
+	int item,i;
 	POINT newpos;
 	DRAWITEMSTRUCT *pdi;
-	UIRECT r;
 	Point newscroll;
 	HFONT hfnt;
 	

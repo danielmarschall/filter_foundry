@@ -59,6 +59,7 @@ unsigned long printablehash(unsigned long hash){
 
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	PIProperty *prop;
+	char *p;
 	struct hstm_data{
 		/* this structure must be 14+1 bytes long, to match PiPL structure */
 		long version; /* = 0 */
@@ -73,7 +74,8 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 
 	pipl->count += 3; // more keys in PiPL
 
-	prop = (PIProperty*)((char*)pipl + origsize);
+	p = (char*)pipl + origsize;
+	prop = (PIProperty*)p;
 
 	/* add Title/Name property key */
 	
@@ -82,7 +84,10 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->propertyID = 0;
 	prop->propertyLength = title[0]+1;
 	PLstrcpy((StringPtr)prop->propertyData,title);
-	(char*)prop += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	
+	// skip past new property record, and any padding
+	p += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	prop = (PIProperty*)p;
 	
 	/* add Category property key */
 	
@@ -91,7 +96,9 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->propertyID = 0;
 	prop->propertyLength = gdata->parm.category[0]+1;
 	PLstrcpy((StringPtr)prop->propertyData,gdata->parm.category);
-	(char*)prop += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	
+	p += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	prop = (PIProperty*)p;
 
 	/* add HasTerminology property key */	
 
@@ -114,9 +121,9 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	hstm->event_id = event_id;
 	hstm->aete_resid = AETE_ID;
 	
-	(char*)prop += (16+prop->propertyLength+3) & -4;
+	p += (16+prop->propertyLength+3) & -4;
 
-	return (char*)prop - (char*)pipl;
+	return p - (char*)pipl;  // figure how many bytes were added
 }
 
 /* Mac aete resources include word alignments after string pairs; Windows ones apparently don't */

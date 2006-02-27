@@ -159,7 +159,7 @@ int checksl(struct node*p,int ctlflags[],int mapflags[]){
 					ctlflags[s] = 1;
 			}else 
 				return true; /* can't determine which ctl() */
-		}else if( p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map )
+		}else if( p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map ){
 			if(p->child[0]->kind == TOK_NUM){
 				s = p->child[0]->v.value;
 				if(s>=0 && s<=3){
@@ -168,6 +168,7 @@ int checksl(struct node*p,int ctlflags[],int mapflags[]){
 				}
 			}else 
 				return true; /* can't determine which map() */
+		 }
 
 		return checksl(p->child[0],ctlflags,mapflags)
 			|| checksl(p->child[1],ctlflags,mapflags)
@@ -249,7 +250,6 @@ void maindlgupdate(DIALOGREF dp){
 
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
-	extern char *defaultexpr[];
 	int i;
 
 	/* hide unused expression items */
@@ -317,7 +317,6 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	static char filefilters[] =
 		"All supported files (.AFS, .8BF, .TXT)\0*.AFS;*.8BF;*.TXT\0All files (*.*)\0*.*\0\0";
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
-	Boolean readok = false;
 	char *reason;
 	Str255 fname;
 

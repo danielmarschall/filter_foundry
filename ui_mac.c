@@ -75,7 +75,6 @@ Boolean simplealert(char *s){
 
 pascal void preview_item(DialogRef dp,DialogItemIndex item){
 	GrafPtr port;
-	extern int recalcpreview;
 	
 	ENTERCALLBACK();
 
@@ -105,7 +104,7 @@ pascal void preview_item(DialogRef dp,DialogItemIndex item){
 */
 
 pascal void slideraction(ControlRef theControl,short partCode){
-	int old,delta; // [] = {-10,10,-143,143};
+	int old,delta = 0;
 
 	ENTERCALLBACK();
 

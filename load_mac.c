@@ -23,8 +23,8 @@
 
 Boolean readPARMresource(HMODULE hm,char **reason){
 	Boolean res = false;
-	Handle h;
-	if(h = Get1Resource(PARM_TYPE,PARM_ID)){
+	Handle h = Get1Resource(PARM_TYPE,PARM_ID);
+	if(h){
 		HLock(h);
 		res = readPARM(*h,&gdata->parm,reason);
 		ReleaseResource(h);
@@ -40,7 +40,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	if(!FSpGetFInfo(&sfr->sfFile,&fndrInfo))
 		switch(fndrInfo.fdType){
 		case TEXT_FILETYPE:
-			if(readok = readfile(sfr,reason))
+			if( (readok = readfile(sfr,reason)) )
 				gdata->parmloaded = false;
 			break;
 		case PS_FILTER_FILETYPE:

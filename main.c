@@ -124,7 +124,7 @@ int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
 	int i,f,showdialog;
 	
-	if( f = !(params && readparams(params,false,&reasonstr)) ){
+	if( (f = !(params && readparams(params,false,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 

@@ -175,8 +175,8 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 	Boolean res = false;
 
 	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&r)){
-		if(h = readfileintohandle(r)){
-			if(res = readparams(h,true,reason))
+		if( (h = readfileintohandle(r)) ){
+			if( (res = readparams(h,true,reason)) )
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 			PIDISPOSEHANDLE(h);
 		}

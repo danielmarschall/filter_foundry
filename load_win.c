@@ -41,14 +41,13 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 
 Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
-	HANDLE h;
 	HMODULE hm;
 
 	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null
 
 	if(sfr->nFileExtension){
 		if(!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")){
-			if( hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE) ){
+			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
 				if(readPARMresource(hm,reason)){
 					if(gdata->parm.iProtected)
 						*reason = ("The filter is protected.");
@@ -61,7 +60,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				dbglasterror("LoadLibrary");
 			}
 		}else{
-			if(readok = readfile(sfr,reason))
+			if( (readok = readfile(sfr,reason)) )
 				gdata->parmloaded = false;
 		}
 	}

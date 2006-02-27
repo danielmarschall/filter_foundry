@@ -146,7 +146,7 @@ value_type ff_scl(value_type a,value_type il,value_type ih,
 
 unsigned long isqrt (unsigned long x)
 {
-    int i;
+    unsigned i;
     unsigned long a = 0, e = 0, r = 0;
 
 

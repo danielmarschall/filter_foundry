@@ -54,7 +54,7 @@ char *get_cstring(PIReadDescriptor token){
 		n = PIGETHANDLESIZE(h);
 		p = PILOCKHANDLE(h,false);
 		//sprintf(str,"get_cstring: token=%#x s=%#x h=%#x p=%#x n=%d",token,s,h,p,n); dbg(str);
-		if(str = malloc(n+1)){
+		if( (str = malloc(n+1)) ){
 			memcpy(str,p,n);
 			str[n] = 0;
 		}
@@ -80,18 +80,16 @@ Boolean ReadScriptParamsOnRead(void)
 		token = OpenReader(array);
 		if (token){
 			while (PIGetKey(token, &key, &type, &flags)){
-				switch (key){char s[10];
+				switch (key){
 					case PARAM_R_KEY: expr[0] = get_cstring(token); break;
 					case PARAM_G_KEY: expr[1] = get_cstring(token); break;
 					case PARAM_B_KEY: expr[2] = get_cstring(token); break;
 					case PARAM_A_KEY: expr[3] = get_cstring(token); break;
 					default:
-						key -= PARAM_CTL0_KEY;
-						if(key >=0 && key < 8){
+						if(key >= PARAM_CTL0_KEY && key <= PARAM_CTL7_KEY){
 							PIGetInt(token,&v); 
-							slider[key] = v; 
+							slider[key - PARAM_CTL0_KEY] = v; 
 						}
-						//sprintf(s,"%d:%d",key,v);dbg(s);
 						break;
 				}
 			}
@@ -100,14 +98,6 @@ Boolean ReadScriptParamsOnRead(void)
 				
 			// all Filter Foundry parameters are regarded as optional,
 			// so we needn't worry if any are missing
-			if (stickyError){
-				if (stickyError == errMissingParameter) // missedParamErr == -1715
-					;
-					/* (descriptorKeyIDArray != NULL)
-					   missing parameter somewhere.  Walk IDarray to find which one. */
-				else
-					; //gResult = stickyError;
-			}
 		}
 		
 		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */		

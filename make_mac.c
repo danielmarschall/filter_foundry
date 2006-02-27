@@ -82,7 +82,7 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 		/* create a new PiPL resource for the standalone plugin,
 		   with updated title and category strings */
 	
-		if(h = Get1Resource('PiPL',16000)){
+		if( (h = Get1Resource('PiPL',16000)) ){
 			RemoveResource(h);
 			
 			DetachResource(hpipl);
@@ -104,7 +104,7 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 		/* do a similar trick with the terminology resource,
 		   so the scripting system can distinguish the standalone plugin */
 
-		if(h = Get1Resource(typeAETE,AETE_ID)){
+		if( (h = Get1Resource(typeAETE,AETE_ID)) ){
 			origsize = GetHandleSize(h);
 			SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
 			HLock(h);

@@ -47,27 +47,23 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 */
 
 Boolean doresources(HMODULE srcmod,char *dstname){
-	OSErr e = noErr;
 	int i;
 
-	HRSRC datarsrc,piplrsrc,aetersrc;
-	HANDLE datah,aeteh,hpipl,hupdate;
+	HRSRC datarsrc,aetersrc;
+	HANDLE datah,aeteh,hupdate;
 	Ptr newpipl = NULL,newaete = NULL,datap,aetep;
 	PARM_T *pparm = NULL;
 
-	PIPropertyList *pipl;
-	short srcrn,dstrn;
-	Handle h;
-	long piplsize,aetesize,titlesize,catsize,*lp,origsize;
+	long piplsize,aetesize,origsize;
 	Str255 title;
-	char s[0x100];
+	//char s[0x100];
 	
 	Boolean discard = true;
 
 //	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0)) 
 //		dbglasterror("EnumResourceLanguages");
 
-	if(hupdate = BeginUpdateResource(dstname,false)){
+	if( (hupdate = BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
 		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA)) 
 			&& (datah = LoadResource(srcmod,datarsrc))

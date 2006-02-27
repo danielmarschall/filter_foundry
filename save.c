@@ -63,7 +63,7 @@ OSErr saveparams(Handle h){
 		
 		/* expressions */
 		for( i=0 ; i<4 ; ++i ){
-			if(r = expr[i])
+			if( (r = expr[i]) )
 				for( n = strlen(r) ; n ; n -= chunk ){
 					chunk = n>CHOPLINES ? CHOPLINES : n;
 					for( j = chunk,q = outbuf ; j-- ; )
@@ -86,11 +86,8 @@ OSErr saveparams(Handle h){
 
 		PIUNLOCKHANDLE(h);
 		e = PISETHANDLESIZE(h,p - start); // could ignore this error, maybe
-	}else{char s[100];
-		//alertuser("saveparams","couldn't resize (or lock) parameters!");
-		//sprintf(s,"est=%d e=%d ",est,e);dbg(s);
 	}
-err:
+
 	return e;
 }
 
@@ -112,7 +109,7 @@ Boolean savefile(StandardFileReply *sfr){
 	if(!FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript))
 		if(!FSpOpenDF(&sfr->sfFile,fsWrPerm,&r)){
 
-			if(h = PINEWHANDLE(0)){
+			if( (h = PINEWHANDLE(0)) ){
 				res = !(saveparams(h) || savehandleintofile(h,r)) ;
 				PIDISPOSEHANDLE(h);
 			}

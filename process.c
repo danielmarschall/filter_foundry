@@ -35,7 +35,6 @@ int needinput;
 
 Boolean setup(FilterRecordPtr pb){
 	int i;
-	extern int chunksize;
 
 	INITRANDSEED();
 	var['X'] = pb->imageSize.h;
@@ -137,7 +136,7 @@ OSErr process_scaled(FilterRecordPtr pb,Boolean progress,
 			  Rect *inRect,Rect *filterRect,Rect *outRect,
 			  void *outData,long outRowBytes,double zoom){
 	unsigned char *inrow,*outrow,*outp;
-	int j,i,ncols = filterRect->right - filterRect->left;
+	int j,i;
 	long t,ticks = TICKCOUNT();
 	double x,y;
 /*
