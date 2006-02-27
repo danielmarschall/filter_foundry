@@ -22,7 +22,7 @@
 
 #include "world.h"
 
-#include "piabout.h"
+#include "PIAbout.h"
 
 #include <windows.h>
 #include <commctrl.h>

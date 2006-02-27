@@ -21,7 +21,7 @@
 
 #include "ff.h"
 
-#include "piproperties.h"
+#include "PIProperties.h"
 
 #include "node.h"
 #include "funcs.h"

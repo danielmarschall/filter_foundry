@@ -89,8 +89,8 @@
 #ifndef RC_INVOKED
 #ifndef Rez
 
-	#include "piabout.h"
-	#include "pifilter.h"
+	#include "PIAbout.h"
+	#include "PIFilter.h"
 	
 	#include "ui_compat.h"
 	
