@@ -71,15 +71,16 @@
 03-Oct-2005: 1.1f1 - fix dialog behaviour on repeated filter application
 18-Jan-2006: 1.1f2 - fix CS2/Mac build (missing fields in PiPL);
                      scripting parameters were being ignored (!!)
+26-Feb-2006: 1.1f3 - fix plugin DLL extension; fix many source code warnings
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1f2"
-#define VERSION_NUM 1,0x10,final,2
+#define VERSION_STR "1.1f3"
+#define VERSION_NUM 1,0x10,final,3
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,2
+#define VI_VERS_NUM 1,1,0,3
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
