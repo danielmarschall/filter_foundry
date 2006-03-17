@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -72,15 +72,16 @@
 18-Jan-2006: 1.1f2 - fix CS2/Mac build (missing fields in PiPL);
                      scripting parameters were being ignored (!!)
 26-Feb-2006: 1.1f3 - fix plugin DLL extension; fix many source code warnings
+16-Mar-2006: 1.1f4,5 - add default extension AFS, 8BF for file saving (thanks Daniel Denk)
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1f3"
-#define VERSION_NUM 1,0x10,final,3
+#define VERSION_STR "1.1f5"
+#define VERSION_NUM 1,0x10,final,5
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,3
+#define VI_VERS_NUM 1,1,0,5
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

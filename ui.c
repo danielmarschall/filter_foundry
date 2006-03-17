@@ -308,8 +308,6 @@ void maindlginit(DIALOGREF dp){
 Boolean maindlgitem(DIALOGREF dp,int item){
 	StandardFileReply sfr;
 	NavReplyRecord reply;
-	static char filefilters[] =
-		"All supported files (.AFS, .8BF, .TXT)\0*.AFS;*.8BF;*.TXT\0All files (*.*)\0*.*\0\0";
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
 	char *reason;
 	Str255 fname;
@@ -321,7 +319,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		dispose_preview();
 		return false; // end dialog
 	case OPENITEM:
-		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,filefilters)){
+		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,
+					"All supported files (.AFS, .8BF, .TXT)\0*.AFS;*.8BF;*.TXT\0All files (*.*)\0*.*\0\0")){
 			if(loadfile(&sfr,&reason)){
 				updatedialog(dp);
 				maindlgupdate(dp);
@@ -330,7 +329,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		break;
 	case SAVEITEM:
 		if(!gdata->standalone && putfile("\pSave filter settings","",
-										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,"AFS")){
+										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
+										 "AFS","Settings file (.AFS, .TXT)\0*.AFS;*.TXT\0\0",1)){
 //			updateglobals(dp);
 			if(savefile(&sfr))
 				completesave(&reply);
@@ -343,7 +343,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
       PLstrcat(fname,(StringPtr)"\p.plugin");
 #endif
 			if( putfile("\pMake standalone filter",fname,
-						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,"8BF") )
+						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
+						"8BF","Filter plugin file (.8BF)\0*.8BF\0\0",1) )
 				make_standalone(&sfr);
 		}
 		break;
