@@ -298,12 +298,6 @@ void maindlginit(DIALOGREF dp){
     HideDialogItem(dp,MAKEITEM);
 #endif
 
-#ifdef MACMACHO
-  // FIXME: can't make standalone Mach-O bundle plugin yet
-  // most of the code is written (see make_mac.c)
-  //HideDialogItem(dp,MAKEITEM);
-#endif
-
 	updatedialog(dp);
 	maindlgupdate(dp);
 }
@@ -335,8 +329,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		}
 		break;
 	case SAVEITEM:
-		if(!gdata->standalone && putfile("\pSave filter settings","\p",
-										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr)){
+		if(!gdata->standalone && putfile("\pSave filter settings","",
+										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,"AFS")){
 //			updateglobals(dp);
 			if(savefile(&sfr))
 				completesave(&reply);
@@ -345,19 +339,15 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case MAKEITEM:
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
-#ifdef WIN_ENV
-      PLstrcat(fname,(StringPtr)"\p.8bf");
-#endif
 #ifdef MACMACHO
       PLstrcat(fname,(StringPtr)"\p.plugin");
 #endif
 			if( putfile("\pMake standalone filter",fname,
-						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr ) )
+						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,"8BF") )
 				make_standalone(&sfr);
 		}
 		break;
 	case ZOOMINITEM:
-//		zoomfactor = zoomfactor/2.;
 		zoomfactor = zoomfactor>2. ? zoomfactor/2. : 1.;
 		updatezoom(dp);
 		recalc_preview(gpb,dp);

@@ -48,8 +48,8 @@ OSErr saveparams(Handle h){
 	
 	if(!h) DBG("saveparams: Null handle!");
 	
-	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
-	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
+	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3])
+	    + strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
 	
 	PIUNLOCKHANDLE(h); // should not be necessary
 	if( !(e = PISETHANDLESIZE(h,est)) && (p = start = PILOCKHANDLE(h,false)) ){
