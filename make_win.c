@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -22,8 +22,6 @@
 #include "file_compat.h"
 #include "compat_string.h"
 
-//#include "UpdateResource.h"
-
 extern HANDLE hDllInstance;
 
 Boolean doresources(HMODULE srcmod,char *dstname);
@@ -33,7 +31,7 @@ void dbglasterror(char *func){
 	strcpy(s,func);
 	strcat(s," failed: ");
 	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM,NULL,GetLastError(),0,s+strlen(s),0x100,NULL );
-	DBG(s);
+	dbg(s);
 }
 
 /*

@@ -23,17 +23,31 @@
 
 #include <string.h>
 
+static int parm_id;
+
+// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/resources/introductiontoresources/resourcereference/resourcefunctions/findresource.asp
+static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,LPTSTR lpszName,LONG_PTR lParam){
+	
+	if(IS_INTRESOURCE(lpszName))
+		parm_id = lpszName;
+	return false; // we only want the first one
+}
+
 Boolean readPARMresource(HMODULE hm,char **reason){
 	Boolean res = false;
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
-
-	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(PARM_ID),"PARM")) 
-						&& (h = LoadResource(hm,resinfo))
-						&& (pparm = LockResource(h)) ){
+	
+	parm_id = PARM_ID;
+	EnumResourceNames(hm,"PARM",enumnames,0);
+	
+	// load first PARM resource
+	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM"))
+			&& (h = LoadResource(hm,resinfo))
+			&& (pparm = LockResource(h)) )
 		res = readPARM(pparm,&gdata->parm,reason);
-	}
+
 	return res;
 }
 
