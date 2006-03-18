@@ -225,10 +225,8 @@ inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d) inLoPlane=%d inHiPlane=%d ",
 		}*/
 
 		if(e && !previewerr){
-			char s[0x100];
-			sprintf(s,"Could not build preview at chosen zoom level.\n\n%s",
+			alertuser("Could not build preview at chosen zoom level.",
 			        e == memFullErr && !srcradused ? "The image is too large for available memory. Try zooming in.\nIf that does not help, Cancel and retry the filter." : "");
-			dbg(s);
 			previewerr = true;
 		}
 

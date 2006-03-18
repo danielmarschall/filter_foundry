@@ -341,7 +341,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		}
 		break;
 	case SAVEITEM:
-		if(!gdata->standalone && putfile("\pSave filter settings","",
+		if(!gdata->standalone && putfile("\pSave filter settings",(StringPtr)"",
 										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
 										 "AFS","Settings file (.AFS, .TXT)\0*.AFS;*.TXT\0\0",1)){
 //			updateglobals(dp);
