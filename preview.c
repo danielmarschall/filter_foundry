@@ -32,7 +32,7 @@ PSPixelMap preview_pmap;
 PSPixelMask preview_pmask;
 Handle preview_handle;
 UIRECT preview_rect;
-int preview_w,preview_h;
+int preview_w,preview_h,previewerr = false;
 Point preview_scroll;
 Boolean preview_complete = false;
 
@@ -96,12 +96,13 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	extern int srcradused,needinput;
 	extern double zoomfactor;
 	OSErr e;
-	int j,n,scaledw,scaledh,imgw,imgh;
+	int j,n,scaledw,scaledh,imgw,imgh,badzoom = false;
 	Rect r,outRect;
 	Ptr outrow;
 
+	preview_complete = false;
+	
 	if(preview_handle){
-
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
 		scaledw = zoomfactor*preview_w;
 		if(scaledw > (pb->filterRect.right - pb->filterRect.left))
@@ -153,6 +154,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		pb->inHiPlane = pb->outHiPlane = nplanes-1;
 				
 //dbg("recalc_preview: about to call advanceState()");
+
 		if( !needinput || !(e = pb->advanceState()) ){
 			Ptr outptr = PILOCKHANDLE(preview_handle,false);
 			int blankrows = (preview_h-imgh)/2,
@@ -211,7 +213,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 
 			PIUNLOCKHANDLE(preview_handle);
 
-		}else{ char s[0x100];
+		}/*else{
+			char s[0x100];
 			sprintf(s,"recalc_preview: advanceState failed (%d)\n\
 inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d) inLoPlane=%d inHiPlane=%d ",
 				e,
@@ -219,7 +222,16 @@ inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d) inLoPlane=%d inHiPlane=%d ",
 				pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom,
 				pb->inLoPlane,pb->inHiPlane);
 			dbg(s);
+		}*/
+
+		if(e && !previewerr){
+			char s[0x100];
+			sprintf(s,"Could not build preview at chosen zoom level.\n\n%s",
+			        e == memFullErr && !srcradused ? "The image is too large for available memory. Try zooming in.\nIf that does not help, Cancel and retry the filter." : "");
+			dbg(s);
+			previewerr = true;
 		}
+
 	}
 }
 
@@ -252,41 +264,3 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 	}
 	return e;
 }
-
-#if 0
-// old process-then-scale preview code
-			if(scaleddata = PINEWHANDLE((long)nplanes*scaledw*scaledh)){
-				Ptr scaledptr = PILOCKHANDLE(scaleddata,false);
-				//process(pb,false,&pb->inRect,&r,&r,outptr,preview_pmap.rowBytes)
-				long scaledrb = (long)nplanes*scaledw;
-
-				if(!(e = process(pb,false,&pb->inRect,&r,&r,scaledptr,scaledrb)){
-	
-					/* copy data from scaledptr to outptr, scaling as we go */
-					if(zoomfactor == 1.)
-						memcpy(outptr,scaledptr,(long)nplanes*preview_w*preview_h);
-					else{
-						int blankrows = (preview_h-imgh)/2,
-							blankcols = (preview_w-imgw)/2;
-	
-						memset(outptr,0xff,preview_pmap.rowBytes*blankrows);
-						memset(outptr+preview_pmap.rowBytes*(preview_h-blankrows),0xff,preview_pmap.rowBytes*blankrows);
-	
-						outrow = outptr+preview_pmap.rowBytes*blankrows;
-						for( j=blankrows,y=0. ; j<preview_h-blankrows ; ++j,y+=zoomfactor ){
-							memset(outrow,0xff,nplanes*blankcols);
-							memset(outrow+nplanes*(preview_w-blankcols),0xff,nplanes*blankcols);
-							outrow += nplanes*blankcols;
-							inrow = scaledptr + scaledrb*(int)y;
-							for( i=blankcols,x = 0. ; i<(preview_w-blankcols) ; ++i,x+=zoomfactor){
-								inpix = inrow + nplanes*(int)x ;
-								for(k=0;k<nplanes;++k)
-									*outrow++ = inpix[k];
-							}
-							outrow += nplanes*blankcols;
-						}
-					}
-				}
-				PIDISPOSEHANDLE(scaleddata);
-			}else e = memFullErr;
-#endif

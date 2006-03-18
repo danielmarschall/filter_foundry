@@ -31,6 +31,7 @@ char *err[4];
 int errpos[4],errstart[4],nplanes,srcradused,chunksize,toprow;
 value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4],*defaultexpr[]={"r","g","b","a"};
+long maxSpace;
 
 #ifdef MAC_ENV
 #define hDllInstance NULL /* fake this Windows-only global */
@@ -159,8 +160,7 @@ void DoPrepare(FilterRecordPtr pb){
 		expr[i] = NULL;
 		tree[i] = NULL;
 	}
-	
-//	pb->maxSpace = 256L<<10; /* nominal memory, neither here nor there */
+	maxSpace = pb->maxSpace;
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){

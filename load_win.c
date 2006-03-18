@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -29,7 +29,7 @@ static int parm_id;
 static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,LPTSTR lpszName,LONG_PTR lParam){
 	
 	if(IS_INTRESOURCE(lpszName))
-		parm_id = lpszName;
+		parm_id = (int)lpszName;
 	return false; // we only want the first one
 }
 

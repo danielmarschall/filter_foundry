@@ -281,9 +281,20 @@ void maindlginit(DIALOGREF dp){
 	if(setup_preview(gpb)){
 		extern int preview_w,preview_h;
 		double zh = (gpb->filterRect.right-gpb->filterRect.left)/(double)preview_w,
-			   zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h;
+			   zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h,k;
 		fitzoom = zh > zv ? zh : zv;
-		zoomfactor = fitzoom;
+		
+		// On very large images, processing a fully zoomed out preview (the initial default)
+		// can cause out of memory errors, because Photoshop can't page in all data
+		// during advanceState. To prevent this problem, zoom in until we aren't
+		// previewing more than say 10% of Photoshop's indicated maxSpace.
+		// (e.g., on a 1GB WinXP system, PS CS2 reports 520MB maxSpace, so this will let us
+		// preview about 50MB of image data.)
+		
+		k = maxSpace/(10.*preview_w*preview_h*nplanes);
+		for( zoomfactor = fitzoom ; zoomfactor >= 2. && zoomfactor*zoomfactor > k ; )
+			zoomfactor /= 2.;
+		
 		updatezoom(dp);
 	}else{
 		HideDialogItem(dp,ZOOMINITEM);
@@ -306,6 +317,8 @@ void maindlginit(DIALOGREF dp){
 /* process an item hit. return false if the dialog is finished; otherwise return true. */
 
 Boolean maindlgitem(DIALOGREF dp,int item){
+	extern int previewerr;
+	
 	StandardFileReply sfr;
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
@@ -351,6 +364,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case ZOOMINITEM:
 		zoomfactor = zoomfactor>2. ? zoomfactor/2. : 1.;
 		updatezoom(dp);
+		previewerr = false;
 		recalc_preview(gpb,dp);
 		break;
 	case ZOOMOUTITEM:
@@ -358,11 +372,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if(zoomfactor > fitzoom)
 			zoomfactor = fitzoom;
 		updatezoom(dp);
+		previewerr = false;
 		recalc_preview(gpb,dp);
 		break;
 	case ZOOMLEVELITEM:
 		zoomfactor = (zoomfactor == fitzoom) ? 1. : fitzoom;
 		updatezoom(dp);
+		previewerr = false;
 		recalc_preview(gpb,dp);
 		break;
 	case FIRSTCTLITEM:
