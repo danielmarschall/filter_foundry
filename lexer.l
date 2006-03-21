@@ -19,12 +19,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//#ifdef TARGET_API_MAC_CARBON
-//	/* can't use StdCLib ctype.h, it refers to symbols which aren't in OS X stdclib */
-//	int toupper(int);
-//#else
-	#include <ctype.h>
-//#endif
+#include <ctype.h>
 
 #include "node.h"
 #include "dbg.h"

@@ -125,8 +125,8 @@ LIBS_CLASSIC = ¶
 		"{SharedLibraries}ControlsLib" ¶
 		"{PPCLibraries}StdCRuntime.o" ¶
 		"{PPCLibraries}PPCCRuntime.o" ¶
+		"{PPCLibraries}"CarbonAccessors.o
 		#"{PPCLibraries}PPCToolLibs.o" ¶
-		#"{PPCLibraries}"CarbonAccessors.o
 
 LIBS_CARBON = ¶
 		"{SharedLibraries}CarbonLib" ¶
@@ -154,7 +154,7 @@ REZOPTS = -a -s : -d SystemSevenOrLater=1
 .ca.x Ä .c # Carbon PowerPC object
 	mrc {depdir}{default}.c -o {targ} {copt} -d TARGET_CARBON
 .cl.x Ä .c # Classic PowerPC object
-	mrc {depdir}{default}.c -o {targ} {copt}
+	mrc {depdir}{default}.c -o {targ} {copt} -d ACCESSOR_CALLS_ARE_FUNCTIONS
 .68k.o Ä .c # 68K object
 	sc {depdir}{default}.c -o {targ} -b {copt}
 

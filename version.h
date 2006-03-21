@@ -75,15 +75,16 @@
 16-Mar-2006: 1.1f4,5 - add default extension AFS, 8BF for file saving (thanks Daniel Denk)
 17-Mar-2006: 1.1f6 - fix loading of Filter Factory saved PARM data on Windows
 18-Mar-2006: 1.1f7,8 - safer handling of previewing very large images, and clarify out-of-memory message
+21-Mar-2006: 1.1f9 - improve file filtering on OS X (parse Windows-style extension filter)
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1f8"
-#define VERSION_NUM 1,0x10,final,8
+#define VERSION_STR "1.1f9"
+#define VERSION_NUM 1,0x10,final,9
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,8
+#define VI_VERS_NUM 1,1,0,9
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
