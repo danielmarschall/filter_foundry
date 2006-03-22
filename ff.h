@@ -97,7 +97,7 @@ void RequestNext (FilterRecordPtr epb,long);
 Boolean readparams(Handle h,Boolean alerts,char **reason);
 Handle readfileintohandle(FILEREF r);
 Boolean readfile(StandardFileReply *sfr,char **reason);
-Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr);
+Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr,int fromwin);
 
 OSErr saveparams(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);

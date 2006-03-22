@@ -76,17 +76,18 @@
 17-Mar-2006: 1.1f6 - fix loading of Filter Factory saved PARM data on Windows
 18-Mar-2006: 1.1f7,8 - safer handling of previewing very large images, and clarify out-of-memory message
 21-Mar-2006: 1.1f9,10 - improve file filtering on OS X (parse Windows-style extension filter)
+22-Mar-2006: 1.2b1 - read parameters from Windows .8BF Filter Factory standalones, in Mac version
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.1f10"
-#define VERSION_NUM 1,0x10,final,10
+#define VERSION_STR "1.2b1"
+#define VERSION_NUM 1,0x20,beta,1
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,1,0,10
-#define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
-#define VI_COMMENTS	"Final.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
+#define VI_VERS_NUM 1,2,0,1
+#define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
+#define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
 /* wildcard signature in resources */
 #define ANY '    '

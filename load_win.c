@@ -46,7 +46,7 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM"))
 			&& (h = LoadResource(hm,resinfo))
 			&& (pparm = LockResource(h)) )
-		res = readPARM(pparm,&gdata->parm,reason);
+		res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
 
 	return res;
 }

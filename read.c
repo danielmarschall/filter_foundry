@@ -121,36 +121,33 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 	return res;
 }
 
-Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr){
+Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 	Boolean res = false;
 	int i;
 
 	memcpy(pparm,p,sizeof(PARM_T));
-#ifdef WIN_ENV
-	/* Windows PARM resource stores C strings - convert to Pascal strings  */
-	myc2pstr((char*)pparm->category);
-	myc2pstr((char*)pparm->title);
-	myc2pstr((char*)pparm->copyright);
-	myc2pstr((char*)pparm->author);
-	for(i=0;i<4;++i)
-		myc2pstr((char*)pparm->map[i]);
-	for(i=0;i<8;++i)
-		myc2pstr((char*)pparm->ctl[i]);
-#endif
+
+	if(fromwin){
+		/* Windows PARM resource stores C strings - convert to Pascal strings  */
+		myc2pstr((char*)pparm->category);
+		myc2pstr((char*)pparm->title);
+		myc2pstr((char*)pparm->copyright);
+		myc2pstr((char*)pparm->author);
+		for(i=0;i<4;++i)
+			myc2pstr((char*)pparm->map[i]);
+		for(i=0;i<8;++i)
+			myc2pstr((char*)pparm->ctl[i]);
+	}
 
 	for(i=0;i<4;++i){
 		if(expr[i]) free(expr[i]);
 		expr[i] = my_strdup(pparm->formula[i]);
-		//dbg(expr[i]);
 	}
 
 	for(i=0;i<8;++i)
 		slider[i] = pparm->val[i];
 
-	res = true;
-	//dbg("read pparm ok");
-
-	return res;
+	return true;
 }
 
 Handle readfileintohandle(FILEREF r){
@@ -160,7 +157,7 @@ Handle readfileintohandle(FILEREF r){
 
 	if( !GetEOF(r,&n) && (h = PINEWHANDLE(n)) ){
 		p = PILOCKHANDLE(h,false);
-		if(!FSRead(r,&n,p)){
+		if(!SetFPos(r,fsFromStart,0) && !FSRead(r,&n,p)){
 			PIUNLOCKHANDLE(h);
 			return h;
 		}

@@ -96,7 +96,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	extern int srcradused,needinput;
 	extern double zoomfactor;
 	OSErr e;
-	int j,n,scaledw,scaledh,imgw,imgh,badzoom = false;
+	int j,n,scaledw,scaledh,imgw,imgh;
 	Rect r,outRect;
 	Ptr outrow;
 

@@ -54,7 +54,7 @@ void DoAbout(AboutRecordPtr prec){
 
 	if(h){
 		HLock(h);
-		readPARM(*h,&p,&reason);
+		readPARM(*h,&p,&reason,0 /*Mac format resource*/);
 		ParamText(p.title,p.author,p.copyright,NULL);
 	}
 	Alert(h ? ID_ABOUTSTANDALONEDLG : ID_ABOUTDLG,filterproc_UPP);
