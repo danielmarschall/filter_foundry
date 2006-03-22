@@ -67,10 +67,9 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 					long *q = (long*)PILOCKHANDLE(h,false);
 					
 					// look for signature at start of valid PARM resource
-					// The 0x68200000 (= PARM_SIZE as BigEndian, see PARM.h)
-					// is observed in Filter Factory standalones.
+					// This signature is observed in Filter Factory standalones.
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
-						if( q[0] == 0x68200000 && q[1] == 0x01000000
+						if( EndianS32_LtoN(q[0]) == PARM_SIZE && EndianS32_LtoN(q[1]) == 1
 							  && (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) ){
 							// these are the only numeric fields we *have* to swap
 							// all the rest are flags which (if we're careful) will work in either ordering
