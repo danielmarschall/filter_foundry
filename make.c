@@ -37,25 +37,11 @@ This leaves all IDÕs that begin with a lowercase letter and have at least
 one uppercase letter for you and other plug-in developers.
 */
 unsigned long printablehash(unsigned long hash){
-	unsigned long key = 'a' + (hash % 26); hash /= 26; // first lower case
-	key <<= 8;   key |= ' ' + (hash % 95); hash /= 95; // second and third any printable
-	key <<= 8;   key |= ' ' + (hash % 95); hash /= 95;
-	return  (key<<8) | ('A' + (hash % 26));			   // last upper case
+	unsigned long key = 'a' + (hash % 26);  hash /= 26; // first lower case
+	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
+	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
+	return  (key<<8) | ('A' + (hash % 26));             // last upper case
 }
-
-/* original version with any four printables
-unsigned long printablehash(unsigned long hash){
-	unsigned long key;
-	int i;
-	
-	for(key=0,i=4;i--;){
-		key <<= 8;
-		key |= ' ' + (hash % 95); // get a printable character from hash
-		hash /= 95;
-	}
-	return key;
-}
-*/
 
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	PIProperty *prop;
