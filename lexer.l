@@ -126,6 +126,12 @@ HEXDIGIT	[0-9A-Fa-f]
 			return TOK_UNKNOWN; 
 	}
 	
+[RGBACIUV] {  /* undocumented(?) variables indicating channel range */
+		yylval = newnode(TOK_NUM);
+		yylval->v.value = 255;
+		return TOK_NUM; 
+	}
+
 [rgbaciuvxyzdmXYZDM] { /* single character variable */
 		yylval = newnode(TOK_SPECIALVAR);
 		yylval->v.specialvar = yytext[0];
