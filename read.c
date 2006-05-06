@@ -122,7 +122,6 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 }
 
 Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
-	Boolean res = false;
 	int i;
 
 	memcpy(pparm,p,sizeof(PARM_T));

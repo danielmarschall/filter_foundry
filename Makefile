@@ -29,7 +29,9 @@ MINGW_CC = i386-mingw32msvc-gcc
 DLLWRAP  = i386-mingw32msvc-dllwrap
 WINDRES  = i386-mingw32msvc-windres
 
-# use GNU flex and bison (comment out to use system lex and yacc)
+# use GNU flex and bison
+# these lines can be commented to use system lex and yacc
+# although this may result in a larger overall executable
 LEX = flex
 YACC = bison -y
 YFLAGS = -d
@@ -95,7 +97,7 @@ $(BUNDLE) :
 # insert correct executable name and version string in bundle's Info.plist
 $(BUNDLE)/Contents/Info.plist : Info.plist version.h
 	V=`sed -n -E 's/^.*VERSION_STR[[:blank:]]+\"([^"]*)\"/\1/p' version.h` ;\
-		cat $< | sed s/VERSION_STR/$$V/ | sed s/EXEC/$(EXEC)/ > $@
+		sed -e s/VERSION_STR/$$V/ -e s/EXEC/$(EXEC)/ $< > $@
 
 clean :
 	rm -fr *.[ox] obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) \

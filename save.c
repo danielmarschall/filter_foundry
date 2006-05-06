@@ -48,20 +48,22 @@ OSErr saveparams(Handle h){
 	
 	if(!h) DBG("saveparams: Null handle!");
 	
-	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3])
-	    + strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
+	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	// do not be tempted to combine into one expression: 'est' is referenced below
+	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
 	
 	PIUNLOCKHANDLE(h); // should not be necessary
 	if( !(e = PISETHANDLESIZE(h,est)) && (p = start = PILOCKHANDLE(h,false)) ){
-		p = cat(p,afs_sig);
+		// build one long string in AFS format
+		p = cat(p,afs_sig); // first the header signature
 		
-		/* slider values */
+		/* then slider values, one per line */
 		for( i=0 ; i<8 ; ++i ){
 			p = int_str(p,slider[i],10);
 			*p++ = '\n';
 		}
 		
-		/* expressions */
+		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){
 			if( (r = expr[i]) )
 				for( n = strlen(r) ; n ; n -= chunk ){

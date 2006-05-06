@@ -79,15 +79,16 @@
 22-Mar-2006: 1.2b1 - read parameters from Windows .8BF Filter Factory standalones, in Mac version
 23-Mar-2006: 1.2b2 - new release
 25-Mar-2006: 1.2b3 - include R,G,B,A,C,I,U,V undocumented(?) constants (per Harald Heim)
+06-May-2006: 1.2b4 - fix minor AFS saving bug
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.2b3"
-#define VERSION_NUM 1,0x20,beta,3
+#define VERSION_STR "1.2b4"
+#define VERSION_NUM 1,0x20,beta,4
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,2,0,3
+#define VI_VERS_NUM 1,2,0,4
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
