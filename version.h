@@ -80,7 +80,7 @@
 23-Mar-2006: 1.2b2 - new release
 25-Mar-2006: 1.2b3 - include R,G,B,A,C,I,U,V undocumented(?) constants (per Harald Heim)
 06-May-2006: 1.2b4 - fix minor AFS saving bug
-05-Jun-2006: 1.3b1 - fix x,y,X,Y,M variables to use selection extent instead of image size (per Eiji nishidai)
+05-Jun-2006: 1.3b1 - fix x,y,X,Y,M variables to use selection extent instead of image size (per Eiji Nishidai)
 */
 
 #define plugInName "FilterFoundry"
