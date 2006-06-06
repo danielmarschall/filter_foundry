@@ -107,12 +107,9 @@ OSErr make_standalone(StandardFileReply *sfr);
 
 Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
-OSErr process(FilterRecordPtr pb,Boolean progress,
-			  Rect *inRect,Rect *filterRect,Rect *outRect,
-			  void *outData,long outRowBytes);
-OSErr process_scaled(FilterRecordPtr pb,Boolean progress,
-			  Rect *inRect,Rect *filterRect,Rect *outRect,
-			  void *outData,long outRowBytes,double zoom);
+OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
+			  Rect *filterRect, Rect *outRect,
+			  void *outData, long outRowBytes, double zoom);
 
 unsigned long printablehash(unsigned long hash);
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title);

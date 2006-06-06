@@ -105,8 +105,8 @@ EXEC_CARBON = :debug:{EXEC}.carbon
 	ls -x b {EXEC_CARBON} {EXEC_CLASSIC} > temp
 	target temp
 	find ¥
-	find /[0-9]+/ && set CARBON_LENGTH `catenate {target}.¤`
-	find /[0-9]+/ && set CLASSIC_LENGTH `catenate {target}.¤`
+	find /[0-9]+/ && set CARBON_LENGTH `catenate "{target}".¤`
+	find /[0-9]+/ && set CLASSIC_LENGTH `catenate "{target}".¤`
 	close
 	Rez universal.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}  ¶
 		-d CARBON_LENGTH={CARBON_LENGTH} -d CLASSIC_LENGTH={CLASSIC_LENGTH}

@@ -126,20 +126,20 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		/* compute source data rectangle (inRect) */
 
 		/* centre preview on filtered part of input image, adding scroll offset */
-		r.left = (pb->filterRect.left+pb->filterRect.right-scaledw)/2 + preview_scroll.h;
+		r.left = (pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h;
 		/* make sure it does not go outside the input area */
 		if(r.left < pb->filterRect.left) 
 			r.left = pb->filterRect.left;
 		else if(r.left > pb->filterRect.right-scaledw) 
-			r.left = pb->filterRect.right-scaledw;
+			r.left = pb->filterRect.right - scaledw;
 		r.right = r.left + scaledw;
 
 		/* now compute for vertical */
-		r.top = (pb->filterRect.top+pb->filterRect.bottom-scaledh)/2 + preview_scroll.v;
+		r.top = (pb->filterRect.top+pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
 		if(r.top < pb->filterRect.top) 
 			r.top = pb->filterRect.top;
 		else if(r.top > pb->filterRect.bottom-scaledh) 
-			r.top = pb->filterRect.bottom-scaledh;
+			r.top = pb->filterRect.bottom - scaledh;
 		r.bottom = r.top + scaledh;
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
@@ -157,30 +157,28 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 
 		if( !needinput || !(e = pb->advanceState()) ){
 			Ptr outptr = PILOCKHANDLE(preview_handle,false);
-			int blankrows = (preview_h-imgh)/2,
-				blankcols = (preview_w-imgw)/2;
+			int blankrows = (preview_h - imgh)/2,
+				blankcols = (preview_w - imgw)/2, pmrb = preview_pmap.rowBytes;
 
 			INITRANDSEED();
 //dbg("recalc_preview: about to call process()");
 				
 			SETRECT(outRect,0,0,imgw,imgh);
 			
-			e = process_scaled(pb,false,
-					&pb->inRect,&r,&outRect,
-					outptr+preview_pmap.rowBytes*blankrows+nplanes*blankcols,preview_pmap.rowBytes,
-					zoomfactor);
+			e = process_scaled(pb, false, &r, &outRect,
+					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
 			if(blankrows){
-				memset(outptr,0xff,preview_pmap.rowBytes*blankrows);
+				memset(outptr, 0xff, pmrb*blankrows);
 				n = preview_h - blankrows - imgh; /* blank rows below preview */
-				memset(outptr+preview_pmap.rowBytes*(blankrows+imgh),0xff,preview_pmap.rowBytes*n);
+				memset(outptr + pmrb*(blankrows+imgh), 0xff, pmrb*n);
 			}
 			if(blankcols){
 				n = preview_w - blankcols - imgw; /* blank columns on right side of preview */
-				outrow = outptr+preview_pmap.rowBytes*blankrows;
+				outrow = outptr + pmrb*blankrows;
 				for( j = blankrows ; j < preview_h - blankrows ; ++j ){
-					memset(outrow,0xff,nplanes*blankcols);
-					memset(outrow+nplanes*(blankcols+imgw),0xff,nplanes*n);
-					outrow += preview_pmap.rowBytes;
+					memset(outrow, 0xff, nplanes*blankcols);
+					memset(outrow + nplanes*(blankcols+imgw), 0xff, nplanes*n);
+					outrow += pmrb;
 				}
 			}
 
@@ -243,8 +241,8 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 
 		srcRect = preview_pmap.bounds;
 
-		imagebounds.left = (preview_rect.left+preview_rect.right-preview_w)/2;
-		imagebounds.top = (preview_rect.top+preview_rect.bottom-preview_h)/2;
+		imagebounds.left = (preview_rect.left + preview_rect.right - preview_w)/2;
+		imagebounds.top = (preview_rect.top + preview_rect.bottom - preview_h)/2;
 		imagebounds.right = imagebounds.left + preview_w;
 		imagebounds.bottom = imagebounds.top + preview_h;
 

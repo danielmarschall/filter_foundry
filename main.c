@@ -203,11 +203,8 @@ OSErr DoContinue(FilterRecordPtr pb){
 
 //	{char s[0x100];sprintf(s,"DoContinue: outoffset=%d\n",outoffset);dbg(s);}
 	
-	if(!(e = process_scaled(pb,true,
-				&pb->inRect,
-				fr,
-				fr,//&pb->outRect,
-				(Ptr)pb->outData+outoffset,pb->outRowBytes, 1.))){
+	if(!(e = process_scaled(pb, true, fr, fr,
+				(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.))){
 		toprow += chunksize;
 		if(toprow < pb->filterRect.bottom)
 			RequestNext(pb,toprow);
