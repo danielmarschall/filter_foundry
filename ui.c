@@ -256,6 +256,8 @@ void maindlginit(DIALOGREF dp){
 	if(gdata->standalone){
 		myp2cstrcpy(s,gdata->parm.author); SetDlgItemText(dp,PARAMAUTHORITEM,s);
 		myp2cstrcpy(s,gdata->parm.copyright); SetDlgItemText(dp,PARAMCOPYITEM,s);
+		
+		// update labels for map() or ctl() sliders
 		for(i=0;i<8;++i){
 			if(gdata->parm.ctl_used[i]){
 				myp2cstrcpy(s,gdata->parm.ctl[i]); SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);

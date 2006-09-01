@@ -47,7 +47,7 @@ resource 'DITL' (ID_ABOUTDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-5 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-6 Toby Thain <toby@telegraphics.com.au>."
 			"\nLatest version available from\nhttp://www.telegraphics.com.au/sw/\n"
 		},
 		{104, 20, 216, 340},
@@ -74,7 +74,7 @@ resource 'DITL' (ID_ABOUTSTANDALONEDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-5 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-6 Toby Thain <toby@telegraphics.com.au>."
 		},
 		{88, 20, 200, 340},
 		StaticText {

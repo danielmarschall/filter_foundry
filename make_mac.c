@@ -76,13 +76,12 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 #endif
 
 	if(!e){
-
-		hpipl = Get1Resource('DATA',16000);
-		
 		/* create a new PiPL resource for the standalone plugin,
 		   with updated title and category strings */
 	
-		if( (h = Get1Resource('PiPL',16000)) ){
+		if( (hpipl = Get1Resource('DATA',16000)) 
+		 && (h = Get1Resource('PiPL',16000)) )
+		{
 			RemoveResource(h);
 			
 			DetachResource(hpipl);
@@ -99,32 +98,34 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			SetHandleSize(hpipl,newsize);
 			
 			AddResource(hpipl,'PiPL',16000,"\p");
-		}
-
-		/* do a similar trick with the terminology resource,
-		   so the scripting system can distinguish the standalone plugin */
-
-		if( (h = Get1Resource(typeAETE,AETE_ID)) ){
-			origsize = GetHandleSize(h);
-			SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
-			HLock(h);
-			newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
-			HUnlock(h);
-			SetHandleSize(h,newsize);
 			
-			ChangedResource(h);
-		}
-
-		if( !(e = ResError()) ){
+			if( !(e = ResError()) ){
+				/* do a similar trick with the terminology resource,
+				   so the scripting system can distinguish the standalone plugin */
 		
-			/* now add PARM resource */
-			
-			if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
-				AddResource(h,'PARM',PARM_ID,"\p");
-				e = ResError();
+				if( (h = Get1Resource(typeAETE,AETE_ID)) ){
+					origsize = GetHandleSize(h);
+					SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
+					HLock(h);
+					newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
+					HUnlock(h);
+					SetHandleSize(h,newsize);
+					
+					ChangedResource(h);
+					
+					if( !(e = ResError()) ){
+						/* add PARM resource */
+						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) )
+							AddResource(h,'PARM',PARM_ID,"\p");
+					}
+				}
+					
 			}
+			
 		}
-		
+		if(!e)
+			e = ResError();
+
 		CloseResFile(dstrn);
 		CloseResFile(srcrn);
 	}
@@ -145,7 +146,7 @@ int copyletters(char *dst,StringPtr src){
 // Info.plist in new standalone copy needs to be edited
 // at least the CFBundleIdentifier property must be unique
 
-OSErr copyplist(FSSpec *fss, short dstvol,long dstdir){
+OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
   static char *key = "com.telegraphics.FilterFoundry";
   static unsigned char *fname="\pInfo.plist";
   char *buf,*save,*p;
@@ -155,9 +156,9 @@ OSErr copyplist(FSSpec *fss, short dstvol,long dstdir){
   
   if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){
     if( !(e = HOpenDF(dstvol,dstdir,fname,fsWrPerm,&dstrn)) ){
-      if(!(e = FSpOpenDF(fss,fsRdPerm,&rn))){
+      if( !(e = FSpOpenDF(fss,fsRdPerm,&rn)) ){
         if( !(e = GetEOF(rn,&eof)) && (buf = malloc(eof+1024)) ){
-          if(!(e = FSRead(rn,&eof,buf))){
+          if( !(e = FSRead(rn,&eof,buf)) ){
             buf[eof] = 0;
             if( (p = strnstr(buf,key,eof)) && (save = malloc(eof-(p-buf)+1)) ){
               p += strlen(key);
@@ -194,7 +195,7 @@ OSErr copyplist(FSSpec *fss, short dstvol,long dstdir){
   return e;
 }
 
-OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname){
+OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
 	short dstvol = sfr->sfFile.vRefNum;
 	long bundledir,contentsdir,macosdir,rsrcdir;
 	DInfo fndrInfo;

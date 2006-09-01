@@ -38,6 +38,15 @@ resource 'PiPL' (16000, purgeable)
 	}
 };
 
+type 'DATA' as 'PiPL';
+resource 'DATA' (16000, purgeable)
+{
+	{
+#include "pipl_common.r"
+		CodeMachO { 0, 0, "" },
+	}
+};
+
 resource 'vers' (1){
 	VERS_RSRC " (Carbon Mach-O)"
 };
