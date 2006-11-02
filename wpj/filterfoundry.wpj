@@ -1,0 +1,55 @@
+40
+projectIdent
+0
+VpeMain
+1
+WRect
+3429
+21
+7680
+9728
+2
+MProject
+3
+MCommand
+249
+set PSSDK=E:\Adobe_Photoshop_6.0_SDK
+set PSAPI =E:\Adobe_Photoshop_6.0_SDK\PhotoshopAPI
+cd ..
+bison  parser.y -d -y
+flex  lexer.l y.tab.c
+rem IDE doesnt like multiple dots in filenames
+copy y.tab.c y_tab.c
+copy lex.yy.c lex_yy.c
+cd wpj
+
+
+
+4
+MCommand
+0
+1
+5
+WFileName
+17
+filterfoundry.tgt
+6
+WVList
+1
+7
+VComponent
+8
+WRect
+0
+704
+5712
+4352
+0
+0
+9
+WFileName
+17
+filterfoundry.tgt
+0
+0
+7

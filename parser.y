@@ -150,7 +150,7 @@ expr : TOK_NUM
 %%
 
 struct node *parseexpr(char *s){
-	void *yy_scan_string(const char*); // hack. correct prototype is buried in lex output
+	struct yy_buffer_state *yy_scan_string(const char*); // hack. correct prototype is buried in lex output
 	int yyparse(void); // hack. correct prototype appears just after this code, in yacc output
 	extern int tokpos,tokstart;
 	
