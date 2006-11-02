@@ -1,1 +1,0 @@
-#define __IDSTRING(a,b)#define __P(protos)     protos          /* full-blown ANSI C */
