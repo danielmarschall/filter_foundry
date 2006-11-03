@@ -4,23 +4,25 @@ projectIdent
 VpeMain
 1
 WRect
-3429
-21
+1216
+768
 7680
 9728
 2
 MProject
 3
 MCommand
-249
+310
 set PSSDK=E:\Adobe_Photoshop_6.0_SDK
 set PSAPI =E:\Adobe_Photoshop_6.0_SDK\PhotoshopAPI
 cd ..
+if exist y_tab.c del y_tab.c 
+if exist lex_yy.c del lex_yy.c
 bison  parser.y -d -y
 flex  lexer.l y.tab.c
 rem IDE doesnt like multiple dots in filenames
-copy y.tab.c y_tab.c
-copy lex.yy.c lex_yy.c
+ren y.tab.c y_tab.c
+ren lex.yy.c lex_yy.c
 cd wpj
 
 
