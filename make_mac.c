@@ -56,23 +56,23 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	Str255 title;
 
 #ifdef MACMACHO
-  FSRef inref,outref;
-  // work with resources in data fork
-  if( !(e = FSpMakeFSRef(srcplug,&inref))
-    &&!(e = FSOpenResourceFile(&inref,0/*forkNameLength*/,NULL/*forkName*/,fsRdPerm,&srcrn))
-    &&!(e = FSpMakeFSRef(rsrccopy,&outref))
-    && (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn)) )
-      CloseResFile(srcrn);
+	FSRef inref,outref;
+	// work with resources in data fork
+	if( !(e = FSpMakeFSRef(srcplug,&inref))
+	 && !(e = FSOpenResourceFile(&inref,0/*forkNameLength*/,NULL/*forkName*/,fsRdPerm,&srcrn))
+	 && !(e = FSpMakeFSRef(rsrccopy,&outref))
+	 &&  (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn)) )
+		CloseResFile(srcrn);
 #else
-  // ordinary resource fork files
-  srcrn = FSpOpenResFile(srcplug,fsRdPerm);
-  if(srcrn != -1){
-    dstrn = FSpOpenResFile(rsrccopy,fsWrPerm);
-    if(dstrn == -1){
-      e = ResError();
-      CloseResFile(srcrn);
-    }
-  }else e = ResError();
+	// ordinary resource fork files
+	srcrn = FSpOpenResFile(srcplug,fsRdPerm);
+	if(srcrn != -1){
+		dstrn = FSpOpenResFile(rsrccopy,fsWrPerm);
+		if(dstrn == -1){
+			e = ResError();
+			CloseResFile(srcrn);
+		}
+	}else e = ResError();
 #endif
 
 	if(!e){
@@ -134,65 +134,66 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 }
 
 int copyletters(char *dst,StringPtr src){
-  int i,n=0;
-  for(i=src[0];i--;)
-    if(isalpha(*++src)){
-      *dst++ = *src;
-      ++n;
-    }
-  return n;
+	int i,n=0;
+
+	for(i=src[0];i--;)
+		if(isalpha(*++src)){
+			*dst++ = *src;
+			++n;
+		}
+	return n;
 }
 
 // Info.plist in new standalone copy needs to be edited
 // at least the CFBundleIdentifier property must be unique
 
 OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
-  static char *key = "com.telegraphics.FilterFoundry";
-  static unsigned char *fname="\pInfo.plist";
-  char *buf,*save,*p;
-  short rn,dstrn,i,n,m;
-  long eof,count;
-  OSErr e;
-  
-  if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){
-    if( !(e = HOpenDF(dstvol,dstdir,fname,fsWrPerm,&dstrn)) ){
-      if( !(e = FSpOpenDF(fss,fsRdPerm,&rn)) ){
-        if( !(e = GetEOF(rn,&eof)) && (buf = malloc(eof+1024)) ){
-          if( !(e = FSRead(rn,&eof,buf)) ){
-            buf[eof] = 0;
-            if( (p = strnstr(buf,key,eof)) && (save = malloc(eof-(p-buf)+1)) ){
-              p += strlen(key);
-              // store text after matched string
-              strcpy(save,p);
-    
-              *p++ = '.';
-              n = copyletters(p,gdata->parm.category);
-              p += n;
-              if(n) *p++ = '.';
-              m = copyletters(p,gdata->parm.title);
-              p += m;
-              if(!m){
-                // generate a random ASCII identifier
-                srand(TICKCOUNT());
-                for(i=8;i--;) *p++ = 'a' + (rand() % 26);
-              }
-              strcpy(p,save);
-    
-              count = strlen(buf);
-              e = FSWrite(dstrn,&count,buf);
-    
-              free(save);
-            }else e = paramErr; // not found?? shouldn't happen
-          }
-          free(buf);
-        }
-        FSClose(rn);
-      }
-      FSClose(dstrn);
-    }
-    if(e) HDelete(dstvol,dstdir,fname);
-  }
-  return e;
+	static char *key = "com.telegraphics.FilterFoundry";
+	static unsigned char *fname="\pInfo.plist";
+	char *buf,*save,*p;
+	short rn,dstrn,i,n,m;
+	long eof,count;
+	OSErr e;
+	
+	if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){
+		if( !(e = HOpenDF(dstvol,dstdir,fname,fsWrPerm,&dstrn)) ){
+			if( !(e = FSpOpenDF(fss,fsRdPerm,&rn)) ){
+				if( !(e = GetEOF(rn,&eof)) && (buf = malloc(eof+1024)) ){
+					if( !(e = FSRead(rn,&eof,buf)) ){
+						buf[eof] = 0;
+						if( (p = strnstr(buf,key,eof)) && (save = malloc(eof-(p-buf)+1)) ){
+							p += strlen(key);
+							// store text after matched string
+							strcpy(save,p);
+							
+							*p++ = '.';
+							n = copyletters(p,gdata->parm.category);
+							p += n;
+							if(n) *p++ = '.';
+							m = copyletters(p,gdata->parm.title);
+							p += m;
+							if(!m){
+								// generate a random ASCII identifier
+								srand(TICKCOUNT());
+								for(i=8;i--;) *p++ = 'a' + (rand() % 26);
+							}
+							strcpy(p,save);
+							
+							count = strlen(buf);
+							e = FSWrite(dstrn,&count,buf);
+							
+							free(save);
+						}else e = paramErr; // not found?? shouldn't happen
+					}
+					free(buf);
+				}
+				FSClose(rn);
+			}
+			FSClose(dstrn);
+		}
+		if(e) HDelete(dstvol,dstdir,fname);
+	}
+	return e;
 }
 
 OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
@@ -216,18 +217,17 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::MacOS:FilterFoundry",&macosfss))
 					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) ){
 						/* now we add PARM resources to each binary, and edit PiPLs */
-            if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
-               && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
-               && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) ){
-                
-						   if( !(e = doresources(&rsrcfss, &rsrccopyfss))
-              && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) ){
-                e = copyplist(&fss,dstvol,contentsdir);
-                
-                if(e) FSpDelete(&rsrccopyfss);
-               }
-                
-              if(e) HDelete(dstvol,macosdir,"\pFilterFoundry");
+							if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
+							 && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
+							 && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) )
+							{
+								if( !(e = doresources(&rsrcfss, &rsrccopyfss))
+								 && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) ){
+									e = copyplist(&fss,dstvol,contentsdir);
+								
+								if(e) FSpDelete(&rsrccopyfss);
+							}
+							if(e) HDelete(dstvol,macosdir,"\pFilterFoundry");
 						}
 						if(e) HDelete(dstvol,rsrcdir,plugname);
 					}
@@ -254,7 +254,7 @@ OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringP
 	}
 
 	if( !(e = FileCopy(plugvol,plugdir,plugname, sfr->sfFile.vRefNum,sfr->sfFile.parID,NULL, sfr->sfFile.name,NULL,0,false)) 
-	&& !(e = FSMakeFSSpec(plugvol,plugdir,plugname,&origfss)) )
+	 && !(e = FSMakeFSSpec(plugvol,plugdir,plugname,&origfss)) )
 		/* now we add PARM resources, and edit PiPL */
 		e = doresources(&origfss, &sfr->sfFile);
 
@@ -269,9 +269,9 @@ OSErr make_standalone(StandardFileReply *sfr){
 	
 	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname)))
 #ifdef MACMACHO
-    e = make_bundle(sfr,plugvol,plugdir,plugname);
+	e = make_bundle(sfr,plugvol,plugdir,plugname);
 #else
-		e = make_singlefile(sfr,plugvol,plugdir,plugname);
+	e = make_singlefile(sfr,plugvol,plugdir,plugname);
 #endif
 
 	if(e && e != userCanceledErr) 

@@ -70,7 +70,8 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 					// This signature is observed in Filter Factory standalones.
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
 						if( EndianS32_LtoN(q[0]) == PARM_SIZE && EndianS32_LtoN(q[1]) == 1
-							  && (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) ){
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
+						{
 							// these are the only numeric fields we *have* to swap
 							// all the rest are flags which (if we're careful) will work in either ordering
 							for(i=0;i<8;++i)

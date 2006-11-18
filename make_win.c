@@ -28,6 +28,7 @@ Boolean doresources(HMODULE srcmod,char *dstname);
 
 void dbglasterror(char *func){
 	char s[0x100];
+
 	strcpy(s,func);
 	strcat(s," failed: ");
 	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM,NULL,GetLastError(),0,s+strlen(s),0x100,NULL );
@@ -68,8 +69,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 			&& (datap = LockResource(datah)) 
 			&& (aetersrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"AETE")) 
 			&& (aeteh = LoadResource(srcmod,aetersrc))
-			&& (aetep = LockResource(aeteh)) 
-		){
+			&& (aetep = LockResource(aeteh)) )
+		{
 			DBG("loaded DATA, PiPL");
 
 			PLstrcpy(title,gdata->parm.title);
@@ -81,8 +82,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 			if( (newpipl = malloc(origsize+0x300)) 
 			 && (newaete = malloc(aetesize+0x100)) 
-			 && (pparm = malloc(sizeof(PARM_T))) ){
-
+			 && (pparm = malloc(sizeof(PARM_T))) )
+			{
 				/* add user-specified title and category to new PiPL */
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front 
@@ -142,8 +143,8 @@ OSErr make_standalone(StandardFileReply *sfr){
 	//FSpDelete(&sfr->sfFile);
 	myp2cstrcpy(dstname,sfr->sfFile.name);
 	res = GetModuleFileName(hDllInstance,srcname,MAX_PATH)
-		&& CopyFile(srcname,dstname,false) 
-		&& doresources(hDllInstance,dstname);
+		  && CopyFile(srcname,dstname,false) 
+		  && doresources(hDllInstance,dstname);
 
 	if(!res)
 		alertuser("Could not create standalone plugin.","");

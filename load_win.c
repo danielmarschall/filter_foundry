@@ -26,8 +26,9 @@
 static int parm_id;
 
 // see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/resources/introductiontoresources/resourcereference/resourcefunctions/findresource.asp
-static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,LPTSTR lpszName,LONG_PTR lParam){
-	
+static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
+							   LPTSTR lpszName,LONG_PTR lParam)
+{
 	if(IS_INTRESOURCE(lpszName))
 		parm_id = (int)lpszName;
 	return false; // we only want the first one
@@ -44,8 +45,8 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM"))
-			&& (h = LoadResource(hm,resinfo))
-			&& (pparm = LockResource(h)) )
+	 && (h = LoadResource(hm,resinfo))
+	 && (pparm = LockResource(h)) )
 		res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
 
 	return res;

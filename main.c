@@ -34,7 +34,7 @@ char *expr[4],*defaultexpr[]={"r","g","b","a"};
 long maxSpace;
 
 #ifdef MAC_ENV
-#define hDllInstance NULL /* fake this Windows-only global */
+	#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
 extern struct sym_rec predefs[];
@@ -204,7 +204,8 @@ OSErr DoContinue(FilterRecordPtr pb){
 //	{char s[0x100];sprintf(s,"DoContinue: outoffset=%d\n",outoffset);dbg(s);}
 	
 	if(!(e = process_scaled(pb, true, fr, fr,
-				(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.))){
+				(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.)))
+	{
 		toprow += chunksize;
 		if(toprow < pb->filterRect.bottom)
 			RequestNext(pb,toprow);

@@ -74,7 +74,7 @@ void dump_symbols(){
 				maxchain = chain;
 		}
 	printf("# hash stats: occupancy=%d/%d (%.1f%%) longest chain=%d\n",
-		occ,TABLE_SIZE,(100.*occ)/TABLE_SIZE,maxchain);
+		   occ,TABLE_SIZE,(100.*occ)/TABLE_SIZE,maxchain);
 }
 
 

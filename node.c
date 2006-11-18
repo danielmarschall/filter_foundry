@@ -135,34 +135,34 @@ value_type eval(struct node *root){
 		case TOK_VAR: return *root->v.sym->pvar;
 		case TOK_FN1: return root->v.sym->fn(eval(root->child[0]));
 		case TOK_FN2: return root->v.sym->fn(
-							  eval(root->child[0]),
-						      eval(root->child[1]) );
+								eval(root->child[0]),
+								eval(root->child[1]) );
 		case TOK_FN3: return root->v.sym->fn(
-							  eval(root->child[0]),
-						      eval(root->child[1]),
-						      eval(root->child[2]) );
+								eval(root->child[0]),
+								eval(root->child[1]),
+								eval(root->child[2]) );
 		case TOK_FN4: return root->v.sym->fn(
-							  eval(root->child[0]),
-						      eval(root->child[1]),
-						      eval(root->child[2]),
-						      eval(root->child[3]) );
+								eval(root->child[0]),
+								eval(root->child[1]),
+								eval(root->child[2]),
+								eval(root->child[3]) );
 		case TOK_FN5: return root->v.sym->fn(
-							  eval(root->child[0]),
-						      eval(root->child[1]),
-						      eval(root->child[2]),
-						      eval(root->child[3]),
-						      eval(root->child[4]) );
+								eval(root->child[0]),
+								eval(root->child[1]),
+								eval(root->child[2]),
+								eval(root->child[3]),
+								eval(root->child[4]) );
 		case TOK_FN10: return root->v.sym->fn(
-							  eval(root->child[0]),
-						      eval(root->child[1]),
-						      eval(root->child[2]),
-						      eval(root->child[3]),
-						      eval(root->child[4]),
-						      eval(root->child[5]),
-						      eval(root->child[6]),
-						      eval(root->child[7]),
-						      eval(root->child[8]),
-						      eval(root->child[9]) );
+								eval(root->child[0]),
+								eval(root->child[1]),
+								eval(root->child[2]),
+								eval(root->child[3]),
+								eval(root->child[4]),
+								eval(root->child[5]),
+								eval(root->child[6]),
+								eval(root->child[7]),
+								eval(root->child[8]),
+								eval(root->child[9]) );
 
 		case '+': return eval(root->child[0]) + eval(root->child[1]);
 		case '-': return eval(root->child[0]) - eval(root->child[1]);
@@ -218,7 +218,7 @@ void checkvars(struct node*p,int f[],int *srcrad /* ,int *mapused */ ){
 		if(p->kind==TOK_SPECIALVAR)
 			f[p->v.specialvar] = 1;
 		else if( (p->kind==TOK_FN3 && (p->v.sym->fn == (pfunc_type)ff_src || p->v.sym->fn == (pfunc_type)ff_rad ) )
-				|| (p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv) )
+			  || (p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv) )
 			*srcrad = 1;
 //		else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map))
 //			*mapused = 1;

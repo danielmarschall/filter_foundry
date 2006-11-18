@@ -32,9 +32,9 @@
    when project is built with MPW */
 
 #if defined(__MRC__) && TARGET_CARBON
-#define stdin 0
-#define stdout 0
-#define stderr 0
+	#define stdin 0
+	#define stdout 0
+	#define stderr 0
 #endif 
 
 #define YY_FATAL_ERROR(msg)

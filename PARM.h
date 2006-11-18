@@ -46,24 +46,24 @@ type 'PARM' {
 /* N.B. under Windows, the strings are all C strings (!) */
 
 typedef struct {   //structure of FF PARM resource
-     long cbSize;    //size of this structure
-     long nVersion;  //0=original FF, 1=standalone filter
-     long val[8];    //initial values of controls
-     long popDialog; //true if need to pop a parameter dialog
-     long unknown1;
-     long unknown2;
-     long unknown3;
-     long map_used[4];   //true if map(n) is used
-     long ctl_used[8];   //true if ctl(n) is used
-     unsigned char category[252];    //Category name
-     // Michael Johannhanwahr's protect flag...
-     long iProtected;            // == 1 means protected
-     unsigned char title[256];       //Filter title
-     unsigned char copyright[256];   //Copyright info
-     unsigned char author[256];      //Filter author(s)
-     unsigned char map[4][256];      //4 map labels
-     unsigned char ctl[8][256];      //8 control labels
-     char formula[4][1024]; //4 channel formulas
- } PARM_T;
+	long cbSize;    //size of this structure
+	long nVersion;  //0=original FF, 1=standalone filter
+	long val[8];    //initial values of controls
+	long popDialog; //true if need to pop a parameter dialog
+	long unknown1;
+	long unknown2;
+	long unknown3;
+	long map_used[4];   //true if map(n) is used
+	long ctl_used[8];   //true if ctl(n) is used
+	unsigned char category[252];    //Category name
+	// Michael Johannhanwahr's protect flag...
+	long iProtected;            // == 1 means protected
+	unsigned char title[256];       //Filter title
+	unsigned char copyright[256];   //Copyright info
+	unsigned char author[256];      //Filter author(s)
+	unsigned char map[4][256];      //4 map labels
+	unsigned char ctl[8][256];      //8 control labels
+	char formula[4][1024]; //4 channel formulas
+} PARM_T;
 
 #endif

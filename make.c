@@ -146,8 +146,8 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 #endif
 	/* shift latter part of aete data, taking into account new string lengths */
 	memcpy(aete+offset+1+newlen+newpad, 
-			 aete+offset+1+oldlen+oldpad, 
-			 origsize-offset-1-oldlen-oldpad); /* phew! */
+		   aete+offset+1+oldlen+oldpad, 
+		   origsize-offset-1-oldlen-oldpad); /* phew! */
 	/* copy in new title string */
 	PLstrcpy((StringPtr)(aete+offset),title);
 	/* copy description string into right place... [this could be new description from dialog field??] */
