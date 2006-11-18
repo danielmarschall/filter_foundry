@@ -215,15 +215,17 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 					/* directories created ; now we need to copy the Info.plist file, resource file, and executable */
 
 					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::MacOS:FilterFoundry",&macosfss))
-					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) ){
+					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) )
+					{
 						/* now we add PARM resources to each binary, and edit PiPLs */
-							if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
-							 && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
-							 && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) )
+						if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
+						 && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
+						 && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) )
+						{
+							if( !(e = doresources(&rsrcfss, &rsrccopyfss))
+							 && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) )
 							{
-								if( !(e = doresources(&rsrcfss, &rsrccopyfss))
-								 && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) ){
-									e = copyplist(&fss,dstvol,contentsdir);
+								e = copyplist(&fss,dstvol,contentsdir);
 								
 								if(e) FSpDelete(&rsrccopyfss);
 							}
