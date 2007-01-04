@@ -1,5 +1,5 @@
 # This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-# Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by  
@@ -37,9 +37,6 @@ YACC = bison -y
 YFLAGS = -d
 
 PSAPI = "../Adobe Photoshop CS3 Public Beta SDK/photoshopapi"
-# in CS3(CS2?), PiPL FormatFlags added a 'fmtCannotCreateThumbnail' bit
-# older SDKs don't have this, so comment out this define if using them
-REZFLAGS = -d CS3SDK
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -I$(PSAPI)/Pica_sp -I$(PSAPI)/Photoshop -I$(PSAPI)/General \
@@ -103,7 +100,7 @@ $(BUNDLE) :
 	/Developer/Tools/SetFile -t TEXT -c ttxt dist/examples/*.afs
 
 # insert correct executable name and version string in bundle's Info.plist
-$(BUNDLE)/Contents/Info.plist : $(BUNDLE) Info.plist version.h
+$(BUNDLE)/Contents/Info.plist : Info.plist $(BUNDLE) version.h
 	mkdir -p $(dir $@)
 	V=`sed -n -E 's/^.*VERSION_STR[[:blank:]]+\"([^"]*)\"/\1/p' version.h` ;\
 		sed -e s/VERSION_STR/$$V/ -e s/EXEC/$(EXEC)/ $< > $@
