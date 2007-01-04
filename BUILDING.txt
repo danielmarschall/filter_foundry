@@ -19,7 +19,7 @@ Building the Filter Foundry plugin for Photoshop
 ------------------------------------------------
 
 Notes on source code
-
+--------------------
 Source code, makefiles and IDE projects under GPL license are provided for MPW (Classic & Carbon PowerPC targets), 
 CodeWarrior 7 (Classic & Carbon PowerPC, Win32, 68K targets) and mingw32 (Win32 target).
 
@@ -45,7 +45,7 @@ This code has not been tested with the Photoshop v7.0 SDK.
 
 
 Mac notes
-
+---------
 The Mac build requires Apple's MoreFiles library, which can be obtained via
 http://developer.apple.com/samplecode/Sample_Code/Files/MoreFiles.htm
 
@@ -66,12 +66,12 @@ in the source archive.
 If building with MPW, finished binaries are left in the "debug" directory; these should be used
 for testing and debugging, as they can be re-built and re-run without having to restart Photoshop.
 
-The finished "universal" binary, which contains separate executables for Classic and Carbon,
-is left in the "dist" directory. 
-   
-   
-Development systems
+The finished binary, which contains separate executables for Classic and Carbon,
+is left in the "dist" directory.
 
+
+Development systems
+-------------------
 While a CodeWarrior 7 project is provided, MPW and mingw32 are recommended 
 as they produce much smaller executables.
 

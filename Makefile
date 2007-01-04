@@ -36,7 +36,10 @@ LEX = flex
 YACC = bison -y
 YFLAGS = -d
 
-PSAPI = ../PhotoshopAPI
+PSAPI = "../Adobe Photoshop CS3 Public Beta SDK/photoshopapi"
+# in CS3(CS2?), PiPL FormatFlags added a 'fmtCannotCreateThumbnail' bit
+# older SDKs don't have this, so comment out this define if using them
+REZFLAGS = -d CS3SDK
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -I$(PSAPI)/Pica_sp -I$(PSAPI)/Photoshop -I$(PSAPI)/General \
@@ -87,15 +90,21 @@ all : dll osx
 
 dll : $(PLUGIN_W32)
 
-osx : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist
+osx fat : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist
+
+# See: http://developer.apple.com/documentation/Porting/Conceptual/PortingUnix/compiling/chapter_4_section_3.html#//apple_ref/doc/uid/TP40002850-BAJCFEBA
+fat : CFLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
+fat : LDFLAGS += -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
+fat : REZFLAGS += -arch ppc -arch i386
 
 $(BUNDLE) :
 	mkdir -p $@
+	/Developer/Tools/SetFile -a B $(@)
 	/Developer/Tools/SetFile -t TEXT -c ttxt dist/examples/*.afs
-	/Developer/Tools/SetFile -a B $(BUNDLE)
 
 # insert correct executable name and version string in bundle's Info.plist
-$(BUNDLE)/Contents/Info.plist : Info.plist version.h
+$(BUNDLE)/Contents/Info.plist : $(BUNDLE) Info.plist version.h
+	mkdir -p $(dir $@)
 	V=`sed -n -E 's/^.*VERSION_STR[[:blank:]]+\"([^"]*)\"/\1/p' version.h` ;\
 		sed -e s/VERSION_STR/$$V/ -e s/EXEC/$(EXEC)/ $< > $@
 
@@ -173,9 +182,9 @@ gentab : gentab.c funcs.h ; $(CC) -o $@ $< -lm
 trigtab.c : gentab ; ./gentab > $@
 
 # compile Mac resources (into data fork of .rsrc file)
-$(PLUGIN_RSRC) : PiPL_macho.r ui_mac.r scripting.r ui.h version.h
+$(PLUGIN_RSRC) : $(BUNDLE) PiPL_macho.r ui_mac.r scripting.r ui.h version.h
 	mkdir -p $(dir $@)
-	/Developer/Tools/Rez -o $@ -useDF $(filter %.r,$^) \
+	/Developer/Tools/Rez -o $@ -useDF $(REZFLAGS) $(filter %.r,$^) \
 		-i /Developer/Headers/FlatCarbon \
 		-i $(PSAPI)/Resources \
 		-i $(PSAPI)/Photoshop
@@ -185,11 +194,13 @@ $(PLUGIN_RSRC) : PiPL_macho.r ui_mac.r scripting.r ui.h version.h
 # ---------- link rules ----------
 
 # link OS X Mach-O executable
-$(PLUGIN_OSX) : exports.exp $(OBJ_OSX) $(PLUGIN_RSRC)
+$(PLUGIN_OSX) : $(BUNDLE) exports.exp $(OBJ_OSX) $(PLUGIN_RSRC)
 	mkdir -p $(dir $@)
-	$(CC) -bundle -o $@ $(OBJ_OSX) -exported_symbols_list exports.exp \
+	$(CC) -bundle -o $@ $(OBJ_OSX) \
+		$(LDFLAGS) -exported_symbols_list exports.exp \
 		-framework Carbon -framework System
 	ls -l $@
+	file $@
 
 # link Win32 DLL
 $(PLUGIN_W32) : exports.def $(OBJ_W32) obj_w32/res.o

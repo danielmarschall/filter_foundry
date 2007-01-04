@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -17,10 +17,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "AEUserTermTypes.r"
+//#include "AEUserTermTypes.r"
 
 #define MSWindows 0
-#include "piactions.h"
+#include "PIActions.h"
+#include "PITerminology.h"
 
 #include "ui.h"
 #include "version.h"
@@ -29,19 +30,19 @@
 //	Dictionary (scripting) resource
 //-------------------------------------------------------------------------------
 
-resource 'aete' (AETE_ID, "", purgeable)
+resource 'aete' (AETE_ID, "FilterFoundry scripting dictionary", purgeable)
 {
 	1, 0, english, roman,				/* aete version and language specifiers */
 	{
 		vendorName,						/* vendor suite name */
-		"",								/* optional description */
+		"custom filter creator, compatible with Adobe Filter Factory", /* optional description */
 		plugInSuiteID,					/* suite ID */
-		1,								/* suite code, must be 1 */
 		1,								/* suite level, must be 1 */
-		{								/* structure for filters */
+		1,								/* suite version, must be 1 */
+		{	/* structure for filters */
 			plugInName,					/* unique filter name */
 			"",							/* optional description */
-			plugInClassID,				/* class ID, must be unique or Suite ID */
+			plugInClassID,				/* event class ID, must be unique or Suite ID */
 			plugInEventID,				/* event ID, must be unique to class ID */
 			
 			NO_REPLY,					/* never a reply */

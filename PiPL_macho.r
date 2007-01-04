@@ -33,8 +33,15 @@ resource 'PiPL' (16000, purgeable)
 		Category { "Telegraphics" },
 		Name { "Filter Foundry…" },
 		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
+
 #include "PiPL_common.r"
-		CodeMachO { 0, 0, "" },
+
+#if (defined(__i386__))
+		CodeMacIntel32 { "PluginMain" },
+#endif
+#if (defined(__ppc__))
+		CodeMachOPowerPC { 0, 0, "PluginMain" },
+#endif
 	}
 };
 
@@ -43,7 +50,13 @@ resource 'DATA' (16000, purgeable)
 {
 	{
 #include "pipl_common.r"
-		CodeMachO { 0, 0, "" },
+
+#if (defined(__i386__))
+		CodeMacIntel32 { "PluginMain" },
+#endif
+#if (defined(__ppc__))
+		CodeMachOPowerPC { 0, 0, "PluginMain" },
+#endif
 	}
 };
 
