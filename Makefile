@@ -58,7 +58,7 @@ SRC_W32 = dbg_win.c ui_win.c make_win.c load_win.c ui_compat_win.c choosefile_wi
 
 # derive lists of object files, separate for each platform
 OBJ_OSX := $(patsubst %.c, obj/%.o,     $(SRC_COMMON) $(SRC_OSX))
-OBJ_W32 := $(patsubst %.c, obj_w32/%.o, $(SRC_COMMON) $(SRC_W32))
+OBJ_W32 := $(patsubst %.c, obj_w32/%.o, $(SRC_COMMON) $(SRC_W32)) obj_w32/res.o
 
 
 # ---------- executables ----------
@@ -69,7 +69,7 @@ BUNDLE = $(EXEC)_cs2.plugin
 PLUGIN_OSX  = $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLUGIN_RSRC = $(BUNDLE)/Contents/Resources/$(EXEC).rsrc
 
-$(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -DMACMACHO -Dmacintosh \
+$(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -Dmacintosh \
 	-I/Developer/Headers/FlatCarbon \
 	-I../MoreFiles/CHeaders -I../MoreFiles/Sources
 
@@ -87,7 +87,7 @@ all : dll osx
 
 dll : $(PLUGIN_W32)
 
-osx fat : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist
+osx fat : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist $(BUNDLE)/Contents/PkgInfo
 
 # See: http://developer.apple.com/documentation/Porting/Conceptual/PortingUnix/compiling/chapter_4_section_3.html#//apple_ref/doc/uid/TP40002850-BAJCFEBA
 fat : CFLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
@@ -96,7 +96,7 @@ fat : REZFLAGS += -arch ppc -arch i386
 
 $(BUNDLE) :
 	mkdir -p $@
-	/Developer/Tools/SetFile -a B $(@)
+	/Developer/Tools/SetFile -a B $@
 	/Developer/Tools/SetFile -t TEXT -c ttxt dist/examples/*.afs
 
 # insert correct executable name and version string in bundle's Info.plist
@@ -105,8 +105,12 @@ $(BUNDLE)/Contents/Info.plist : Info.plist $(BUNDLE) version.h
 	V=`sed -n -E 's/^.*VERSION_STR[[:blank:]]+\"([^"]*)\"/\1/p' version.h` ;\
 		sed -e s/VERSION_STR/$$V/ -e s/EXEC/$(EXEC)/ $< > $@
 
+$(BUNDLE)/Contents/PkgInfo : $(BUNDLE)
+	mkdir -p $(dir $@)
+	echo -n 8BIF8BIM > $@
+
 clean :
-	rm -fr *.[ox] obj/* obj_w32/* $(PLUGIN_W32) $(BUNDLE) \
+	rm -fr *.[ox] $(OBJ_OSX) $(OBJ_W32) $(PLUGIN_W32) $(BUNDLE) \
 	       gentab trigtab.c lex.yy.[ch] y.tab.[ch] temp
 
 
@@ -118,7 +122,8 @@ $(DISTARCHIVE) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.af
 
 dist/gpl.html : 
 	curl http://www.gnu.org/licenses/gpl.html | \
-		sed 's%</HEAD>%<BASE HREF="http://www.gnu.org/"> </HEAD>%' > $@
+		sed -e 's%</HEAD>%<BASE HREF="http://www.gnu.org/"> </HEAD>%' \
+			-e 's%</head>%<BASE HREF="http://www.gnu.org/"> </HEAD>%' > $@
 
 
 # ---------- compile rules ----------
@@ -191,7 +196,7 @@ $(PLUGIN_RSRC) : $(BUNDLE) PiPL_macho.r ui_mac.r scripting.r ui.h version.h
 # ---------- link rules ----------
 
 # link OS X Mach-O executable
-$(PLUGIN_OSX) : $(BUNDLE) exports.exp $(OBJ_OSX) $(PLUGIN_RSRC)
+$(PLUGIN_OSX) : $(BUNDLE) exports.exp $(OBJ_OSX)
 	mkdir -p $(dir $@)
 	$(CC) -bundle -o $@ $(OBJ_OSX) \
 		$(LDFLAGS) -exported_symbols_list exports.exp \
@@ -200,7 +205,7 @@ $(PLUGIN_OSX) : $(BUNDLE) exports.exp $(OBJ_OSX) $(PLUGIN_RSRC)
 	file $@
 
 # link Win32 DLL
-$(PLUGIN_W32) : exports.def $(OBJ_W32) obj_w32/res.o
+$(PLUGIN_W32) : exports.def $(OBJ_W32)
 	$(DLLWRAP) -o $@ -def $^ -mwindows -s
 	ls -l $@
 

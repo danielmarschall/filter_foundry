@@ -40,6 +40,7 @@
 //#endif
 
 extern value_type slider[],cell[],var[],map[][0x100];
+extern unsigned char *image_ptr;
 
 /* src(x,y,z) Channel z for the pixel at coordinates x,y */
 value_type ff_src(value_type x,value_type y,value_type z){
@@ -54,7 +55,7 @@ value_type ff_src(value_type x,value_type y,value_type z){
 		y = 0;
 	else if(y>=var['Y']) 
 		y = var['Y']-1;
-	return z>=0 && z<var['Z'] ? ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*y + (long)nplanes*x + z ] : 0;
+	return z>=0 && z<var['Z'] ? image_ptr[ (long)gpb->inRowBytes*y + (long)nplanes*x + z ] : 0;
 #endif
 }
 
@@ -237,7 +238,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type d ){
 	long total = 0;
 	int x=var['x'],y=var['y'];
-	unsigned char *p = (unsigned char*)gpb->inData + y*(long)gpb->inRowBytes + (x-1)*(long)nplanes + var['z'];
+	unsigned char *p = image_ptr + y*(long)gpb->inRowBytes + (x-1)*(long)nplanes + var['z'];
 	
 	/* left column */
 	if(x > 0){

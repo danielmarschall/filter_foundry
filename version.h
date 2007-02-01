@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -83,15 +83,16 @@
 05-Jun-2006: 1.3b1 - fix x,y,X,Y,M variables to use selection extent instead of image size (per Eiji Nishidai)
 01-Sep-2006: 1.3b2 - fix standalone UI bugs (thanks Craig Bickford)
 04-Jan-2007: 1.4b1 - Universal Binary on OS X (PPC+Intel)
+31-Jan-2007: 1.4b2 - fix selection bug reported by Daniel Denk
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.4b1"
-#define VERSION_NUM 1,0x40,beta,1
+#define VERSION_STR "1.4b2"
+#define VERSION_NUM 1,0x40,beta,2
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,4,0,1
+#define VI_VERS_NUM 1,4,0,2
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

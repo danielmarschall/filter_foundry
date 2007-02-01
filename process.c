@@ -26,6 +26,11 @@
 extern value_type var[];
 extern int nplanes,varused[],srcradused;
 extern struct node *tree[];
+
+// points to first row, first column of selection image data
+// this is used by src() and cnv() functions to access pixels
+unsigned char *image_ptr;
+
 int needinput;
 
 /* get prepared to evaluate expression trees--
@@ -73,78 +78,91 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		if(varused['u']) var['u'] = ((-19L*var['r'])+(-37L*var['g'])+( 56L*var['b']))/256;
 		if(varused['v']) var['v'] = (( 78L*var['r'])+(-65L*var['g'])+(-13L*var['b']))/256;
 	}
-	if(varused['d']) var['d'] = ff_c2d(var['X']/2-var['x'],var['Y']/2-var['y']);
-	if(varused['m']) var['m'] = ff_c2m(var['X']/2-var['x'],var['Y']/2-var['y']);
+	if(varused['d']) var['d'] = ff_c2d(var['X']/2 - var['x'], var['Y']/2 - var['y']);
+	if(varused['m']) var['m'] = ff_c2m(var['X']/2 - var['x'], var['Y']/2 - var['y']);
 	
-	for( k=0 ; k<nplanes ; ++k ){
+	for(k = 0; k < nplanes; ++k){
 		if(needinput)
 			var['c'] = inp[k];
 		var['z'] = k;
 		f = eval(tree[k]);
-		outp[k] = f<0 ? 0 : ( f>255 ? 255 : f ); // clamp channel value to 0-255
+		outp[k] = f<0 ? 0 : (f>255 ? 255 : f); // clamp channel value to 0-255
 	}
 }
 
 /* Zoom and filter image.
- * Parameters:  pb          - Photoshop parameter block
- *              progress    - whether to call Photoshop's progress bar
+ * Parameters:  pb          - Photoshop Filter parameter block
+ *              progress    - whether to use Photoshop's progress bar
  *                            (not appropriate during preview)
- *              filterRect  - rectangle (contained within pb->inRect)
+ *              filterRect  - rectangle (within pb->inRect)
  *                            of area to be filtered. This may not correspond
  *                            to pb->filterRect, it may be just a piece.
- *              outRect     - rectangle defining scaled output buffer,
- *                            physically scaled FROM filterRect
- *                            (= filterRect for unscaled 1:1 filtering).
+ *              outPiece    - rectangle defining scaled output buffer.
+ *                            In case of zoomed preview, this is physically
+ *                            scaled FROM filterRect (or equal to filterRect
+ *                            for unscaled 1:1 filtering).
  *              outData     - pointer to output data buffer
  *              outRowBytes - row stride of output data buffer
- *              zoom        - pixel scale factor (horiz & vert) 
+ *              zoom        - pixel scale factor (both horiz & vert) 
  *                            e.g. 2.0 means 1 output pixel per 2 input pixels.
  */
 
 OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
-			  Rect *filterRect, Rect *outRect,
+			  Rect *filterPiece, Rect *outPiece,
 			  void *outData, long outRowBytes, double zoom){
 	unsigned char *inrow,*outrow,*outp;
 	int j,i;
 	long t,ticks = TICKCOUNT();
 	double x,y;
-/*
-{char s[0x100];sprintf(s,"process_scaled: pb->inData=%#x  outData=%#x\n\
-inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d) outRect=(%d,%d,%d,%d)\n\
-pb->filterRect=(%d,%d,%d,%d)\n",
+
+/* char s[0x100];sprintf(s,"process_scaled: pb->inData=%p outData=%p\n\
+pb->inRect=(%d,%d,%d,%d) filterPiece=(%d,%d,%d,%d) outPiece=(%d,%d,%d,%d)\n\
+pb->fRect=(%d,%d,%d,%d)\n\
+top row offset (from inData) = %d\n\
+left row offset = %d\n",
 	pb->inData,outData,
-	pb->inRect->left,pb->inRect->top,pb->inRect->right,pb->inRect->bottom,
-	filterRect->left,filterRect->top,filterRect->right,filterRect->bottom,
-	outRect->left,outRect->top,outRect->right,outRect->bottom,
-	pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom); dbg(s);}
-*/
+	pb->inRect.left,pb->inRect.top,pb->inRect.right,pb->inRect.bottom,
+	filterPiece->left,filterPiece->top,filterPiece->right,filterPiece->bottom,
+	outPiece->left,outPiece->top,outPiece->right,outPiece->bottom,
+	pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom,
+	filterPiece->top - pb->filterRect.top + pb->filterRect.top - pb->inRect.top,
+	filterPiece->left - pb->filterRect.left + pb->filterRect.left - pb->inRect.left); dbg(s); */
+
 	if(needinput && !pb->inData){
 		simplealert("Error (process_scaled: pb->inData == NULL)."
 					" This problem is being investigated. Cannot apply the filter;"
 					" please re-launch Photoshop and try again.");
 		return userCanceledErr;
 	}else
-		for( j = outRect->top, outrow = (unsigned char*)outData, y = filterRect->top - pb->filterRect.top ;
-			 j < outRect->bottom ; ++j, outrow += outRowBytes, y += zoom )
+		// find base pointer to selection image data
+		image_ptr = (unsigned char*)pb->inData + (long)pb->inRowBytes*(pb->filterRect.top - pb->inRect.top)
+					+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
+
+		// j indexes scaled output rows
+		for( j = outPiece->top, outrow = (unsigned char*)outData, y = filterPiece->top - pb->filterRect.top ;
+			 j < outPiece->bottom ; ++j, outrow += outRowBytes, y += zoom )
 		{
-			var['y'] = y; // counts *input* columns across selection (pb->filterRect)
+			var['y'] = y;  // index of corresponding *input* row, top of selection == 0
 			inrow = (unsigned char*)pb->inData
 					+ ((long)y + pb->filterRect.top - pb->inRect.top)*pb->inRowBytes
 					+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
-	
-			for( outp = outrow, i = outRect->left, x = filterRect->left - pb->filterRect.left ;
-				 i < outRect->right ; ++i, outp += nplanes, x += zoom )
+
+			// i indexes scaled output columns
+			for( outp = outrow, i = outPiece->left, x = filterPiece->left - pb->filterRect.left ;
+				 i < outPiece->right ; ++i, outp += nplanes, x += zoom )
 			{
-				var['x'] = x; // counts *input* rows across selection (pb->filterRect)
-				evalpixel(outp,inrow + (long)var['x']*nplanes); /* var['x'] & var['y'] are implicit parameters */
+				var['x'] = x;  // index of corresponding *input* column, left of selection == 0
+				evalpixel(outp,inrow + (long)x*nplanes); /* var['x'] & var['y'] are implicit parameters */
 			}
 	
-			if(progress && (t = TICKCOUNT()) > ticks){
-				ticks = t + TICKS_SEC/4;
-				if(pb->abortProc())
-					return userCanceledErr;
-				else
-					pb->progressProc((int)y - pb->filterRect.top,pb->filterRect.bottom - pb->filterRect.top);
+			if(progress){
+				if((t = TICKCOUNT()) > ticks){
+					ticks = t + TICKS_SEC/4;
+					if(pb->abortProc())
+						return userCanceledErr;
+					else
+						pb->progressProc((int)y - pb->filterRect.top,pb->filterRect.bottom - pb->filterRect.top);
+				}
 			}
 #ifdef MAC_ENV
 			else{

@@ -169,15 +169,18 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	pb->inLoPlane = pb->outLoPlane = 0;
 	pb->inHiPlane = pb->outHiPlane = nplanes-1;
 
+	// if any of the formulae involve random access to image pixels,
+	// must ask for the entire image
 	if(srcradused){
 		SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
 	}else{
+		// otherwise, process the filtered area, by chunksize parts
 		pb->inRect.left = pb->filterRect.left;
 		pb->inRect.right = pb->filterRect.right;
 		pb->inRect.top = toprow;
 		pb->inRect.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
 	}
-	pb->outRect = pb->inRect;
+	pb->outRect = pb->filterRect;
 /*
 {char s[0x100];sprintf(s,"RequestNext srcradused=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
 	srcradused, 
