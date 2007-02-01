@@ -100,7 +100,7 @@ EXEC_CLASSIC = :debug:{EXEC}.classic
 EXEC_CARBON = :debug:{EXEC}.carbon
 
 # build "universal" plugin with both Classic and Carbon binaries in one file 
-{EXEC_UNI} ÄÄ {EXEC_CARBON} {EXEC_CLASSIC} universal.r pipl_common.r version.h
+{EXEC_UNI} ÄÄ {EXEC_CARBON} {EXEC_CLASSIC} PiPL_universal.r PiPL_common.r version.h
 	catenate {EXEC_CARBON} {EXEC_CLASSIC} > temp && duplicate -y -d temp {EXEC_UNI} # copy just data fork, without junk resources
 	ls -x b {EXEC_CARBON} {EXEC_CLASSIC} > temp
 	target temp
@@ -108,7 +108,7 @@ EXEC_CARBON = :debug:{EXEC}.carbon
 	find /[0-9]+/ && set CARBON_LENGTH `catenate "{target}".¤`
 	find /[0-9]+/ && set CLASSIC_LENGTH `catenate "{target}".¤`
 	close
-	Rez universal.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}  ¶
+	Rez PiPL_universal.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}  ¶
 		-d CARBON_LENGTH={CARBON_LENGTH} -d CLASSIC_LENGTH={CLASSIC_LENGTH}
 
 {EXEC} Ä {EXEC_UNI}
@@ -168,10 +168,10 @@ REZOPTS = -a -s : -d SystemSevenOrLater=1
 	Link -o {TARG} -t 'rsrc' -c 'RSED' -sg {EXEC} -rt {PLUGINTYPE}=16000 -m MAIN {OBJ_68K} {LIBS_68K}
 	rezdet -l {targ}
 
-{EXEC_CLASSIC} ÄÄ classic.r pipl_common.r version.h {PLUGIN68K}
-	Rez classic.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}  {BUILD68K}
-{EXEC_CARBON} ÄÄ carbon.r pipl_common.r version.h
-	Rez carbon.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS} 
+{EXEC_CLASSIC} ÄÄ PiPL_classic.r PiPL_common.r version.h {PLUGIN68K}
+	Rez PiPL_classic.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}  {BUILD68K}
+{EXEC_CARBON} ÄÄ PiPL_carbon.r PiPL_common.r version.h
+	Rez PiPL_carbon.r -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS} 
 
 {EXEC_CLASSIC} ÄÄ {REZFILES} ui.h version.h 
 	Rez {REZFILES} -o {Targ} {FILETYPE} {REZHEADERS} {REZOPTS}

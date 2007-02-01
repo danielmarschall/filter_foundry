@@ -33,8 +33,7 @@ resource 'PiPL' (16000, purgeable)
 		Name { "Filter Foundry…" },
 		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 #include "pipl_common.r"
-		CodePowerPCbundle { 0, CARBON_LENGTH, "" },
-		CodePowerPC { CARBON_LENGTH, CLASSIC_LENGTH, "" },
+		CodeCarbonPowerPC { 0, 0, "" },
 	}
 };
 
@@ -43,11 +42,10 @@ resource 'DATA' (16000, purgeable)
 {
 	{
 #include "pipl_common.r"
-		CodePowerPCbundle { 0, CARBON_LENGTH, "" },
-		CodePowerPC { CARBON_LENGTH, CLASSIC_LENGTH, "" },
+		CodeCarbonPowerPC { 0, 0, "" },
 	}
 };
 
 resource 'vers' (1){
-	VERS_RSRC " (Carbon/Classic)"
+	VERS_RSRC " (Carbon)"
 };

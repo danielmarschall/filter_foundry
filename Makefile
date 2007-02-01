@@ -25,6 +25,8 @@
 
 EXEC = FilterFoundry
 
+VERSION = $(shell perl -n -e 'm/^.*VERSION_STR[[:blank:]]+\"([^"]*)\"/ && print $$1;' version.h)
+
 MINGW_CC = i386-mingw32msvc-gcc
 DLLWRAP  = i386-mingw32msvc-dllwrap
 WINDRES  = i386-mingw32msvc-windres
@@ -68,6 +70,8 @@ OBJ_W32 := $(patsubst %.c, obj_w32/%.o, $(SRC_COMMON) $(SRC_W32)) obj_w32/res.o
 BUNDLE = $(EXEC)_cs2.plugin
 PLUGIN_OSX  = $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLUGIN_RSRC = $(BUNDLE)/Contents/Resources/$(EXEC).rsrc
+PLUGIN_PARTS = $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist $(BUNDLE)/Contents/PkgInfo
+DISTDMG = dist/$(EXEC)-$(VERSION)-mac_cs2.dmg
 
 $(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -Dmacintosh \
 	-I/Developer/Headers/FlatCarbon \
@@ -75,7 +79,7 @@ $(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -Dmacintosh \
 
 # Win32 plugin DLL to build
 PLUGIN_W32 = $(EXEC).8bf
-DISTARCHIVE = dist/$(EXEC)-win.zip
+DISTZIP = dist/$(EXEC)-$(VERSION)-win.zip
 
 $(PLUGIN_W32) : CPPFLAGS += -DWIN_ENV
 
@@ -97,7 +101,6 @@ fat : REZFLAGS += -arch ppc -arch i386
 $(BUNDLE) :
 	mkdir -p $@
 	/Developer/Tools/SetFile -a B $@
-	/Developer/Tools/SetFile -t TEXT -c ttxt dist/examples/*.afs
 
 # insert correct executable name and version string in bundle's Info.plist
 $(BUNDLE)/Contents/Info.plist : Info.plist $(BUNDLE) version.h
@@ -114,9 +117,23 @@ clean :
 	       gentab trigtab.c lex.yy.[ch] y.tab.[ch] temp
 
 
-dist : $(DISTARCHIVE)
+dmg : $(DISTDMG)
 
-$(DISTARCHIVE) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.afs
+# create an Apple disk image (dmg) archive of the distribution kit
+$(DISTDMG) : $(PLUGIN_PARTS) dist/README.html dist/gpl.html
+	@ DIR=`mktemp -d $(EXEC)-XXXX`; \
+	cp -Rp dist/README.html dist/gpl.html $(BUNDLE) $$DIR; \
+	mkdir -p $$DIR/examples; \
+	cp dist/examples/*.afs $$DIR/examples; \
+	/Developer/Tools/SetFile -t TEXT -c ttxt $$DIR/examples/*; \
+	hdiutil create -srcfolder $$DIR -ov -volname "$(EXEC) $(VERSION)" $@; \
+	rm -fr $$DIR
+	@ ls -l $@
+
+
+zip : $(DISTZIP)
+
+$(DISTZIP) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.afs
 	zip -j -9 -r $@ $^
 	ls -l $@
 
