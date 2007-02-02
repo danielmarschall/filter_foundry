@@ -42,27 +42,45 @@
 extern value_type slider[],cell[],var[],map[][0x100];
 extern unsigned char *image_ptr;
 
-/* src(x,y,z) Channel z for the pixel at coordinates x,y */
-value_type ff_src(value_type x,value_type y,value_type z){
+/* Channel z for the input pixel at coordinates x,y.
+ * Coordinates are relative to passed base pointer; row stride and
+ * channel count is that of Photoshop's passed input buffer. */
+value_type rawsrc(value_type x,value_type y,value_type z){
 #ifdef PARSERTEST
 	return 0;
 #else
-	if(x<0) 
-		x = 0;
-	else if(x>=var['X']) 
-		x = var['X']-1;
-	if(y<0) 
-		y = 0;
-	else if(y>=var['Y']) 
-		y = var['Y']-1;
-	return z>=0 && z<var['Z'] ? image_ptr[ (long)gpb->inRowBytes*y + (long)nplanes*x + z ] : 0;
+	if(x < gpb->inRect.left) 
+		x = gpb->inRect.left;
+	else if(x >= gpb->inRect.right) 
+		x = gpb->inRect.right-1;
+	if(y < gpb->inRect.top) 
+		y = gpb->inRect.top;
+	else if(y >= gpb->inRect.bottom) 
+		y = gpb->inRect.bottom-1;
+	return ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*(y-gpb->inRect.top)
+										  + (long)nplanes*(x-gpb->inRect.left) + z ];
 #endif
 }
 
-/* rad(d,m,z) Channel z in the source image, which is m units away, at an
-	angle of d, from the center of the image */
+/* src(x,y,z) Channel z for the pixel at coordinates x,y.
+ * Coordinates are relative to filtered area (selection). */
+value_type ff_src(value_type x,value_type y,value_type z){
+	if(x < 0) 
+		x = 0;
+	else if(x >= var['X']) 
+		x = var['X']-1;
+	if(y < 0) 
+		y = 0;
+	else if(y >= var['Y']) 
+		y = var['Y']-1;
+	return z >= 0 && z < var['Z'] ?
+		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
+}
+
+/* rad(d,m,z) Channel z in the source image, which is m units away,
+	at an angle of d, from the center of the image */
 value_type ff_rad(value_type d,value_type m,value_type z){
-	return ff_src(ff_r2x(d,m)+var['X']/2,ff_r2y(d,m)+var['Y']/2,z);
+	return ff_src(ff_r2x(d,m) + var['X']/2, ff_r2y(d,m) + var['Y']/2, z);
 }
 
 /* ctl(i) Value of slider i, where i is an integer between 0 and 7, inclusive */
@@ -235,31 +253,20 @@ value_type ff_put(value_type v,value_type i){
 value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m21,value_type m22,value_type m23,
 				  value_type m31,value_type m32,value_type m33,
-				  value_type d ){
-	long total = 0;
-	int x=var['x'],y=var['y'];
-	unsigned char *p = image_ptr + y*(long)gpb->inRowBytes + (x-1)*(long)nplanes + var['z'];
-	
-	/* left column */
-	if(x > 0){
-		if(y > 0) total += m11*p[ -gpb->inRowBytes ];
-		total += m21*p[ 0 ];
-		if(y < var['Y']-1) total += m31*p[ gpb->inRowBytes ];
-	}
+				  value_type d)
+{
+	long total;
+	// shift x,y from selection-relative to image relative
+	int x = var['x'] + gpb->filterRect.left,
+		y = var['y'] + gpb->filterRect.top,
+		z = var['z'];
 
-	/* centre column */
-	p += nplanes;
-	if(y > 0) total += m12*p[ -gpb->inRowBytes ];
-	total += m22*p[ 0 ];
-	if(y < var['Y']-1) total += m32*p[ gpb->inRowBytes ];
-
-	/* right column */
-	if(x < var['X']-1){
-		p += nplanes;
-		if(y > 0) total += m13*p[ -gpb->inRowBytes ];
-		total += m23*p[ 0 ];
-		if(y < var['Y']-1) total += m33*p[ gpb->inRowBytes ];
-	}
+	if(z >= 0 && z < var['Z'])
+		total = m11*rawsrc(x-1,y-1,z) + m12*rawsrc(x,y-1,z) + m13*rawsrc(x+1,y-1,z)
+			  + m21*rawsrc(x-1,y,  z) + m22*rawsrc(x,y,  z) + m23*rawsrc(x+1,y,  z)
+			  + m31*rawsrc(x-1,y+1,z) + m32*rawsrc(x,y+1,z) + m33*rawsrc(x+1,y+1,z);
+	else
+		total = 0;
 
 	return d ? total/d : 0;
 }

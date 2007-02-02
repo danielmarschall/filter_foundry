@@ -28,20 +28,20 @@
 
 struct node *tree[4];
 char *err[4];
-int errpos[4],errstart[4],nplanes,srcradused,chunksize,toprow;
+int errpos[4],errstart[4],nplanes,cnvused,srcradused,chunksize,toprow;
 value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4],*defaultexpr[]={"r","g","b","a"};
 long maxSpace;
+globals_t *gdata;
+FilterRecordPtr gpb;
 
 #ifdef MAC_ENV
 	#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
 extern struct sym_rec predefs[];
-extern int nplanes,varused[],srcradused;
+extern int nplanes,varused[];
 
-globals_t *gdata;
-FilterRecordPtr gpb;
 
 int checkandinitparams(Handle params);
 
@@ -179,6 +179,18 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 		pb->inRect.right = pb->filterRect.right;
 		pb->inRect.top = toprow;
 		pb->inRect.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
+		
+		if(cnvused){
+			// cnv() needs one extra pixel in each direction
+			if(pb->inRect.left > 0)
+				--pb->inRect.left;
+			if(pb->inRect.right < pb->imageSize.h)
+				++pb->inRect.right;
+			if(pb->inRect.top > 0)
+				--pb->inRect.top;
+			if(pb->inRect.bottom < pb->imageSize.v)
+				++pb->inRect.bottom;
+		}
 	}
 	pb->outRect = pb->filterRect;
 /*
@@ -200,13 +212,26 @@ void DoStart(FilterRecordPtr pb){
 
 OSErr DoContinue(FilterRecordPtr pb){
 	OSErr e = noErr;
-	Rect *fr = srcradused ? &pb->filterRect : &pb->inRect;
-	long outoffset = (long)pb->outRowBytes*(fr->top - pb->outRect.top) 
-				  	 + (long)nplanes*(fr->left - pb->outRect.left);
+	Rect fr;
+	long outoffset;
 
-//	{char s[0x100];sprintf(s,"DoContinue: outoffset=%d\n",outoffset);dbg(s);}
-	
-	if(!(e = process_scaled(pb, true, fr, fr,
+	if(srcradused)
+		fr = pb->filterRect;  // filter whole selection at once
+	else if(cnvused){
+		// we've requested one pixel extra all around
+		// (see RequestNext()), just for access purposes. But filter
+		// original selection only.
+		fr.left = pb->filterRect.left;
+		fr.right = pb->filterRect.right;
+		fr.top = toprow;
+		fr.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
+	}else  // filter whatever portion we've been given
+		fr = pb->inRect;
+
+	outoffset = (long)pb->outRowBytes*(fr.top - pb->outRect.top) 
+				+ (long)nplanes*(fr.left - pb->outRect.left);
+
+	if(!(e = process_scaled(pb, true, &fr, &fr,
 				(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.)))
 	{
 		toprow += chunksize;

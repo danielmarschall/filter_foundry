@@ -24,7 +24,7 @@
 #include "y.tab.h"
 
 extern value_type var[];
-extern int nplanes,varused[],srcradused;
+extern int nplanes,varused[],cnvused,srcradused;
 extern struct node *tree[];
 
 // points to first row, first column of selection image data
@@ -49,18 +49,19 @@ Boolean setup(FilterRecordPtr pb){
 	var['M'] = ff_c2m(var['X'],var['Y'])/2;
 
 	/* initialise flags for tracking special variable usage */
-	for( i=0 ; i<0x100 ; i++ )
+	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;
-	srcradused = 0;
-	for(i=0;i<nplanes;++i){
+	srcradused = cnvused = 0;
+	for(i = 0; i < nplanes; ++i){
 //char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
-		if( tree[i] || ( tree[i] = parseexpr(expr[i]) ) )
-			checkvars(tree[i],varused,&srcradused);
+		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
+			checkvars(tree[i],varused,&cnvused,&srcradused);
 		else
 			break;
 	}
-	needinput = (srcradused || varused['r'] || varused['g'] || varused['b'] || varused['a']
-							|| varused['i'] || varused['u'] || varused['v'] || varused['c']) ;
+	needinput = ( cnvused || srcradused
+		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
+		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
 
 	return i==nplanes; /* all required expressions parse OK */
 }

@@ -211,18 +211,19 @@ void freetree(struct node *root){
 
 /* tabulate usage of special variables, or any invocations of src()/rad()/cnv(), in the tree */
 
-void checkvars(struct node*p,int f[],int *srcrad /* ,int *mapused */ ){
+void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */ ){
 	int i;
 	
 	if(p){
 		if(p->kind==TOK_SPECIALVAR)
 			f[p->v.specialvar] = 1;
-		else if( (p->kind==TOK_FN3 && (p->v.sym->fn == (pfunc_type)ff_src || p->v.sym->fn == (pfunc_type)ff_rad ) )
-			  || (p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv) )
+		else if(p->kind==TOK_FN3 && (p->v.sym->fn == (pfunc_type)ff_src || p->v.sym->fn == (pfunc_type)ff_rad))
 			*srcrad = 1;
+		else if(p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv)
+			*cnv = 1;
 //		else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map))
 //			*mapused = 1;
 		for( i = 0 ; i < MAXCHILDREN ; ++i )
-			checkvars(p->child[i],f,srcrad);
+			checkvars(p->child[i],f,cnv,srcrad);
 	}
 }

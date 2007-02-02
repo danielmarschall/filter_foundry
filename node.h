@@ -47,6 +47,6 @@ void freeallnodes();
 void dumptree(struct node *root,int level);
 value_type eval(struct node *root);
 void freetree(struct node*);
-void checkvars(struct node*p,int varflags[],int *srcrad);
+void checkvars(struct node*p,int varflags[],int *cnv,int *srcrad);
 
 #endif
