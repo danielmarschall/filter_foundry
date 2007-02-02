@@ -155,45 +155,45 @@ obj_w32/%.o : %.c
 obj_w32/res.o : win_res.rc PiPL.rc PiPL_body.rc ui_win.rc caution.ico ui.h version.h
 	$(WINDRES) -o $@ -i $< --language=0 $(CPPFLAGS)
 
-lex.yy.c : lexer.l y.tab.c
+lex.yy.c : lexer.l y.tab.h
 	$(LEX) $<
-y.tab.c : parser.y
+y.tab.c y.tab.h : parser.y
 	$(YACC) $< $(YFLAGS)
 
-obj_w32/funcs.o : ff.h funcs.h symtab.h ui.h PARM.h y.tab.c
-obj_w32/lex.yy.o : node.h symtab.h y.tab.c
+obj_w32/funcs.o : ff.h funcs.h symtab.h ui.h PARM.h y.tab.h
+obj_w32/lex.yy.o : node.h symtab.h y.tab.h
 obj_w32/load_win.o : ff.h funcs.h symtab.h ui.h PARM.h
-obj_w32/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.c 
+obj_w32/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj_w32/make.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/make_win.o : ff.h funcs.h symtab.h ui.h PARM.h
-obj_w32/node.o : node.h y.tab.c funcs.h symtab.h ui.h PARM.h
-obj_w32/y.tab.o : node.h y.tab.c
-obj_w32/preview.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
-obj_w32/process.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
+obj_w32/node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h
+obj_w32/y.tab.o : node.h y.tab.h
+obj_w32/preview.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
+obj_w32/process.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj_w32/read.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/save.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/scripting.o : ff.h funcs.h symtab.h ui.h PARM.h scripting.h
 obj_w32/symtab.o : symtab.h
-obj_w32/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
+obj_w32/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj_w32/ui_build.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/ui_build_win.o : ff.h funcs.h symtab.h ui.h PARM.h version.h
 obj_w32/ui_win.o : ff.h funcs.h symtab.h ui.h PARM.h version.h
 
-obj/funcs.o : ff.h funcs.h symtab.h ui.h PARM.h y.tab.c
-obj/lex.yy.o : node.h symtab.h y.tab.c
+obj/funcs.o : ff.h funcs.h symtab.h ui.h PARM.h y.tab.h
+obj/lex.yy.o : node.h symtab.h y.tab.h
 obj/load_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
-obj/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.c 
+obj/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj/make.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/make_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
-obj/node.o : node.h y.tab.c funcs.h symtab.h ui.h PARM.h
-obj/y.tab.o : node.h y.tab.c
-obj/preview.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
-obj/process.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
+obj/node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h
+obj/y.tab.o : node.h symtab.h y.tab.h
+obj/preview.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
+obj/process.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj/read.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/save.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/scripting.o : ff.h funcs.h symtab.h ui.h PARM.h scripting.h
 obj/symtab.o : symtab.h
-obj/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.c
+obj/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj/ui_build.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/ui_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
 
