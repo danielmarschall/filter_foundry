@@ -1,0 +1,137 @@
+AUTHOR: "Daniel Denk" <djdenk@gmail.com>
+
+REVISION DATE: 2007-02-11
+PREVIOUS DATE: N/A
+
+SYNOPSIS:
+
+	Filter Foundry development wishlist.
+
+
+DESCRIPTION:
+
+	  Compile a list of development needs to establish a finalized
+	version of Filter Foundry, and to improve or expand on its
+	current capabilities as a viable option to plugin development
+	without the requirement of complicated programming languages.
+
+
+CURRENT VERSION TESTING:
+
+	1.4 beta 5 (1.4b5)
+
+
+
+IMPROVEMENTS/BUGS:
+
+	* Convolutions 'cnv()' function was radically improved allowing
+	  for entire image processing without a one pixel border limitation
+	  in previous versions. (Resolved from previous communication.)
+
+	* -1 pixel offset compensation when tiling appears to be eliminated,
+	  as was typical with Filter Factory and code requirements. This is
+	  a value-added development, but mysterious in how it effects the
+	  other processing functions. (Evaluate code and test?)
+
+
+
+PRIORITY NEEDS:
+
+	* Establish processing fixes/bugs where needed. One example is
+	  imcompatibility with former Filter Factory scripts not working
+	  properly [ie: Simple Tile tools, repeating edge problem].
+
+	  (If a documentation issue based on processing changes, then
+	  documentation required for the updated code structure.)
+
+	* Control captions currently not being applied in compiled plugins.
+
+	* Obfuscation or hiding of PARM source in compiled binary .8bf.
+
+	  (Prefered as a checkbox option in the Make dialogue, or include
+	  with the 'Protect' option already established.)
+
+	* Make additional captions optional (Copyright, Author, etc.)
+	  (Don't place box in dialogue at all if nothing entered.)
+
+	* Fix compiled plugin dialogue to read the filter's name.
+	  [ie: CAPTION "Filters Name Goes Here"]
+	  Currently defaults to "Filter Foundry"
+
+	* Determine if all default CONTROLs can read STATIC and not "Static"?
+	  (Noticed in ResHacker when editing a dialogue - ResHacker automatically
+	  Compiles Script to read STATIC, and extracts the additional 001fxx types.)
+
+	* Add a checkbox option to Preview image adjustment in real-time, and
+	  possibly allow being able to scroll through the main image window.
+	  [Like native Photoshop plugins.]
+
+
+
+DEVELOPMENT PROPOSALS (Future Development / Expansion):
+
+	* Support all Photoshop color spaces, RGB, Grayscale, CMYK, and LaB.
+
+	* Multi-channel support (Being able to process all channels, regardless
+	  of color-space). [ie: If additional channels are loaded, then 4 channels
+	  will have their own space for code. - Red, Green, Blue, Alpha1, etc, A]
+
+	* Add options for Levels display (to be able to see what any adjustment
+	  does to the histogram in real-time).
+
+	* Consider a dialogue editor while building plugins, instead of automatic
+	  captions / labeling - a la ResHacker dialogue editor.
+
+	  (This would fully surpass the traditional Filter Factory dialogue and
+	  produce something more flexible and unique, but with the same or
+	  current coding environment established in Filter Foundry.)
+
+	* Consider expanding on code, to include support for alpha blending to
+	  blend pixels together. [ie: If making a seamless tile, then code in
+	  the blend amount between pixels that overlap]
+
+	  (This would take Filter Foundry to the next level beyond what Filter
+	  Factory had established, by allowing an additional range of options
+	  to explore in filter creation.) - If this is possible.
+
+	  'alph()' function? Similar to the scl() or mix() functions?
+
+
+
+
+
+
+
+
+
+ACKNOWLEDGEMENTS:
+
+* Simple Tile Tools - http://www.btinternet.com/~cateran/simple/
+  (Used as a test source to test current status of continuity
+  with Filter Factory compatibilities.)
+
+
+
+
+LICENSE NOTIFICATION:
+
+  This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+Copyright (C) 2003-2007 Toby Thain, toby@telegraphics.com.au
+
+  This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+along with this program; if not, write to:
+
+	Free Software Foundation, Inc.
+	59 Temple Place, Suite 330
+	Boston, MA  02111-1307  USA
+
