@@ -2,6 +2,7 @@ AUTHOR: "Daniel Denk" <djdenk@gmail.com>
 
 REVISION DATE: 2007-02-11
 PREVIOUS DATE: N/A
+Revision: 2
 
 SYNOPSIS:
 
@@ -33,9 +34,16 @@ IMPROVEMENTS/BUGS:
 	  a value-added development, but mysterious in how it effects the
 	  other processing functions. (Evaluate code and test?)
 
+		*** See examples of comparison between Filter Factory
+		code from the FF manual and revised code eliminating
+		the -1 pixel offset.
+
 
 
 PRIORITY NEEDS:
+
+	* Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
+	  Currently uppercase.
 
 	* Establish processing fixes/bugs where needed. One example is
 	  imcompatibility with former Filter Factory scripts not working
@@ -43,6 +51,8 @@ PRIORITY NEEDS:
 
 	  (If a documentation issue based on processing changes, then
 	  documentation required for the updated code structure.)
+
+		*** See examples provided.
 
 	* Control captions currently not being applied in compiled plugins.
 
@@ -62,9 +72,13 @@ PRIORITY NEEDS:
 	  (Noticed in ResHacker when editing a dialogue - ResHacker automatically
 	  Compiles Script to read STATIC, and extracts the additional 001fxx types.)
 
+	----------------------------------------------------------------------------
+
 	* Add a checkbox option to Preview image adjustment in real-time, and
 	  possibly allow being able to scroll through the main image window.
 	  [Like native Photoshop plugins.]
+
+		*** Deprecated due to lack of support from SDK. ***
 
 
 
@@ -79,12 +93,15 @@ DEVELOPMENT PROPOSALS (Future Development / Expansion):
 	* Add options for Levels display (to be able to see what any adjustment
 	  does to the histogram in real-time).
 
+	----------------------------------------------------------------------------
+
 	* Consider a dialogue editor while building plugins, instead of automatic
 	  captions / labeling - a la ResHacker dialogue editor.
 
 	  (This would fully surpass the traditional Filter Factory dialogue and
 	  produce something more flexible and unique, but with the same or
 	  current coding environment established in Filter Foundry.)
+
 
 	* Consider expanding on code, to include support for alpha blending to
 	  blend pixels together. [ie: If making a seamless tile, then code in
@@ -95,6 +112,9 @@ DEVELOPMENT PROPOSALS (Future Development / Expansion):
 	  to explore in filter creation.) - If this is possible.
 
 	  'alph()' function? Similar to the scl() or mix() functions?
+
+		***** Discussed optional coding language - not recommended for the
+		current needs of Filter Foundry. *****
 
 
 
