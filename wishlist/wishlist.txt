@@ -1,8 +1,5 @@
 AUTHOR: "Daniel Denk" <djdenk@gmail.com>
 
-REVISION DATE: 2007-02-11
-PREVIOUS DATE: N/A
-Revision: 2
 
 SYNOPSIS:
 
@@ -42,11 +39,11 @@ IMPROVEMENTS/BUGS:
 
 PRIORITY NEEDS:
 
-	* Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
+	1. Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
 	  Currently uppercase.
 
-	* Establish processing fixes/bugs where needed. One example is
-	  imcompatibility with former Filter Factory scripts not working
+	2. Establish processing fixes/bugs where needed. One example is
+	  incompatibility with former Filter Factory scripts not working
 	  properly [ie: Simple Tile tools, repeating edge problem].
 
 	  (If a documentation issue based on processing changes, then
@@ -54,27 +51,27 @@ PRIORITY NEEDS:
 
 		*** See examples provided.
 
-	* Control captions currently not being applied in compiled plugins.
+	3. Control captions currently not being applied in compiled plugins.
 
-	* Obfuscation or hiding of PARM source in compiled binary .8bf.
+	4. Obfuscation or hiding of PARM source in compiled binary .8bf.
 
 	  (Prefered as a checkbox option in the Make dialogue, or include
 	  with the 'Protect' option already established.)
 
-	* Make additional captions optional (Copyright, Author, etc.)
+	5. Make additional captions optional (Copyright, Author, etc.)
 	  (Don't place box in dialogue at all if nothing entered.)
 
-	* Fix compiled plugin dialogue to read the filter's name.
+	6. Fix compiled plugin dialogue to read the filter's name.
 	  [ie: CAPTION "Filters Name Goes Here"]
 	  Currently defaults to "Filter Foundry"
 
-	* Determine if all default CONTROLs can read STATIC and not "Static"?
+	7. Determine if all default CONTROLs can read STATIC and not "Static"?
 	  (Noticed in ResHacker when editing a dialogue - ResHacker automatically
 	  Compiles Script to read STATIC, and extracts the additional 001fxx types.)
 
 	----------------------------------------------------------------------------
 
-	* Add a checkbox option to Preview image adjustment in real-time, and
+	8. Add a checkbox option to Preview image adjustment in real-time, and
 	  possibly allow being able to scroll through the main image window.
 	  [Like native Photoshop plugins.]
 
@@ -84,18 +81,18 @@ PRIORITY NEEDS:
 
 DEVELOPMENT PROPOSALS (Future Development / Expansion):
 
-	* Support all Photoshop color spaces, RGB, Grayscale, CMYK, and LaB.
+	1. Support all Photoshop color spaces, RGB, Grayscale, CMYK, and LaB.
 
-	* Multi-channel support (Being able to process all channels, regardless
+	2. Multi-channel support (Being able to process all channels, regardless
 	  of color-space). [ie: If additional channels are loaded, then 4 channels
 	  will have their own space for code. - Red, Green, Blue, Alpha1, etc, A]
 
-	* Add options for Levels display (to be able to see what any adjustment
+	3. Add options for Levels display (to be able to see what any adjustment
 	  does to the histogram in real-time).
 
 	----------------------------------------------------------------------------
 
-	* Consider a dialogue editor while building plugins, instead of automatic
+	4. Consider a dialogue editor while building plugins, instead of automatic
 	  captions / labeling - a la ResHacker dialogue editor.
 
 	  (This would fully surpass the traditional Filter Factory dialogue and
@@ -103,7 +100,7 @@ DEVELOPMENT PROPOSALS (Future Development / Expansion):
 	  current coding environment established in Filter Foundry.)
 
 
-	* Consider expanding on code, to include support for alpha blending to
+	5. Consider expanding on code, to include support for alpha blending to
 	  blend pixels together. [ie: If making a seamless tile, then code in
 	  the blend amount between pixels that overlap]
 
