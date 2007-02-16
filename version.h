@@ -87,15 +87,16 @@
 01-Feb-2007: 1.4b3 - in cnv(), repeat pixels at edge of image, instead of using zero (reported by Daniel Denk)
              1.4b4 - cnv() no longer requests entire filtered image in one piece; can now work in chunks
                      improve the handling of edge pixels when filtering selection
+02-Feb-2007: 1.4b5 - minor changes to image sampling logic (ff_src(), rawsrc())
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.4b4"
-#define VERSION_NUM 1,0x40,beta,4
+#define VERSION_STR "1.4b5"
+#define VERSION_NUM 1,0x40,beta,5
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,4,0,4
+#define VI_VERS_NUM 1,4,0,5
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

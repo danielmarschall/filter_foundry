@@ -43,12 +43,8 @@ extern value_type slider[],cell[],var[],map[][0x100];
 extern unsigned char *image_ptr;
 
 /* Channel z for the input pixel at coordinates x,y.
- * Coordinates are relative to passed base pointer; row stride and
- * channel count is that of Photoshop's passed input buffer. */
+ * Coordinates are relative to the input image data (pb->inData) */
 value_type rawsrc(value_type x,value_type y,value_type z){
-#ifdef PARSERTEST
-	return 0;
-#else
 	if(x < gpb->inRect.left) 
 		x = gpb->inRect.left;
 	else if(x >= gpb->inRect.right) 
@@ -57,14 +53,16 @@ value_type rawsrc(value_type x,value_type y,value_type z){
 		y = gpb->inRect.top;
 	else if(y >= gpb->inRect.bottom) 
 		y = gpb->inRect.bottom-1;
-	return ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*(y-gpb->inRect.top)
-										  + (long)nplanes*(x-gpb->inRect.left) + z ];
-#endif
+	return ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*(y - gpb->inRect.top)
+										  + (long)nplanes*(x - gpb->inRect.left) + z ];
 }
 
 /* src(x,y,z) Channel z for the pixel at coordinates x,y.
  * Coordinates are relative to filtered area (selection). */
 value_type ff_src(value_type x,value_type y,value_type z){
+#ifdef PARSERTEST
+	return 0;
+#else
 	if(x < 0) 
 		x = 0;
 	else if(x >= var['X']) 
@@ -75,6 +73,7 @@ value_type ff_src(value_type x,value_type y,value_type z){
 		y = var['Y']-1;
 	return z >= 0 && z < var['Z'] ?
 		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
+#endif
 }
 
 /* rad(d,m,z) Channel z in the source image, which is m units away,
@@ -255,6 +254,9 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m31,value_type m32,value_type m33,
 				  value_type d)
 {
+#ifdef PARSERTEST
+	return 0;
+#else
 	long total;
 	// shift x,y from selection-relative to image relative
 	int x = var['x'] + gpb->filterRect.left,
@@ -269,6 +271,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 		total = 0;
 
 	return d ? total/d : 0;
+#endif
 }
 
 value_type zero_val = 0;

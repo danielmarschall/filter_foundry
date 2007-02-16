@@ -136,7 +136,8 @@ left row offset = %d\n",
 		return userCanceledErr;
 	}else
 		// find base pointer to selection image data
-		image_ptr = (unsigned char*)pb->inData + (long)pb->inRowBytes*(pb->filterRect.top - pb->inRect.top)
+		image_ptr = (unsigned char*)pb->inData
+					+ (long)pb->inRowBytes*(pb->filterRect.top - pb->inRect.top)
 					+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
 
 		// j indexes scaled output rows
@@ -144,9 +145,7 @@ left row offset = %d\n",
 			 j < outPiece->bottom ; ++j, outrow += outRowBytes, y += zoom )
 		{
 			var['y'] = y;  // index of corresponding *input* row, top of selection == 0
-			inrow = (unsigned char*)pb->inData
-					+ ((long)y + pb->filterRect.top - pb->inRect.top)*pb->inRowBytes
-					+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
+			inrow = image_ptr + (long)y*pb->inRowBytes;
 
 			// i indexes scaled output columns
 			for( outp = outrow, i = outPiece->left, x = filterPiece->left - pb->filterRect.left ;
