@@ -44,7 +44,7 @@ extern unsigned char *image_ptr;
 
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
-value_type rawsrc(value_type x,value_type y,value_type z){
+static value_type rawsrc(value_type x,value_type y,value_type z){
 	if(x < gpb->inRect.left) 
 		x = gpb->inRect.left;
 	else if(x >= gpb->inRect.right) 
