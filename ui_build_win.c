@@ -17,8 +17,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* Win32 user interface routines 
-   Copyright (C) 2003-5 Toby Thain <toby@telegraphics.com.au> */
+/* Win32 user interface routines */
 
 #include "world.h"
 

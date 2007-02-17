@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -65,18 +65,20 @@ void updatedialog(DIALOGREF dp){
 
 	doupdates = false;
 
-	for( i=0 ; i<8 ; ++i ){
+	for(i = 0; i < 8; ++i){
 		SETSLIDERVALUE(dp,FIRSTCTLITEM+i,slider[i]);
 		SETCTLTEXTINT(dp,FIRSTCTLTEXTITEM+i,slider[i],false);
 	}
 
-	for( i=0 ; i<4 ; ++i ){
-		if(!gdata->standalone) SETCTLTEXT(dp,FIRSTEXPRITEM+i,expr[i] ? expr[i] : "oups! expr[i] is nil!");
-		if(i<nplanes) 
+	for(i = 0; i < 4; ++i){
+		if(!gdata->standalone)
+			SETCTLTEXT(dp,FIRSTEXPRITEM+i,expr[i] ? expr[i] : "");
+		if(i < nplanes) 
 			updateexpr(dp,FIRSTEXPRITEM+i);
 	}
 
-	if(!gdata->standalone) SELECTCTLTEXT(dp,FIRSTEXPRITEM,0,-1);
+	if(!gdata->standalone)
+		SELECTCTLTEXT(dp,FIRSTEXPRITEM,0,-1);
 
 	doupdates = true;
 }
@@ -87,11 +89,11 @@ void updateglobals(DIALOGREF dp){
 	int i;
 	char s[MAXEXPR+1];
 
-	for( i=0 ; i<8 ; ++i )
+	for(i = 0; i < 8; ++i)
 		slider[i] = GETSLIDERVALUE(dp,FIRSTCTLITEM+i);
 
 	if(!gdata->standalone)
-		for( i=0 ; i<4 ; ++i ){
+		for(i = 0; i < 4; ++i){
 			/* stash expression strings */
 			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){
 				if(expr[i]) 
@@ -141,16 +143,23 @@ void updatezoom(DIALOGREF dp){
 	*q++ = '%';
 	*q = 0;
 	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
-	zoomfactor > 1. ? ShowDialogItem(dp,ZOOMINITEM) : HideDialogItem(dp,ZOOMINITEM);
-	zoomfactor < fitzoom ? ShowDialogItem(dp,ZOOMOUTITEM) : HideDialogItem(dp,ZOOMOUTITEM);
+	if(zoomfactor > 1.)
+		ShowDialogItem(dp,ZOOMINITEM);
+	else
+		HideDialogItem(dp,ZOOMINITEM);
+	if(zoomfactor < fitzoom)
+		ShowDialogItem(dp,ZOOMOUTITEM);
+	else
+		HideDialogItem(dp,ZOOMOUTITEM);
 }
 
 /* traverse expression tree, looking for constant references to sliders */
 
 int checksl(struct node*p,int ctlflags[],int mapflags[]);
 int checksl(struct node*p,int ctlflags[],int mapflags[]){
+	int s;
+
 	if(p){
-		int s;
 		if( (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_ctl)
 		 || (p->kind==TOK_FN3 && p->v.sym->fn == (pfunc_type)ff_val) ){
 			if(p->child[0]->kind == TOK_NUM){
@@ -159,7 +168,7 @@ int checksl(struct node*p,int ctlflags[],int mapflags[]){
 					ctlflags[s] = 1;
 			}else 
 				return true; /* can't determine which ctl() */
-		}else if( p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map ){
+		}else if(p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map){
 			if(p->child[0]->kind == TOK_NUM){
 				s = p->child[0]->v.value;
 				if(s>=0 && s<=3){
@@ -181,12 +190,12 @@ int checksl(struct node*p,int ctlflags[],int mapflags[]){
 Boolean checksliders(int exprs,int ctlflags[],int mapflags[]){
 	int i,f = false;
 
-	for(i=4;i--;)
+	for(i = 4; i--;)
 		mapflags[i] = 0;
-	for(i=8;i--;)
+	for(i = 8; i--;)
 		ctlflags[i] = 0;
 
-	for(i=0;i<exprs;i++)
+	for(i = 0; i < exprs; i++)
 		if(checksl(tree[i],ctlflags,mapflags))
 			f = true;
 
@@ -212,7 +221,7 @@ void maindlgupdate(DIALOGREF dp){
 
 	unknown = checksliders(nplanes,ctls,maps);
 
-	for(i=0;i<8;i++)
+	for(i = 0; i < 8; i++)
 		if(unknown || ctls[i]){
 			ENABLEDLGITEM(dp,FIRSTCTLITEM+i);
 			ShowDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
@@ -221,7 +230,7 @@ void maindlgupdate(DIALOGREF dp){
 			HideDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}
 
-	for( i=0 ; i<nplanes ; i++ )
+	for(i = 0; i < nplanes; i++)
 		if(!tree[i]){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
@@ -254,18 +263,22 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
-		myp2cstrcpy(s,gdata->parm.author); SetDlgItemText(dp,PARAMAUTHORITEM,s);
-		myp2cstrcpy(s,gdata->parm.copyright); SetDlgItemText(dp,PARAMCOPYITEM,s);
+		myp2cstrcpy(s,gdata->parm.author);
+		SetDlgItemText(dp,PARAMAUTHORITEM,s);
+		myp2cstrcpy(s,gdata->parm.copyright);
+		SetDlgItemText(dp,PARAMCOPYITEM,s);
 		
 		// update labels for map() or ctl() sliders
-		for(i=0;i<8;++i){
+		for(i = 0; i < 8; ++i){
 			if(gdata->parm.ctl_used[i]){
-				myp2cstrcpy(s,gdata->parm.ctl[i]); SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
+				myp2cstrcpy(s,gdata->parm.ctl[i]);
+				SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
 			}else if(gdata->parm.map_used[i/2]){
 				if(i&1)
 					HideDialogItem(dp,FIRSTCTLLABELITEM+i);
 				else{
-					myp2cstrcpy(s,gdata->parm.map[i/2]); SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
+					myp2cstrcpy(s,gdata->parm.map[i/2]);
+					SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
 				}
 			}else{
 				HideDialogItem(dp,FIRSTCTLITEM+i);
@@ -274,7 +287,7 @@ void maindlginit(DIALOGREF dp){
 			}
 		}
 	}else
-		for(i=nplanes;i<4;++i){
+		for(i = nplanes; i < 4; ++i){
 			HideDialogItem(dp,FIRSTICONITEM+i);
 			HideDialogItem(dp,FIRSTEXPRITEM+i);
 			HideDialogItem(dp,FIRSTLABELITEM+i);
@@ -283,7 +296,8 @@ void maindlginit(DIALOGREF dp){
 	if(setup_preview(gpb)){
 		extern int preview_w,preview_h;
 		double zh = (gpb->filterRect.right-gpb->filterRect.left)/(double)preview_w,
-			   zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h,k;
+		       zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h,
+		       k;
 		fitzoom = zh > zv ? zh : zv;
 		
 		// On very large images, processing a fully zoomed out preview (the initial default)
@@ -294,7 +308,7 @@ void maindlginit(DIALOGREF dp){
 		// preview about 50MB of image data.)
 		
 		k = maxSpace/(10.*preview_w*preview_h*nplanes);
-		for( zoomfactor = fitzoom ; zoomfactor >= 2. && zoomfactor*zoomfactor > k ; )
+		for(zoomfactor = fitzoom; zoomfactor >= 2. && zoomfactor*zoomfactor > k; )
 			zoomfactor /= 2.;
 		
 		updatezoom(dp);
@@ -328,25 +342,24 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	Str255 fname;
 
 	switch(item){
-	case IDOK:	
-//		updateglobals(dp);
+	case IDOK:
 	case IDCANCEL:
 		dispose_preview();
 		return false; // end dialog
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,
-					"All supported files (.AFS, .8BF, .TXT)\0*.AFS;*.8BF;*.TXT\0All files (*.*)\0*.*\0\0")){
+					"All supported files (.afs, .8bf, .txt)\0*.afs;*.8bf;*.txt\0All files (*.*)\0*.*\0\0")){
 			if(loadfile(&sfr,&reason)){
 				updatedialog(dp);
 				maindlgupdate(dp);
-			}else alertuser("Cannot load settings.",reason);
+			}else
+				alertuser("Cannot load settings.",reason);
 		}
 		break;
 	case SAVEITEM:
 		if(!gdata->standalone && putfile("\pSave filter settings",(StringPtr)"",
 										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										 "AFS","Settings file (.AFS, .TXT)\0*.AFS;*.TXT\0\0",1)){
-//			updateglobals(dp);
+										 "afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1)){
 			if(savefile(&sfr))
 				completesave(&reply);
 		}
@@ -355,16 +368,16 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
 #ifdef MACMACHO
-      PLstrcat(fname,(StringPtr)"\p.plugin");
+			PLstrcat(fname,(StringPtr)"\p.plugin");
 #endif
 			if( putfile("\pMake standalone filter",fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-						"8BF","Filter plugin file (.8BF)\0*.8BF\0\0",1) )
+						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1) )
 				make_standalone(&sfr);
 		}
 		break;
 	case ZOOMINITEM:
-		zoomfactor = zoomfactor>2. ? zoomfactor/2. : 1.;
+		zoomfactor = zoomfactor > 2. ? zoomfactor/2. : 1.;
 		updatezoom(dp);
 		previewerr = false;
 		recalc_preview(gpb,dp);
@@ -417,8 +430,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case FIRSTEXPRITEM+1:
 	case FIRSTEXPRITEM+2:
 	case FIRSTEXPRITEM+3:
-//		dbg("expritem hit");
-		if( (item-FIRSTEXPRITEM)<nplanes ){
+		if((item-FIRSTEXPRITEM) < nplanes){
 			updateexpr(dp,item);
 			maindlgupdate(dp);
 		}

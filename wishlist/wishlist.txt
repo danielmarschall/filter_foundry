@@ -39,7 +39,7 @@ IMPROVEMENTS/BUGS:
 
 PRIORITY NEEDS:
 
-	1. Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
+	1. (FIXED) Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
 	  Currently uppercase.
 
 	2. Establish processing fixes/bugs where needed. One example is
@@ -55,7 +55,7 @@ PRIORITY NEEDS:
 
 	4. Obfuscation or hiding of PARM source in compiled binary .8bf.
 
-	  (Prefered as a checkbox option in the Make dialogue, or include
+	  (Preferred as a checkbox option in the Make dialogue, or include
 	  with the 'Protect' option already established.)
 
 	5. Make additional captions optional (Copyright, Author, etc.)
