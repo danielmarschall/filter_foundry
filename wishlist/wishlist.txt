@@ -16,7 +16,7 @@ DESCRIPTION:
 
 CURRENT VERSION TESTING:
 
-	1.4 beta 5 (1.4b5)
+	1.4 beta 6 (1.4b6)
 
 
 
@@ -39,7 +39,7 @@ IMPROVEMENTS/BUGS:
 
 PRIORITY NEEDS:
 
-	1. (FIXED) Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
+(FIXED)	1. Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
 	  Currently uppercase.
 
 	2. Establish processing fixes/bugs where needed. One example is
@@ -49,33 +49,51 @@ PRIORITY NEEDS:
 	  (If a documentation issue based on processing changes, then
 	  documentation required for the updated code structure.)
 
-		*** See examples provided.
+		2a. See examples provided. (Blintz)
 
 	3. Control captions currently not being applied in compiled plugins.
 
-	4. Obfuscation or hiding of PARM source in compiled binary .8bf.
-
-	  (Preferred as a checkbox option in the Make dialogue, or include
-	  with the 'Protect' option already established.)
-
-	5. Make additional captions optional (Copyright, Author, etc.)
-	  (Don't place box in dialogue at all if nothing entered.)
-
-	6. Fix compiled plugin dialogue to read the filter's name.
+	4. Fix compiled plugin dialogue to read the filter's name.
 	  [ie: CAPTION "Filters Name Goes Here"]
-	  Currently defaults to "Filter Foundry"
 
-	7. Determine if all default CONTROLs can read STATIC and not "Static"?
-	  (Noticed in ResHacker when editing a dialogue - ResHacker automatically
-	  Compiles Script to read STATIC, and extracts the additional 001fxx types.)
+		4a. Currently defaults to "Filter Foundry" and requires ResHacker
+		    to fix.
+
+	5. One pixel border bug at very bottom of Preview image.
+
+		5a. Minor annoyance in aesthetic.
+		5b. Refer to Item 6 as a potential fix or work-around.
+
+	6. Prefer Preview default with no background color.
+
+		6a. Currently white background for Preview.
+
+	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
+
+	  	7a. Preferred as a checkbox option in the Make dialogue, or include
+		    with the 'Protect' option already established.
+
 
 	----------------------------------------------------------------------------
 
-	8. Add a checkbox option to Preview image adjustment in real-time, and
-	  possibly allow being able to scroll through the main image window.
-	  [Like native Photoshop plugins.]
 
-		*** Deprecated due to lack of support from SDK. ***
+(Deprecated)	8. Make additional captions optional (Copyright, Author, etc.)
+	  	(Don't place box in dialogue at all if nothing entered.)
+
+(Deprecated)	9. Determine if all default CONTROLs can read STATIC and not "Static"?
+		(Noticed in ResHacker when editing a dialogue - ResHacker automatically
+	  	Compiles Script to read STATIC, and extracts the additional 001fxx types.)
+
+		*** Deprecated due to testing in ResHacker.
+		*** Preview problem was solved due to a mistake in DS_OWNERDRAW
+			being altered to DS_LEFT.
+
+
+		10. Add a checkbox option to Preview image adjustment in real-time, and
+		   possibly allow being able to scroll through the main image window.
+	   	[Like native Photoshop plugins.]
+
+		*** Deprecated due to lack of support from SDK.
 
 
 
