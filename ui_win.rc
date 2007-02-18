@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -17,8 +17,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* Windows UI resources
-   Copyright (C) 2003-4 Toby Thain <toby@telegraphics.com.au> */
+/* Windows UI resources */
 
 #include "winuser.h"
 #include "commctrl.h"
@@ -43,8 +42,8 @@ BEGIN
 	PUSHBUTTON	"Make...",MAKEITEM,		110,253, 42,14
 
 	CONTROL		"",PREVIEWITEM,				"Static",SS_OWNERDRAW|SS_NOTIFY,				15,10, 100,100
-	CONTROL		"ZOOMIN_ICO",ZOOMINITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	15,115, 12,12
-	CONTROL		"ZOOMOUT_ICO",ZOOMOUTITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	103,115, 12,12
+	CONTROL		"ZOOMIN_ICO",ZOOMINITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	103,115, 12,12
+	CONTROL		"ZOOMOUT_ICO",ZOOMOUTITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	15,115, 12,12
 	CONTROL		"",ZOOMLEVELITEM,			"Static",SS_CENTER|SS_NOTIFY,					37,115, 56,12
 
 	LTEXT		"ctl(0)",100,			129,10, 15,12

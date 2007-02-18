@@ -47,7 +47,7 @@ resource 'DITL' (ID_ABOUTDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-6 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-7 Toby Thain <toby@telegraphics.com.au>."
 			"\nLatest version available from\nhttp://www.telegraphics.com.au/sw/\n"
 		},
 		{104, 20, 216, 340},
@@ -74,7 +74,7 @@ resource 'DITL' (ID_ABOUTSTANDALONEDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-6 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-7 Toby Thain <toby@telegraphics.com.au>."
 		},
 		{88, 20, 200, 340},
 		StaticText {
@@ -192,8 +192,8 @@ resource 'DITL' (ID_MAINDLG, purgeable) {
 		{426, 190, 446, 260}, Button { enabled, "Make…" },
 
 		{ 10, 15,210,215}, useritem { disabled }, /* preview area */
-		{215, 15,226, 26}, picture { enabled,ID_ZOOMINPICT },
-		{215,204,226,215}, picture { enabled,ID_ZOOMOUTPICT },
+		{215,204,226,215}, picture { enabled,ID_ZOOMINPICT },
+		{215, 15,226, 26}, picture { enabled,ID_ZOOMOUTPICT },
 		{215, 26,231,204}, statictext { enabled,"" },
 
 		{ 10,158+72, 26,228+72}, StaticText { disabled, "ctl(0)" },
@@ -322,8 +322,8 @@ resource 'DITL' (ID_PARAMDLG, purgeable) {
 		{266, 190, 286, 260}, useritem { disabled },
 
 		{ 10, 15,210,215}, useritem { disabled }, /* preview area */
-		{215, 15,226, 26}, picture { enabled,ID_ZOOMINPICT },
-		{215,204,226,215}, picture { enabled,ID_ZOOMOUTPICT },
+		{215,204,226,215}, picture { enabled,ID_ZOOMINPICT },
+		{215, 15,226, 26}, picture { enabled,ID_ZOOMOUTPICT },
 		{215, 26,231,204}, statictext { enabled,"" },
 
 		{ 10,158+72, 26,228+72}, StaticText { disabled, "ctl(0)" },
@@ -411,7 +411,7 @@ resource 'DITL' (ID_BUILDDLG, purgeable) {
 		EditText { enabled,"Untitled" },
 		/* [5] */
 		{60, 92, 92, 395},
-		EditText { enabled,"Filter Foundry Copyright (C) 2003-5 Toby Thain, <toby@telegraphics.com.au>" },
+		EditText { enabled,"Filter Foundry Copyright (C) 2003-7 Toby Thain, <toby@telegraphics.com.au>" },
 		/* [6] */
 		{100, 92, 116, 395},
 		EditText { enabled,"Anonymous" },

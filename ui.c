@@ -109,8 +109,6 @@ struct node *updateexpr(DIALOGREF dp,int item){
 	char s[MAXEXPR+1];
 	int i;
 
-//dbg("updateexpr");
-
 	i = item - FIRSTEXPRITEM;
 
 	freetree(tree[i]);
