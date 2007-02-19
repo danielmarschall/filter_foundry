@@ -16,7 +16,7 @@ DESCRIPTION:
 
 CURRENT VERSION TESTING:
 
-	1.4 beta 6 (1.4b6)
+	1.4 beta 9 (1.4b9)
 
 
 
@@ -39,6 +39,7 @@ IMPROVEMENTS/BUGS:
 
 PRIORITY NEEDS:
 
+
 (FIXED)	1. Default load and save file extensions to lowercase. (.afs, .txt, .8bf)
 	  Currently uppercase.
 
@@ -53,7 +54,7 @@ PRIORITY NEEDS:
 
 	3. Control captions currently not being applied in compiled plugins.
 
-	4. Fix compiled plugin dialogue to read the filter's name.
+(FIXED)	4. Fix compiled plugin dialogue to read the filter's name.
 	  [ie: CAPTION "Filters Name Goes Here"]
 
 		4a. Currently defaults to "Filter Foundry" and requires ResHacker
@@ -78,14 +79,14 @@ PRIORITY NEEDS:
 
 		6a. Currently white background for Preview.
 
-	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
+(ADDED)	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
 
 	  	7a. Preferred as a checkbox option in the Make dialogue, or include
 		    with the 'Protect' option already established.
 
+(FIXED)	8. Flip to match PS builtin zoom controls (+/-)
 
 	----------------------------------------------------------------------------
-
 
 (Deprecated)	8. Make additional captions optional (Copyright, Author, etc.)
 	  	(Don't place box in dialogue at all if nothing entered.)
@@ -98,8 +99,7 @@ PRIORITY NEEDS:
 		*** Preview problem was solved due to a mistake in DS_OWNERDRAW
 			being altered to DS_LEFT.
 
-
-		10. Add a checkbox option to Preview image adjustment in real-time, and
+(Deprecated)	10. Add a checkbox option to Preview image adjustment in real-time, and
 		   possibly allow being able to scroll through the main image window.
 	   	[Like native Photoshop plugins.]
 
@@ -126,7 +126,6 @@ DEVELOPMENT PROPOSALS (Future Development / Expansion):
 	  (This would fully surpass the traditional Filter Factory dialogue and
 	  produce something more flexible and unique, but with the same or
 	  current coding environment established in Filter Foundry.)
-
 
 	5. Consider expanding on code, to include support for alpha blending to
 	  blend pixels together. [ie: If making a seamless tile, then code in
