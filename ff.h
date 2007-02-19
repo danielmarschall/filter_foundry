@@ -118,7 +118,7 @@ long fixaete(unsigned char *p,long origsize,StringPtr title);
 void obfusc(unsigned char *pparm,size_t size);
 
 Boolean loadfile(StandardFileReply *sfr,char **reason);
-Boolean readPARMresource(HMODULE hm,char **reason);
+Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc);
 
 void dbglasterror(char*);
 

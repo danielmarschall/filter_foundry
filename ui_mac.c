@@ -47,20 +47,14 @@ pascal void slideraction(ControlRef theControl,short partCode);
 pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item);
 
 void DoAbout(AboutRecordPtr prec){
-	PARM_T p;
-	char *reason;
-	Handle h = Get1Resource(PARM_TYPE,PARM_ID);
 	ModalFilterUPP filterproc_UPP = NewModalFilterUPP(aboutfilter);
 
-	if(h){
-		HLock(h);
-		readPARM(*h,&p,&reason,0 /*Mac format resource*/);
-		ParamText(p.title,p.author,p.copyright,NULL);
-	}
-	Alert(h ? ID_ABOUTSTANDALONEDLG : ID_ABOUTDLG,filterproc_UPP);
+	if(gdata->standalone){
+		ParamText(gdata->parm.title,gdata->parm.author,gdata->parm.copyright,NULL);
+		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
+	}else
+		Alert(ID_ABOUTDLG,filterproc_UPP);
 	DisposeModalFilterUPP(filterproc_UPP);
-	if(h)
-		ReleaseResource(h);
 }
 
 Boolean simplealert(char *s){

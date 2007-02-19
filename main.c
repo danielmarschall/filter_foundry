@@ -47,8 +47,9 @@ int checkandinitparams(Handle params);
 
 DLLEXPORT MACPASCAL 
 void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
-	OSErr e = noErr;
 	static Boolean wantdialog = false;
+	OSErr e = noErr;
+	char *reason;
 	
 	EnterCodeResource();
 	
@@ -63,7 +64,9 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 	nplanes = MIN(pb->planes,4);
 
 	switch (selector){
-	case filterSelectorAbout: 
+	case filterSelectorAbout:
+		if(!gdata->parmloaded)
+			gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
 		DoAbout((AboutRecordPtr)pb); 
 		break;
 	case filterSelectorParameters:
@@ -129,9 +132,8 @@ int checkandinitparams(Handle params){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
-		if(readPARMresource(hDllInstance,&reason))
-			gdata->standalone = true;
-		else{
+		gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
+		if(!gdata->standalone){
 			// no saved settings (not standalone)
 			for(i = 0; i < 8; ++i)
 				slider[i] = i*10+100;

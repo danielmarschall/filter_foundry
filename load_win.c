@@ -34,26 +34,26 @@ static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
 	return false; // we only want the first one
 }
 
-Boolean readPARMresource(HMODULE hm,char **reason){
+Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
+	int res = false;
 	
 	parm_id = PARM_ID;
 	EnumResourceNames(hm,"PARM",enumnames,0);
 	
 	// load first PARM resource
-	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) )
-		return (h = LoadResource(hm,resinfo))
-			   && (pparm = LockResource(h))
-			   && readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
-	else if( (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
-		if((h = LoadResource(hm,resinfo)) && (pparm = LockResource(h))){
+	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){
+		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) )
+			res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
+	}else if( readobfusc && (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
+		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) ){
 			obfusc(pparm,SizeofResource(hm,resinfo));
-			return readPARM(pparm,&gdata->parm,reason,1);
+			res = readPARM(pparm,&gdata->parm,reason,1);
 		}
 	}
-	return false;
+	return res;
 }
 
 // see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
@@ -67,7 +67,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	if(sfr->nFileExtension){
 		if(!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")){
 			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
-				if(readPARMresource(hm,reason)){
+				if(readPARMresource(hm,reason,0)){
 					if(gdata->parm.iProtected)
 						*reason = "The filter is protected.";
 					else

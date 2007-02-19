@@ -24,11 +24,12 @@
 
 #include "file_compat.h"
 
-Boolean readPARMresource(HMODULE hm,char **reason){
+Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	Boolean res = false;
 	Handle h;
 
 	if( !(h = Get1Resource(PARM_TYPE,PARM_ID))
+	  && readobfusc
 	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
 		HLock(h);
 		obfusc((unsigned char*)*h,GetHandleSize(h));
@@ -46,7 +47,7 @@ static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 	
 	if(rrn != -1){
-		if(readPARMresource(NULL,reason))
+		if(readPARMresource(NULL,reason,0))
 			res = true;
 		CloseResFile(rrn);
 	}else
