@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -133,9 +133,9 @@ int checkandinitparams(Handle params){
 			gdata->standalone = true;
 		else{
 			// no saved settings (not standalone)
-			for(i=0;i<8;++i)
+			for(i = 0; i < 8; ++i)
 				slider[i] = i*10+100;
-			for(i=4;i--;)
+			for(i = 4; i--;)
 				expr[i] = my_strdup(defaultexpr[i]);
 		}
 	}
@@ -145,7 +145,7 @@ int checkandinitparams(Handle params){
 	showdialog = ReadScriptParamsOnRead();
 
 	/* sanity check for NULL expression pointers (?) */
-	for(i=4;i--;)
+	for(i = 4; i--;)
 		if(!expr[i]) expr[i] = my_strdup(defaultexpr[i]);
 
 	saveparams(params); /* keep what we got */
@@ -155,7 +155,7 @@ int checkandinitparams(Handle params){
 void DoPrepare(FilterRecordPtr pb){
 	int i;
 
-	for(i=4;i--;){
+	for(i = 4; i--;){
 		if(expr[i]||tree[i]) DBG("expr[] or tree[] non-NULL in Prepare!");
 		expr[i] = NULL;
 		tree[i] = NULL;
@@ -250,7 +250,7 @@ void DoFinish(FilterRecordPtr pb){
 	
 	WriteScriptParamsOnRead();
 
-	for(i=4;i--;){
+	for(i = 4; i--;){
 		freetree(tree[i]);
 		if(expr[i]) free(expr[i]);
 	}

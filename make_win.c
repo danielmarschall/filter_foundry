@@ -46,17 +46,14 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 */
 
 Boolean doresources(HMODULE srcmod,char *dstname){
-	int i;
-
 	HRSRC datarsrc,aetersrc;
 	HANDLE datah,aeteh,hupdate;
 	Ptr newpipl = NULL,newaete = NULL,datap,aetep;
 	PARM_T *pparm = NULL;
-
 	long piplsize,aetesize,origsize;
 	Str255 title;
-	//char s[0x100];
-	
+	LPCTSTR parm_type;
+	int i,parm_id;
 	Boolean discard = true;
 
 //	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0)) 
@@ -110,12 +107,21 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 					myp2cstr(pparm->map[i]);
 				for(i=0;i<8;++i)
 					myp2cstr(pparm->ctl[i]);
+				
+				if(gdata->obfusc){
+					parm_type = RT_RCDATA;
+					parm_id = OBFUSCDATA_ID;
+					obfusc((unsigned char*)pparm,sizeof(PARM_T));
+				}else{
+					parm_type = "PARM";
+					parm_id = PARM_ID;
+				}
 
 				if( UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,piplsize)
 				 && UpdateResource(hupdate,"AETE" /* note: caps!! */,MAKEINTRESOURCE(16000),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newaete,aetesize)
-				 && UpdateResource(hupdate,"PARM",MAKEINTRESOURCE(PARM_ID),
+				 && UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 					discard = false;
 				else 

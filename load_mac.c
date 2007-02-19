@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -20,15 +20,19 @@
 #include "ff.h"
 
 #include <Endian.h>
+#include <Resources.h>
 
 #include "file_compat.h"
 
-Boolean readmacplugin(StandardFileReply *sfr,char **reason);
-Boolean read8bfplugin(StandardFileReply *sfr,char **reason);
-
 Boolean readPARMresource(HMODULE hm,char **reason){
 	Boolean res = false;
-	Handle h = Get1Resource(PARM_TYPE,PARM_ID);
+	Handle h;
+
+	if( !(h = Get1Resource(PARM_TYPE,PARM_ID))
+	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
+		HLock(h);
+		obfusc((unsigned char*)*h,GetHandleSize(h));
+	}
 	if(h){
 		HLock(h);
 		res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
@@ -37,11 +41,11 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	return res;
 }
 
-Boolean readmacplugin(StandardFileReply *sfr,char **reason){
+static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 	Boolean res = false;
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 	
-	if( rrn != -1 ){
+	if(rrn != -1){
 		if(readPARMresource(NULL,reason))
 			res = true;
 		CloseResFile(rrn);
@@ -50,7 +54,7 @@ Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 	return res;
 }
 
-Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
+static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	unsigned char magic[2];
 	long count;
 	Handle h;
@@ -58,7 +62,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	short refnum;
 	int i;
 	
-	if( ! FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum) ){
+	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
 		// check DOS EXE magic number
 		count = 2;
 		if(!FSRead(refnum,&count,magic) && magic[0]=='M' && magic[1]=='Z'){
@@ -74,7 +78,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 						{
 							// these are the only numeric fields we *have* to swap
 							// all the rest are flags which (if we're careful) will work in either ordering
-							for(i=0;i<8;++i)
+							for(i = 0; i < 8; ++i)
 								slider[i] = EndianS32_LtoN(slider[i]);
 						}
 
@@ -103,7 +107,8 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				return false;
 			}else
 				gdata->parmloaded = true;
-		}else *reason = "It is not a text parameter (AFS) file, nor a standalone Mac/PC filter made by Filter Factory/Filter Foundry.";
+		}else
+			*reason = "It is not a text parameter (AFS) file, nor a standalone Mac/PC filter made by Filter Factory/Filter Foundry.";
 	}
 
 	return readok;

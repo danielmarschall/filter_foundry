@@ -48,26 +48,26 @@ void builddlginit(DIALOGREF dp){
 		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au");
 		SetDlgItemText(dp,AUTHORITEM,	"Anonymous");
 		strcpy(s,"Map X");
-		for(i=0;i<4;++i){
+		for(i = 0; i < 4; ++i){
 			s[4] = '0'+i; 
 			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s);
 		}
 		strcpy(s,"ctl(X)");
-		for(i=0;i<8;++i){
+		for(i = 0; i < 8; ++i){
 			s[4] = '0'+i; 
 			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s);
 		}
 	}
 
 	if(!checksliders(4,ctls,maps)){
-		for(i=4;i--;){
+		for(i = 4; i--;){
 			DISABLEDLGITEM(dp,FIRSTMAPCHECKITEM+i);
 			if(maps[i])
 				CHECKDLGBUTTON(dp,FIRSTMAPCHECKITEM+i,true);
 			else
 				HideDialogItem(dp,FIRSTMAPNAMEITEM+i);
 		}
-		for(i=8;i--;){
+		for(i = 8; i--;){
 			DISABLEDLGITEM(dp,FIRSTCTLCHECKITEM+i);
 			if(ctls[i])
 				CHECKDLGBUTTON(dp,FIRSTCTLCHECKITEM+i,true);
@@ -96,12 +96,12 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		GetDlgItemText(dp,AUTHORITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.author,s);
 		gdata->parm.cbSize = PARM_SIG;
 		gdata->parm.nVersion = 1;  //0=original FF, 1=standalone filter
-		for(i=needui=0;i<8;++i){
+		for(i = needui = 0; i < 8; ++i){
 			gdata->parm.val[i] = slider[i];
 			needui |= (gdata->parm.ctl_used[i] = ctls[i]);
 			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.ctl[i],s);
 		}
-		for(i=0;i<4;++i){
+		for(i = 0; i < 4; ++i){
 			gdata->parm.map_used[i] = maps[i];
 			GetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.map[i],s);
 			strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
@@ -109,11 +109,13 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.popDialog = needui; //true if need to pop a parameter dialog
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
+		gdata->obfusc = ISDLGBUTTONCHECKED(dp,OBFUSCITEM);
 		
 	case IDCANCEL:
 		return false; // end dialog
 	case PROTECTITEM:
-		CHECKDLGBUTTON(dp,PROTECTITEM, ISDLGBUTTONCHECKED(dp,PROTECTITEM) ^ 1);
+	case OBFUSCITEM:
+		CHECKDLGBUTTON(dp, item, ISDLGBUTTONCHECKED(dp,item) ^ 1);
 		break;
 	}
 

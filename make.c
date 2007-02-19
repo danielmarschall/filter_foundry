@@ -162,3 +162,14 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 
 	return origsize-oldlen-oldpad+newlen+newpad;
 }
+
+void obfusc(unsigned char *pparm,size_t size){
+	int i;
+	unsigned char *p;
+	
+	/* Very simplistic. meant to hide from casual observation/loading only.
+	 * Results are platform dependent, but this should not matter. */
+	srand(0xdc43df3c);
+	for(i = size, p = pparm; i--;)
+		*p++ ^= rand();
+}

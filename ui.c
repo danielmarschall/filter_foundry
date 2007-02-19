@@ -261,6 +261,10 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
+#ifdef WIN_ENV
+		myp2cstrcpy(s,gdata->parm.title);
+		SetWindowText(dp,s); // window title bar
+#endif
 		myp2cstrcpy(s,gdata->parm.author);
 		SetDlgItemText(dp,PARAMAUTHORITEM,s);
 		myp2cstrcpy(s,gdata->parm.copyright);
@@ -294,8 +298,7 @@ void maindlginit(DIALOGREF dp){
 	if(setup_preview(gpb)){
 		extern int preview_w,preview_h;
 		double zh = (gpb->filterRect.right-gpb->filterRect.left)/(double)preview_w,
-		       zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h,
-		       k;
+		       zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h;
 		fitzoom = zh > zv ? zh : zv;
 		
 		// On very large images, processing a fully zoomed out preview (the initial default)
@@ -305,9 +308,11 @@ void maindlginit(DIALOGREF dp){
 		// (e.g., on a 1GB WinXP system, PS CS2 reports 520MB maxSpace, so this will let us
 		// preview about 50MB of image data.)
 		
-		k = maxSpace/(10.*preview_w*preview_h*nplanes);
-		for(zoomfactor = fitzoom; zoomfactor >= 2. && zoomfactor*zoomfactor > k; )
-			zoomfactor /= 2.;
+		zoomfactor = sqrt(maxSpace/(10.*preview_w*preview_h*nplanes));
+		if(zoomfactor > fitzoom)
+			zoomfactor = fitzoom;
+		if(zoomfactor < 1.)
+			zoomfactor = 1.;
 		
 		updatezoom(dp);
 	}else{

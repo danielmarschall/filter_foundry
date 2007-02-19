@@ -51,7 +51,7 @@ OSErr wrstr(FILEREF rn,char *s){
 OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	short srcrn,dstrn;
 	Handle hpipl,h;
-	long origsize,newsize;
+	long origsize,newsize,parm_type,parm_id;
 	OSErr e = noErr;
 	Str255 title;
 
@@ -115,8 +115,19 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 					
 					if( !(e = ResError()) ){
 						/* add PARM resource */
-						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) )
-							AddResource(h,'PARM',PARM_ID,"\p");
+						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
+							if(gdata->obfusc){
+								HLock(h);
+								obfusc((unsigned char*)*h,sizeof(PARM_T));
+								HUnlock(h);
+								parm_type = 'DATA';
+								parm_id = OBFUSCDATA_ID;
+							}else{
+								parm_type = 'PARM';
+								parm_id = PARM_ID;
+							}
+							AddResource(h,parm_type,parm_id,"\p");
+						}
 					}
 				}
 					

@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -35,7 +35,6 @@ static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
 }
 
 Boolean readPARMresource(HMODULE hm,char **reason){
-	Boolean res = false;
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
@@ -44,12 +43,17 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	EnumResourceNames(hm,"PARM",enumnames,0);
 	
 	// load first PARM resource
-	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM"))
-	 && (h = LoadResource(hm,resinfo))
-	 && (pparm = LockResource(h)) )
-		res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
-
-	return res;
+	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) )
+		return (h = LoadResource(hm,resinfo))
+			   && (pparm = LockResource(h))
+			   && readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
+	else if( (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
+		if((h = LoadResource(hm,resinfo)) && (pparm = LockResource(h))){
+			obfusc(pparm,SizeofResource(hm,resinfo));
+			return readPARM(pparm,&gdata->parm,reason,1);
+		}
+	}
+	return false;
 }
 
 // see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
@@ -65,10 +69,11 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
 				if(readPARMresource(hm,reason)){
 					if(gdata->parm.iProtected)
-						*reason = ("The filter is protected.");
+						*reason = "The filter is protected.";
 					else
 						readok = gdata->parmloaded = true;
-				}else *reason = ("It is not a standalone filter made by Filter Factory/Filter Foundry.");
+				}else
+					*reason = "It is not a standalone filter made by Filter Factory/Filter Foundry.";
 				FreeLibrary(hm);
 			}else{
 				*reason = "Could not open file (LoadLibrary failed).";

@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -38,13 +38,14 @@ enum{
 
 	PARM_TYPE = 'PARM',
 	PARM_ID = 16000,
+	OBFUSCDATA_ID = 16001,
 	TEXT_FILETYPE = 'TEXT',
 	SIG_SIMPLETEXT = 'ttxt',
 	PS_FILTER_FILETYPE = '8BFM'
 };
 
 typedef struct{
-	Boolean standalone,parmloaded;
+	Boolean standalone,parmloaded,obfusc;
 	PARM_T parm;
 } globals_t;
 
@@ -114,6 +115,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 unsigned long printablehash(unsigned long hash);
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title);
 long fixaete(unsigned char *p,long origsize,StringPtr title);
+void obfusc(unsigned char *pparm,size_t size);
 
 Boolean loadfile(StandardFileReply *sfr,char **reason);
 Boolean readPARMresource(HMODULE hm,char **reason);

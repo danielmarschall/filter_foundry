@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -22,7 +22,7 @@
 #include "file_compat.h"
 
 enum{
-	BUFSIZE = (4L<<10),
+	BUFSIZE = 4L<<10,
 	MAXLINE = 0x200,
 };
 
@@ -38,13 +38,12 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 
 	p = PILOCKHANDLE(h,false);
 	dataend = p + PIGETHANDLESIZE(h);
-//sprintf(s,"readparams: Input data size = %d",dataend-p); dbg(s);
 	
 	q = curexpr;
 	linecnt = exprcnt = lineptr = 0;
 
 	*reason = "File was too short.";
-	while( p < dataend ){
+	while(p < dataend){
 
 		c = *p++;
 
@@ -55,14 +54,12 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 				++p;
 			
 			linebuf[lineptr] = 0; /* add terminating NUL to line buffer */
-			
-//sprintf(s,"got line %d = \"%s\"",linecnt,linebuf); dbg(s);
 
 			/* process complete line */
 			if(linecnt==0){
 				if(strcmp(linebuf,"%RGB-1.0")){
 					if(alerts)
-						*reason = ("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").");
+						*reason = "This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").";
 					break;
 				}
 			}else if(linecnt<=8){
@@ -71,7 +68,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 				if(lineptr){ 
 					/* it's not an empty line; append it to current expr string */
 					if( q+lineptr > curexpr+MAXEXPR ){
-						*reason = ("Found an expression longer than 1024 characters.");
+						*reason = "Found an expression longer than 1024 characters.";
 						break;
 					}
 					q = cat(q,linebuf);
@@ -81,7 +78,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 						free(expr[exprcnt]);
 					*q = 0;
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
-						*reason = ("Could not get memory for expression.");
+						*reason = "Could not get memory for expression.";
 						break;
 					}
 
@@ -116,7 +113,6 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 	}
 	
 	PIUNLOCKHANDLE(h);
-//			if(c == EOF) alertuser("end of file");
 
 	return res;
 }
@@ -132,18 +128,18 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 		myc2pstr((char*)pparm->title);
 		myc2pstr((char*)pparm->copyright);
 		myc2pstr((char*)pparm->author);
-		for(i=0;i<4;++i)
+		for(i = 0; i < 4; ++i)
 			myc2pstr((char*)pparm->map[i]);
-		for(i=0;i<8;++i)
+		for(i = 0; i < 8; ++i)
 			myc2pstr((char*)pparm->ctl[i]);
 	}
 
-	for(i=0;i<4;++i){
+	for(i = 0; i < 4; ++i){
 		if(expr[i]) free(expr[i]);
 		expr[i] = my_strdup(pparm->formula[i]);
 	}
 
-	for(i=0;i<8;++i)
+	for(i = 0; i < 8; ++i)
 		slider[i] = pparm->val[i];
 
 	return true;
@@ -178,7 +174,7 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 		}
 		FSClose(r);
 	}else
-		*reason = ("Could not open the file.");
+		*reason = "Could not open the file.";
 
 	return res;
 }
