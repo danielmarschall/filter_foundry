@@ -96,7 +96,7 @@ Boolean ReadScriptParamsOnRead(void)
 
 			stickyError = CloseReader(&token); // closes & disposes.
 				
-			// all Filter Foundry parameters are regarded as optional,
+			// all Filter Foundry parameters are optional,
 			// so we needn't worry if any are missing
 		}
 		
@@ -126,8 +126,8 @@ OSErr WriteScriptParamsOnRead(void)
 
 			/* only write values for the sliders that are actually used! */
 			allctls = checksliders(4,ctls,maps);
-			for(i=0;i<8;++i)
-				if(allctls||ctls[i])
+			for(i = 0; i < 8; ++i)
+				if(allctls || ctls[i])
 					PIPutInt(token, PARAM_CTL0_KEY+i, slider[i]);
 
 			gotErr = CloseWriter(&token); /* closes and sets dialog optional */
