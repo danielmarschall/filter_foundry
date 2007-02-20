@@ -30,7 +30,7 @@ struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,srcradused,chunksize,toprow;
 value_type slider[8],cell[0x100],map[4][0x100];
-char *expr[4],*defaultexpr[]={"r","g","b","a"};
+char *expr[4];
 long maxSpace;
 globals_t *gdata;
 FilterRecordPtr gpb;
@@ -41,7 +41,6 @@ FilterRecordPtr gpb;
 
 extern struct sym_rec predefs[];
 extern int nplanes,varused[];
-
 
 int checkandinitparams(Handle params);
 
@@ -70,29 +69,22 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
 		DoAbout((AboutRecordPtr)pb); 
 		break;
 	case filterSelectorParameters:
-//		dbg("filterSelectorParameters");
 		wantdialog = true;
 		break;
 	case filterSelectorPrepare:
-//		dbg("filterSelectorPrepare");
 		DoPrepare(pb);
 		init_symtab(predefs); // ready for parser calls
 		break;
-	case filterSelectorStart: 
-//		dbg("filterSelectorStart");
-
-		if(!pb->parameters){
-			//dbg("pb->parameters = PINEWHANDLE(0)"),
-			pb->parameters = PINEWHANDLE(0); /* initialise the parameter handle that Photoshop keeps for us */
-			if(!pb->parameters) dbg("filterSelectorStart NULL handle @ PINEWHANDLE(0)");
-		}
+	case filterSelectorStart:
+		/* initialise the parameter handle that Photoshop keeps for us */
+		if(!pb->parameters)
+			pb->parameters = PINEWHANDLE(0);
 
 		wantdialog |= checkandinitparams(pb->parameters);
 
 		/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
-				//dbg("maindialog OK!");
 				/* update stored parameters from new user settings */
 				saveparams(pb->parameters);
 			}else
@@ -132,25 +124,32 @@ int checkandinitparams(Handle params){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
+		// see if saved parameters exist
 		gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
+
 		if(!gdata->standalone){
 			// no saved settings (not standalone)
 			for(i = 0; i < 8; ++i)
 				slider[i] = i*10+100;
-			for(i = 4; i--;)
-				expr[i] = my_strdup(defaultexpr[i]);
+			if(gpb->imageMode == plugInModeRGBColor){
+				expr[0] = my_strdup("r");
+				expr[1] = my_strdup("g");
+				expr[2] = my_strdup("b");
+				expr[3] = my_strdup("a");
+			}else{
+				expr[0] = my_strdup("c");
+				expr[1] = my_strdup("c");
+				expr[2] = my_strdup("c");
+				expr[3] = my_strdup("c");
+			}
 		}
 	}
 	
-	// let scripting system change parameters, if we're scripted
+	// let scripting system change parameters, if we're scripted;
 	// user may want to force display of dialog during scripting playback 
 	showdialog = ReadScriptParamsOnRead();
 
-	/* sanity check for NULL expression pointers (?) */
-	for(i = 4; i--;)
-		if(!expr[i]) expr[i] = my_strdup(defaultexpr[i]);
-
-	saveparams(params); /* keep what we got */
+	saveparams(params);
 	return f || showdialog;
 }
 
@@ -172,7 +171,7 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	pb->inHiPlane = pb->outHiPlane = nplanes-1;
 
 	// if any of the formulae involve random access to image pixels,
-	// must ask for the entire image
+	// ask for the entire image
 	if(srcradused){
 		SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
 	}else{
@@ -249,7 +248,7 @@ OSErr DoContinue(FilterRecordPtr pb){
 
 void DoFinish(FilterRecordPtr pb){
 	int i;
-	
+
 	WriteScriptParamsOnRead();
 
 	for(i = 4; i--;){

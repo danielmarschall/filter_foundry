@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -23,14 +23,14 @@ Version { (latestFilterVersion << 16) | latestFilterSubVersion },
 SupportedModes {
 	noBitmap,
 	doesSupportGrayScale,
-	noIndexedColor,
+	doesSupportIndexedColor,
 	doesSupportRGBColor,
-	noCMYKColor,
-	noHSLColor,
-	noHSBColor,
+	doesSupportCMYKColor,
+	doesSupportHSLColor,
+	doesSupportHSBColor,
 	doesSupportMultichannel,
-	noDuotone,
-	noLABColor
+	doesSupportDuotone,
+	doesSupportLABColor
 },
 
 FilterCaseInfo {

@@ -109,9 +109,9 @@ PRIORITY NEEDS:
 
 DEVELOPMENT PROPOSALS (Future Development / Expansion):
 
-	1. Support all Photoshop color spaces, RGB, Grayscale, CMYK, and LaB.
+(FIXED) 1. Support all Photoshop color spaces, RGB, Grayscale, CMYK, and LaB.
 
-	2. Multi-channel support (Being able to process all channels, regardless
+(FIXED, up to 4 channels) 2. Multi-channel support (Being able to process all channels, regardless
 	  of color-space). [ie: If additional channels are loaded, then 4 channels
 	  will have their own space for code. - Red, Green, Blue, Alpha1, etc, A]
 

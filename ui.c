@@ -153,8 +153,7 @@ void updatezoom(DIALOGREF dp){
 
 /* traverse expression tree, looking for constant references to sliders */
 
-int checksl(struct node*p,int ctlflags[],int mapflags[]);
-int checksl(struct node*p,int ctlflags[],int mapflags[]){
+static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 	int s;
 
 	if(p){
@@ -182,7 +181,8 @@ int checksl(struct node*p,int ctlflags[],int mapflags[]){
 			|| checksl(p->child[2],ctlflags,mapflags)
 			|| checksl(p->child[3],ctlflags,mapflags)
 			|| checksl(p->child[4],ctlflags,mapflags);	
-	}else return false;
+	}else
+		return false;
 }
 
 Boolean checksliders(int exprs,int ctlflags[],int mapflags[]){
@@ -258,6 +258,11 @@ void maindlgupdate(DIALOGREF dp){
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;
+	char *channelsuffixes[] = {
+		"", "GA", "I", "RGBA",
+		"CMYK", "HSL", "HSB", "1234",
+		"DA", "LabA"
+	};
 
 	/* hide unused expression items */
 	if(gdata->standalone){
@@ -288,17 +293,24 @@ void maindlginit(DIALOGREF dp){
 				HideDialogItem(dp,FIRSTCTLLABELITEM+i);
 			}
 		}
-	}else
-		for(i = nplanes; i < 4; ++i){
+	}
+
+	strcpy(s,"X =");
+	for(i = 0; i < 4; ++i){
+		if(i >= nplanes){
 			HideDialogItem(dp,FIRSTICONITEM+i);
 			HideDialogItem(dp,FIRSTEXPRITEM+i);
 			HideDialogItem(dp,FIRSTLABELITEM+i);
+		}else{
+			s[0] = channelsuffixes[gpb->imageMode][i];
+			SetDlgItemText(dp,FIRSTLABELITEM+i,s);
 		}
+	}
 
 	if(setup_preview(gpb)){
 		extern int preview_w,preview_h;
-		double zh = (gpb->filterRect.right-gpb->filterRect.left)/(double)preview_w,
-		       zv = (gpb->filterRect.bottom-gpb->filterRect.top)/(double)preview_h;
+		double zh = (gpb->filterRect.right - gpb->filterRect.left)/(double)preview_w,
+		       zv = (gpb->filterRect.bottom - gpb->filterRect.top)/(double)preview_h;
 		fitzoom = zh > zv ? zh : zv;
 		
 		// On very large images, processing a fully zoomed out preview (the initial default)

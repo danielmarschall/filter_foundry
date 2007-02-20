@@ -37,19 +37,17 @@ Point preview_scroll;
 Boolean preview_complete = false;
 
 Boolean setup_preview(FilterRecordPtr pb){
-
-	//dbg("setup_preview");
-	
 	if(pb->displayPixels && pb->advanceState){
-
-		preview_w = MIN(preview_rect.right - preview_rect.left - 2,pb->filterRect.right - pb->filterRect.left);
-		preview_h = MIN(preview_rect.bottom - preview_rect.top - 2,pb->filterRect.bottom - pb->filterRect.top);
+		preview_w = MIN(preview_rect.right - preview_rect.left - 2,
+						pb->filterRect.right - pb->filterRect.left);
+		preview_h = MIN(preview_rect.bottom - preview_rect.top - 2,
+						pb->filterRect.bottom - pb->filterRect.top);
 	
 		preview_pmap.version = 1;
 		preview_pmap.bounds.left = preview_pmap.bounds.top = 0;
 		preview_pmap.bounds.right = preview_w;
 		preview_pmap.bounds.bottom = preview_h;
-		preview_pmap.imageMode = nplanes>1 ? plugInModeRGBColor : plugInModeGrayScale;
+		preview_pmap.imageMode = gpb->imageMode;
 		preview_pmap.rowBytes = nplanes*preview_w;
 		preview_pmap.colBytes = nplanes;
 		preview_pmap.planeBytes = 1; /*interleaved*/
@@ -61,7 +59,11 @@ Boolean setup_preview(FilterRecordPtr pb){
 		//---------------------------------------------------------------------------	
 		preview_pmap.mat = NULL;
 		
-		if(nplanes==4){
+		if( (gpb->imageMode == plugInModeRGBColor && nplanes == 4)
+		 || (gpb->imageMode == plugInModeLabColor && nplanes == 4)
+		 || (gpb->imageMode == plugInModeGrayScale && nplanes == 2)
+		 || (gpb->imageMode == plugInModeDuotone && nplanes == 2) )
+		{
 			preview_pmask.next = NULL;
 	//		preview_pmask.maskData = preview_data+3;
 			preview_pmask.rowBytes = preview_pmap.rowBytes;
@@ -81,8 +83,6 @@ Boolean setup_preview(FilterRecordPtr pb){
 	//---------------------------------------------------------------------------	
 //	preview_pmap.pixelOverlays;
 //	preview_pmap.colorManagementOptions;
-
-//	setup(pb); // prepare for evaluations
 }
 
 void dispose_preview(){
@@ -106,10 +106,10 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
 		scaledw = zoomfactor*preview_w;
 		if(scaledw > (pb->filterRect.right - pb->filterRect.left))
-			scaledw = (pb->filterRect.right - pb->filterRect.left);
+			scaledw = pb->filterRect.right - pb->filterRect.left;
 		scaledh = zoomfactor*preview_h;
 		if(scaledh > (pb->filterRect.bottom - pb->filterRect.top))
-			scaledh = (pb->filterRect.bottom - pb->filterRect.top);
+			scaledh = pb->filterRect.bottom - pb->filterRect.top;
 			
 		/* scale clipped preview area down again - this becomes the pixel size of preview */
 		imgw = scaledw/zoomfactor;
@@ -158,7 +158,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		if( !needinput || !(e = pb->advanceState()) ){
 			Ptr outptr = PILOCKHANDLE(preview_handle,false);
 			int blankrows = (preview_h - imgh)/2,
-				blankcols = (preview_w - imgw)/2, pmrb = preview_pmap.rowBytes;
+				blankcols = (preview_w - imgw)/2,
+				pmrb = preview_pmap.rowBytes;
 
 			INITRANDSEED();
 //dbg("recalc_preview: about to call process()");
@@ -189,8 +190,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 				{
 				extern HWND preview_hwnd;
 				HDC hdc = GetDC(preview_hwnd);
-				
-//dbg("recalc_preview: about to call drawpreview()");
+
 				drawpreview(dp,hdc,outptr);
 				
 				ReleaseDC(preview_hwnd,hdc);
@@ -246,13 +246,14 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 		imagebounds.right = imagebounds.left + preview_w;
 		imagebounds.bottom = imagebounds.top + preview_h;
 
-		preview_pmap.baseAddr = imageptr;//PILOCKHANDLE(preview_handle,false);
+		preview_pmap.baseAddr = imageptr;
 		preview_pmask.maskData = imageptr+3;
 
 		if(gpb->propertyProcs->getPropertyProc){
 			gpb->propertyProcs->getPropertyProc(kPhotoshopSignature,propWatchSuspension,0,&watchsusp,NULL);
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp+1,NULL);
 		}
+
 		e = gpb->displayPixels(&preview_pmap,&srcRect,imagebounds.top,imagebounds.left,hdc);
 
 		if(gpb->propertyProcs->getPropertyProc)
