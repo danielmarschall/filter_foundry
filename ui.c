@@ -266,10 +266,6 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
-#ifdef WIN_ENV
-		myp2cstrcpy(s,gdata->parm.title);
-		SetWindowText(dp,s); // window title bar
-#endif
 		myp2cstrcpy(s,gdata->parm.author);
 		SetDlgItemText(dp,PARAMAUTHORITEM,s);
 		myp2cstrcpy(s,gdata->parm.copyright);

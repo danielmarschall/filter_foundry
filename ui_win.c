@@ -72,12 +72,17 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	DRAWITEMSTRUCT *pdi;
 	Point newscroll;
 	HFONT hfnt;
+	char s[0x100];
 	
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
 	switch(wMsg){
 	case WM_INITDIALOG:
+		if(gdata->standalone){
+			myp2cstrcpy(s,gdata->parm.title);
+			SetWindowText(hDlg,s); // window title bar
+		}
 		centre_window(hDlg);
 
 		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/fontext_3pbo.asp
