@@ -91,16 +91,16 @@
 16-Feb-2007: 1.4b6 - lowercase default file extensions (wishlist #1)
 18-Feb-2007: 1.4b7 - swap +/- zoom controls to match Photoshop builtins
              1.4b8,9,10 - simple parameter obfuscation in standalone plugins (wishlist #7)
-19-Feb-2007: 1.5b1 - support remaining 8-bit image modes (wishlist proposal)
+19-Feb-2007: 1.5b1,2 - support remaining 8-bit image modes (wishlist proposal)
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.5b1"
-#define VERSION_NUM 1,0x50,beta,1
+#define VERSION_STR "1.5b2"
+#define VERSION_NUM 1,0x50,beta,2
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,5,0,1
+#define VI_VERS_NUM 1,5,0,2
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
