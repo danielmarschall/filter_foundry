@@ -1,6 +1,6 @@
 /*
     This file is part of Filter Foundry, a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -19,35 +19,43 @@
 
 /* This is PLATFORM INDEPENDENT user interface code - mainly dialog logic */
 
-#include "ff.h"
+#include "preview.h"
+
+#ifdef MAC_ENV
+	#include <fp.h>
+#endif
+#include <math.h>
 
 #include "PIProperties.h"
 
-#include "node.h"
-#include "funcs.h"
-#include "y.tab.h"
-#include "choosefile.h"
+extern FilterRecordPtr gpb;
 
 PSPixelMap preview_pmap;
 PSPixelMask preview_pmask;
 Handle preview_handle;
 UIRECT preview_rect;
-int preview_w,preview_h,previewerr = false;
+int preview_w,preview_h,previewerr = false,needall = false,needinput = true;
 Point preview_scroll;
 Boolean preview_complete = false;
+double zoomfactor,fitzoom;
 
-Boolean setup_preview(FilterRecordPtr pb){
+Boolean setup_preview(FilterRecordPtr pb, int nplanes){
+	double zh,zv;
+
 	if(pb->displayPixels && pb->advanceState){
 		preview_w = MIN(preview_rect.right - preview_rect.left - 2,
 						pb->filterRect.right - pb->filterRect.left);
 		preview_h = MIN(preview_rect.bottom - preview_rect.top - 2,
 						pb->filterRect.bottom - pb->filterRect.top);
+		zh = (pb->filterRect.right - pb->filterRect.left)/(double)preview_w;
+		zv = (pb->filterRect.bottom - pb->filterRect.top)/(double)preview_h;
+		fitzoom = zh > zv ? zh : zv;
 	
 		preview_pmap.version = 1;
 		preview_pmap.bounds.left = preview_pmap.bounds.top = 0;
 		preview_pmap.bounds.right = preview_w;
 		preview_pmap.bounds.bottom = preview_h;
-		preview_pmap.imageMode = gpb->imageMode;
+		preview_pmap.imageMode = pb->imageMode;
 		preview_pmap.rowBytes = nplanes*preview_w;
 		preview_pmap.colBytes = nplanes;
 		preview_pmap.planeBytes = 1; /*interleaved*/
@@ -59,10 +67,10 @@ Boolean setup_preview(FilterRecordPtr pb){
 		//---------------------------------------------------------------------------	
 		preview_pmap.mat = NULL;
 		
-		if( (gpb->imageMode == plugInModeRGBColor && nplanes == 4)
-		 || (gpb->imageMode == plugInModeLabColor && nplanes == 4)
-		 || (gpb->imageMode == plugInModeGrayScale && nplanes == 2)
-		 || (gpb->imageMode == plugInModeDuotone && nplanes == 2) )
+		if( (pb->imageMode == plugInModeRGBColor && nplanes == 4)
+		 || (pb->imageMode == plugInModeLabColor && nplanes == 4)
+		 || (pb->imageMode == plugInModeGrayScale && nplanes == 2)
+		 || (pb->imageMode == plugInModeDuotone && nplanes == 2) )
 		{
 			preview_pmask.next = NULL;
 	//		preview_pmask.maskData = preview_data+3;
@@ -93,8 +101,6 @@ void dispose_preview(){
 }
 
 void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
-	extern int srcradused,needinput;
-	extern double zoomfactor;
 	OSErr e;
 	int j,n,scaledw,scaledh,imgw,imgh;
 	Rect r,outRect;
@@ -135,7 +141,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		r.right = r.left + scaledw;
 
 		/* now compute for vertical */
-		r.top = (pb->filterRect.top+pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
+		r.top = (pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
 		if(r.top < pb->filterRect.top) 
 			r.top = pb->filterRect.top;
 		else if(r.top > pb->filterRect.bottom-scaledh) 
@@ -143,17 +149,15 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		r.bottom = r.top + scaledh;
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
-		if(srcradused){
+		if(needall)
 			SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
-		}else
+		else
 			pb->inRect = r;
 		
 		pb->outRect = pb->inRect;
 		SETRECT(pb->maskRect,0,0,0,0);
 		pb->inLoPlane = pb->outLoPlane = 0;
 		pb->inHiPlane = pb->outHiPlane = nplanes-1;
-				
-//dbg("recalc_preview: about to call advanceState()");
 
 		if( !needinput || !(e = pb->advanceState()) ){
 			Ptr outptr = PILOCKHANDLE(preview_handle,false);
@@ -161,8 +165,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 				blankcols = (preview_w - imgw)/2,
 				pmrb = preview_pmap.rowBytes;
 
-			INITRANDSEED();
-//dbg("recalc_preview: about to call process()");
+			evalinit();
 				
 			SETRECT(outRect,0,0,imgw,imgh);
 			
@@ -176,7 +179,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			if(blankcols){
 				n = preview_w - blankcols - imgw; /* blank columns on right side of preview */
 				outrow = outptr + pmrb*blankrows;
-				for( j = blankrows ; j < preview_h - blankrows ; ++j ){
+				for(j = blankrows; j < preview_h - blankrows; ++j){
 					memset(outrow, 0xff, nplanes*blankcols);
 					memset(outrow + nplanes*(blankcols+imgw), 0xff, nplanes*n);
 					outrow += pmrb;
@@ -210,21 +213,11 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			}
 
 			PIUNLOCKHANDLE(preview_handle);
-
-		}/*else{
-			char s[0x100];
-			sprintf(s,"recalc_preview: advanceState failed (%d)\n\
-inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d) inLoPlane=%d inHiPlane=%d ",
-				e,
-				pb->inRect.left,pb->inRect.top,pb->inRect.right,pb->inRect.bottom,
-				pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom,
-				pb->inLoPlane,pb->inHiPlane);
-			dbg(s);
-		}*/
+		}
 
 		if(e && !previewerr){
 			alertuser("Could not build preview at chosen zoom level.",
-			        e == memFullErr && !srcradused ? "The image is too large for available memory. Try zooming in.\nIf that does not help, Cancel and retry the filter." : "");
+			        e == memFullErr && !needall ? "The image is too large for available memory. Try zooming in.\nIf that does not help, Cancel and retry the filter." : "");
 			previewerr = true;
 		}
 
@@ -247,7 +240,7 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 		imagebounds.bottom = imagebounds.top + preview_h;
 
 		preview_pmap.baseAddr = imageptr;
-		preview_pmask.maskData = imageptr+3;
+		preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!
 
 		if(gpb->propertyProcs->getPropertyProc){
 			gpb->propertyProcs->getPropertyProc(kPhotoshopSignature,propWatchSuspension,0,&watchsusp,NULL);

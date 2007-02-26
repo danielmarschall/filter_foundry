@@ -28,31 +28,10 @@
 #include "sprintf_tiny.h"
 
 #ifdef MAC_ENV
-	#include <files.h>
 	#include <plstringfuncs.h>
-	
-	#define GETSLIDERVALUE GetDlgControlValue
-	#define SETSLIDERVALUE SetDlgControlValue
-	#define GETCTLTEXT getctltext
-	#define SETCTLTEXT setctltext
-	#define GETCTLTEXTINT getctltextint
-	#define SETCTLTEXTINT setctltextint
-	#define SELECTCTLTEXT selectctltext
-#else
-	#include <commctrl.h>
-	#include "compat_string.h"
-	
-	#define GETSLIDERVALUE(d,i) SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
-	#define SETSLIDERVALUE(d,i,v) SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
-	#define GETCTLTEXT GetDlgItemText
-	#define SETCTLTEXT SetDlgItemText
-	#define SELECTCTLTEXT SELECTDLGITEMTEXT
-	#define GETCTLTEXTINT GetDlgItemInt
-	#define SETCTLTEXTINT SetDlgItemInt
 #endif
 
 Boolean doupdates = true;
-double zoomfactor,fitzoom;
 
 void updateglobals(DIALOGREF dp);
 struct node *updateexpr(DIALOGREF dp,int i);
@@ -303,12 +282,7 @@ void maindlginit(DIALOGREF dp){
 		}
 	}
 
-	if(setup_preview(gpb)){
-		extern int preview_w,preview_h;
-		double zh = (gpb->filterRect.right - gpb->filterRect.left)/(double)preview_w,
-		       zv = (gpb->filterRect.bottom - gpb->filterRect.top)/(double)preview_h;
-		fitzoom = zh > zv ? zh : zv;
-		
+	if(setup_preview(gpb,nplanes)){
 		// On very large images, processing a fully zoomed out preview (the initial default)
 		// can cause out of memory errors, because Photoshop can't page in all data
 		// during advanceState. To prevent this problem, zoom in until we aren't

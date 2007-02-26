@@ -104,11 +104,6 @@
 	Boolean builddialog(FilterRecordPtr pb);
 	Boolean simplealert(char *s);
 	
-	Boolean setup_preview(FilterRecordPtr pb);
-	void recalc_preview(FilterRecordPtr pb,DIALOGREF dp);
-	void dispose_preview();
-	OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr);
-	
 	// platform independent
 	Boolean alertuser(char *err,char *more);
 	void maindlginit(DIALOGREF dp);

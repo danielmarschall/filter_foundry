@@ -28,7 +28,7 @@
 
 struct node *tree[4];
 char *err[4];
-int errpos[4],errstart[4],nplanes,cnvused,srcradused,chunksize,toprow;
+int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
 value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4];
 long maxSpace;
@@ -172,7 +172,7 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 
 	// if any of the formulae involve random access to image pixels,
 	// ask for the entire image
-	if(srcradused){
+	if(needall){
 		SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
 	}else{
 		// otherwise, process the filtered area, by chunksize parts
@@ -195,8 +195,8 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	}
 	pb->outRect = pb->filterRect;
 /*
-{char s[0x100];sprintf(s,"RequestNext srcradused=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
-	srcradused, 
+{char s[0x100];sprintf(s,"RequestNext needall=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
+	needall, 
 	pb->inRect.left,pb->inRect.top,pb->inRect.right,pb->inRect.bottom,
 	pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom);dbg(s);}
 */
@@ -206,7 +206,7 @@ void DoStart(FilterRecordPtr pb){
 //dbg("DoStart");
 	/* if src() or rad() functions are used, random access to the image data is required,
 	   so we must request the entire image in a single chunk. */
-	chunksize = srcradused ? (pb->filterRect.bottom - pb->filterRect.top) : CHUNK_ROWS;
+	chunksize = needall ? (pb->filterRect.bottom - pb->filterRect.top) : CHUNK_ROWS;
 	toprow = pb->filterRect.top;
 	RequestNext(pb,toprow);
 }
@@ -216,7 +216,7 @@ OSErr DoContinue(FilterRecordPtr pb){
 	Rect fr;
 	long outoffset;
 
-	if(srcradused)
+	if(needall)
 		fr = pb->filterRect;  // filter whole selection at once
 	else if(cnvused){
 		// we've requested one pixel extra all around

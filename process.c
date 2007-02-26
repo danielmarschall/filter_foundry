@@ -18,13 +18,14 @@
 */
 
 #include "ff.h"
+
 #include "symtab.h"
 #include "node.h"
 #include "funcs.h"
 #include "y.tab.h"
 
 extern value_type var[];
-extern int nplanes,varused[],cnvused,srcradused;
+extern int nplanes,varused[],cnvused;
 extern struct node *tree[];
 
 // points to first row, first column of selection image data
@@ -38,10 +39,16 @@ int needinput;
    return TRUE if we're ready to go
 */
 
+// minimum setup required when formulae have not changed,
+// and a new preview is to be generated. (Called by recalc_preview())
+void evalinit(){
+	INITRANDSEED();
+}
+
+// full setup for evaluation, called when formulae have changed.
 Boolean setup(FilterRecordPtr pb){
 	int i;
 
-	INITRANDSEED();
 	var['X'] = pb->filterRect.right - pb->filterRect.left;
 	var['Y'] = pb->filterRect.bottom - pb->filterRect.top;
 	var['Z'] = nplanes;
@@ -51,18 +58,19 @@ Boolean setup(FilterRecordPtr pb){
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;
-	srcradused = cnvused = 0;
+	needall = cnvused = 0;
 	for(i = 0; i < nplanes; ++i){
 //char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
 		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
-			checkvars(tree[i],varused,&cnvused,&srcradused);
+			checkvars(tree[i],varused,&cnvused,&needall);
 		else
 			break;
 	}
-	needinput = ( cnvused || srcradused
+	needinput = ( cnvused || needall
 		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
-
+	
+	evalinit();
 	return i==nplanes; /* all required expressions parse OK */
 }
 

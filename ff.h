@@ -28,6 +28,8 @@
 #include "file_compat.h"
 #include "symtab.h"
 #include "PARM.h"
+#include "preview.h"
+#include "misc.h"
 
 enum{
 	TAB = 011,
@@ -50,37 +52,16 @@ typedef struct{
 } globals_t;
 
 extern globals_t *gdata;
-extern FilterRecordPtr gpb;
 
 extern struct node *tree[4];
 extern char *err[4];
-extern int errpos[4],errstart[4],nplanes;
+extern int errpos[4],errstart[4];//,nplanes;
 extern value_type slider[8],cell[0x100],map[4][0x100];
 extern char *expr[4];
 extern long maxSpace;
 
 extern int tokpos,tokstart,varused[];
 extern char *errstr;
-
-#if 1
-#define PINEWHANDLE		gpb->handleProcs->newProc
-#define PIDISPOSEHANDLE	gpb->handleProcs->disposeProc
-#define PIGETHANDLESIZE	gpb->handleProcs->getSizeProc
-#define PISETHANDLESIZE	gpb->handleProcs->setSizeProc
-#define PILOCKHANDLE	gpb->handleProcs->lockProc
-#define PIUNLOCKHANDLE	gpb->handleProcs->unlockProc
-#else
-// avoid host callbacks for AE
-#define PINEWHANDLE		NewHandle
-#define PIDISPOSEHANDLE	DisposeHandle
-#define PIGETHANDLESIZE	GetHandleSize
-#define PISETHANDLESIZE(h,s) ( SetHandleSize(h,s),MemError() )
-#define PILOCKHANDLE(h,f) ( HLock(h),*(h) )
-#define PIUNLOCKHANDLE	HUnlock
-#endif
-
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 #define DBG(x)
 //#define DEBUG
@@ -108,9 +89,6 @@ OSErr make_standalone(StandardFileReply *sfr);
 
 Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
-OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
-					 Rect *filterRect, Rect *outRect,
-					 void *outData, long outRowBytes, double zoom);
 
 unsigned long printablehash(unsigned long hash);
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title);

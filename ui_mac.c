@@ -27,12 +27,6 @@
 
 #include "ff.h"
 
-extern PSPixelMap preview_pmap;
-extern PSPixelMask preview_pmask;
-extern Handle preview_handle;
-extern UIRECT preview_rect;
-extern int preview_w,preview_h;
-
 extern Point preview_scroll;
 
 CursHandle handcursor,ibeamcursor;
@@ -40,7 +34,6 @@ ControlActionUPP action_UPP,indaction_UPP;
 DIALOGREF thedialog;
 ControlRef exprctls[4];
 int trackingitem;
-extern double zoomfactor;
 
 pascal void preview_item(DialogRef dp,DialogItemIndex item);
 pascal void slideraction(ControlRef theControl,short partCode);
@@ -65,24 +58,6 @@ Boolean simplealert(char *s){
 	i = StopAlert(ID_SYNTAXALERT,NULL);
 	myp2cstr((StringPtr)s);
 	return i == ok;
-}
-
-pascal void preview_item(DialogRef dp,DialogItemIndex item){
-	GrafPtr port;
-	
-	ENTERCALLBACK();
-
-	GetPort(&port);
-	SetPortDialogPort(dp);
-
-	drawpreview(dp,0,PILOCKHANDLE(preview_handle,false));
-	PIUNLOCKHANDLE(preview_handle);
-
-	FrameRect(&preview_rect);
-	
-	SetPort(port);
-
-	EXITCALLBACK();
 }
 
 /*

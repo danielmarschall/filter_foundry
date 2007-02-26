@@ -27,11 +27,8 @@
 #include <commctrl.h>
 
 #include "ff.h"
-#include "version.h"
 
-extern UIRECT preview_rect;
-extern double zoomfactor;
-extern Point preview_scroll;
+#include "version.h"
 
 HWND preview_hwnd;
 
