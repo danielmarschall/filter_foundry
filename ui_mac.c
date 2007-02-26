@@ -111,14 +111,12 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 
 /* !(result = standardfilter(dialog,event,item)) && */
 
-	if(!event->what)
-		gpb->processEvent(event); // pass null events to Photoshop
-	
-	if(event->what == updateEvt && (WindowRef)event->message != GetDialogWindow(dialog)){
-		// pass Photoshop update events for its windows
+	if( !event->what || (event->what == updateEvt 
+						 && (WindowRef)event->message != GetDialogWindow(dialog)) )
+	{	// pass null events and update events to Photoshop
 		gpb->processEvent(event);
-		result = false;
-	}else if( event->what == mouseDown ){
+	}
+	else if(event->what == mouseDown){
 
 		pt = event->where;
 		GlobalToLocal(&pt);
@@ -148,7 +146,8 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 			result = true;
 		}
 		
-	}else{
+	}
+	else{
 		GetKeyboardFocus(GetDialogWindow(dialog),&focus);
 		/* handle return keypresses */
 		if( event->what == keyDown && (char)event->message == CR

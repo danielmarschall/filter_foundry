@@ -43,8 +43,8 @@ pascal void preview_item(DialogRef dp,DialogItemIndex item){
 	EXITCALLBACK();
 }
 
-// The following code is not actually used in Filter Foundry;
-// it implements a preview-only event filter, for plugins that need
+// The following code is not actually used by Filter Foundry;
+// it implements an event filter for plugins that need
 // only preview functionality (without sliders).
 
 pascal Boolean previewfilter(DialogRef dialog,EventRecord *event,short *item){	
@@ -59,15 +59,12 @@ pascal Boolean previewfilter(DialogRef dialog,EventRecord *event,short *item){
 	GetPort(&oldport);
 	SetPortDialogPort(dialog);
 
-	if(!event->what)
-		gpb->processEvent(event); // pass null events to Photoshop
-	
-	if(event->what == updateEvt && (WindowRef)event->message != GetDialogWindow(dialog)){
-		// pass Photoshop update events for its windows
+	if( !event->what || (event->what == updateEvt 
+						 && (WindowRef)event->message != GetDialogWindow(dialog)) )
+	{	// pass null events and update events to Photoshop
 		gpb->processEvent(event);
-		result = false;
-	}else if(event->what == mouseDown){
-
+	}
+	else if(event->what == mouseDown){
 		pt = event->where;
 		GlobalToLocal(&pt);
 	
@@ -88,11 +85,9 @@ pascal Boolean previewfilter(DialogRef dialog,EventRecord *event,short *item){
 			*item = i;
 			result = true;
 		}
-		
-	}else{
-		//GetKeyboardFocus(GetDialogWindow(dialog),&focus);
-		result = StdFilterProc(dialog,event,item);
 	}
+	else
+		result = StdFilterProc(dialog,event,item);
 		
 	SetPort(oldport);
 
