@@ -51,12 +51,15 @@ CPPFLAGS += -I$(PSAPI)/Pica_sp -I$(PSAPI)/Photoshop -I$(PSAPI)/General \
 vpath %.c ../common/tt ../common/adobeplugin ../MoreFiles/Sources
 
 # list of source files
-SRC_COMMON = main.c funcs.c trigtab.c process.c node.c symtab.c sprintf_tiny.c \
-	ui.c ui_build.c preview.c read.c save.c make.c scripting.c y.tab.c lex.yy.c str.c
-SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c choosefile_nav.c \
+SRC_COMMON = main.c funcs.c trigtab.c process.c node.c symtab.c \
+	sprintf_tiny.c ui.c ui_build.c preview.c read.c save.c make.c \
+	scripting.c y.tab.c lex.yy.c str.c
+SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
+	choosefile_nav.c preview_mac.c \
 	MoreFilesExtras.c MoreFiles.c MoreDesktopMgr.c FileCopy.c Search.c
-SRC_W32 = dbg_win.c ui_win.c make_win.c load_win.c ui_compat_win.c choosefile_win.c \
-	ui_build_win.c compat_string.c compat_win.c file_compat_win.c dllmain.c
+SRC_W32 = dbg_win.c ui_win.c make_win.c load_win.c ui_compat_win.c \
+	choosefile_win.c ui_build_win.c compat_string.c compat_win.c \
+	file_compat_win.c dllmain.c
 
 # derive lists of object files, separate for each platform
 OBJ_OSX := $(patsubst %.c, obj/%.o,     $(SRC_COMMON) $(SRC_OSX))
@@ -91,7 +94,7 @@ all : dll osx
 
 dll : $(PLUGIN_W32)
 
-osx fat : $(BUNDLE) $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist $(BUNDLE)/Contents/PkgInfo
+osx fat : $(BUNDLE) $(PLUGIN_PARTS)
 
 # See: http://developer.apple.com/documentation/Porting/Conceptual/PortingUnix/compiling/chapter_4_section_3.html#//apple_ref/doc/uid/TP40002850-BAJCFEBA
 fat : CFLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
