@@ -31,7 +31,6 @@ resource 'PiPL' (16000, purgeable)
 	{
 		Category { "Telegraphics" },
 		Name { "Filter Foundry…" },
-		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 #include "pipl_common.r"
 		CodePowerPC { 0, 0, "" },
 #ifdef BUILD68K

@@ -38,15 +38,6 @@ BEGIN
 	
 	VENDORID, LC(c,a,t,g), NULLID, 13L, "\014Telegraphics\0\0\0", /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 18L, "\021Filter Foundry...\0\0", /* PString */
-
-	/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
-	VENDORID, LC(h,s,t,m), NULLID, 41L, /* = 14 + sizeof(c string) */
-		0L,								/* version */
-		LC(f,i,F,o),					/* Class ID, always required.  Can be Suite ID. */
-		LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
-		AETE_ID,						/* Dictionary ('AETE') resource ID. */
-		"Telegraphics FilterFoundry\0\0\0\0", /* Unique scope string, C format, long padded.
-												 Always required in Photoshop 5.0 and later. */
 #include "PiPL_body.rc"
 		
 END
@@ -55,7 +46,7 @@ END
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
-	5L, 			/* Property Count */
+	6L, 			/* Property Count */
 	
 #include "PiPL_body.rc"
 		

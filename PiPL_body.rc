@@ -30,4 +30,13 @@ VENDORID, LC(m,o,d,e), NULLID, 2L, flagSupportsGrayScale|flagSupportsIndexedColo
 	   doNotCopySourceToDestination */
 VENDORID, LC(f,i,c,i), NULLID, 28L,
 	"\001\001\003\000","\001\001\003\000","\001\001\003\000","\001\001\003\000",
-	"\001\001\003\000","\001\001\003\000","\001\001\003\000"
+	"\001\001\003\000","\001\001\003\000","\001\001\003\000",
+
+/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
+VENDORID, LC(h,s,t,m), NULLID, 41L, /* = 14 + sizeof(c string) */
+	0L,								/* version */
+	LC(f,i,F,o),					/* Class ID, always required.  Can be Suite ID. */
+	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
+	AETE_ID,						/* Dictionary ('AETE') resource ID. */
+	"Telegraphics FilterFoundry\0\0\0\0" /* Unique scope string, C format, long padded.
+											 Always required in Photoshop 5.0 and later. */
