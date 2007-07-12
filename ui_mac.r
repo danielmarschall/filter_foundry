@@ -40,9 +40,7 @@ resource 'ALRT' (ID_ABOUTDLG, purgeable) {
 	alertPositionMainScreen
 };
 resource 'DITL' (ID_ABOUTDLG, purgeable) {
-	{	/* array DITLarray: 5 elements */
-		/* [1] */
-		/* [2] */
+	{
 		{16, 20, 96, 340},
 		StaticText {
 			disabled,
@@ -67,9 +65,7 @@ resource 'ALRT' (ID_ABOUTSTANDALONEDLG, purgeable) {
 	alertPositionMainScreen
 };
 resource 'DITL' (ID_ABOUTSTANDALONEDLG, purgeable) {
-	{	/* array DITLarray: 5 elements */
-		/* [1] */
-		/* [2] */
+	{
 		{16, 20, 80, 340},
 		StaticText {
 			disabled,

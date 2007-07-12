@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -145,9 +145,9 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 }
 
 int copyletters(char *dst,StringPtr src){
-	int i,n=0;
+	int i, n;
 
-	for(i=src[0];i--;)
+	for(i = src[0], n = 0; i--;)
 		if(isalpha(*++src)){
 			*dst++ = *src;
 			++n;
@@ -155,7 +155,7 @@ int copyletters(char *dst,StringPtr src){
 	return n;
 }
 
-// Info.plist in new standalone copy needs to be edited
+// Info.plist in new standalone copy needs to be edited -
 // at least the CFBundleIdentifier property must be unique
 
 OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
@@ -186,7 +186,8 @@ OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 							if(!m){
 								// generate a random ASCII identifier
 								srand(TICKCOUNT());
-								for(i=8;i--;) *p++ = 'a' + (rand() % 26);
+								for(i = 8; i--;)
+									*p++ = 'a' + (rand() % 26);
 							}
 							strcpy(p,save);
 							
@@ -223,12 +224,12 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 			if( !(e = DirCreate(dstvol,contentsdir,"\pMacOS",&macosdir)) ){
 				if( !(e = DirCreate(dstvol,contentsdir,"\pResources",&rsrcdir)) ){
 
-					/* directories created ; now we need to copy the Info.plist file, resource file, and executable */
+					/* directories created; copy the Info.plist file, resource file, and executable */
 
 					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::MacOS:FilterFoundry",&macosfss))
 					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) )
 					{
-						/* now we add PARM resources to each binary, and edit PiPLs */
+						/* add PARM resources to each binary, and edit PiPLs */
 						if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Resources:FilterFoundry.rsrc",&rsrcfss))
 						 && !(e = FileCopy(rsrcfss.vRefNum,rsrcfss.parID,rsrcfss.name, dstvol,rsrcdir,NULL, NULL,NULL,0,false))
 						 && !(e = FSMakeFSSpec(dstvol,rsrcdir,"\pFilterFoundry.rsrc",&rsrccopyfss)) )
@@ -256,7 +257,7 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 	return e;
 }
 
-OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname){
+OSErr make_singlefile(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
 	OSErr e;
 	FSSpec origfss;
 
@@ -268,7 +269,7 @@ OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringP
 
 	if( !(e = FileCopy(plugvol,plugdir,plugname, sfr->sfFile.vRefNum,sfr->sfFile.parID,NULL, sfr->sfFile.name,NULL,0,false)) 
 	 && !(e = FSMakeFSSpec(plugvol,plugdir,plugname,&origfss)) )
-		/* now we add PARM resources, and edit PiPL */
+		/* add PARM resources, and edit PiPL */
 		e = doresources(&origfss, &sfr->sfFile);
 
 	return e;
@@ -280,12 +281,13 @@ OSErr make_standalone(StandardFileReply *sfr){
 	long plugdir;
 	Str255 plugname;
 	
-	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname)))
+	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname))){
 #ifdef MACMACHO
-	e = make_bundle(sfr,plugvol,plugdir,plugname);
+		e = make_bundle(sfr,plugvol,plugdir,plugname);
 #else
-	e = make_singlefile(sfr,plugvol,plugdir,plugname);
+		e = make_singlefile(sfr,plugvol,plugdir,plugname);
 #endif
+	}
 
 	if(e && e != userCanceledErr) 
 		alertuser("Could not create standalone plugin.","");

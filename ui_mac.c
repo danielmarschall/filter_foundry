@@ -47,6 +47,7 @@ void DoAbout(AboutRecordPtr prec){
 		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
 	}else
 		Alert(ID_ABOUTDLG,filterproc_UPP);
+
 	DisposeModalFilterUPP(filterproc_UPP);
 }
 
@@ -166,9 +167,8 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 }
 
 Boolean maindialog(FilterRecordPtr pb){
-	short itemType;
+	short itemType, item;
 	Handle itemHdl;
-	short item;
 	DIALOGREF dp;
 	int i;
 	UserItemUPP preview_image_UPP = NewUserItemUPP(preview_item);
@@ -191,7 +191,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	SetDialogTracksCursor(dp,true);
 	
 	if(!gdata->standalone)
-		for(i=0;i<4;++i)
+		for(i = 0; i < 4; ++i)
 			GetDialogItemAsControl(dp,FIRSTEXPRITEM+i,&exprctls[i]);
 
 	maindlginit(dp);
