@@ -29,26 +29,18 @@
 #include "FileCopy.h" 
 #include "MoreFilesExtras.h"
 
-OSErr wrstr(FILEREF rn,char *s);
-OSErr dopkginfo(FILEREF rn);
-OSErr make_bundle(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname);
-OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopyfss);
-OSErr make_singlefile(StandardFileReply *sfr, short plugvol,long plugdir,StringPtr plugname);
-OSErr copyplist(FSSpec *fss, short dstvol,long dstdir);
-int copyletters(char *dst,StringPtr src);
-
 // prototype for a function included in Carbon's stdlib and declared in /usr/include/string.h
 // but missing from MPW Universal header string.h
 #ifndef _STRING_H_
 	char    *strnstr(const char *, const char *, size_t);
 #endif
 
-OSErr wrstr(FILEREF rn,char *s){
+static OSErr wrstr(FILEREF rn,char *s){
 	long count = strlen(s);
 	return FSWrite(rn,&count,s);
 }
 
-OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
+static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	short srcrn,dstrn;
 	Handle hpipl,h;
 	long origsize,newsize,parm_type,parm_id;
@@ -144,7 +136,7 @@ OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	return e;
 }
 
-int copyletters(char *dst,StringPtr src){
+static int copyletters(char *dst,StringPtr src){
 	int i, n;
 
 	for(i = src[0], n = 0; i--;)
@@ -158,7 +150,7 @@ int copyletters(char *dst,StringPtr src){
 // Info.plist in new standalone copy needs to be edited -
 // at least the CFBundleIdentifier property must be unique
 
-OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
+static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 	static char *key = "com.telegraphics.FilterFoundry";
 	static unsigned char *fname="\pInfo.plist";
 	char *buf,*save,*p;
@@ -208,12 +200,15 @@ OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 	return e;
 }
 
-OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
+static OSErr make_bundle(StandardFileReply *sfr, short plugvol,
+						 long plugdir, StringPtr plugname, char *reason)
+{
 	short dstvol = sfr->sfFile.vRefNum;
 	long bundledir,contentsdir,macosdir,rsrcdir;
 	DInfo fndrInfo;
 	OSErr e;
 	FSSpec fss,macosfss,rsrcfss,rsrccopyfss;
+	char *why;
 
 	if( !(e = FSpDirCreate(&sfr->sfFile,sfr->sfScript,&bundledir)) ){
 		if(!(e = FSpGetDInfo(&sfr->sfFile,&fndrInfo)) ){
@@ -223,9 +218,7 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 		if( !(e = DirCreate(dstvol,bundledir,"\pContents",&contentsdir)) ){
 			if( !(e = DirCreate(dstvol,contentsdir,"\pMacOS",&macosdir)) ){
 				if( !(e = DirCreate(dstvol,contentsdir,"\pResources",&rsrcdir)) ){
-
-					/* directories created; copy the Info.plist file, resource file, and executable */
-
+					/* copy the Info.plist file, resource file, and executable */
 					if( !(e = FSMakeFSSpec(plugvol,plugdir,"\p::MacOS:FilterFoundry",&macosfss))
 					 && !(e = FileCopy(macosfss.vRefNum,macosfss.parID,macosfss.name, dstvol,macosdir,NULL, NULL,NULL,0,false)) )
 					{
@@ -238,26 +231,33 @@ OSErr make_bundle(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr
 							 && !(e = FSMakeFSSpec(plugvol,plugdir,"\p::Info.plist",&fss)) )
 							{
 								e = copyplist(&fss,dstvol,contentsdir);
-								
-								if(e) FSpDelete(&rsrccopyfss);
-							}
+								if(e){
+									FSpDelete(&rsrccopyfss);
+									why = "Can't copy Info.plist file.";
+								}
+							}else why = "Can't copy resources.";
 							if(e) HDelete(dstvol,macosdir,"\pFilterFoundry");
-						}
+						}else why = "Can't copy FilterFoundry.rsrc file.";
 						if(e) HDelete(dstvol,rsrcdir,plugname);
-					}
+					}else why = "Can't copy FilterFoundry executable.";
 					if(e) HDelete(dstvol,contentsdir,"\pResources");
-				}
+				}else why = "Can't create bundle Contents/Resources directory.";
 				if(e) HDelete(dstvol,contentsdir,"\pMacOS");
-			}
+			}else why = "Can't create bundle Contents/MacOS directory.";
 			if(e) HDelete(dstvol,bundledir,"\pContents");
-		}
+		}else why = "Can't create bundle Contents directory.";
 		if(e) FSpDelete(&sfr->sfFile);
-	}
-		
+	}else why = "Can't create new bundle directory.";
+
+	if(e)
+		sprintf(reason, "%s (%d)", why, e);
+	else
+		reason[0] = 0;
+
 	return e;
 }
 
-OSErr make_singlefile(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
+static OSErr make_singlefile(StandardFileReply *sfr, short plugvol, long plugdir, StringPtr plugname){
 	OSErr e;
 	FSSpec origfss;
 
@@ -280,17 +280,18 @@ OSErr make_standalone(StandardFileReply *sfr){
 	short plugvol;
 	long plugdir;
 	Str255 plugname;
+	char reason[0x100] = {0};
 	
 	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname))){
 #ifdef MACMACHO
-		e = make_bundle(sfr,plugvol,plugdir,plugname);
+		e = make_bundle(sfr,plugvol,plugdir,plugname,reason);
 #else
 		e = make_singlefile(sfr,plugvol,plugdir,plugname);
 #endif
 	}
 
 	if(e && e != userCanceledErr) 
-		alertuser("Could not create standalone plugin.","");
+		alertuser("Could not create standalone plugin.",reason);
 	
 	return e;
 }

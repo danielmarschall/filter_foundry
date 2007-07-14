@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>EXEC</string>
 	<key>CFBundleGetInfoString</key>
-	<string>EXEC plugin VERSION_STR Copyright (C) Telegraphics Pty Ltd 1995-2006</string>
+	<string>EXEC plugin VERSION_STR Copyright (C) Telegraphics Pty Ltd 1995-2007</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.telegraphics.EXEC</string>
 	<key>CFBundleName</key>

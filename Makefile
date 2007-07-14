@@ -70,13 +70,13 @@ OBJ_W32 := $(patsubst %.c, obj_w32/%.o, $(SRC_COMMON) $(SRC_W32)) obj_w32/res.o
 
 # parts of Mac OS X plugin bundle to build
 # Adobe's plugs use .plugin extension
-BUNDLE = $(EXEC)_cs2.plugin
+BUNDLE = $(EXEC).plugin
 PLUGIN_OSX  = $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLUGIN_RSRC = $(BUNDLE)/Contents/Resources/$(EXEC).rsrc
 PLUGIN_PARTS = $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist $(BUNDLE)/Contents/PkgInfo
-DISTDMG = dist/$(EXEC)-$(VERSION)-mac_cs2.dmg
+DISTDMG = dist/$(EXEC)-$(VERSION).dmg
 
-$(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -Dmacintosh \
+$(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -DMACMACHO -Dmacintosh \
 	-I/Developer/Headers/FlatCarbon \
 	-I../MoreFiles/CHeaders -I../MoreFiles/Sources
 
@@ -113,7 +113,7 @@ $(BUNDLE)/Contents/Info.plist : Info.plist $(BUNDLE) version.h
 
 $(BUNDLE)/Contents/PkgInfo : $(BUNDLE)
 	mkdir -p $(dir $@)
-	echo -n 8BIF8BIM > $@
+	echo -n 8BFM8BIM > $@
 
 clean :
 	rm -fr *.[ox] $(OBJ_OSX) $(OBJ_W32) $(PLUGIN_W32) $(BUNDLE) \
