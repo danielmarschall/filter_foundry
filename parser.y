@@ -71,7 +71,7 @@ int pushflag(int x){
 %token TOK_SPECIALVAR TOK_VAR TOK_UNKNOWN TOK_BADCHAR
 
 %left ','
-%left '?' ':'
+%right '?' ':'
 %left LOGAND LOGOR
 %left '&' '^' '|'
 %left EQ NE

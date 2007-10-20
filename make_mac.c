@@ -35,11 +35,6 @@
 	char    *strnstr(const char *, const char *, size_t);
 #endif
 
-static OSErr wrstr(FILEREF rn,char *s){
-	long count = strlen(s);
-	return FSWrite(rn,&count,s);
-}
-
 static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	short srcrn,dstrn;
 	Handle hpipl,h;
@@ -52,8 +47,8 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	// work with resources in data fork
 	if( !(e = FSpMakeFSRef(srcplug,&inref))
 	 && !(e = FSOpenResourceFile(&inref,0/*forkNameLength*/,NULL/*forkName*/,fsRdPerm,&srcrn))
-	 && !(e = FSpMakeFSRef(rsrccopy,&outref))
-	 &&  (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn)) )
+	 && ((e = FSpMakeFSRef(rsrccopy,&outref))
+		 || (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn))) )
 		CloseResFile(srcrn);
 #else
 	// ordinary resource fork files

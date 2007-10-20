@@ -75,12 +75,12 @@ void updateglobals(DIALOGREF dp){
 		for(i = 0; i < 4; ++i){
 			/* stash expression strings */
 			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){
-				if(expr[i]) 
+				if(expr[i])
 					free(expr[i]);
-				if(!(expr[i] = my_strdup(s))) 
-					dbg("updateglobals: my_strdup returned zero??");
-			}else 
-				dbg("updateglobals: GETCTLTEXT returned zero??");
+				expr[i] = my_strdup(s);
+			}
+			if(!expr[i])
+				expr[i] = my_strdup("c");
 		}
 }
 
