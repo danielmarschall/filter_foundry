@@ -3,7 +3,7 @@
     Copyright (C) 2003-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -45,10 +45,10 @@ extern int nplanes,varused[];
 int checkandinitparams(Handle params);
 
 // MPW MrC requires prototype
-DLLEXPORT MACPASCAL 
+DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector,FilterRecordPtr pb,intptr_t *data,short *result);
 
-DLLEXPORT MACPASCAL 
+DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	OSErr e = noErr;
@@ -58,7 +58,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		BufferID tempId;
 		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) )
 			return;
-		gdata = (globals_t*)*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
+		*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
+		gdata = (globals_t*)*data;
 		gdata->standalone = gdata->parmloaded = false;
 	}else
 		gdata = (globals_t*)*data;
@@ -73,7 +74,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	case filterSelectorAbout:
 		if(gdata && !gdata->parmloaded)
 			gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
-		DoAbout((AboutRecordPtr)pb); 
+		DoAbout((AboutRecordPtr)pb);
 		break;
 	case filterSelectorParameters:
 		wantdialog = true;
@@ -108,8 +109,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			}
 		}
 		break;
-	case filterSelectorContinue: 
-		e = DoContinue(pb); 
+	case filterSelectorContinue:
+		e = DoContinue(pb);
 		break;
 	case filterSelectorFinish:
 		DoFinish(pb);
@@ -117,7 +118,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	default:
 		e = filterBadParameters;
 	}
-		
+
 	*result = e;
 
 	ExitCodeResource();
@@ -126,7 +127,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
 	int i,f,showdialog;
-	
+
 	if( (f = !(params && readparams(params,false,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
@@ -151,9 +152,9 @@ int checkandinitparams(Handle params){
 			}
 		}
 	}
-	
+
 	// let scripting system change parameters, if we're scripted;
-	// user may want to force display of dialog during scripting playback 
+	// user may want to force display of dialog during scripting playback
 	showdialog = ReadScriptParamsOnRead();
 
 	saveparams(params);
@@ -162,13 +163,17 @@ int checkandinitparams(Handle params){
 
 void DoPrepare(FilterRecordPtr pb){
 	int i;
+	long space = (pb->maxSpace*9)/10; // don't ask for more than 90% of available memory
 
 	for(i = 4; i--;){
 		if(expr[i]||tree[i]) DBG("expr[] or tree[] non-NULL in Prepare!");
 		expr[i] = NULL;
 		tree[i] = NULL;
 	}
-	maxSpace = pb->maxSpace;
+	maxSpace = 512L<<10; // this is a wild guess, actually
+	if(maxSpace > space)
+		maxSpace = space;
+	pb->maxSpace = maxSpace;
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){
@@ -187,7 +192,7 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 		pb->inRect.right = pb->filterRect.right;
 		pb->inRect.top = toprow;
 		pb->inRect.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
-		
+
 		if(cnvused){
 			// cnv() needs one extra pixel in each direction
 			if(pb->inRect.left > 0)
@@ -203,7 +208,7 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	pb->outRect = pb->filterRect;
 /*
 {char s[0x100];sprintf(s,"RequestNext needall=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
-	needall, 
+	needall,
 	pb->inRect.left,pb->inRect.top,pb->inRect.right,pb->inRect.bottom,
 	pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom);dbg(s);}
 */
@@ -236,7 +241,7 @@ OSErr DoContinue(FilterRecordPtr pb){
 	}else  // filter whatever portion we've been given
 		fr = pb->inRect;
 
-	outoffset = (long)pb->outRowBytes*(fr.top - pb->outRect.top) 
+	outoffset = (long)pb->outRowBytes*(fr.top - pb->outRect.top)
 				+ (long)nplanes*(fr.left - pb->outRect.left);
 
 	if(!(e = process_scaled(pb, true, &fr, &fr,

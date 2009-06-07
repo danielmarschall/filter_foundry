@@ -49,7 +49,7 @@ OBJ_CLASSIC = main.cl.x ui_mac.cl.x ui.cl.x ui_build.cl.x ¶
 	preview.cl.x read.cl.x save.cl.x preview_mac.cl.x make_mac.cl.x load_mac.cl.x make.cl.x scripting.cl.x ¶
 	y.tab.cl.x lex.yy.cl.x node.cl.x symtab.cl.x funcs.cl.x process.cl.x trigtab.cl.x ¶
 	{COMMONT}dbg_mac.cl.x {COMMONT}str.cl.x {COMMONT}ui_compat_mac.cl.x ¶
-	{COMMONT}choosefile_nav.cl.x {COMMONT}sprintf_tiny.cl.x ¶
+	{COMMONT}choosefile_nav.cl.x ¶
 	::MoreFiles:Sources:MoreFilesExtras.cl.x ¶
 	::MoreFiles:Sources:MoreFiles.cl.x ¶
 	::MoreFiles:Sources:MoreDesktopMgr.cl.x ¶
@@ -59,7 +59,7 @@ OBJ_CARBON =  main.ca.x ui_mac.ca.x ui.ca.x ui_build.ca.x ¶
 	preview.ca.x read.ca.x save.ca.x preview_mac.ca.x make_mac.ca.x load_mac.ca.x make.ca.x scripting.ca.x ¶
 	y.tab.ca.x lex.yy.ca.x node.ca.x symtab.ca.x funcs.ca.x process.ca.x trigtab.ca.x ¶
 	{COMMONT}dbg_mac.ca.x {COMMONT}str.ca.x {COMMONT}ui_compat_mac.ca.x ¶
-	{COMMONT}choosefile_nav.ca.x {COMMONT}sprintf_tiny.ca.x ¶
+	{COMMONT}choosefile_nav.ca.x ¶
 	::MoreFiles:Sources:MoreFilesExtras.ca.x ¶
 	::MoreFiles:Sources:MoreFiles.ca.x ¶
 	::MoreFiles:Sources:MoreDesktopMgr.ca.x ¶

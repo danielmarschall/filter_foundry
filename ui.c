@@ -117,7 +117,7 @@ struct node *updateexpr(DIALOGREF dp,int item){
 
 void updatezoom(DIALOGREF dp){
 	char s[10];
-	snprintf(s, 10, "%d%%", (int)(100./zoomfactor));
+	sprintf(s, "%d%%", (int)(100./zoomfactor));
 	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
 	if(zoomfactor > 1.)
 		ShowDialogItem(dp,ZOOMINITEM);

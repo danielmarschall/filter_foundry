@@ -38,7 +38,7 @@ LEX = flex
 YACC = bison -y
 YFLAGS = -d
 
-PSAPI = "../../.wine/drive_c/Adobe Photoshop CS4 SDK/photoshopapi"
+PSAPI = "../Adobe Photoshop CS3 Public Beta SDK/photoshopapi"
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -DYY_SKIP_YYWRAP \
@@ -53,7 +53,7 @@ vpath %.c ../common/tt ../common/adobeplugin ../MoreFiles/Sources
 
 # list of source files
 SRC_COMMON = main.c funcs.c trigtab.c process.c node.c symtab.c \
-	sprintf_tiny.c ui.c ui_build.c preview.c read.c save.c make.c \
+	ui.c ui_build.c preview.c read.c save.c make.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
 	choosefile_nav.c preview_mac.c \

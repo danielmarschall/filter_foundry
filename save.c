@@ -3,7 +3,7 @@
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -30,7 +30,7 @@ OSErr putstr(Handle h,char *s){
 	Ptr p;
 	OSErr e;
 	long size = PIGETHANDLESIZE(h),n = strlen(s);
-	
+
 	if(!(e = PISETHANDLESIZE(h,size+n))){
 		p = PILOCKHANDLE(h,false);
 		memcpy(p+size,s,n);
@@ -45,22 +45,22 @@ OSErr saveparams(Handle h){
 	OSErr e;
 	long est;
 	static char afs_sig[] = "%RGB-1.0\n";
-	
+
 	if(!h) DBG("saveparams: Null handle!");
-	
+
 	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
 	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
-	
+
 	PIUNLOCKHANDLE(h); // should not be necessary
 	if( !(e = PISETHANDLESIZE(h,est)) && (p = start = PILOCKHANDLE(h,false)) ){
 		// build one long string in AFS format
 		p = cat(p,afs_sig); // first the header signature
-		
+
 		/* then slider values, one per line */
 		for( i=0 ; i<8 ; ++i )
-			p += sprintf(p, "%d\n", slider[i]);
-		
+			p += sprintf(p, "%ld\n", slider[i]);
+
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){
 			if( (r = expr[i]) )
@@ -71,7 +71,7 @@ OSErr saveparams(Handle h){
 							*q++ = '\\';
 							*q++ = 'r';
 							++r;
-						}else 
+						}else
 							*q++ = *r++;
 					*q++ = '\n';
 					*q = 0;
