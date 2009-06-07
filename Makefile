@@ -138,7 +138,15 @@ $(DISTDMG) : $(PLUGIN_PARTS) dist/README.html dist/gpl.html
 zip : $(DISTZIP)
 
 $(DISTZIP) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.afs
-	zip -j -9 -r $@ $^
+	T=`mktemp -d`; \
+		D=$$T/FilterFoundry-$(VERSION); \
+		mkdir -p $$D/examples; \
+		cp $^ $$D; \
+		mv $$D/*.afs $$D/examples; \
+		cd $$T; \
+		zip -9 -r temp.zip FilterFoundry-$(VERSION); \
+		mv temp.zip $(PWD)/$@; \
+		rm -fr $$T
 	ls -l $@
 
 dist/gpl.html : 
