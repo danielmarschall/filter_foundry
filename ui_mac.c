@@ -42,7 +42,7 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item);
 void DoAbout(AboutRecordPtr prec){
 	ModalFilterUPP filterproc_UPP = NewModalFilterUPP(aboutfilter);
 
-	if(gdata->standalone){
+	if(gdata && gdata->standalone){
 		ParamText(gdata->parm.title,gdata->parm.author,gdata->parm.copyright,NULL);
 		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
 	}else

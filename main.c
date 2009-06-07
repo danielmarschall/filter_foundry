@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -44,27 +44,34 @@ extern int nplanes,varused[];
 
 int checkandinitparams(Handle params);
 
+// MPW MrC requires prototype
 DLLEXPORT MACPASCAL 
-void ENTRYPOINT(short selector,FilterRecordPtr pb,long *data,short *result){
+void ENTRYPOINT(short selector,FilterRecordPtr pb,intptr_t *data,short *result);
+
+DLLEXPORT MACPASCAL 
+void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	OSErr e = noErr;
 	char *reason;
-	
-	EnterCodeResource();
-	
-	gpb = pb;
-	
-	if(!*data){
-		gdata = (globals_t*)( *data = (long)malloc(sizeof(globals_t)) ) ;
+
+	if(selector != formatSelectorAbout && !*data){
+		BufferID tempId;
+		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) )
+			return;
+		gdata = (globals_t*)*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
 		gdata->standalone = gdata->parmloaded = false;
 	}else
 		gdata = (globals_t*)*data;
-	
+
+	EnterCodeResource();
+
+	gpb = pb;
+
 	nplanes = MIN(pb->planes,4);
 
 	switch (selector){
 	case filterSelectorAbout:
-		if(!gdata->parmloaded)
+		if(gdata && !gdata->parmloaded)
 			gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
 		DoAbout((AboutRecordPtr)pb); 
 		break;

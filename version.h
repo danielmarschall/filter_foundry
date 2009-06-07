@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -95,15 +95,16 @@
 13-Jul-2007: 1.5b3 - add instrumentation to try to find CS3/Intel Mac 'Make standalone' problem
 02-Aug-2007: 1.5b4 - fix debug message spotted by Daniel Denk
 26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
+07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.5b6"
-#define VERSION_NUM 1,0x50,beta,6
+#define VERSION_STR "1.6b1"
+#define VERSION_NUM 1,0x60,beta,1
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,5,0,6
+#define VI_VERS_NUM 1,6,0,1
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

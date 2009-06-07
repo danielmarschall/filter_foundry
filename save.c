@@ -58,10 +58,8 @@ OSErr saveparams(Handle h){
 		p = cat(p,afs_sig); // first the header signature
 		
 		/* then slider values, one per line */
-		for( i=0 ; i<8 ; ++i ){
-			p = int_str(p,slider[i],10);
-			*p++ = '\n';
-		}
+		for( i=0 ; i<8 ; ++i )
+			p += sprintf(p, "%d\n", slider[i]);
 		
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){

@@ -66,9 +66,10 @@ extern char *errstr;
 #define DBG(x)
 //#define DEBUG
 
-
-DLLEXPORT MACPASCAL 
-void ENTRYPOINT(short selector,FilterRecordPtr epb,long *data,short *result);
+#define PS_BUFFER_ALLOC  (pb->bufferProcs->allocateProc)
+#define PS_BUFFER_LOCK   (pb->bufferProcs->lockProc)
+#define PS_BUFFER_UNLOCK (pb->bufferProcs->unlockProc)
+#define PS_BUFFER_FREE   (pb->bufferProcs->freeProc)
 
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
@@ -102,3 +103,9 @@ void dbglasterror(char*);
 
 // from parser.y
 struct node *parseexpr(char *s);
+
+#ifdef _MSC_VER
+	// Microsoft dumbassery
+	#define strcasecmp _stricmp
+	#define snprintf _snprintf
+#endif

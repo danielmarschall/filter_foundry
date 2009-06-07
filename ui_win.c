@@ -39,18 +39,20 @@ void DoAbout(AboutRecordPtr pb){
 	int n;
 	PlatformData *p = (PlatformData*)pb->platformData;
 
-	n = sprintf(s,"Filter Foundry %s\n(C) 2003-7 Toby Thain <toby@telegraphics.com.au>\n\n",VERSION_STR);
-	if(gdata->standalone){
-		sprintf(s+n,"Standalone filter:\n%s by %s.\n%s",
+	n = sprintf(s, "Filter Foundry " VERSION_STR "\n"
+				   "(C) 2003-9 Toby Thain <toby@telegraphics.com.au>\n\n");
+	if(gdata && gdata->standalone)
+		sprintf(s+n, "Standalone filter:\n%s by %s.\n%s",
 			INPLACEP2CSTR(gdata->parm.title),
 			INPLACEP2CSTR(gdata->parm.author),
 			INPLACEP2CSTR(gdata->parm.copyright));
-	}else 
-		strcat(s,"Latest version available from http://www.telegraphics.com.au/sw/\n\
+	else 
+		strcat(s,
+"Latest version available from http://www.telegraphics.com.au/sw/\n\
 Please contact the author with any bug reports, suggestions or comments.\n\
 If you use this program and like it, please consider making a donation\n\
 through www.paypal.com (US$5 suggested) to the address above.");
-	MessageBox((HWND)p->hwnd,s,"About Filter Foundry",MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
+	MessageBox((HWND)p->hwnd, s, "About Filter Foundry", MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
 }
 
 Boolean simplealert(char *s){

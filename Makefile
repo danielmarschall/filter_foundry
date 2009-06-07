@@ -38,11 +38,12 @@ LEX = flex
 YACC = bison -y
 YFLAGS = -d
 
-PSAPI = "../Adobe Photoshop CS3 Public Beta SDK/photoshopapi"
+PSAPI = "../../.wine/drive_c/Adobe Photoshop CS4 SDK/photoshopapi"
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
-CPPFLAGS += -I$(PSAPI)/Pica_sp -I$(PSAPI)/Photoshop -I$(PSAPI)/General \
-	-I../common/adobeplugin -I../common/tt
+CPPFLAGS += -DYY_SKIP_YYWRAP \
+            -I$(PSAPI)/pica_sp -I$(PSAPI)/photoshop -I$(PSAPI)/general \
+            -I../common/adobeplugin -I../common/tt
 
 
 # ---------- source & object files ----------
