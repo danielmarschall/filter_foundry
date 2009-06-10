@@ -54,7 +54,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	OSErr e = noErr;
 	char *reason;
 
-	if(selector != formatSelectorAbout && !*data){
+	if(selector != filterSelectorAbout && !*data){
 		BufferID tempId;
 		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) )
 			return;
