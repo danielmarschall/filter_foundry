@@ -3,7 +3,7 @@
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -35,11 +35,11 @@ BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
 	8L, 			/* Property Count */
-	
+
 	VENDORID, LC(c,a,t,g), NULLID, 13L, "\014Telegraphics\0\0\0", /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 18L, "\021Filter Foundry...\0\0", /* PString */
 #include "PiPL_body.rc"
-		
+
 END
 
 16000  RCDATA  DISCARDABLE
@@ -47,9 +47,9 @@ BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
 	6L, 			/* Property Count */
-	
+
 #include "PiPL_body.rc"
-		
+
 END
 
 /*	Dictionary (scripting) resource */
@@ -91,7 +91,7 @@ END
 	LC('#',I,m,R),	/*typeImageReference*/ \
 	"\0", \
 	"\260\000"		/* 10 110 000|00 000 000 */
-	
+
 #define FLAGS_SINGLE_PROP	"\020\000" /* 00 010 000|00 000 000 */
 #define FLAGS_1_OPT_PARAM	"\200\000" /* 10 000 000|00 000 000 */
 
@@ -173,7 +173,7 @@ BEGIN
             VALUE "LegalCopyright",		"Copyright (C) 2003-9 Toby Thain\0"
             VALUE "License",			"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\0"
             /*VALUE "LegalTrademarks",	"\0"*/
-            VALUE "OriginalFilename",	"FilterFoundry.8bi\0"
+            VALUE "OriginalFilename",	"FilterFoundry.8bf\0"
             /*VALUE "PrivateBuild",		"\0"*/
             VALUE "ProductName",		"Filter Foundry\0"
             VALUE "ProductVersion",		VERSION_STR "\0"

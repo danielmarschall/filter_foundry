@@ -3,7 +3,7 @@
     Copyright (C) 2003-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -51,7 +51,7 @@
 21-Mar-2004: 1.0f3 - alert when pb->inData is NULL - temporary workaround for crash bug
 23-May-2004: 1.0f4 - include missing license(!)
 25-Sep-2004: 1.0f5 - remove debug calls in Win build (!!) - thanks Shiro Akaishi;
-					 fix RC EDITTEXT syntax 
+					 fix RC EDITTEXT syntax
 20-Dec-2004: 1.0f6 - fix bug in rad(d,m,z) -- wasn't relative to centre of image!
 					 also ff_c2d, needed to negate x and y arguments to atan2()
 02-Feb-2005: add Win VERSIONINFO
@@ -96,15 +96,27 @@
 02-Aug-2007: 1.5b4 - fix debug message spotted by Daniel Denk
 26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
 07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
+19-Dec-2018: 1.6b2 - Fixed crash at filter startup when computer had too much RAM.
+                     Fixed crash where built obfuscated filters could not be opened.
+                     Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
+                     Size PARM_SIZE in PARM ressource corrected.
+                     Extended NMake file to support flex and bison compilation.
+                     Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
+                     The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
+                     Dialog boxes now have an [X] button to close the window.
+                     (Changes by Daniel Marschall)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
+
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.6b1"
-#define VERSION_NUM 1,0x60,beta,1
+#define VERSION_STR "1.6b2"
+#define VERSION_NUM 1,0x60,beta,2
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,6,0,1
+#define VI_VERS_NUM 1,6,0,2
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 

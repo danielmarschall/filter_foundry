@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -39,18 +39,24 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	HANDLE h;
 	Ptr pparm;
 	int res = false;
-	
+
 	parm_id = PARM_ID;
 	EnumResourceNames(hm,"PARM",enumnames,0);
-	
+
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){
 		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) )
 			res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
 	}else if( readobfusc && (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
 		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) ){
-			obfusc(pparm,SizeofResource(hm,resinfo));
-			res = readPARM(pparm,&gdata->parm,reason,1);
+			// Fix by DM, 18 Dec 2018:
+			// We need to copy the information, because the resource data is read-only
+			DWORD resSize = SizeofResource(hm,resinfo);
+			byte* copy = malloc(resSize);
+			memcpy(copy, pparm, resSize);
+			obfusc(copy, resSize);
+			res = readPARM(copy,&gdata->parm,reason,1);
+			free(copy);
 		}
 	}
 	return res;

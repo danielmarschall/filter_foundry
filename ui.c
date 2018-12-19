@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -52,7 +52,7 @@ void updatedialog(DIALOGREF dp){
 	for(i = 0; i < 4; ++i){
 		if(!gdata->standalone)
 			SETCTLTEXT(dp,FIRSTEXPRITEM+i,expr[i] ? expr[i] : "");
-		if(i < nplanes) 
+		if(i < nplanes)
 			updateexpr(dp,FIRSTEXPRITEM+i);
 	}
 
@@ -94,14 +94,14 @@ struct node *updateexpr(DIALOGREF dp,int item){
 
 	if(!gdata->standalone){
 		GETCTLTEXT(dp,item,s,MAXEXPR);
-	
+
 		if(expr[i])
 			free(expr[i]);
 		expr[i] = my_strdup(s);
 	}
 
 	tree[i] = parseexpr(expr[i]);
-	
+
 	if(!gdata->standalone){
 		if(tree[i])
 			HideDialogItem(dp,FIRSTICONITEM+i);
@@ -118,7 +118,7 @@ struct node *updateexpr(DIALOGREF dp,int item){
 void updatezoom(DIALOGREF dp){
 	char s[10];
 	sprintf(s, "%d%%", (int)(100./zoomfactor));
-	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
+SETCTLTEXT(dp,ZOOMLEVELITEM,s);
 	if(zoomfactor > 1.)
 		ShowDialogItem(dp,ZOOMINITEM);
 	else
@@ -141,7 +141,7 @@ static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 				s = p->child[0]->v.value;
 				if(s>=0 && s<=7)
 					ctlflags[s] = 1;
-			}else 
+			}else
 				return true; /* can't determine which ctl() */
 		}else if(p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map){
 			if(p->child[0]->kind == TOK_NUM){
@@ -150,7 +150,7 @@ static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 					mapflags[s] = 1;
 					ctlflags[s*2] = ctlflags[s*2+1] = 1;
 				}
-			}else 
+			}else
 				return true; /* can't determine which map() */
 		 }
 
@@ -158,7 +158,7 @@ static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 			|| checksl(p->child[1],ctlflags,mapflags)
 			|| checksl(p->child[2],ctlflags,mapflags)
 			|| checksl(p->child[3],ctlflags,mapflags)
-			|| checksl(p->child[4],ctlflags,mapflags);	
+			|| checksl(p->child[4],ctlflags,mapflags);
 	}else
 		return false;
 }
@@ -248,7 +248,7 @@ void maindlginit(DIALOGREF dp){
 		SetDlgItemText(dp,PARAMAUTHORITEM,s);
 		myp2cstrcpy(s,gdata->parm.copyright);
 		SetDlgItemText(dp,PARAMCOPYITEM,s);
-		
+
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
 			if(gdata->parm.ctl_used[i]){
@@ -288,20 +288,20 @@ void maindlginit(DIALOGREF dp){
 		// previewing more than say 10% of Photoshop's indicated maxSpace.
 		// (e.g., on a 1GB WinXP system, PS CS2 reports 520MB maxSpace, so this will let us
 		// preview about 50MB of image data.)
-		
-		zoomfactor = sqrt(maxSpace/(10.*preview_w*preview_h*nplanes));
+
+		zoomfactor = sqrt(gpb->maxSpace/(10.*preview_w*preview_h*nplanes));
 		if(zoomfactor > fitzoom)
 			zoomfactor = fitzoom;
 		if(zoomfactor < 1.)
 			zoomfactor = 1.;
-		
+
 		updatezoom(dp);
 	}else{
 		HideDialogItem(dp,ZOOMINITEM);
 		HideDialogItem(dp,ZOOMOUTITEM);
 		HideDialogItem(dp,ZOOMLEVELITEM);
 	}
-	
+
 #ifdef WIN_ENV
   // can't build standalone filter on less than NT platform :-(
   // due to absence of resource editing API (UpdateResource etc)
@@ -318,7 +318,7 @@ void maindlginit(DIALOGREF dp){
 
 Boolean maindlgitem(DIALOGREF dp,int item){
 	extern int previewerr;
-	
+
 	StandardFileReply sfr;
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
@@ -332,7 +332,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		return false; // end dialog
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,
-					"All supported files (.afs, .8bf, .txt)\0*.afs;*.8bf;*.txt\0All files (*.*)\0*.*\0\0")){
+					"All supported files (.afs, .8bf, .txt)\0*.afs;*.8bf;*.txt\0All files (*.*)\0*.*\0\0"
+					#ifdef _WIN32
+					,gdata->hWndMainDlg
+					#endif /* _WIN32 */
+					)){
 			if(loadfile(&sfr,&reason)){
 				updatedialog(dp);
 				maindlgupdate(dp);
@@ -343,7 +347,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case SAVEITEM:
 		if(!gdata->standalone && putfile("\pSave filter settings",(StringPtr)"",
 										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										 "afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1)){
+										 "afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
+										 #ifdef _WIN32
+										 ,gdata->hWndMainDlg
+										 #endif /* _WIN32 */
+										 )){
 			if(savefile(&sfr))
 				completesave(&reply);
 		}
@@ -356,7 +364,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 #endif
 			if( putfile("\pMake standalone filter",fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1) )
+						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1
+						#ifdef _WIN32
+						,gdata->hWndMainDlg
+						#endif /* _WIN32 */
+						))
 				make_standalone(&sfr);
 		}
 		break;
@@ -427,7 +439,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 Boolean alertuser(char *err,char *more){
 	char *s = malloc(strlen(err)+strlen(more)+2),*q;
 	Boolean res;
-	
+
 	q = cat(s,err);
 	*q++ = '\n';
 	q = cat(q,more);

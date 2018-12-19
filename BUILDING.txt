@@ -1,4 +1,4 @@
-	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -85,6 +85,41 @@ The finished binary, which contains executables for Classic and Carbon,
 is left in the "dist" directory.
 
 
+Windows notes
+-------------
+
+To build with Visual Studio, you have to use nmake.
+Currently, there is not Visual Studio project file.
+
+To compile:
+1. First download Flex and Bison from https://sourceforge.net/projects/winflexbison/
+   and unpack them on your disk.
+2. Download the Adobe Photoshop SDK from https://www.adobe.com/devnet/photoshop/sdk.html
+   and unpack it on your disk.
+3. Download the telegraphics common library from http://telegraphics.com.au/svn/common/trunk/
+   and unpack it on your disk.
+4. Adjust paths in the nmake.mak file of Filter Foundry.
+5. Run "Visual Studio Developer Command Prompt" from the start menu
+6. Navigate to the Filter Foundry dir and run
+   nmake /f nmake.mak clean
+   nmake /f nmake.mak
+
+Troubleshooting:
+- If "rc" can't be found, install the Windows 10 SDK, and then copy
+  C:\Program Files (x86)\Windows Kits\10\bin\...\x64 to C:\Program Files (x86)\Windows Kits\10\bin\x86
+  see also https://stackoverflow.com/questions/43847542/rc-exe-no-longer-found-in-vs-2015-command-prompt
+- If lex.yy.c can't be found, check the flex command (it generates lex.yy.c)
+- If nmake gives the error message "makefile(28) : fatal error U1000: Syntax error: ")" missing in macro invocation"
+  then run nmake with the parameter "/f nmake.mak" (nmake calls Makefile by default, which is not optimized for nmake)
+- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak"
+
+
+To build in Windows with the OpenWatcom IDE, see the wpj
+subdirectory and notes kindly provided by Peter Heckert.
+Please note that there might be problems with calling conventions;
+the plugin might not work after the building process.
+
+
 Development systems
 -------------------
 While a CodeWarrior 7 project is provided, MPW and mingw32 are recommended 
@@ -95,6 +130,3 @@ Linux system, or under Windows.
 
 MPW (http://developer.apple.com/tools/mpw-tools/) runs on PowerPC and
 68K Macs under Mac OS 9 or earlier, or Classic under OS X.
-
-To build in Windows with the OpenWatcom IDE, see the wpj subdirectory
-and notes kindly provided by Peter Heckert.

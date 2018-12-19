@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -49,12 +49,12 @@ void builddlginit(DIALOGREF dp){
 		SetDlgItemText(dp,AUTHORITEM,	"Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){
-			s[4] = '0'+i; 
+			s[4] = '0'+i;
 			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s);
 		}
 		strcpy(s,"ctl(X)");
 		for(i = 0; i < 8; ++i){
-			s[4] = '0'+i; 
+			s[4] = '0'+i;
 			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s);
 		}
 	}
@@ -94,7 +94,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		GetDlgItemText(dp,TITLEITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.title,s);
 		GetDlgItemText(dp,COPYRIGHTITEM,s,MAXFIELD);	myc2pstrcpy(gdata->parm.copyright,s);
 		GetDlgItemText(dp,AUTHORITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.author,s);
-		gdata->parm.cbSize = PARM_SIG;
+		gdata->parm.cbSize = PARM_SIZE;
 		gdata->parm.nVersion = 1;  //0=original FF, 1=standalone filter
 		for(i = needui = 0; i < 8; ++i){
 			gdata->parm.val[i] = slider[i];
@@ -110,7 +110,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,OBFUSCITEM);
-		
+
 	case IDCANCEL:
 		return false; // end dialog
 	case PROTECTITEM:

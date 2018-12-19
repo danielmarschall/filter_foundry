@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -30,6 +30,9 @@
 #include "PARM.h"
 #include "preview.h"
 #include "misc.h"
+
+#ifndef INCLUDED_FF_H
+#define INCLUDED_FF_H
 
 enum{
 	TAB = 011,
@@ -49,6 +52,9 @@ enum{
 typedef struct{
 	Boolean standalone,parmloaded,obfusc;
 	PARM_T parm;
+	#ifdef _WIN32
+	HWND hWndMainDlg;
+	#endif /* _WIN32 */
 } globals_t;
 
 extern globals_t *gdata;
@@ -58,7 +64,7 @@ extern char *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
 extern value_type slider[8],cell[0x100],map[4][0x100];
 extern char *expr[4];
-extern long maxSpace;
+// extern long maxSpace;
 
 extern int tokpos,tokstart,varused[];
 extern char *errstr;
@@ -108,4 +114,6 @@ struct node *parseexpr(char *s);
 	// Microsoft dumbassery
 	#define strcasecmp _stricmp
 	#define snprintf _snprintf
-#endif
+#endif /* _MSC_VER */
+
+#endif /* INCLUDED_FF_H */

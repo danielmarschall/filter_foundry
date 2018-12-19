@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -31,6 +31,8 @@
 #include "version.h"
 
 HWND preview_hwnd;
+HCURSOR hCurHandOpen;
+HCURSOR hCurHandGrab;
 
 extern HANDLE hDllInstance;
 
@@ -46,7 +48,7 @@ void DoAbout(AboutRecordPtr pb){
 			INPLACEP2CSTR(gdata->parm.title),
 			INPLACEP2CSTR(gdata->parm.author),
 			INPLACEP2CSTR(gdata->parm.copyright));
-	else 
+	else
 		strcat(s,
 "Latest version available from http://www.telegraphics.com.au/sw/\n\
 Please contact the author with any bug reports, suggestions or comments.\n\
@@ -72,12 +74,14 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	Point newscroll;
 	HFONT hfnt;
 	char s[0x100];
-	
+
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
 	switch(wMsg){
 	case WM_INITDIALOG:
+		gdata->hWndMainDlg = hDlg;
+
 		if(gdata->standalone){
 			myp2cstrcpy(s,gdata->parm.title);
 			SetWindowText(hDlg,s); // window title bar
@@ -85,10 +89,14 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 		centre_window(hDlg);
 
 		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/fontext_3pbo.asp
-		hfnt = GetStockObject(ANSI_FIXED_FONT); 
-	
+		hfnt = GetStockObject(ANSI_FIXED_FONT);
+
+		hCurHandOpen = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_OPEN));
+		hCurHandGrab = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_GRAB));
+
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
 		GetClientRect(preview_hwnd, &preview_rect);
+		SetClassLongPtr(preview_hwnd, GCL_HCURSOR, (LONG_PTR)hCurHandOpen);
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
@@ -97,11 +105,14 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 			SendDlgItemMessage(hDlg,FIRSTCTLTEXTITEM+i,	EM_SETLIMITTEXT,3,0);
 		}
 		for(i = 0; i < 4; ++i){
-			SendDlgItemMessage(hDlg,FIRSTEXPRITEM+i,	EM_SETLIMITTEXT,MAXEXPR,0);
+			SendDlgItemMessage(hDlg,FIRSTEXPRITEM+i,	EM_SETLIMITTEXT,MAXEXPR-1,0); // we need 1 byte as NUL terminator, so our formula can be max 1023
 			SendDlgItemMessage(hDlg,FIRSTEXPRITEM+i,	WM_SETFONT,(WPARAM)hfnt,false);
 		}
 
 		maindlginit(hDlg);
+		break;
+	case WM_DESTROY:
+		gdata->hWndMainDlg = 0;
 		break;
 	case WM_DRAWITEM:
 		pdi = (DRAWITEMSTRUCT*)lParam;
@@ -124,6 +135,7 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 			if(item==PREVIEWITEM && GetCursorPos(&origpos)){
 				panning = true;
 				origscroll = preview_scroll;
+				SetCursor(hCurHandGrab);
 				SetCapture(hDlg);
 				break;
 			}
@@ -160,6 +172,15 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 }
 
 Boolean maindialog(FilterRecordPtr pb){
+
+	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
+	WNDCLASSEX clx;
+	clx.cbSize = sizeof(WNDCLASSEX);
+	GetClassInfoEx(hDllInstance, "Static", &clx);
+	clx.lpszClassName = "Preview";
+	RegisterClassEx(&clx);
+
+	// Now show the dialog
 	PlatformData *p = pb->platformData;
 	return DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 						  (HWND)p->hwnd,maindlgproc,0) == IDOK;

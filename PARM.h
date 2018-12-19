@@ -12,16 +12,15 @@ more details.
 Cheers,
 -Alex Hunter
 alex@afh.com
-FilterMeister Developer 
+FilterMeister Developer
 */
 
 #define PARM_SIZE 8296
-#define PARM_SIG 7272 // don't know WHERE this value comes from...but it's in valid FF resources
 
 #ifdef Rez
 
 type 'PARM' {
-	longint = PARM_SIG; // cbSize;    //size of this structure
+	longint = PARM_SIZE; // cbSize;    //size of this structure
 	longint FilterFactory,standaloneFilter; // nVersion;  //0=original FF, 1=standalone filter
 	array[8] { longint; }; // val[8];    //initial values of controls
 	longint noParameters,parametersDialog; // popDialog; //true if need to pop a parameter dialog

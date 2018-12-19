@@ -31,7 +31,7 @@ char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
 value_type slider[8],cell[0x100],map[4][0x100];
 char *expr[4];
-long maxSpace;
+// long maxSpace;
 globals_t *gdata;
 FilterRecordPtr gpb;
 
@@ -163,17 +163,27 @@ int checkandinitparams(Handle params){
 
 void DoPrepare(FilterRecordPtr pb){
 	int i;
-	long space = (pb->maxSpace*9)/10; // don't ask for more than 90% of available memory
 
 	for(i = 4; i--;){
 		if(expr[i]||tree[i]) DBG("expr[] or tree[] non-NULL in Prepare!");
 		expr[i] = NULL;
 		tree[i] = NULL;
 	}
+
+	// Commented out by DM, 18 Dec 2018:
+	// This code did not work on systems with 8 GB RAM:
+	/*
+	long space = (pb->maxSpace*9)/10; // don't ask for more than 90% of available memory
+
 	maxSpace = 512L<<10; // this is a wild guess, actually
 	if(maxSpace > space)
 		maxSpace = space;
 	pb->maxSpace = maxSpace;
+	*/
+
+	// New variant:
+	// TODO: Programmatically test if host supports pb->maxSpace64, and if it does so, use this value instead.
+	pb->maxSpace = ((double)pb->maxSpace/10)*9; // don't ask for more than 90% of available memory
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){

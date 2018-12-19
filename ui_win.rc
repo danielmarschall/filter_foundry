@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -28,10 +28,14 @@ CAUTION_ICO ICON "caution.ico"
 ZOOMIN_ICO ICON "zoomin.ico"
 ZOOMOUT_ICO ICON "zoomout.ico"
 
+/* Cursors for the preview window */
+IDC_FF_HAND_OPEN CURSOR "cursor_hand_open.cur"
+IDC_FF_HAND_GRAB CURSOR "cursor_hand_grab.cur"
+
 /* left,top,w,h */
 
 ID_MAINDLG DIALOG DISCARDABLE  150,50, 308,277
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Filter Foundry"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -41,7 +45,8 @@ BEGIN
 	PUSHBUTTON	"Save...",SAVEITEM,		60,253, 42,14
 	PUSHBUTTON	"Make...",MAKEITEM,		110,253, 42,14
 
-	CONTROL		"",PREVIEWITEM,				"Static",SS_OWNERDRAW|SS_NOTIFY,				15,10, 100,100
+	/* The class "Preview" is defined in ui_win.c */
+	CONTROL		"",PREVIEWITEM,				"Preview",SS_OWNERDRAW|SS_NOTIFY,				15,10, 100,100
 	CONTROL		"ZOOMIN_ICO",ZOOMINITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	103,115, 12,12
 	CONTROL		"ZOOMOUT_ICO",ZOOMOUTITEM,	"Static",SS_ICON|SS_REALSIZEIMAGE|SS_NOTIFY,	15,115, 12,12
 	CONTROL		"",ZOOMLEVELITEM,			"Static",SS_CENTER|SS_NOTIFY,					37,115, 56,12
@@ -90,7 +95,7 @@ BEGIN
 END
 
 ID_PARAMDLG DIALOG DISCARDABLE  150,50, 308,161
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Filter Foundry"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -133,7 +138,7 @@ BEGIN
 END
 
 ID_BUILDDLG DIALOG DISCARDABLE  150,50, 208,243
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Make Standalone Filter"
 FONT 8, "MS Sans Serif"
 BEGIN

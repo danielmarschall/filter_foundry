@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -65,6 +65,9 @@
 #define ID_ZOOMOUTPICT 16002
 #define ID_HANDCURSOR 16000
 
+#define IDC_FF_HAND_OPEN 1001
+#define IDC_FF_HAND_GRAB 1002
+
 /* --- constants for terminology (scripting) resource */
 #define AETE_ID			16000
 #define vendorName		"Telegraphics"
@@ -77,7 +80,7 @@
 #define PARAM_B_KEY		'xprB'
 #define PARAM_A_KEY		'xprA'
 
-#define PARAM_CTL0_KEY	'cTl0'	// some naughty parts of the code assume 
+#define PARAM_CTL0_KEY	'cTl0'	// some naughty parts of the code assume
 #define PARAM_CTL1_KEY	'cTl1'	// these are numerically sequential
 #define PARAM_CTL2_KEY	'cTl2'
 #define PARAM_CTL3_KEY	'cTl3'
@@ -92,18 +95,18 @@
 
 	#include "PIAbout.h"
 	#include "PIFilter.h"
-	
+
 	#include "ui_compat.h"
-	
-	enum{ 
+
+	enum{
 		MAXEXPR = 1024,
 	};
-	
+
 	void DoAbout(AboutRecordPtr prec);
 	Boolean maindialog(FilterRecordPtr pb);
 	Boolean builddialog(FilterRecordPtr pb);
 	Boolean simplealert(char *s);
-	
+
 	// platform independent
 	Boolean alertuser(char *err,char *more);
 	void maindlginit(DIALOGREF dp);
@@ -111,7 +114,7 @@
 	void maindlgupdate(DIALOGREF dp);
 	void slidermoved(DIALOGREF dp,int item);
 	Boolean checksliders(int exprs,int ctlflags[],int mapflags[]);
-	
+
 	void builddlginit(DIALOGREF dp);
 	Boolean builddlgitem(DIALOGREF dp,int item);
 

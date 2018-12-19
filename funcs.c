@@ -3,7 +3,7 @@
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -45,13 +45,13 @@ extern unsigned char *image_ptr;
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
 static value_type rawsrc(value_type x,value_type y,value_type z){
-	if(x < gpb->inRect.left) 
+	if(x < gpb->inRect.left)
 		x = gpb->inRect.left;
-	else if(x >= gpb->inRect.right) 
+	else if(x >= gpb->inRect.right)
 		x = gpb->inRect.right-1;
-	if(y < gpb->inRect.top) 
+	if(y < gpb->inRect.top)
 		y = gpb->inRect.top;
-	else if(y >= gpb->inRect.bottom) 
+	else if(y >= gpb->inRect.bottom)
 		y = gpb->inRect.bottom-1;
 	return ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*(y - gpb->inRect.top)
 										  + (long)nplanes*(x - gpb->inRect.left) + z ];
@@ -63,13 +63,13 @@ value_type ff_src(value_type x,value_type y,value_type z){
 #ifdef PARSERTEST
 	return 0;
 #else
-	if(x < 0) 
+	if(x < 0)
 		x = 0;
-	else if(x >= var['X']) 
+	else if(x >= var['X'])
 		x = var['X']-1;
-	if(y < 0) 
+	if(y < 0)
 		y = 0;
-	else if(y >= var['Y']) 
+	else if(y >= var['Y'])
 		y = var['Y']-1;
 	return z >= 0 && z < var['Z'] ?
 		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
@@ -274,6 +274,13 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 #endif
 }
 
+/* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
+   Added by DM, 18 Dec 2018 */
+value_type ff_rst(value_type seed){
+	srand(seed);
+	return 0;
+}
+
 value_type zero_val = 0;
 
 /* predefined symbols */
@@ -304,6 +311,7 @@ struct sym_rec predefs[]={
 	{0,TOK_FN1,"get", (pfunc_type)ff_get, 0},
 	{0,TOK_FN2,"put", (pfunc_type)ff_put, 0},
 	{0,TOK_FN10,"cnv",(pfunc_type)ff_cnv, 0},
+	{0,TOK_FN1,"rst", (pfunc_type)ff_rst, 0},
 	/* predefined variables (names >1 characters) */
 	{0,TOK_VAR,"dmin",0, &zero_val},
 	{0,TOK_VAR,"mmin",0, &zero_val},
