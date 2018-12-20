@@ -166,14 +166,15 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 void obfusc(unsigned char *pparm,size_t size){
 	int i;
 	unsigned char *p;
+	int selftest1, selftest2, selftest3;
 
 	/* Do a small self-test to test if the stdlib implementation works as expected, i.e. that it only
 	 * depends on the seed set by srand() and on nothing else.
 	 */
 	srand(0xdc43df3c);
-	int selftest1 = rand();
-	int selftest2 = rand();
-	int selftest3 = rand();
+	selftest1 = rand();
+	selftest2 = rand();
+	selftest3 = rand();
 
 	srand(0xdc43df3c);
 	if ((rand() != selftest1) || (rand() != selftest2) || (rand() != selftest3)) {

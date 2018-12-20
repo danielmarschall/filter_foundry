@@ -172,6 +172,7 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 }
 
 Boolean maindialog(FilterRecordPtr pb){
+	PlatformData *p;
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
 	WNDCLASSEX clx;
@@ -181,7 +182,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	RegisterClassEx(&clx);
 
 	// Now show the dialog
-	PlatformData *p = pb->platformData;
+	p = pb->platformData;
 	return DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 						  (HWND)p->hwnd,maindlgproc,0) == IDOK;
 }

@@ -88,6 +88,8 @@ is left in the "dist" directory.
 Windows notes
 -------------
 
+BUILDING WITH VISUAL STUDIO:
+
 To build with Visual Studio, you have to use nmake.
 Currently, there is not Visual Studio project file.
 
@@ -113,11 +115,13 @@ Troubleshooting:
   then run nmake with the parameter "/f nmake.mak" (nmake calls Makefile by default, which is not optimized for nmake)
 - If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak"
 
+Most recently tested with Visual C++ 2017 with Adobe Photoshop SDK CC 2017.
+
+
+BUILDING WITH OPEN WATCOM:
 
 To build in Windows with the OpenWatcom IDE, see the wpj
-subdirectory and notes kindly provided by Peter Heckert.
-Please note that there might be problems with calling conventions;
-the plugin might not work after the building process.
+subdirectory and notes (README.TXT) kindly provided by Peter Heckert and Daniel Marschall.
 
 
 Development systems
