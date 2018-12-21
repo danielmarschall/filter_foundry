@@ -62,8 +62,9 @@ Troubleshooting:
 
 - If you get the error message "Fatal Error! 62:  Unable to open 'sdkddkver.h'", please open 
   pluginsdk\photoshopapi\photoshop\PITypes.h in your Adobe Photoshop SDK and
-  comment out the line "#include <sdkddkver.h> // for WINVER",
-  or use an older Photoshop SDK.
+  comment out the line "#include <sdkddkver.h> // for WINVER".
+  Alternatively, you can use an older version of the Photoshop SDK, or create an empty
+  sdkddkver.h file in your wpj folder.
 
 - It is important that the correct calling convention is used.
   The calling convention needs to be set in

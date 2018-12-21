@@ -96,7 +96,7 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
 		GetClientRect(preview_hwnd, &preview_rect);
-		SetClassLongPtr(preview_hwnd, GCL_HCURSOR, (LONG_PTR)hCurHandOpen);
+		SetClassLongPtr(preview_hwnd, GCLP_HCURSOR, (LONG_PTR)hCurHandOpen);
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
