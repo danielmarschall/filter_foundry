@@ -100,11 +100,17 @@ To compile:
    and unpack it on your disk.
 3. Download the telegraphics common library from http://telegraphics.com.au/svn/common/trunk/
    and unpack it on your disk.
-4. Adjust paths in the nmake.mak file of Filter Foundry.
-5. Run "Visual Studio Developer Command Prompt" from the start menu
-6. Navigate to the Filter Foundry dir and run
-   nmake /f nmake.mak clean
-   nmake /f nmake.mak
+4. Adjust paths in the nmake.mak and nmake64.mak files.
+5. For building the 32 bit plugin:
+	5.1 Run "x86 Native Tools Command Promt" from the start menu
+	5.2 Navigate to the Filter Foundry dir and run
+		nmake /f nmake.mak clean
+		nmake /f nmake.mak
+   For building the 64 bit plugin:
+	5.1 Run "x64 Native Tools Command Promt" from the start menu
+	5.2 Navigate to the Filter Foundry dir and run
+		nmake /f nmake64.mak clean
+		nmake /f nmake64.mak
 
 Troubleshooting:
 - If "rc" can't be found, install the Windows 10 SDK, and then copy
@@ -112,8 +118,10 @@ Troubleshooting:
   see also https://stackoverflow.com/questions/43847542/rc-exe-no-longer-found-in-vs-2015-command-prompt
 - If lex.yy.c can't be found, check the flex command (it generates lex.yy.c)
 - If nmake gives the error message "makefile(28) : fatal error U1000: Syntax error: ")" missing in macro invocation"
-  then run nmake with the parameter "/f nmake.mak" (nmake calls Makefile by default, which is not optimized for nmake)
-- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak"
+  then run nmake with the parameter "/f nmake.mak" or "/f nmake64.mak"
+  (nmake calls Makefile by default, which is not optimized for nmake)
+- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak",
+  or for 64 bit: "nmake /f nmake64.mak clean" followed by "nmake /f nmake64.mak"
 
 Most recently tested with Visual C++ 2017 with Adobe Photoshop SDK CC 2017.
 
@@ -134,3 +142,8 @@ Linux system, or under Windows.
 
 MPW (http://developer.apple.com/tools/mpw-tools/) runs on PowerPC and
 68K Macs under Mac OS 9 or earlier, or Classic under OS X.
+
+For Windows, Visual Studio works best (the community edition is even free),
+and it can compile the 32-Bit and 64-Bit plugin for Windows.
+OpenWatcom can also be used, but only for 32 Bit, and it is officially not
+supported by Adobe.
