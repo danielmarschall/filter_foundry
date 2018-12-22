@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -50,7 +50,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		zh = (pb->filterRect.right - pb->filterRect.left)/(double)preview_w;
 		zv = (pb->filterRect.bottom - pb->filterRect.top)/(double)preview_h;
 		fitzoom = zh > zv ? zh : zv;
-	
+
 		preview_pmap.version = 1;
 		preview_pmap.bounds.left = preview_pmap.bounds.top = 0;
 		preview_pmap.bounds.right = preview_w;
@@ -61,12 +61,12 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		preview_pmap.planeBytes = 1; /*interleaved*/
 	//	preview_pmap.baseAddr = preview_data;
 	/* baseAddr must be set before using pixelmap */
-		
+
 		//---------------------------------------------------------------------------
 		// Fields new in version 1:
-		//---------------------------------------------------------------------------	
+		//---------------------------------------------------------------------------
 		preview_pmap.mat = NULL;
-		
+
 		if( (pb->imageMode == plugInModeRGBColor && nplanes == 4)
 		 || (pb->imageMode == plugInModeLabColor && nplanes == 4)
 		 || (pb->imageMode == plugInModeGrayScale && nplanes == 2)
@@ -80,7 +80,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 			preview_pmap.masks = &preview_pmask;
 		}else
 			preview_pmap.masks = NULL;
-	
+
 		preview_handle = PINEWHANDLE((long)preview_h * preview_pmap.rowBytes);
 	}else
 		preview_handle = NULL;
@@ -88,7 +88,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 
 	//---------------------------------------------------------------------------
 	// Fields new in version 2:
-	//---------------------------------------------------------------------------	
+	//---------------------------------------------------------------------------
 //	preview_pmap.pixelOverlays;
 //	preview_pmap.colorManagementOptions;
 }
@@ -105,9 +105,10 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	int j,n,scaledw,scaledh,imgw,imgh;
 	Rect r,outRect;
 	Ptr outrow;
+	double cor = 0.00;
 
 	preview_complete = false;
-	
+
 	if(preview_handle){
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
 		scaledw = zoomfactor*preview_w;
@@ -116,7 +117,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		scaledh = zoomfactor*preview_h;
 		if(scaledh > (pb->filterRect.bottom - pb->filterRect.top))
 			scaledh = pb->filterRect.bottom - pb->filterRect.top;
-			
+
 		/* scale clipped preview area down again - this becomes the pixel size of preview */
 		imgw = scaledw/zoomfactor;
 		if(imgw > preview_w)
@@ -125,35 +126,45 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		if(imgh > preview_h)
 			imgh = preview_h;
 
-		// Use to set the phase of the checkerboard:
-		preview_pmap.maskPhaseRow = preview_scroll.v/zoomfactor;
-		preview_pmap.maskPhaseCol = preview_scroll.h/zoomfactor;
-
 		/* compute source data rectangle (inRect) */
 
 		/* centre preview on filtered part of input image, adding scroll offset */
 		r.left = (pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h;
 		/* make sure it does not go outside the input area */
-		if(r.left < pb->filterRect.left) 
+		if(r.left < pb->filterRect.left) {
+			cor = pb->filterRect.left - r.left;
 			r.left = pb->filterRect.left;
-		else if(r.left > pb->filterRect.right-scaledw) 
+		}
+		else if(r.left+scaledw > pb->filterRect.right) {
+			cor = pb->filterRect.right - (r.left+scaledw);
 			r.left = pb->filterRect.right - scaledw;
+		} else {
+			cor = 0;
+		}
 		r.right = r.left + scaledw;
+		preview_pmap.maskPhaseCol = (preview_scroll.h+cor)/zoomfactor; // phase of the checkerboard
 
 		/* now compute for vertical */
 		r.top = (pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
-		if(r.top < pb->filterRect.top) 
+		if(r.top < pb->filterRect.top) {
+			cor = pb->filterRect.top - r.top;
 			r.top = pb->filterRect.top;
-		else if(r.top > pb->filterRect.bottom-scaledh) 
+		}
+		else if(r.top+scaledh > pb->filterRect.bottom) {
+			cor = pb->filterRect.bottom - (r.top+scaledh);
 			r.top = pb->filterRect.bottom - scaledh;
+		} else {
+			cor = 0;
+		}
 		r.bottom = r.top + scaledh;
+		preview_pmap.maskPhaseRow = (preview_scroll.v+cor)/zoomfactor; // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
 		if(needall)
 			SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
 		else
 			pb->inRect = r;
-		
+
 		pb->outRect = pb->inRect;
 		SETRECT(pb->maskRect,0,0,0,0);
 		pb->inLoPlane = pb->outLoPlane = 0;
@@ -166,9 +177,9 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 				pmrb = preview_pmap.rowBytes;
 
 			evalinit();
-				
+
 			SETRECT(outRect,0,0,imgw,imgh);
-			
+
 			e = process_scaled(pb, false, &r, &outRect,
 					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
 			if(blankrows){
@@ -195,7 +206,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 				HDC hdc = GetDC(preview_hwnd);
 
 				drawpreview(dp,hdc,outptr);
-				
+
 				ReleaseDC(preview_hwnd,hdc);
 				}
 #else
@@ -204,9 +215,9 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 
 				GetPort(&saveport);
 				SetPortDialogPort(dp);
-				
+
 				drawpreview(dp,NULL,outptr);
-				
+
 				SetPort(saveport);
 				}
 #endif

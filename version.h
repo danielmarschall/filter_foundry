@@ -104,6 +104,7 @@
                      Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
                      The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
                      Dialog boxes now have an [X] button to close the window.
+                     Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
