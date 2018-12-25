@@ -113,6 +113,8 @@ BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 		break;
 	case WM_DESTROY:
 		gdata->hWndMainDlg = 0;
+		DestroyCursor(hCurHandOpen);
+		DestroyCursor(hCurHandGrab);
 		break;
 	case WM_DRAWITEM:
 		pdi = (DRAWITEMSTRUCT*)lParam;
