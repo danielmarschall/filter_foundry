@@ -105,6 +105,7 @@
                      The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
                      Dialog boxes now have an [X] button to close the window.
                      Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
+                     The "version information" of standalone filters is now individualized by the creators input
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

@@ -3,7 +3,7 @@
     Copyright (C) 2003-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -21,6 +21,8 @@
 
 #include "file_compat.h"
 #include "compat_string.h"
+#include "versioninfo_modify_win.h"
+#include "version.h"
 
 extern HANDLE hDllInstance;
 
@@ -55,35 +57,37 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
+	LPWSTR changeRequestStr;
+	char* soleFilename;
 
-//	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0)) 
+//	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))
 //		dbglasterror("EnumResourceLanguages");
 
 	if( (hupdate = BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
-		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA)) 
+		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA))
 			&& (datah = LoadResource(srcmod,datarsrc))
-			&& (datap = LockResource(datah)) 
-			&& (aetersrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"AETE")) 
+			&& (datap = LockResource(datah))
+			&& (aetersrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"AETE"))
 			&& (aeteh = LoadResource(srcmod,aetersrc))
 			&& (aetep = LockResource(aeteh)) )
 		{
 			DBG("loaded DATA, PiPL");
 
 			PLstrcpy(title,gdata->parm.title);
-			if(gdata->parm.popDialog) 
+			if(gdata->parm.popDialog)
 				PLstrcat(title,(StringPtr)"\003...");
 
 			origsize = SizeofResource(srcmod,datarsrc);
 			aetesize = SizeofResource(srcmod,aetersrc);
 
-			if( (newpipl = malloc(origsize+0x300)) 
-			 && (newaete = malloc(aetesize+0x100)) 
+			if( (newpipl = malloc(origsize+0x300))
+			 && (newaete = malloc(aetesize+0x100))
 			 && (pparm = malloc(sizeof(PARM_T))) )
 			{
 				/* add user-specified title and category to new PiPL */
 				memcpy(newpipl,datap,origsize);
-				/* note that Windows PiPLs have 2 byte version datum in front 
+				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
 
 				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,title) + 2;
@@ -107,7 +111,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 					myp2cstr(pparm->map[i]);
 				for(i=0;i<8;++i)
 					myp2cstr(pparm->ctl[i]);
-				
+
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;
 					parm_id = OBFUSCDATA_ID;
@@ -124,20 +128,46 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				 && UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 					discard = false;
-				else 
+				else
 					dbglasterror("UpdateResource");
-				
+
+				if (soleFilename = strrchr(dstname, '\\')) {
+				    ++soleFilename;
+				} else {
+				    soleFilename = dstname;
+				}
+
+				// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
+				// You can CHANGE values for any given name
+				// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
+				// You cannot (yet) ADD entries.
+				changeRequestStr = (PCWSTR)malloc(1024);
+				wsprintfW(changeRequestStr, L"Comments\aBuilt using Filter Foundry %S\aCompanyName\a%S\aLegalCopyright\a%S\aFileDescription\a%S\aOriginalFilename\a%S\aLicense\a%S\a",
+					                         VERSION_STR,
+					/* CompanyName =      */ pparm->author,
+					/* LegalCopyright =   */ pparm->copyright,
+					/* FileDescription =  */ pparm->title,
+					/* OriginalFilename = */ soleFilename,
+					/* License =          */ "\b" /* remove, since filter is standalone and might have its own license */
+					);
+				for (i=wcslen(changeRequestStr)-1; i>=0; --i) {
+					if (changeRequestStr[i] == '\a') // we need to do this weird replacement, because wsprintfW() cannot produce a string with \0 in it
+					changeRequestStr[i] = '\0';
+				}
+				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
+					alertuser("UpdateVersionInfoWithHandle failed","");
+				}
 			}
 
 		}else dbglasterror("Find-, Load- or LockResource");
 
 		if(!EndUpdateResource(hupdate,discard))
-			dbglasterror("EndUpdateResource");	
+			dbglasterror("EndUpdateResource");
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
-	}else 
+	}else
 		dbglasterror("BeginUpdateResource");
 	return !discard;
 }
@@ -149,7 +179,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	//FSpDelete(&sfr->sfFile);
 	myp2cstrcpy(dstname,sfr->sfFile.name);
 	res = GetModuleFileName(hDllInstance,srcname,MAX_PATH)
-		  && CopyFile(srcname,dstname,false) 
+		  && CopyFile(srcname,dstname,false)
 		  && doresources(hDllInstance,dstname);
 
 	if(!res)

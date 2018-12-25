@@ -4,8 +4,8 @@ projectIdent
 VpeMain
 1
 WRect
-0
-0
+928
+56
 7680
 9728
 2
@@ -13,13 +13,13 @@ MProject
 3
 MCommand
 445
-set PSSDK=D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk
-set PSAPI=D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi
+set PSSDK=E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk
+set PSAPI=E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi
 cd ..
 if exist y_tab.c del y_tab.c 
 if exist lex_yy.c del lex_yy.c
-D:\FilterFoundry\win_flex_bison\win_bison  parser.y -d -y
-D:\FilterFoundry\win_flex_bison\win_flex  lexer.l y.tab.c
+E:\FilterFoundry\win_flex_bison\win_bison  parser.y -d -y
+E:\FilterFoundry\win_flex_bison\win_flex  lexer.l y.tab.c
 rem IDE doesnt like multiple dots in filenames
 ren y.tab.c y_tab.c
 ren lex.yy.c lex_yy.c
@@ -43,7 +43,7 @@ VComponent
 8
 WRect
 0
-692
+682
 5712
 4352
 0
@@ -52,6 +52,6 @@ WRect
 WFileName
 17
 filterfoundry.tgt
-3
-13
+4
+28
 7

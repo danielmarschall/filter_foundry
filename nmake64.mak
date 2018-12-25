@@ -62,7 +62,7 @@ BISON = D:\FilterFoundry\win_flex_bison\win_bison
 
 OBJ = main.obj funcs.obj trigtab.obj process.obj node.obj symtab.obj \
 	ui.obj ui_build.obj preview.obj read.obj save.obj make.obj \
-	scripting.obj lex.yy.obj ui_win.obj make_win.obj load_win.obj \
+	scripting.obj lex.yy.obj ui_win.obj make_win.obj versioninfo_modify_win.obj load_win.obj \
 	..\common\tt\dbg_win.obj ..\common\tt\ui_compat_win.obj \
 	..\common\tt\choosefile_win.obj ui_build_win.obj \
 	..\common\tt\compat_string.obj ..\common\tt\compat_win.obj \
