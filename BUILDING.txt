@@ -111,6 +111,8 @@ To compile:
 	5.2 Navigate to the Filter Foundry dir and run
 		nmake /f nmake64.mak clean
 		nmake /f nmake64.mak
+   You can use the script vc_make_3264.bat to build both 32- and 64-bit in one click.
+   Please first edit this batch file and adjust the Visual Studio path.
 
 Troubleshooting:
 - If "rc" can't be found, install the Windows 10 SDK, and then copy
@@ -122,6 +124,7 @@ Troubleshooting:
   (nmake calls Makefile by default, which is not optimized for nmake)
 - If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak",
   or for 64 bit: "nmake /f nmake64.mak clean" followed by "nmake /f nmake64.mak"
+  It is necessary to run the "clean" command when switching between 32bit and 64 bit building.
 
 Most recently tested with Visual C++ 2017 with Adobe Photoshop SDK CC 2017.
 
