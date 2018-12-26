@@ -23,15 +23,14 @@
 
 #include <string.h>
 
-static UINT parm_id;
+static UINT16 parm_id;
 
 // see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/resources/introductiontoresources/resourcereference/resourcefunctions/findresource.asp
 static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
 							   LPTSTR lpszName,LONG_PTR lParam)
 {
 	if(IS_INTRESOURCE(lpszName))
-		parm_id = (int)lpszName; // FIXME: How to remove compiler warning in Win64?
-		                         // Note: This typecast is safe. We just need the lower 32 bits of the 64 bit "pointer"
+		parm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
 	return false; // we only want the first one
 }
 
