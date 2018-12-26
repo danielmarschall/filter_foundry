@@ -141,7 +141,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				// You can CHANGE values for any given name
 				// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
 				// You cannot (yet) ADD entries.
-				changeRequestStr = (PCWSTR)malloc(1024);
+				changeRequestStr = (LPWSTR)malloc(1024);
 				wsprintfW(changeRequestStr, L"Comments\aBuilt using Filter Foundry %S\aCompanyName\a%S\aLegalCopyright\a%S\aFileDescription\a%S\aOriginalFilename\a%S\aLicense\a%S\a",
 					                         VERSION_STR,
 					/* CompanyName =      */ pparm->author,

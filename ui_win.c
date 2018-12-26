@@ -61,9 +61,9 @@ Boolean simplealert(char *s){
 	return MessageBox(NULL,s,"Filter Foundry",MB_APPLMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
-BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
-BOOL CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
+INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
 	static Point origscroll;
 	static Boolean panning = false;

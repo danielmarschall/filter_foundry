@@ -236,7 +236,7 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 }
 
 OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
-	int32 watchsusp;
+	intptr_t watchsusp;
 	OSErr e = noErr;
 	VRect srcRect;
 	UIRECT imagebounds;

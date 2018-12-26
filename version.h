@@ -106,6 +106,7 @@
                      Dialog boxes now have an [X] button to close the window.
                      Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
                      The "version information" of standalone filters is now individualized by the creators input
+                     Win64 support
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
