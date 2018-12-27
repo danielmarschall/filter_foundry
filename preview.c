@@ -105,7 +105,6 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	int j,n,scaledw,scaledh,imgw,imgh;
 	Rect r,outRect;
 	Ptr outrow;
-	double cor = 0.00;
 
 	preview_complete = false;
 
@@ -132,33 +131,27 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		r.left = (pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h;
 		/* make sure it does not go outside the input area */
 		if(r.left < pb->filterRect.left) {
-			cor = pb->filterRect.left - r.left;
+			preview_scroll.h += pb->filterRect.left - r.left;
 			r.left = pb->filterRect.left;
 		}
 		else if(r.left+scaledw > pb->filterRect.right) {
-			cor = pb->filterRect.right - (r.left+scaledw);
+			preview_scroll.h += pb->filterRect.right - (r.left+scaledw);
 			r.left = pb->filterRect.right - scaledw;
-		} else {
-			cor = 0;
 		}
 		r.right = r.left + scaledw;
-		preview_scroll.h += cor;
 		preview_pmap.maskPhaseCol = (preview_scroll.h)/zoomfactor; // phase of the checkerboard
 
 		/* now compute for vertical */
 		r.top = (pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
 		if(r.top < pb->filterRect.top) {
-			cor = pb->filterRect.top - r.top;
+			preview_scroll.v += pb->filterRect.top - r.top;
 			r.top = pb->filterRect.top;
 		}
 		else if(r.top+scaledh > pb->filterRect.bottom) {
-			cor = pb->filterRect.bottom - (r.top+scaledh);
+			preview_scroll.v += pb->filterRect.bottom - (r.top+scaledh);
 			r.top = pb->filterRect.bottom - scaledh;
-		} else {
-			cor = 0;
 		}
 		r.bottom = r.top + scaledh;
-		preview_scroll.v += cor;
 		preview_pmap.maskPhaseRow = (preview_scroll.v)/zoomfactor; // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
