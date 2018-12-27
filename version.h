@@ -97,17 +97,19 @@
 26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
 07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
 19-Dec-2018: 1.6b2 - Fixed crash at filter startup when computer had too much RAM.
-                     Fixed crash where built obfuscated filters could not be opened.
-                     Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
-                     Size PARM_SIZE in PARM ressource corrected.
-                     Extended NMake file to support flex and bison compilation.
-                     Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
-                     The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
-                     Dialog boxes now have an [X] button to close the window.
-                     Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
-                     The "version information" of standalone filters is now individualized by the creators input
-                     Win64 support
-                     All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
+                   - Fixed crash where built obfuscated filters could not be opened.
+                   - Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
+                   - Size PARM_SIZE in PARM ressource corrected.
+                   - Extended NMake file to support flex and bison compilation.
+                   - Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
+                   - The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
+                   - Dialog boxes now have an [X] button to close the window.
+                   - Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
+                   - Bugfix: In the preview window, you could (virtually) pan the image beyond the canvas,
+                             so that you needed to pan multiple times to get to the position "0" again.
+                   - The "version information" of standalone filters is now individualized by the creators input
+                   - Win64 support
+                   - All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

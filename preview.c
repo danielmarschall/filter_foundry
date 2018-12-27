@@ -142,7 +142,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			cor = 0;
 		}
 		r.right = r.left + scaledw;
-		preview_pmap.maskPhaseCol = (preview_scroll.h+cor)/zoomfactor; // phase of the checkerboard
+		preview_scroll.h += cor;
+		preview_pmap.maskPhaseCol = (preview_scroll.h)/zoomfactor; // phase of the checkerboard
 
 		/* now compute for vertical */
 		r.top = (pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
@@ -157,7 +158,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			cor = 0;
 		}
 		r.bottom = r.top + scaledh;
-		preview_pmap.maskPhaseRow = (preview_scroll.v+cor)/zoomfactor; // phase of the checkerboard
+		preview_scroll.v += cor;
+		preview_pmap.maskPhaseRow = (preview_scroll.v)/zoomfactor; // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
 		if(needall)
