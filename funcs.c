@@ -284,7 +284,7 @@ value_type ff_rst(value_type seed){
 }
 
 value_type zero_val = 0;
-value_type one_val = 0;
+value_type one_val = 1;
 value_type max_channel_val = 255;
 
 /* predefined symbols */
