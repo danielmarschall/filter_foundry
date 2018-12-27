@@ -49,6 +49,7 @@ void evalinit(){
 Boolean setup(FilterRecordPtr pb){
 	int i;
 
+	// Attention: If you introduce new variables, please define them also in lexer.l
 	var['X'] = pb->filterRect.right - pb->filterRect.left;
 	var['Y'] = pb->filterRect.bottom - pb->filterRect.top;
 	var['Z'] = nplanes;
@@ -94,6 +95,7 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		if(needinput)
 			var['c'] = inp[k];
 		var['z'] = k;
+		var['p'] = k; // undocumented alias of z
 		f = eval(tree[k]);
 		outp[k] = f<0 ? 0 : (f>255 ? 255 : f); // clamp channel value to 0-255
 	}

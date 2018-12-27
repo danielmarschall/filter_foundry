@@ -30,6 +30,8 @@
 #include "funcs.h"
 #include "y.tab.h"
 
+#include "node.h" // for symbol "var[]"
+
 #define RINT //no rounding for now
 
 //#if TARGET_API_MAC_CARBON
@@ -282,10 +284,13 @@ value_type ff_rst(value_type seed){
 }
 
 value_type zero_val = 0;
+value_type one_val = 0;
+value_type max_channel_val = 255;
 
 /* predefined symbols */
 struct sym_rec predefs[]={
 	/* functions */
+
 	{0,TOK_FN3,"src", (pfunc_type)ff_src, 0},
 	{0,TOK_FN3,"rad", (pfunc_type)ff_rad, 0},
 	{0,TOK_FN1,"ctl", (pfunc_type)ff_ctl, 0},
@@ -311,10 +316,72 @@ struct sym_rec predefs[]={
 	{0,TOK_FN1,"get", (pfunc_type)ff_get, 0},
 	{0,TOK_FN2,"put", (pfunc_type)ff_put, 0},
 	{0,TOK_FN10,"cnv",(pfunc_type)ff_cnv, 0},
-	{0,TOK_FN1,"rst", (pfunc_type)ff_rst, 0},
-	/* predefined variables (names >1 characters) */
+	{0,TOK_FN1,"rst", (pfunc_type)ff_rst, 0}, // undocumented FilterFactory function
+
+	/* predefined variables (names with more than 1 character); most of them are undocumented in FilterFactory */
+	/* the predefined variables with 1 character are defined in lexer.l and process.c */
+	/* in this table, you must not add TOK_VAR with only 1 character (since this case is not defined in parser.y) */
+
+	{0,TOK_VAR,"rmax",0, &max_channel_val}, // alias of 'R' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"gmax",0, &max_channel_val}, // alias of 'G' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"bmax",0, &max_channel_val}, // alias of 'B' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"amax",0, &max_channel_val}, // alias of 'A' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"cmax",0, &max_channel_val}, // alias of 'C' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"imax",0, &max_channel_val}, // alias of 'I' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"umax",0, &max_channel_val}, // alias of 'U' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"vmax",0, &max_channel_val}, // alias of 'V' (defined in lexer.l, line 129)
+	{0,TOK_VAR,"dmax",0, &var['D']},
+	{0,TOK_VAR,"mmax",0, &var['M']},
+	{0,TOK_VAR,"pmax",0, &var['Z']},
+	{0,TOK_VAR,"xmax",0, &var['X']},
+	{0,TOK_VAR,"ymax",0, &var['Y']},
+	{0,TOK_VAR,"zmax",0, &var['Z']},
+
+	{0,TOK_VAR,"rmin",0, &zero_val},
+	{0,TOK_VAR,"gmin",0, &zero_val},
+	{0,TOK_VAR,"bmin",0, &zero_val},
+	{0,TOK_VAR,"amin",0, &zero_val},
+	{0,TOK_VAR,"cmin",0, &zero_val},
+	{0,TOK_VAR,"imin",0, &zero_val},
+	{0,TOK_VAR,"umin",0, &zero_val},
+	{0,TOK_VAR,"vmin",0, &zero_val},
 	{0,TOK_VAR,"dmin",0, &zero_val},
 	{0,TOK_VAR,"mmin",0, &zero_val},
+	{0,TOK_VAR,"pmin",0, &zero_val},
+	{0,TOK_VAR,"xmin",0, &zero_val},
+	{0,TOK_VAR,"ymin",0, &zero_val},
+	{0,TOK_VAR,"zmin",0, &zero_val},
+
+	/* Undocumented synonyms of FilterFactory for compatibility with Premiere */
+	{0,TOK_FN10,"cnv0",(pfunc_type)ff_cnv, 0},
+	{0,TOK_FN3,"src0", (pfunc_type)ff_src, 0},
+	{0,TOK_FN3,"rad0", (pfunc_type)ff_rad, 0},
+	{0,TOK_FN10,"cnv1",(pfunc_type)ff_cnv, 0},
+	{0,TOK_FN3,"src1", (pfunc_type)ff_src, 0},
+	{0,TOK_FN3,"rad1", (pfunc_type)ff_rad, 0},
+	{0,TOK_VAR,"r0",0, &var['r']},
+	{0,TOK_VAR,"g0",0, &var['g']},
+	{0,TOK_VAR,"b0",0, &var['b']},
+	{0,TOK_VAR,"a0",0, &var['a']},
+	{0,TOK_VAR,"c0",0, &var['c']},
+	{0,TOK_VAR,"i0",0, &var['i']},
+	{0,TOK_VAR,"u0",0, &var['u']},
+	{0,TOK_VAR,"v0",0, &var['v']},
+	{0,TOK_VAR,"d0",0, &var['d']},
+	{0,TOK_VAR,"m0",0, &var['m']},
+	{0,TOK_VAR,"r1",0, &var['r']},
+	{0,TOK_VAR,"g1",0, &var['g']},
+	{0,TOK_VAR,"b1",0, &var['b']},
+	{0,TOK_VAR,"a1",0, &var['a']},
+	{0,TOK_VAR,"c1",0, &var['c']},
+	{0,TOK_VAR,"i1",0, &var['i']},
+	{0,TOK_VAR,"u1",0, &var['u']},
+	{0,TOK_VAR,"v1",0, &var['v']},
+	{0,TOK_VAR,"d1",0, &var['d']},
+	{0,TOK_VAR,"m1",0, &var['m']},
+	{0,TOK_VAR,"tmin",0, &zero_val},
+	{0,TOK_VAR,"tmax",0, &one_val},
+	{0,TOK_VAR,"total",0, &one_val},
+
 	{0,0,0,0,0}
 };
-

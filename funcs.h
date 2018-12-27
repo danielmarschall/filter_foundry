@@ -3,7 +3,7 @@
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -21,7 +21,7 @@
 
 
 #ifndef M_PI
-	#define M_PI 3.14159265358979323846264338327 
+	#define M_PI 3.14159265358979323846264338327
 #endif
 
 
@@ -72,3 +72,4 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m21,value_type m22,value_type m23,
 				  value_type m31,value_type m32,value_type m33,
 				  value_type d );
+value_type ff_rst(value_type seed);

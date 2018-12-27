@@ -107,6 +107,7 @@
                      Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
                      The "version information" of standalone filters is now individualized by the creators input
                      Win64 support
+                     All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

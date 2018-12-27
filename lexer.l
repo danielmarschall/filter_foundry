@@ -132,9 +132,16 @@ HEXDIGIT	[0-9A-Fa-f]
 		return TOK_NUM; 
 	}
 
-[rgbaciuvxyzdmXYZDM] { /* single character variable */
+[t] {
+		yylval = newnode(TOK_NUM);
+		yylval->v.value = 0;
+		return TOK_NUM; 
+	}
+
+[rgbaciuvxyzpdmXYZDM] { /* single character variable */
 		yylval = newnode(TOK_SPECIALVAR);
 		yylval->v.specialvar = yytext[0];
+		/* values are defined in process.c */
 		return TOK_SPECIALVAR;
 	}
 
