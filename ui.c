@@ -253,16 +253,16 @@ void maindlginit(DIALOGREF dp){
 
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
-			if(gdata->parm.ctl_used[i]){
-				myp2cstrcpy(s,gdata->parm.ctl[i]);
-				SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
-			}else if(gdata->parm.map_used[i/2]){
+			if(gdata->parm.map_used[i/2]){
 				if(i&1)
 					HideDialogItem(dp,FIRSTCTLLABELITEM+i);
 				else{
 					myp2cstrcpy(s,gdata->parm.map[i/2]);
 					SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
 				}
+			} else if(gdata->parm.ctl_used[i]){
+				myp2cstrcpy(s,gdata->parm.ctl[i]);
+				SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
 			}else{
 				HideDialogItem(dp,FIRSTCTLITEM+i);
 				HideDialogItem(dp,FIRSTCTLTEXTITEM+i);

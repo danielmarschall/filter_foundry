@@ -407,7 +407,7 @@ resource 'DITL' (ID_BUILDDLG, purgeable) {
 		EditText { enabled,"Untitled" },
 		/* [5] */
 		{60, 92, 92, 395},
-		EditText { enabled,"Filter Foundry Copyright (C) 2003-7 Toby Thain, <toby@telegraphics.com.au>" },
+		EditText { enabled,"" }, /* Filter Foundry Copyright (C) 2003-7 Toby Thain, <toby@telegraphics.com.au> */
 		/* [6] */
 		{100, 92, 116, 395},
 		EditText { enabled,"Anonymous" },

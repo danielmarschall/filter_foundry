@@ -113,6 +113,7 @@
                    - Bugfix: In some cases, the preview image had a small stripe of random pixels at the right or bottom.
                    - For disabled sliders, the corresponding label is now also grayed out (*)
                    - Bugfix: In standalone filters, the unused ctl() labels were not hidden. They are now invisible as intended.
+                   - Bugfix: At standalone filters, the "map" text was not displayed; instead, the two "ctl" texts were displayed.
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
