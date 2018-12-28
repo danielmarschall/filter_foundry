@@ -200,9 +200,11 @@ void maindlgupdate(DIALOGREF dp){
 	for(i = 0; i < 8; i++)
 		if(unknown || ctls[i]){
 			ENABLEDLGITEM(dp,FIRSTCTLITEM+i);
+			ENABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			ShowDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}else{
 			DISABLEDLGITEM(dp,FIRSTCTLITEM+i);
+			DISABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			HideDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}
 
