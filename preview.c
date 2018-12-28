@@ -118,10 +118,10 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			scaledh = pb->filterRect.bottom - pb->filterRect.top;
 
 		/* scale clipped preview area down again - this becomes the pixel size of preview */
-		imgw = scaledw/zoomfactor;
+		imgw = ceil(scaledw/zoomfactor);
 		if(imgw > preview_w)
 			imgw = preview_w;
-		imgh = scaledh/zoomfactor;
+		imgh = ceil(scaledh/zoomfactor);
 		if(imgh > preview_h)
 			imgh = preview_h;
 
