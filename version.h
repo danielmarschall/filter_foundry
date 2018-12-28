@@ -114,6 +114,9 @@
                    - For disabled sliders, the corresponding label is now also grayed out (*)
                    - Bugfix: In standalone filters, the unused ctl() labels were not hidden. They are now invisible as intended.
                    - Bugfix: At standalone filters, the "map" text was not displayed; instead, the two "ctl" texts were displayed.
+                   - AFS Files are now compatible with FilterFactory. (FilterFactory does ONLY understand "\r" (0D) linebreaks, while
+                     FilterFoundry always saved "\n" (0A) linebreaks, while being able to read "\r", "\n" or "\r\n". Now, "\r" is used
+                     for saving.) (*)
                      (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

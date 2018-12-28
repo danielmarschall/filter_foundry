@@ -44,7 +44,7 @@ OSErr saveparams(Handle h){
 	int i,j,chunk,n;
 	OSErr e;
 	long est;
-	static char afs_sig[] = "%RGB-1.0\n";
+	static char afs_sig[] = "%RGB-1.0\r";
 
 	if(!h) DBG("saveparams: Null handle!");
 
@@ -59,7 +59,7 @@ OSErr saveparams(Handle h){
 
 		/* then slider values, one per line */
 		for( i=0 ; i<8 ; ++i )
-			p += sprintf(p, "%ld\n", slider[i]);
+			p += sprintf(p, "%ld\r", slider[i]);
 
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){
@@ -73,13 +73,13 @@ OSErr saveparams(Handle h){
 							++r;
 						}else
 							*q++ = *r++;
-					*q++ = '\n';
+					*q++ = '\r';
 					*q = 0;
 					p = cat(p,outbuf);
 				}
 			else
-				p = cat(p,"(null expr)\n"); // this shouldn't happen
-			*p++ = '\n';
+				p = cat(p,"(null expr)\r"); // this shouldn't happen
+			*p++ = '\r';
 		}
 
 //		*p = 0; dbg(start);
