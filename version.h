@@ -108,7 +108,7 @@
                    - Bugfix: In the preview window, you could (virtually) pan the image beyond the canvas,
                              so that you needed to pan multiple times to get to the position "0" again.
                    - The "version information" of standalone filters is now individualized by the creators input
-                   - Win64 support
+                   - Win64 support (*)
                    - All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
                    - Bugfix: In some cases, the preview image had a small stripe of random pixels at the right or bottom.
                    - For disabled sliders, the corresponding label is now also grayed out (*)
@@ -117,7 +117,9 @@
                    - AFS Files are now compatible with FilterFactory. (FilterFactory does ONLY understand "\r" (0D) linebreaks, while
                      FilterFoundry always saved "\n" (0A) linebreaks, while being able to read "\r", "\n" or "\r\n". Now, "\r" is used
                      for saving.) (*)
-                     (Changes by Daniel Marschall)
+                   - The "caution" sign that indicates an error in the expression does now have a hand cursor that shows up when
+                     you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
+                   (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

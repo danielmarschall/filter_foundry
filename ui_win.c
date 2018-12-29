@@ -33,6 +33,7 @@
 HWND preview_hwnd;
 HCURSOR hCurHandOpen;
 HCURSOR hCurHandGrab;
+HCURSOR hCurHandQuestion;
 
 extern HANDLE hDllInstance;
 
@@ -93,10 +94,13 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		hCurHandOpen = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_OPEN));
 		hCurHandGrab = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_GRAB));
+		hCurHandQuestion = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION));
 
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
 		GetClientRect(preview_hwnd, &preview_rect);
 		SetClassLongPtr(preview_hwnd, GCLP_HCURSOR, (LONG_PTR)hCurHandOpen);
+
+		SetClassLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandQuestion);
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
@@ -115,6 +119,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		gdata->hWndMainDlg = 0;
 		DestroyCursor(hCurHandOpen);
 		DestroyCursor(hCurHandGrab);
+		DestroyCursor(hCurHandQuestion);
 		break;
 	case WM_DRAWITEM:
 		pdi = (DRAWITEMSTRUCT*)lParam;
@@ -175,17 +180,28 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
+	WNDCLASSEX clx;
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
-	WNDCLASSEX clx;
 	clx.cbSize = sizeof(WNDCLASSEX);
 	GetClassInfoEx(hDllInstance, "Static", &clx);
 	clx.lpszClassName = "Preview";
 	RegisterClassEx(&clx);
 
+	// For the caution images, we register a class, so that we can assign a mouse cursor to this class.
+	clx.cbSize = sizeof(WNDCLASSEX);
+	GetClassInfoEx(hDllInstance, "Static", &clx);
+	clx.lpszClassName = "CautionSign";
+	RegisterClassEx(&clx);
+
 	// Now show the dialog
 	p = pb->platformData;
-	return DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
-						  (HWND)p->hwnd,maindlgproc,0) == IDOK;
+	INT_PTR res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
+	                             (HWND)p->hwnd,maindlgproc,0) == IDOK;
+
+	UnregisterClass("Preview", hDllInstance);
+	UnregisterClass("CautionSign", hDllInstance);
+
+	return res;
 }
 
