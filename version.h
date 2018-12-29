@@ -120,6 +120,10 @@
                    - The "caution" sign that indicates an error in the expression does now have a hand cursor that shows up when
                      you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
                    - The expression input fields now have a vertical scrollbar (*)
+                   - YUV formulas are now more accurate. They are slightly different, but not much.
+                     The i range is now [0..255] instead of [0..254]. (This means that pure white has now i=255 instead of i=254)
+                     The u range stays at [-55..55].
+                     The v range is now [-78..78] instead of [-77..77].
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
