@@ -119,6 +119,7 @@
                      for saving.) (*)
                    - The "caution" sign that indicates an error in the expression does now have a hand cursor that shows up when
                      you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
+                   - The expression input fields now have a vertical scrollbar (*)
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
