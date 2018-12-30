@@ -18,6 +18,7 @@
 */
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "ff.h"
 #include "symtab.h"
@@ -166,26 +167,11 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 void obfusc(unsigned char *pparm,size_t size){
 	int i;
 	unsigned char *p;
-	int selftest1, selftest2, selftest3;
+	uint32_t x32;
 
-	/* Do a small self-test to test if the stdlib implementation works as expected, i.e. that it only
-	 * depends on the seed set by srand() and on nothing else.
-	 */
-	srand(0xdc43df3c);
-	selftest1 = rand();
-	selftest2 = rand();
-	selftest3 = rand();
-
-	srand(0xdc43df3c);
-	if ((rand() != selftest1) || (rand() != selftest2) || (rand() != selftest3)) {
-		// This should never happen
-		alertuser("Warning:","Stdcall rand() implementation does not work as expected. Obfuscation operation will be cancelled.");
-		return; // apply no obfuscation
+	x32 = 0x95D4A68F; // Hardcoded seed
+	for(i = size, p = pparm; i--;) {
+		// https://de.wikipedia.org/wiki/Xorshift
+		*p++ ^= (x32 ^= (x32 ^= (x32 ^= x32 << 13) >> 17) << 5);
 	}
-
-	/* Very simplistic. meant to hide from casual observation/loading only.
-	 * Results are platform dependent, but this should not matter. */
-	srand(0xdc43df3c);
-	for(i = size, p = pparm; i--;)
-		*p++ ^= rand();
 }

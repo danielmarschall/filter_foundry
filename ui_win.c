@@ -181,6 +181,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	WNDCLASSEX clx;
+	INT_PTR res;
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
 	clx.cbSize = sizeof(WNDCLASSEX);
@@ -196,8 +197,8 @@ Boolean maindialog(FilterRecordPtr pb){
 
 	// Now show the dialog
 	p = pb->platformData;
-	INT_PTR res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
-	                             (HWND)p->hwnd,maindlgproc,0) == IDOK;
+	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
+	                     (HWND)p->hwnd,maindlgproc,0) == IDOK;
 
 	UnregisterClass("Preview", hDllInstance);
 	UnregisterClass("CautionSign", hDllInstance);
