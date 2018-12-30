@@ -22,6 +22,7 @@
 #include "ff.h"
 
 int ctls[8],maps[4];
+int checksliders_result;
 
 /* one-time initialisation of dialog box */
 
@@ -59,21 +60,25 @@ void builddlginit(DIALOGREF dp){
 		}
 	}
 
-	if(!checksliders(4,ctls,maps)){
-		for(i = 4; i--;){
-			DISABLEDLGITEM(dp,FIRSTMAPCHECKITEM+i);
-			if(maps[i])
-				CHECKDLGBUTTON(dp,FIRSTMAPCHECKITEM+i,true);
-			else
-				HideDialogItem(dp,FIRSTMAPNAMEITEM+i);
-		}
-		for(i = 8; i--;){
-			DISABLEDLGITEM(dp,FIRSTCTLCHECKITEM+i);
-			if(ctls[i])
-				CHECKDLGBUTTON(dp,FIRSTCTLCHECKITEM+i,true);
-			else
-				HideDialogItem(dp,FIRSTCTLNAMEITEM+i);
-		}
+	checksliders_result = checksliders(4,ctls,maps);
+	for(i = 4; i--;){
+		DISABLEDLGITEM(dp,FIRSTMAPCHECKITEM+i);
+		if(maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
+			CHECKDLGBUTTON(dp,FIRSTMAPCHECKITEM+i,true);
+		else
+			HideDialogItem(dp,FIRSTMAPNAMEITEM+i);
+	}
+	for(i = 8; i--;){
+		DISABLEDLGITEM(dp,FIRSTCTLCHECKITEM+i);
+		if((ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) &&
+		   // When map() is activated, we don't need ctl labels,
+		   // since the standalone filter will only show map labels
+		   !maps[i/2] &&
+		   (!(checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
+		   )
+			CHECKDLGBUTTON(dp,FIRSTCTLCHECKITEM+i,true);
+		else
+			HideDialogItem(dp,FIRSTCTLNAMEITEM+i);
 	}
 
 	SELECTDLGITEMTEXT(dp,TITLEITEM,0,-1);
@@ -96,13 +101,16 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		GetDlgItemText(dp,AUTHORITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.author,s);
 		gdata->parm.cbSize = PARM_SIZE;
 		gdata->parm.nVersion = 1;  //0=original FF, 1=standalone filter
-		for(i = needui = 0; i < 8; ++i){
+		needui = 0;
+		for(i = 0; i < 8; ++i){
 			gdata->parm.val[i] = slider[i];
-			needui |= (gdata->parm.ctl_used[i] = ctls[i]);
+			gdata->parm.ctl_used[i] = ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
+			needui |= gdata->parm.ctl_used[i];
 			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.ctl[i],s);
 		}
 		for(i = 0; i < 4; ++i){
-			gdata->parm.map_used[i] = maps[i];
+			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
+			needui |= gdata->parm.map_used[i];
 			GetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.map[i],s);
 			strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
 		}

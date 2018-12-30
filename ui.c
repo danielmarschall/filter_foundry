@@ -129,11 +129,12 @@ SETCTLTEXT(dp,ZOOMLEVELITEM,s);
 		HideDialogItem(dp,ZOOMOUTITEM);
 }
 
-/* traverse expression tree, looking for constant references to sliders */
+/* traverse expression tree, looking for constant references to sliders/maps */
 
-static int checksl(struct node*p,int ctlflags[],int mapflags[]){
-	int s;
+static int _checksl(struct node*p,int ctlflags[],int mapflags[]){
+	int s, i, result;
 
+	result = 0;
 	if(p){
 		if( (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_ctl)
 		 || (p->kind==TOK_FN3 && p->v.sym->fn == (pfunc_type)ff_val) ){
@@ -142,7 +143,7 @@ static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 				if(s>=0 && s<=7)
 					ctlflags[s] = 1;
 			}else
-				return true; /* can't determine which ctl() */
+				result |= CHECKSLIDERS_CTL_AMBIGUOUS; /* can't determine which ctl() */
 		}else if(p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map){
 			if(p->child[0]->kind == TOK_NUM){
 				s = p->child[0]->v.value;
@@ -151,20 +152,20 @@ static int checksl(struct node*p,int ctlflags[],int mapflags[]){
 					ctlflags[s*2] = ctlflags[s*2+1] = 1;
 				}
 			}else
-				return true; /* can't determine which map() */
+				result |= CHECKSLIDERS_MAP_AMBIGUOUS; /* can't determine which map() */
 		 }
 
-		return checksl(p->child[0],ctlflags,mapflags)
-			|| checksl(p->child[1],ctlflags,mapflags)
-			|| checksl(p->child[2],ctlflags,mapflags)
-			|| checksl(p->child[3],ctlflags,mapflags)
-			|| checksl(p->child[4],ctlflags,mapflags);
-	}else
-		return false;
+		for( i = 0 ; i < MAXCHILDREN ; ++i )
+			result |= _checksl(p->child[i],ctlflags,mapflags);
+	}
+
+	return result;
 }
 
-Boolean checksliders(int exprs,int ctlflags[],int mapflags[]){
-	int i,f = false;
+int checksliders(int exprs,int ctlflags[],int mapflags[]){
+	int i, result;
+
+	result = 0;
 
 	for(i = 4; i--;)
 		mapflags[i] = 0;
@@ -172,10 +173,9 @@ Boolean checksliders(int exprs,int ctlflags[],int mapflags[]){
 		ctlflags[i] = 0;
 
 	for(i = 0; i < exprs; i++)
-		if(checksl(tree[i],ctlflags,mapflags))
-			f = true;
+		result |= _checksl(tree[i],ctlflags,mapflags);
 
-	return f;
+	return result;
 }
 
 void slidermoved(DIALOGREF dp,int i){

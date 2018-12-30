@@ -91,7 +91,7 @@ Windows notes
 BUILDING WITH VISUAL STUDIO:
 
 To build with Visual Studio, you have to use nmake.
-Currently, there is not Visual Studio project file.
+Currently, there is no Visual Studio project file.
 
 To compile:
 1. First download Flex and Bison from https://sourceforge.net/projects/winflexbison/
@@ -111,7 +111,7 @@ To compile:
 	5.2 Navigate to the Filter Foundry dir and run
 		nmake /f nmake64.mak clean
 		nmake /f nmake64.mak
-   You can use the script vc_make_3264.bat to build both 32- and 64-bit in one click.
+   You can use the script vc_make_3264.bat to build both 32- and 64-bit with one click.
    Please first edit this batch file and adjust the Visual Studio path.
 
 Troubleshooting:

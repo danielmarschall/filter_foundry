@@ -89,6 +89,17 @@
 #define PARAM_CTL5_KEY	'cTl5'
 #define PARAM_CTL6_KEY	'cTl6'
 #define PARAM_CTL7_KEY	'cTl7'
+
+// Return value of checksliders() is a bitmask
+// If the CHECKSLIDERS_CTL_AMBIGUOUS bit is set, the function ctl() was called with a non-constant argument.
+// In this case, the ctlflags[] array is NOT populated correctly. The caller might want to handle this
+// case differently (e.g. by enabling all sliders).
+// If the CHECKSLIDERS_MAP_AMBIGUOUS bit is set, the function map() was called with a non-constant argument.
+// In this case, the mapflags[] array is NOT populated correctly.
+// If the return value is zero, ctlflags[] and mapflags[] are populated correctly.
+#define CHECKSLIDERS_CTL_AMBIGUOUS 1
+#define CHECKSLIDERS_MAP_AMBIGUOUS 2
+
 /* --- */
 
 #ifndef RC_INVOKED
@@ -114,7 +125,7 @@
 	Boolean maindlgitem(DIALOGREF dp,int item);
 	void maindlgupdate(DIALOGREF dp);
 	void slidermoved(DIALOGREF dp,int item);
-	Boolean checksliders(int exprs,int ctlflags[],int mapflags[]);
+	int checksliders(int exprs,int ctlflags[],int mapflags[]);
 
 	void builddlginit(DIALOGREF dp);
 	Boolean builddlgitem(DIALOGREF dp,int item);

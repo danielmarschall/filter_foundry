@@ -5,22 +5,11 @@ Wishlist/ToDo by Daniel Marschall <www.daniel-marschall.de>
 Important/Bugs
 --------------
 
-* BUG: If ctl() is called with a non-number, following happens:
-	- All slider controls get enabled => correct
-	- In the build dialog, all ctl() fields are enabled => correct
-	- But also all map() fields are enabled => wrong
-	- In the standalone filter, no ctl(), no map() and no "needsUI" is set => wrong
-	The same problem if map() is called with a non-number.
-	The problem is that the function checksliders() returns true if
-	the ctl()/map() expression is not clear, but it does not alter the
-	ctls and maps parameters. The functions that call checksliders()
-	should act differently, or checksliders() should also modify ctls/maps arguments?
-
 * BUG: alertuser() and simplealert() are not modal. They need a parent window handle.
 	(Does this bug also happen on Mac?)
 
 * In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
-  to write an expression longer than 1024 bytes, which would lead to a crash?
+  to write an expression longer than 1023 bytes, which would lead to a crash?
 
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
 
@@ -67,3 +56,5 @@ Design/UI Tweaks
   Unfortunately, this task is very hard in WIN32 API.
 
 * Should there be more space for expressions, like in Filter Factory?
+
+* Standalone filter: Map labels should be centered between two sliders, like in Filter Factory

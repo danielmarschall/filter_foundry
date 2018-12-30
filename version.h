@@ -124,6 +124,11 @@
                      The i range is now [0..255] instead of [0..254]. (This means that pure white has now i=255 instead of i=254)
                      The u range stays at [-55..55].
                      The v range is now [-78..78] instead of [-77..77].
+                   - Bugfix: If ctl() or map() was called with a non-constant argument, the controls in the build dialogs
+                     were not correctly enabled/disabled, and built standalone filters did not get the correct
+                     "needs UI" flag. Fixed.
+                   - In the build dialog, if map() was used, the corresponding ctl()-labels now can't be changed anymore,
+                     since the resulting standalone filter won't show them anyway.
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
