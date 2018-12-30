@@ -1,0 +1,69 @@
+
+Wishlist/ToDo by Daniel Marschall <www.daniel-marschall.de>
+===========================================================
+
+Important/Bugs
+--------------
+
+* BUG: If ctl() is called with a non-number, following happens:
+	- All slider controls get enabled => correct
+	- In the build dialog, all ctl() fields are enabled => correct
+	- But also all map() fields are enabled => wrong
+	- In the standalone filter, no ctl(), no map() and no "needsUI" is set => wrong
+	The same problem if map() is called with a non-number.
+	The problem is that the function checksliders() returns true if
+	the ctl()/map() expression is not clear, but it does not alter the
+	ctls and maps parameters. The functions that call checksliders()
+	should act differently, or checksliders() should also modify ctls/maps arguments?
+
+* BUG: alertuser() and simplealert() are not modal. They need a parent window handle.
+	(Does this bug also happen on Mac?)
+
+* In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
+  to write an expression longer than 1024 bytes, which would lead to a crash?
+
+* Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
+
+
+Minor priority stuff or ideas
+-----------------------------
+
+* The VERSIONINFO resource is added in PiPl.rc - but that would mean it will also be included in Mac binaries?
+  I think it should be added to a new file version_win.rc , which is included only by win_res.rc
+  
+* Should an expression like "----r" be forbidden? (Multiple negate signs) On the other hand, FilterFactory
+  didn't forbit them either.
+  
+* CMYK mode is possible (although a bit misleading to have r=c, g=m, b=y, a=k), but then it is impossible to
+  control the alpha channel.
+
+* Other Telegraphics Filters have the same problem in VERSIONINFO where the translation
+  strings "04900000" don't fit together "080904B0" (fixed in Filter Foundry)
+
+* The following formula acts a bit weird in comparison to Filter Factory:
+	r = rnd(0,x)+rst(3)	
+	g = rnd(0,y)	
+	b = rnd(0,y-x)
+
+* I have found following in the source code: Do we need to do something here?
+	strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
+
+* Add pow() or "**" operator?
+
+* Create a Visual Studio project file
+
+* Search for TODO and FIXME in the code
+
+
+Design/UI Tweaks
+----------------
+
+* The exlamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac)
+  Not sure how easy it is to do that with WIN32 API
+
+* Should it be possible to zoom more than 100%?
+
+* The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac)
+  Unfortunately, this task is very hard in WIN32 API.
+
+* Should there be more space for expressions, like in Filter Factory?

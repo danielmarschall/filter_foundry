@@ -52,7 +52,7 @@ PRIORITY NEEDS:
 
 		2a. See examples provided. (Blintz)
 
-	3. Control captions currently not being applied in compiled plugins.
+(FIXED)	3. Control captions currently not being applied in compiled plugins.
 
 (FIXED)	4. Fix compiled plugin dialogue to read the filter's name.
 	  [ie: CAPTION "Filters Name Goes Here"]
@@ -60,7 +60,7 @@ PRIORITY NEEDS:
 		4a. Currently defaults to "Filter Foundry" and requires ResHacker
 		    to fix.
 
-	5. One pixel border bug at very bottom of Preview image.
+(FIXED)	5. One pixel border bug at very bottom of Preview image.
 
 		5a. Minor annoyance in aesthetic.
 		5b. Refer to Item 6 as a potential fix or work-around.
