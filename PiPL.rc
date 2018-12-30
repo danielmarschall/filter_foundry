@@ -28,8 +28,8 @@
 #define VENDORID LC(8,B,I,M)
 #define NULLID 0L
 
-/* LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL */
-
+/* Note: make_win.c writes language 0. So, this should be language 0, too, otherwise the standalone filter would have 2 languages for this resource. */
+LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 16000  PiPL  DISCARDABLE
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
@@ -42,6 +42,7 @@ BEGIN
 
 END
 
+LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 16000  RCDATA  DISCARDABLE
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
@@ -102,6 +103,8 @@ END
    the Windows resource does NOT have word alignment constraints
    after its embedded strings. */
 
+/* Note: make_win.c writes language 0. So, this should be language 0, too, otherwise the standalone filter would have 2 languages for this resource. */
+LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 AETE_ID aete
 {
 	0x0001, 		/* Reserved (for Photoshop) */
@@ -152,6 +155,7 @@ AETE_ID aete
 
 #include "winver.h"
 
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION	VI_VERS_NUM
  PRODUCTVERSION	VI_VERS_NUM
