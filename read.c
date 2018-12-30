@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -38,7 +38,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 
 	p = PILOCKHANDLE(h,false);
 	dataend = p + PIGETHANDLESIZE(h);
-	
+
 	q = curexpr;
 	linecnt = exprcnt = lineptr = 0;
 
@@ -48,11 +48,11 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 		c = *p++;
 
 		if(c==CR || c==LF){ /* detected end of line */
-			
+
 			/* look ahead to see if we need to skip a line feed (DOS EOL convention) */
-			if(c == CR && *p == LF && p < dataend) 
+			if(c == CR && *p == LF && p < dataend)
 				++p;
-			
+
 			linebuf[lineptr] = 0; /* add terminating NUL to line buffer */
 
 			/* process complete line */
@@ -65,7 +65,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 			}else if(linecnt<=8){
 				slider[linecnt-1] = atoi(linebuf);
 			}else{
-				if(lineptr){ 
+				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
 					if( q+lineptr > curexpr+MAXEXPR ){
 						*reason = "Found an expression longer than 1024 characters.";
@@ -74,7 +74,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 					q = cat(q,linebuf);
 				}else{
 					/* it's an empty line: we've completed the expr string */
-					if(expr[exprcnt]) 
+					if(expr[exprcnt])
 						free(expr[exprcnt]);
 					*q = 0;
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
@@ -90,7 +90,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 					q = curexpr; /* empty current expr, ready for next one */
 				}
 			}
-			
+
 			++linecnt;
 			lineptr = 0;
 		}else{
@@ -101,17 +101,17 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 					switch(c){
 					case 'r': c = CR;
 					case '\\': break;
-					default: 
+					default:
 						if(alerts) alertuser("Warning:","Unknown escape sequence in input.");
 					}
-				}//else if(alerts) alertuser("truncated escape sequence ends input");
+				}//else if(alerts) alertuser("Warning:","truncated escape sequence ends input");
 			}
 
 			if(lineptr < MAXLINE)
 				linebuf[lineptr++] = c;
 		}
 	}
-	
+
 	PIUNLOCKHANDLE(h);
 
 	return res;

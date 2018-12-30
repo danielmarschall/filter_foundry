@@ -179,7 +179,7 @@ void obfusc(unsigned char *pparm,size_t size){
 	srand(0xdc43df3c);
 	if ((rand() != selftest1) || (rand() != selftest2) || (rand() != selftest3)) {
 		// This should never happen
-		simplealert("Stdcall rand() implementation does not work as expected. Obfuscation operation will be cancelled.");
+		alertuser("Warning:","Stdcall rand() implementation does not work as expected. Obfuscation operation will be cancelled.");
 		return; // apply no obfuscation
 	}
 

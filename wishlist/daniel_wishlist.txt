@@ -5,9 +5,6 @@ Wishlist/ToDo by Daniel Marschall <www.daniel-marschall.de>
 Important/Bugs
 --------------
 
-* BUG: alertuser() and simplealert() are not modal. They need a parent window handle.
-	(Does this bug also happen on Mac?)
-
 * In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
   to write an expression longer than 1023 bytes, which would lead to a crash?
 

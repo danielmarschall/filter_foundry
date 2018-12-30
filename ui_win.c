@@ -59,7 +59,7 @@ through www.paypal.com (US$5 suggested) to the address above.");
 }
 
 Boolean simplealert(char *s){
-	return MessageBox(NULL,s,"Filter Foundry",MB_APPLMODAL|MB_ICONERROR|MB_OK) == IDOK;
+	return MessageBox(NULL,s,"Filter Foundry",MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);

@@ -129,6 +129,7 @@
                      "needs UI" flag. Fixed.
                    - In the build dialog, if map() was used, the corresponding ctl()-labels now can't be changed anymore,
                      since the resulting standalone filter won't show them anyway.
+                   - Warning windows (alertuser and simplealert function) are now modal. (*)
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
