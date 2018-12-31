@@ -199,20 +199,31 @@ value_type ff_sqr(value_type x){
 	between -512 and 512, inclusive (Windows) or -1024 and
 	1024, inclusive (Mac OS) */
 value_type ff_sin(value_type x){
-	return ff_cos(x-256); //RINT(TRIGAMP*sin(FFANGLE(x)));
+	//return RINT(TRIGAMP*sin(FFANGLE(x)));
+	return ff_cos(x-256);
 }
 
-/* cos(x) Cosine function of x */
+/* cos(x) Cosine function of x, where x is an integer between 0 and
+   1024, inclusive, and the value returned is an integer
+   between -512 and 512, inclusive (Windows) or -1024 and
+   1024, inclusive (Mac OS) */
 value_type ff_cos(value_type x){
-	return costab[abs(x) % COSTABSIZE]; //RINT(TRIGAMP*cos(FFANGLE(x)));
+	//return RINT(TRIGAMP*cos(FFANGLE(x)));
+#ifdef WIN_ENV
+	return RINT(costab[abs(x) % COSTABSIZE]/2);
+#else
+	return costab[abs(x) % COSTABSIZE];
+#endif
 }
 
-/* tan(x)
-	Bounded tangent function of x, where x is an integer
-	between -256 and 256, inclusive, and the value returned is
-	 */
+/* tan(x) Bounded tangent function of x, where x is an integer
+   between -256 and 256, inclusive, and the value returned is
+   an integer between -512 and 512, inclusive (Windows) or
+   -1024 and 1024, inclusive (Mac OS) */
 value_type ff_tan(value_type x){
-	return tantab[(x+256) % TANTABSIZE]; //RINT(TRIGAMP*tan(FFANGLE(x)));
+	// TODO: Shouldn't the output be bounded to -1024..1024, or do I understand the definition wrong?
+	// return RINT(tan(FFANGLE(d)));
+	return tantab[(x+256) % TANTABSIZE];
 }
 
 /* r2x(d,m) x displacement of the pixel m units away, at an angle of d,

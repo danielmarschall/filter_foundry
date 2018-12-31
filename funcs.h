@@ -36,7 +36,11 @@ extern value_type costab[],tantab[];
 
 /* [trig functions return] an integer between -512 and 512, inclusive (Windows)
 	or -1024 and 1024, inclusive (Mac OS) */
+#ifdef WIN_ENV
+#define TRIGAMP 512
+#else
 #define TRIGAMP 1024
+#endif
 #define FFANGLE(v) ((v)*M_PI/512.)
 #define TO_FFANGLE(v) ((v)*512./M_PI)
 

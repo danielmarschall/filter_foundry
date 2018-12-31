@@ -10,9 +10,14 @@ Important/Bugs
 
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
 
+* tan() function behaves slightly differently. There is a bug/difference in tan(256);
+  see testcase "tan_1.afs"
+
 
 Minor priority stuff or ideas
 -----------------------------
+
+* Create more test cases and compare various functions between Filter Foundry and Filter Factory.
 
 * The VERSIONINFO resource is added in PiPl.rc - but that would mean it will also be included in Mac binaries?
   I think it should be added to a new file version_win.rc , which is included only by win_res.rc
@@ -43,6 +48,8 @@ Minor priority stuff or ideas
 
 Design/UI Tweaks
 ----------------
+
+* The exclamation mark symbol is looking pixelated. Is it in the wrong format? (12x12/16x16?)
 
 * The exlamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac)
   Not sure how easy it is to do that with WIN32 API
