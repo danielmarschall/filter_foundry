@@ -11,9 +11,6 @@ Important/Bugs
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
   Windows 64 is already tested. We just need an updated Makefile.
 
-* tan() function behaves slightly differently. There is a bug/difference in tan(256);
-  see testcase "tan_1.afs"
-
 
 Minor priority stuff or ideas
 -----------------------------

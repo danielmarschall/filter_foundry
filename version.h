@@ -132,6 +132,7 @@
                    - Warning windows (alertuser and simplealert function) are now modal. (*)
                    - Bugfix: Trigonometry functions sin and cos had wrong output ranges for Windows (it was -1024..1024 instead of
                      the documented output range -512..512). Fixed.
+                   - Bugfix: Trigonometry function tan now behaves like in Filter Factory
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
