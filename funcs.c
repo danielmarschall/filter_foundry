@@ -52,7 +52,12 @@ void init_trigtab(){
 		costab[i] = cos(FFANGLE(i));
 	}
 	for(i=0;i<TANTABSIZE;++i){
-		tantab[i] = tan(FFANGLE(i-256));
+		if (i>=256) {
+			/* the last '-1' in the expression '512-i-1' is for FilterFactory compatibility, and to avoid the undefined pi/2 area */
+			tantab[i] = -tantab[512-i-1];
+		} else {
+			tantab[i] = tan(FFANGLE(i));
+		}
 	}
 }
 
@@ -221,7 +226,7 @@ value_type ff_sin(value_type x){
    1024, inclusive (Mac OS) */
 value_type ff_cos(value_type x){
 	//return RINT(TRIGAMP*cos(FFANGLE(x)));
-	return TRIGAMP*costab[abs(x) % COSTABSIZE];
+	return RINT(TRIGAMP*costab[abs(x) % COSTABSIZE]);
 }
 
 /* tan(x) Bounded tangent function of x, where x is an integer
@@ -230,8 +235,9 @@ value_type ff_cos(value_type x){
    -1024 and 1024, inclusive (Mac OS) */
 value_type ff_tan(value_type x){
 	// TODO: Shouldn't the output be bounded to -1024..1024, or do I understand the definition wrong?
-	// return RINT(TRIGAMP*tan(FFANGLE(d)));
-	return TRIGAMP*tantab[(x+256) % TANTABSIZE];
+	if (x < 0) x--; /* required for FilterFactory compatibility */
+	while (x < 0) x += TANTABSIZE;
+	return RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); /* FIXME: why do we need factor 2? */
 }
 
 /* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
