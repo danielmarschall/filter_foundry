@@ -29,7 +29,9 @@
 
 enum{ COSTABSIZE=1024,TANTABSIZE=512 };
 
-extern value_type costab[],tantab[];
+void init_trigtab();
+
+extern double costab[],tantab[];
 
 #define DEG2RAD(x) ((x)*M_PI/180.)
 #define RAD2DEG(x) ((x)*180./M_PI)

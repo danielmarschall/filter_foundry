@@ -52,7 +52,7 @@ CPPFLAGS += -DYY_SKIP_YYWRAP \
 vpath %.c ../common/tt ../common/adobeplugin ../MoreFiles/Sources
 
 # list of source files
-SRC_COMMON = main.c funcs.c trigtab.c process.c node.c symtab.c \
+SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
 	ui.c ui_build.c preview.c read.c save.c make.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
@@ -118,7 +118,7 @@ $(BUNDLE)/Contents/PkgInfo : $(BUNDLE)
 
 clean :
 	rm -fr *.[ox] $(OBJ_OSX) $(OBJ_W32) $(PLUGIN_W32) $(BUNDLE) \
-	       gentab trigtab.c lex.yy.[ch] y.tab.[ch] temp
+	       lex.yy.[ch] y.tab.[ch] temp
 
 
 dmg : $(DISTDMG)
@@ -209,9 +209,6 @@ obj/symtab.o : symtab.h
 obj/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj/ui_build.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/ui_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
-
-gentab : gentab.c funcs.h ; $(CC) -o $@ $< -lm
-trigtab.c : gentab ; ./gentab > $@
 
 # compile Mac resources (into data fork of .rsrc file)
 $(PLUGIN_RSRC) : $(BUNDLE) PiPL_macho.r ui_mac.r scripting.r ui.h version.h

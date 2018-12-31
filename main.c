@@ -82,6 +82,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	case filterSelectorPrepare:
 		DoPrepare(pb);
 		init_symtab(predefs); // ready for parser calls
+		init_trigtab();
 		break;
 	case filterSelectorStart:
 		/* initialise the parameter handle that Photoshop keeps for us */

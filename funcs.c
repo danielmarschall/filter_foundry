@@ -44,6 +44,18 @@
 extern value_type slider[],cell[],var[],map[][0x100];
 extern unsigned char *image_ptr;
 
+double costab[COSTABSIZE];
+double tantab[TANTABSIZE];
+void init_trigtab(){
+	int i;
+	for(i=0;i<COSTABSIZE;++i){
+		costab[i] = cos(FFANGLE(i));
+	}
+	for(i=0;i<TANTABSIZE;++i){
+		tantab[i] = tan(FFANGLE(i-256));
+	}
+}
+
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
 static value_type rawsrc(value_type x,value_type y,value_type z){
@@ -209,11 +221,7 @@ value_type ff_sin(value_type x){
    1024, inclusive (Mac OS) */
 value_type ff_cos(value_type x){
 	//return RINT(TRIGAMP*cos(FFANGLE(x)));
-#ifdef WIN_ENV
-	return RINT(costab[abs(x) % COSTABSIZE]/2);
-#else
-	return costab[abs(x) % COSTABSIZE];
-#endif
+	return TRIGAMP*costab[abs(x) % COSTABSIZE];
 }
 
 /* tan(x) Bounded tangent function of x, where x is an integer
@@ -222,20 +230,20 @@ value_type ff_cos(value_type x){
    -1024 and 1024, inclusive (Mac OS) */
 value_type ff_tan(value_type x){
 	// TODO: Shouldn't the output be bounded to -1024..1024, or do I understand the definition wrong?
-	// return RINT(tan(FFANGLE(d)));
-	return tantab[(x+256) % TANTABSIZE];
+	// return RINT(TRIGAMP*tan(FFANGLE(d)));
+	return TRIGAMP*tantab[(x+256) % TANTABSIZE];
 }
 
 /* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
    from an arbitrary center */
 value_type ff_r2x(value_type d,value_type m){
-	return RINT(m*cos(FFANGLE(d)));
+	return RINT(m*costab[abs(d) % COSTABSIZE]);
 }
 
 /* r2y(d,m) y displacement of the pixel m units away, at an angle of d,
    from an arbitrary center */
 value_type ff_r2y(value_type d,value_type m){
-	return RINT(m*sin(FFANGLE(d)));
+	return RINT(m*costab[abs(d-256) % COSTABSIZE]);
 }
 
 /* c2d(x,y) Angle displacement of the pixel at coordinates x,y */

@@ -5,7 +5,7 @@ VpeMain
 1
 WRect
 928
-56
+0
 7680
 9728
 2
@@ -43,7 +43,7 @@ VComponent
 8
 WRect
 0
-682
+673
 5712
 4352
 0
@@ -52,6 +52,6 @@ WRect
 WFileName
 17
 filterfoundry.tgt
-4
-28
+3
+16
 7
