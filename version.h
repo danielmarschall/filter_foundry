@@ -106,7 +106,7 @@
                    - Dialog boxes now have an [X] button to close the window.
                    - Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
                    - Bugfix: In the preview window, you could (virtually) pan the image beyond the canvas,
-                             so that you needed to pan multiple times to get to the position "0" again.
+                             so that you needed to pan multiple times in the opposite direction to get to the position "0" again.
                    - The "version information" of standalone filters is now individualized by the creators input
                    - Win64 support (*)
                    - All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
@@ -133,6 +133,7 @@
                    - Bugfix: Trigonometry functions sin and cos had wrong output ranges for Windows (it was -1024..1024 instead of
                      the documented output range -512..512). Fixed.
                    - Bugfix: Trigonometry function tan now behaves like in Filter Factory
+                   - Bugfix: Function c2d() now behaves like in Filter Factory. Implementation changed from atan2(-y,-x) to atan2(y,x).
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

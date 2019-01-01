@@ -256,7 +256,11 @@ value_type ff_r2y(value_type d,value_type m){
 /* note, sign of y difference is negated, as we are dealing with top-down coordinates
    angle is "observed" */
 value_type ff_c2d(value_type x,value_type y){
-	return RINT(TO_FFANGLE(atan2(-y,-x))); /* FIXME: why must we negate x here? */
+	// Behavior of FilterFoundry <1.7:
+	//return RINT(TO_FFANGLE(atan2(-y,-x))); /* FIXME: why must we negate x here? */
+
+	// Behavior in FilterFoundry 1.7+: Matches FilterFactory
+	return RINT(TO_FFANGLE(atan2(y,x)));
 }
 
 /* c2m(x,y) Magnitude displacement of the pixel at coordinates x,y */
