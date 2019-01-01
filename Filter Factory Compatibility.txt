@@ -1,0 +1,96 @@
+
+Implementation detail differences			Daniel Marschall
+=================================			02 January 2018
+
+FilterFoundry tries to be as compatible with FilterFactory as possible.
+However, results are usually not 100% equal, because functions like
+cos, sin, sqr, etc. have different accuracy due to the underlying
+implementation.
+
+Furthermore, there are following known differences between Filter Foundry
+and Filter Factory:
+
+i, u, v
+-------
+
+Filter Foundry <1.7 uses the same formulas as in Filter Factory:
+
+	i=((76*r)+(150*g)+(29*b))/256            Output range is 0..254
+	u=((–19*r)+(–37*g)+(56*b))/256           Output range is -55..55
+	v=((78*r)+(–65*g)+(–13*b))/256           Output range is -77..77
+
+Filter Foundry 1.7 uses more accurate formulas:
+
+	i=(299*r+587*g+114*b)/1000               Output range is 0..255
+	u=(-147407*r-289391*g+436798*b)/2000000  Output range is -55..55
+	v=614777*r-514799*g-99978*b)/2000000     Output range is -78..78
+
+Both formulas follow the same YUV standard, but have different accuracy.
+
+
+get(i) (Testcase getput.afs)
+------
+
+Filter Foundry:
+	get(x)=0 if x>255 or x<0
+
+Filter Factory:
+	get(x)=x if x>255 or x<0
+	[Note: The result "x" was most likely not intended but a result of an undefined behavior]
+
+
+r, g, b at empty canvas (Testcase emptycanvas.afs)
+-----------------------
+
+In Filter Factory, an empty (transparent) canvas of a new file is initialized as r=g=b=0
+
+Filter Foundry initializes it as r=g=b=255
+
+
+rnd(a,b) and rst(i) (Testcases rst_*.afs)
+-------------------
+
+Filter Foundry's implementation of rst(i) (undocumented function that sets the seed for the PRG)
+differs from the implementation of Filter Factory.
+
+1. In Filter Foundry, the function rnd(a,b) retrieves a random number at realtime; therefore, if the
+   seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.
+   For example, following filter would generate an one-colored picture without any randomness:
+	R=rst(123), rnd(0,255)
+	G=rnd(0,255)
+	B=rnd(0,255)
+
+   In Filter Factory, the rnd(a,b) function is more complex.
+   (The analysis of Filter Factory's rnd and rst function is not yet completed, so
+   following notes might not be 100% accurate.)
+   It seems like there is a buffer with 56 random integers that will be refilled regularly.
+   The rst(i) function seems to change the seed for the next batch of random numbers,
+   so there is not immediate effect on the rnd() calls.
+
+2. Furthermore, it seems like in Filter Factory, if rst(i) is called multiple times
+   with the same argument, there will be no effect.
+   So, while following filter would generate random vertical bars in Filter Foundry,
+   it would generate a picture with random pixels in Filter Factory:
+	R=(x==0) ? rst(123) : 0, rnd(0,255)
+	G=0
+	B=0
+	
+   In Filter Foundry, every call of rst(i) will perform an update of the seed.
+   So, if you like to have a random-pixel picture with a specific seed,
+   you must make sure that rst(i) will only be called once.
+   You would need to write your filter like this
+	R=(x==0 && y==0) ? rst(123) : 0, rnd(0,255)
+	G=0
+	B=0
+   if you want generate a similar result as Filter Factory outputs with the filter
+	R=rst(123), rnd(0,255)
+	G=0
+	B=0
+
+3. In Filter Foundry, the argument i of the function rst(i) is limited to the
+   type "unsigned int" (argument of the function srand() in the C StdLib),
+   so the allowed range is 0..4294967295.
+
+   In Filter Factory, the argument i must be between 0 and 32767, inclusively.
+   If the argument not within this range, the operation "and 0x7FFF" will be applied to it
+   to extract the low 15 bits.

@@ -172,7 +172,7 @@ value_type ff_mix(value_type a,value_type b,value_type n,value_type d){
 /* scl(a,il,ih,ol,oh) Scale a from input range (il to ih)
                       to output range (ol to oh) */
 value_type ff_scl(value_type a,value_type il,value_type ih,
-				  value_type ol,value_type oh){
+                  value_type ol,value_type oh){
 	return ih==il ? 0 : ol + ((long)(oh-ol)*(a-il))/(ih-il);
 }
 
@@ -212,9 +212,9 @@ value_type ff_sqr(value_type x){
 }
 
 /* sin(x) Sine function of x, where x is an integer between 0 and
-	1024, inclusive, and the value returned is an integer
-	between -512 and 512, inclusive (Windows) or -1024 and
-	1024, inclusive (Mac OS) */
+   1024, inclusive, and the value returned is an integer
+   between -512 and 512, inclusive (Windows) or -1024 and
+   1024, inclusive (Mac OS) */
 value_type ff_sin(value_type x){
 	//return RINT(TRIGAMP*sin(FFANGLE(x)));
 	return ff_cos(x-256);
@@ -270,6 +270,10 @@ value_type ff_c2m(value_type x,value_type y){
 
 /* get(i) Returns the current cell value at i */
 value_type ff_get(value_type i){
+	// Filter Factory:
+	//return i>=0 && i<=0xff ? cell[i] : i;
+
+	// Filter Foundry:
 	return i>=0 && i<=0xff ? cell[i] : 0;
 }
 

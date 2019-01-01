@@ -10,8 +10,28 @@ Important/Bugs
 
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
   Windows 64 is already tested. We just need an updated Makefile.
+
+* Create and evaluate more testcases, and either fix differences between FilterFactory and
+  FilterFoundry, or document them in "Filter Factory Compatibility.txt"
   
-* Testcase getput.afs failed
+  
+Minor priority bugs
+-------------------
+
+* When you have a formula with rnd(), panning in the preview image will not show
+  any differences in the preview's random pixel data. If the picture only contains random pixels,
+  then it looks like the panning doesn't work at all.
+  Example:
+  	R=rnd(0,128)
+  	G=x*255/X    (<-- to demonstrate that the panning actually works)
+  	B=0
+  	A=255
+  Reason:
+  When functions which modify the internal state (i.e. rst, rnd and put) are called with conditions (e.g. x==0?rst(y):0 ),
+  and the zoomed in preview area does not meet these conditions (e.g. preview stats at x=100), then
+  the state-changing function(s) will not be called, and therefore the preview would be wrong.
+  If these state-changing functions are existing in the code, the whole canvas must be calculated, even if
+  the zoomed in preview will only show a part of it.
 
 
 Minor priority stuff or ideas
@@ -31,11 +51,6 @@ Minor priority stuff or ideas
 * Other Telegraphics Filters have the same problem in VERSIONINFO where the translation
   strings "04900000" don't fit together "080904B0" (fixed in Filter Foundry)
 
-* The following formula acts a bit weird in comparison to Filter Factory:
-	r = rnd(0,x)+rst(3)
-	g = rnd(0,y)
-	b = rnd(0,y-x)
-
 * I have found following in the source code: Do we need to do something here?
 	strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
 
@@ -44,6 +59,11 @@ Minor priority stuff or ideas
 * Create a Visual Studio project file
 
 * Search for TODO and FIXME in the code
+
+* Evaluate the file "Filter Factory Compatibility.txt" and think about if we should
+  change some of our functions to become 100% compatible with Filter Factory.
+  
+* There is no warning if a formula contains a number that exceeds 32 bits.
 
 
 Design/UI Tweaks
