@@ -10,6 +10,8 @@ Important/Bugs
 
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
   Windows 64 is already tested. We just need an updated Makefile.
+  
+* Testcase getput.afs failed
 
 
 Minor priority stuff or ideas
@@ -30,8 +32,8 @@ Minor priority stuff or ideas
   strings "04900000" don't fit together "080904B0" (fixed in Filter Foundry)
 
 * The following formula acts a bit weird in comparison to Filter Factory:
-	r = rnd(0,x)+rst(3)	
-	g = rnd(0,y)	
+	r = rnd(0,x)+rst(3)
+	g = rnd(0,y)
 	b = rnd(0,y-x)
 
 * I have found following in the source code: Do we need to do something here?
@@ -49,7 +51,7 @@ Design/UI Tweaks
 
 * The exclamation mark symbol is looking pixelated, since it is resized from 16x16 to 12x12.
 
-* The exlamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac)
+* The exclamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac)
   Not sure how easy it is to do that with WIN32 API
 
 * Should it be possible to zoom more than 100%?
