@@ -271,15 +271,15 @@ value_type ff_c2m(value_type x,value_type y){
 /* get(i) Returns the current cell value at i */
 value_type ff_get(value_type i){
 	// Filter Factory:
-	//return i>=0 && i<=0xff ? cell[i] : i;
+	//return i>=0 && i<NUM_CELLS ? cell[i] : i;
 
 	// Filter Foundry:
-	return i>=0 && i<=0xff ? cell[i] : 0;
+	return i>=0 && i<NUM_CELLS ? cell[i] : 0;
 }
 
 /* put(v,i) Puts the new value v into cell i */
 value_type ff_put(value_type v,value_type i){
-	if(i>=0 && i<=0xff)
+	if(i>=0 && i<NUM_CELLS)
 		cell[i] = v;
 	return v;
 }

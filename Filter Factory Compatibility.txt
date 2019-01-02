@@ -92,5 +92,5 @@ differs from the implementation of Filter Factory.
    so the allowed range is 0..4294967295.
 
    In Filter Factory, the argument i must be between 0 and 32767, inclusively.
-   If the argument not within this range, the operation "and 0x7FFF" will be applied to it
+   If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
    to extract the low 15 bits.

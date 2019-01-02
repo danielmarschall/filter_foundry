@@ -45,7 +45,13 @@ int needinput;
 // minimum setup required when formulae have not changed,
 // and a new preview is to be generated. (Called by recalc_preview())
 void evalinit(){
+	int i;
+
 	INITRANDSEED();
+
+	for (i=0; i<NUM_CELLS; ++i) {
+		cell[i] = 0;
+	}
 }
 
 // full setup for evaluation, called when formulae have changed.

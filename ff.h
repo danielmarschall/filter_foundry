@@ -59,10 +59,12 @@ typedef struct{
 
 extern globals_t *gdata;
 
+#define NUM_CELLS 0x100
+
 extern struct node *tree[4];
 extern char *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
-extern value_type slider[8],cell[0x100],map[4][0x100];
+extern value_type slider[8],cell[NUM_CELLS],map[4][0x100];
 extern char *expr[4];
 // extern long maxSpace;
 
