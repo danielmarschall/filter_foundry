@@ -1,6 +1,6 @@
 
 Implementation detail differences			Daniel Marschall
-=================================			02 January 2018
+=================================			03 January 2018
 
 FilterFoundry tries to be as compatible with FilterFactory as possible.
 However, results are usually not 100% equal, because functions like
@@ -94,3 +94,36 @@ differs from the implementation of Filter Factory.
    In Filter Factory, the argument i must be between 0 and 32767, inclusively.
    If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
    to extract the low 15 bits.
+
+
+Evaluation of conditional branches
+----------------------------------
+
+Filter Factory:
+	Each branch inside a if-then-else expression will be evaluated.
+	This means that following filter would generate a green canvas: (Testcase conditional_eval_1.afs)
+	R : 1==0 ? put(255,0) : 0
+	G : get(0)
+	B : 0
+	A : 255
+	Also, all arguments of an boolean expression will be fully evaluated.
+	So, this will also generate a green canvas: (Testcase conditional_eval_2.afs)
+	R : 1==0 && put(255,0) ? 0: 0
+	G : get(0)
+	B : 0
+	A : 255
+	
+
+Filter Foundry:
+	Only the branches which will be chosen due to the conditional expression will be evaluated.
+	This means that following filter would generate a black canvas: (Testcase conditional_eval_1.afs)
+	R : 1==0 ? put(255,0) : 0
+	G : get(0)
+	B : 0
+	A : 255
+	In boolean expressions, the evaluation will be aborted if the result is already determined.
+	So, this will also generate a black canvas: (Testcase conditional_eval_2.afs)
+	R : 1==0 && put(255,0) ? 0: 0
+	G : get(0)
+	B : 0
+	A : 255
