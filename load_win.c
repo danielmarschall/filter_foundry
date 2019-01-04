@@ -71,7 +71,9 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null
 
 	if(sfr->nFileExtension){
-		if(!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")){
+		if ((!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")) ||
+		    (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"prm"))) {
+			// File extention is 8bf or prm
 			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
 				if(readPARMresource(hm,reason,0)){
 					if(gdata->parm.iProtected)
@@ -86,6 +88,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				dbglasterror("LoadLibrary");
 			}
 		}else{
+			// Try to read as AFS/PFF/TXT file
 			if( (readok = readfile(sfr,reason)) )
 				gdata->parmloaded = false;
 		}

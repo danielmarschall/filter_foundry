@@ -100,7 +100,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		GetDlgItemText(dp,COPYRIGHTITEM,s,MAXFIELD);	myc2pstrcpy(gdata->parm.copyright,s);
 		GetDlgItemText(dp,AUTHORITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.author,s);
 		gdata->parm.cbSize = PARM_SIZE;
-		gdata->parm.nVersion = 1;  //0=original FF, 1=standalone filter
+		gdata->parm.standalone = 1;  //0=original FF, 1=standalone filter
 		needui = 0;
 		for(i = 0; i < 8; ++i){
 			gdata->parm.val[i] = slider[i];

@@ -3,7 +3,7 @@
     Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -45,7 +45,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 	Boolean res = false;
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
-	
+
 	if(rrn != -1){
 		if(readPARMresource(NULL,reason,0))
 			res = true;
@@ -62,7 +62,7 @@ static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	Boolean res = false;
 	short refnum;
 	int i;
-	
+
 	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
 		// check DOS EXE magic number
 		count = 2;
@@ -70,11 +70,13 @@ static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
 				if( (h = readfileintohandle(refnum)) ){
 					long *q = (long*)PILOCKHANDLE(h,false);
-					
+
 					// look for signature at start of valid PARM resource
 					// This signature is observed in Filter Factory standalones.
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
-						if( EndianS32_LtoN(q[0]) == PARM_SIZE && EndianS32_LtoN(q[1]) == 1
+						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIG_FOUNDRY_OLD)) && EndianS32_LtoN(q[1]) == 1
 							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
 						{
 							// these are the only numeric fields we *have* to swap
@@ -98,7 +100,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	FInfo fndrInfo;
 
 	if(!FSpGetFInfo(&sfr->sfFile,&fndrInfo)){
-		// first try to read text parameters (AFS, TXT)
+		// first try to read text parameters (AFS, TXT, PFF)
 		if( (readok = readfile(sfr,reason)) )
 			gdata->parmloaded = false;
 			// then try plugin formats (Mac first, then Windows .8bf DLL)

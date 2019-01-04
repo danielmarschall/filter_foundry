@@ -117,10 +117,56 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 	return res;
 }
 
+void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere) {
+	int i;
+
+	photoshop->cbSize = sizeof(PARM_T);
+	photoshop->standalone = premiere->standalone;
+	for (i=0;i<8;++i)
+	  photoshop->val[i] = premiere->val[i];
+	photoshop->popDialog = premiere->popDialog;
+	photoshop->unknown1 = premiere->unknown1;
+	photoshop->unknown2 = premiere->unknown2;
+	photoshop->unknown3 = premiere->unknown3;
+	for (i=0;i<4;++i)
+	  photoshop->map_used[i] = premiere->map_used[i];
+	for (i=0;i<8;++i)
+	  photoshop->ctl_used[i] = premiere->ctl_used[i];
+	memcpy((void*)photoshop->category, (void*)premiere->category, sizeof(photoshop->category));
+	photoshop->iProtected = premiere->iProtected;
+	memcpy((void*)photoshop->title, (void*)premiere->category, sizeof(photoshop->title));
+	memcpy((void*)photoshop->copyright, (void*)premiere->category, sizeof(photoshop->copyright));
+	memcpy((void*)photoshop->author, (void*)premiere->category, sizeof(photoshop->author));
+	for (i=0;i<4;++i)
+	  memcpy((void*)photoshop->map[i], (void*)premiere->map[i], sizeof(photoshop->map[i]));
+	for (i=0;i<8;++i)
+	  memcpy((void*)photoshop->ctl[i], (void*)premiere->ctl[i], sizeof(photoshop->ctl[i]));
+
+	if (premiere->singleExpression) {
+		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+		photoshop->formula[3][0] = '2';
+		photoshop->formula[3][1] = '5';
+		photoshop->formula[3][2] = '5';
+		photoshop->formula[3][3] = '\0';
+	} else {
+		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[2], sizeof(photoshop->formula[2]));
+		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[1], sizeof(photoshop->formula[1]));
+		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[0], sizeof(photoshop->formula[0]));
+		memcpy((void*)photoshop->formula[3], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+	}
+}
+
 Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 	int i;
 
-	memcpy(pparm,p,sizeof(PARM_T));
+	if (*((unsigned int*)p) == PARM_SIZE_PREMIERE) {
+		convert_premiere_to_photoshop(pparm, (PARM_T_PREMIERE*)p);
+	} else {
+		// Assume it is Photoshop. Signature either PARM_SIZE (0x2068) or 0x1C68
+		memcpy(pparm,p,sizeof(PARM_T));
+	}
 
 	if(fromwin){
 		/* Windows PARM resource stores C strings - convert to Pascal strings  */
@@ -170,6 +216,15 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 		if( (h = readfileintohandle(r)) ){
 			if( (res = readparams(h,true,reason)) )
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
+
+			if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"pff")) {
+				char* tmp;
+				tmp = my_strdup(expr[0]);
+				memcpy((void*)expr[0], (void*)expr[2], sizeof(expr[0]));
+				memcpy((void*)expr[2], (void*)tmp, sizeof(expr[2]));
+				free(tmp);
+			}
+
 			PIDISPOSEHANDLE(h);
 		}
 		FSClose(r);

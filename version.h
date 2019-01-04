@@ -136,6 +136,7 @@
                    - Bugfix: Function c2d() now behaves like in Filter Factory. Implementation changed from atan2(-y,-x) to atan2(y,x).
                    - Bugfix: The cell values used by the functions get() and put() were not (re-)initialized before the filter started running.
                      This caused that expressions like "put(get(0)+1,0)" produced different results at each run.
+                   - Adobe Premiere FilterFactory/TransitionFactory filters (.pff Settings and .prm Windows Standalone Filters) can now be imported (*)
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

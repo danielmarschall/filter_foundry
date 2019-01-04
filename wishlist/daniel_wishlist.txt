@@ -65,6 +65,16 @@ Minor priority stuff or ideas
   
 * There is no warning if a formula contains a number that exceeds 32 bits.
 
+* Also be able to import Macintosh Premiere Standalone filters.
+  Currently, only Windows Standalone Filters (.prm) can be imported.
+  
+* Also be able to import 16 Bit 8BF/PRM files. (Not sure if 16 Bit 8BF ever existed)
+
+* Verify all calls of my_strdup if they leak memory (i.e. previous pointer was not feed).
+
+* Add synonym sqrt -> sqr (which exists in Premiere);
+  Check if there are more undocumented functions in Premiere FF/TF.
+
 
 Design/UI Tweaks
 ----------------
