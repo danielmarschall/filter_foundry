@@ -117,7 +117,7 @@
                    - AFS Files are now compatible with FilterFactory. (FilterFactory does ONLY understand "\r" (0D) linebreaks, while
                      FilterFoundry always saved "\n" (0A) linebreaks, while being able to read "\r", "\n" or "\r\n". Now, "\r" is used
                      for saving.) (*)
-                   - The "caution" sign that indicates an error in the expression does now have a hand cursor that shows up when
+                   - The "caution" sign that indicates an error in the expression now has a hand cursor that shows up when
                      you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
                    - The expression input fields now have a vertical scrollbar (*)
                    - YUV formulas are now more accurate. They are slightly different, but not much.
