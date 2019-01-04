@@ -21,6 +21,10 @@
 
 #include "file_compat.h"
 
+#ifdef MAC_ENV
+#include <Endian.h>
+#endif
+
 enum{
 	BUFSIZE = 4L<<10,
 	MAXLINE = 0x200,
@@ -153,6 +157,56 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[0], sizeof(photoshop->formula[0]));
 		memcpy((void*)photoshop->formula[3], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
 	}
+}
+
+Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
+	unsigned char magic[2];
+	long count;
+	Handle h;
+	Boolean res = false;
+	FILEREF refnum;
+	int i;
+
+	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
+		// check DOS EXE magic number
+		count = 2;
+		if(!FSRead(refnum,&count,magic) && magic[0]=='M' && magic[1]=='Z'){
+			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
+				if( (h = readfileintohandle(refnum)) ){
+					long *q = (long*)PILOCKHANDLE(h,false);
+
+					// look for signature at start of valid PARM resource
+					// This signature is observed in Filter Factory standalones.
+					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
+
+#ifdef MAC_ENV
+						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIG_FOUNDRY_OLD)) && EndianS32_LtoN(q[1]) == 1
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
+						{
+							// these are the only numeric fields we *have* to swap
+							// all the rest are flags which (if we're careful) will work in either ordering
+							for(i = 0; i < 8; ++i)
+								slider[i] = EndianS32_LtoN(slider[i]);
+						}
+#else
+						if( ((q[0] == PARM_SIZE) ||
+						     (q[0] == PARM_SIZE_PREMIERE) ||
+						     (q[0] == PARM_SIG_FOUNDRY_OLD)) && q[1] == 1
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
+						{
+						}
+#endif
+
+					PIDISPOSEHANDLE(h);
+				}
+			}
+		} // else no point in proceeding
+		FSClose(refnum);
+	}else
+		*reason = "Could not open file.";
+	return res;
 }
 
 Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){

@@ -19,7 +19,6 @@
 
 #include "ff.h"
 
-#include <Endian.h>
 #include <Resources.h>
 
 #include "file_compat.h"
@@ -50,46 +49,6 @@ static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 		if(readPARMresource(NULL,reason,0))
 			res = true;
 		CloseResFile(rrn);
-	}else
-		*reason = "Could not open file.";
-	return res;
-}
-
-static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
-	unsigned char magic[2];
-	long count;
-	Handle h;
-	Boolean res = false;
-	FILEREF refnum;
-	int i;
-
-	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
-		// check DOS EXE magic number
-		count = 2;
-		if(!FSRead(refnum,&count,magic) && magic[0]=='M' && magic[1]=='Z'){
-			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
-				if( (h = readfileintohandle(refnum)) ){
-					long *q = (long*)PILOCKHANDLE(h,false);
-
-					// look for signature at start of valid PARM resource
-					// This signature is observed in Filter Factory standalones.
-					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
-						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIG_FOUNDRY_OLD)) && EndianS32_LtoN(q[1]) == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
-						{
-							// these are the only numeric fields we *have* to swap
-							// all the rest are flags which (if we're careful) will work in either ordering
-							for(i = 0; i < 8; ++i)
-								slider[i] = EndianS32_LtoN(slider[i]);
-						}
-
-					PIDISPOSEHANDLE(h);
-				}
-			}
-		} // else no point in proceeding
-		FSClose(refnum);
 	}else
 		*reason = "Could not open file.";
 	return res;
