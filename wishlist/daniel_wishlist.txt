@@ -67,8 +67,6 @@ Minor priority stuff or ideas
 
 * Also be able to import Macintosh Premiere Standalone filters.
   Currently, only Windows Standalone Filters (.prm) can be imported.
-  
-* Also be able to import 16 Bit 8BF/PRM files. (Not sure if 16 Bit 8BF ever existed)
 
 
 Design/UI Tweaks

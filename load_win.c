@@ -64,6 +64,42 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 
 // see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
 
+static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
+	unsigned char magic[2];
+	long count;
+	Handle h;
+	Boolean res = false;
+	FILEREF refnum;
+	int i;
+
+	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
+		// check DOS EXE magic number
+		count = 2;
+		if(!FSRead(refnum,&count,magic) && magic[0]=='M' && magic[1]=='Z'){
+			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
+				if( (h = readfileintohandle(refnum)) ){
+					long *q = (long*)PILOCKHANDLE(h,false);
+
+					// look for signature at start of valid PARM resource
+					// This signature is observed in Filter Factory standalones.
+					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
+						if( ((q[0] == PARM_SIZE) ||
+						     (q[0] == PARM_SIZE_PREMIERE) ||
+						     (q[0] == PARM_SIG_FOUNDRY_OLD)) && q[1] == 1
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
+						{
+						}
+
+					PIDISPOSEHANDLE(h);
+				}
+			}
+		} // else no point in proceeding
+		FSClose(refnum);
+	}else
+		*reason = "Could not open file.";
+	return res;
+}
+
 Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	HMODULE hm;
@@ -84,8 +120,13 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 					*reason = "It is not a standalone filter made by Filter Factory/Filter Foundry.";
 				FreeLibrary(hm);
 			}else{
-				*reason = "Could not open file (LoadLibrary failed).";
-				dbglasterror("LoadLibrary");
+				//*reason = "Could not open file (LoadLibrary failed).";
+				//dbglasterror("LoadLibraryEx");
+
+				// Maybe it is 16 bit Windows? Try to find the resource
+				if (!(readok = read8bfplugin(sfr, reason))) {
+					*reason = "PARM resource was not found in this plugin file";
+				}
 			}
 		}else{
 			// Try to read as AFS/PFF/TXT file

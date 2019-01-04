@@ -60,7 +60,7 @@ static Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	long count;
 	Handle h;
 	Boolean res = false;
-	short refnum;
+	FILEREF refnum;
 	int i;
 
 	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
@@ -103,7 +103,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// first try to read text parameters (AFS, TXT, PFF)
 		if( (readok = readfile(sfr,reason)) )
 			gdata->parmloaded = false;
-			// then try plugin formats (Mac first, then Windows .8bf DLL)
+			// then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
 		else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
 			if(gdata->parm.iProtected){
 				*reason = "The filter is protected.";

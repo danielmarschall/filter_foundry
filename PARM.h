@@ -16,7 +16,7 @@ FilterMeister Developer
 */
 
 #define PARM_SIZE/*_PHOTOSHOP*/  0x2068 // Photoshop FF
-#define PARM_SIG_FOUNDRY_OLD     0x1C68 // built filters by Filter Foundy <1.6 used 0x1C68 instead of 0x2068 as first member
+#define PARM_SIG_FOUNDRY_OLD     0x1C68 // built filters by Filter Foundy <1.7 used 0x1C68 instead of 0x2068 as first member
 #define PARM_SIZE_PREMIERE       0x206C // Premiere FF/TF
 
 #ifdef Rez
@@ -70,7 +70,7 @@ typedef struct {   //structure of FF PARM resource
 
 // Premiere's Transition/Filter Factory has PARM:16000
 typedef struct {   //structure of Premiere FF/TF PARM resource
-	long cbSize;    //size of this structure = 0x206c
+	long cbSize;    //size of this structure = 0x206C
 	long standalone;  //0=original FF, 1=standalone filter
 	long singleExpression; //1 if "single expression" is checked (member only available in Premiere)
 	long val[8];    //initial values of controls
@@ -88,7 +88,7 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	unsigned char author[256];      //Filter author(s)
 	unsigned char map[4][256];      //4 map labels
 	unsigned char ctl[8][256];      //8 control labels
-	char formula[4][1024];          //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,single)
+	char formula[4][1024];          //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
 } PARM_T_PREMIERE;
 
 #endif
