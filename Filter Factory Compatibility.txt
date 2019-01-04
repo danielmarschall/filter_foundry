@@ -16,8 +16,8 @@ i, u, v
 Filter Foundry <1.7 uses the same formulas as in Filter Factory:
 
 	i=((76*r)+(150*g)+(29*b))/256            Output range is 0..254
-	u=((–19*r)+(–37*g)+(56*b))/256           Output range is -55..55
-	v=((78*r)+(–65*g)+(–13*b))/256           Output range is -77..77
+	u=((-19*r)+(-37*g)+(56*b))/256           Output range is -55..55
+	v=((78*r)+(-65*g)+(-13*b))/256           Output range is -77..77
 
 Filter Foundry 1.7 uses more accurate formulas:
 

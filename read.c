@@ -134,9 +134,9 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 	  photoshop->ctl_used[i] = premiere->ctl_used[i];
 	memcpy((void*)photoshop->category, (void*)premiere->category, sizeof(photoshop->category));
 	photoshop->iProtected = premiere->iProtected;
-	memcpy((void*)photoshop->title, (void*)premiere->category, sizeof(photoshop->title));
-	memcpy((void*)photoshop->copyright, (void*)premiere->category, sizeof(photoshop->copyright));
-	memcpy((void*)photoshop->author, (void*)premiere->category, sizeof(photoshop->author));
+	memcpy((void*)photoshop->title, (void*)premiere->title, sizeof(photoshop->title));
+	memcpy((void*)photoshop->copyright, (void*)premiere->copyright, sizeof(photoshop->copyright));
+	memcpy((void*)photoshop->author, (void*)premiere->author, sizeof(photoshop->author));
 	for (i=0;i<4;++i)
 	  memcpy((void*)photoshop->map[i], (void*)premiere->map[i], sizeof(photoshop->map[i]));
 	for (i=0;i<8;++i)
@@ -146,10 +146,7 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
 		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
 		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
-		photoshop->formula[3][0] = '2';
-		photoshop->formula[3][1] = '5';
-		photoshop->formula[3][2] = '5';
-		photoshop->formula[3][3] = '\0';
+		memcpy((void*)photoshop->formula[3], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
 	} else {
 		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[2], sizeof(photoshop->formula[2]));
 		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[1], sizeof(photoshop->formula[1]));

@@ -140,6 +140,9 @@ int checkandinitparams(Handle params){
 			// no saved settings (not standalone)
 			for(i = 0; i < 8; ++i)
 				slider[i] = i*10+100;
+			for(i = 0; i < 4; ++i)
+				if(expr[i])
+					free(expr[i]);
 			if(gpb->imageMode == plugInModeRGBColor){
 				expr[0] = my_strdup("r");
 				expr[1] = my_strdup("g");

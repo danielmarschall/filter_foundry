@@ -70,11 +70,6 @@ Minor priority stuff or ideas
   
 * Also be able to import 16 Bit 8BF/PRM files. (Not sure if 16 Bit 8BF ever existed)
 
-* Verify all calls of my_strdup if they leak memory (i.e. previous pointer was not feed).
-
-* Add synonym sqrt -> sqr (which exists in Premiere);
-  Check if there are more undocumented functions in Premiere FF/TF.
-
 
 Design/UI Tweaks
 ----------------

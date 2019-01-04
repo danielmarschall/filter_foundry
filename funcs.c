@@ -339,6 +339,7 @@ struct sym_rec predefs[]={
 	{0,TOK_FN4,"mix", (pfunc_type)ff_mix, 0},
 	{0,TOK_FN5,"scl", (pfunc_type)ff_scl, 0},
 	{0,TOK_FN1,"sqr", (pfunc_type)ff_sqr, 0},
+	{0,TOK_FN1,"sqrt", (pfunc_type)ff_sqr, 0}, // sqrt() is synonym to sqr() in Premiere
 	{0,TOK_FN1,"sin", (pfunc_type)ff_sin, 0},
 	{0,TOK_FN1,"cos", (pfunc_type)ff_cos, 0},
 	{0,TOK_FN1,"tan", (pfunc_type)ff_tan, 0},
