@@ -137,6 +137,9 @@
                    - Bugfix: The cell values used by the functions get() and put() were not (re-)initialized before the filter started running.
                      This caused that expressions like "put(get(0)+1,0)" produced different results at each run.
                    - Adobe Premiere FilterFactory/TransitionFactory filters (.pff Settings and .prm 16/32 bit Windows Standalone Filters) can now be imported (*)
+                   - Bugfix: When state changing functions (rst, rnd or put) are used within the formula,
+                     every pixel in the picture will now be evaluated during preview, even if the user
+                     has zoomed in.
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

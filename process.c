@@ -36,6 +36,7 @@ extern struct node *tree[];
 unsigned char *image_ptr;
 
 int needinput;
+int state_changing_funcs_used;
 
 /* get prepared to evaluate expression trees--
    this assumes that tree[] array is already set up
@@ -72,7 +73,7 @@ Boolean setup(FilterRecordPtr pb){
 	for(i = 0; i < nplanes; ++i){
 //char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
 		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
-			checkvars(tree[i],varused,&cnvused,&needall);
+			checkvars(tree[i],varused,&cnvused,&needall,&state_changing_funcs_used);
 		else
 			break;
 	}
@@ -124,7 +125,8 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		var['z'] = k;
 		var['p'] = k; // undocumented alias of z
 		f = eval(tree[k]);
-		outp[k] = f<0 ? 0 : (f>255 ? 255 : f); // clamp channel value to 0-255
+		if (outp)
+			outp[k] = f<0 ? 0 : (f>255 ? 255 : f); // clamp channel value to 0-255
 	}
 }
 
@@ -149,7 +151,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			  Rect *filterPiece, Rect *outPiece,
 			  void *outData, long outRowBytes, double zoom){
 	unsigned char *inrow,*outrow,*outp;
-	int j,i;
+	int j,i,k;
 	long t,ticks = TICKCOUNT();
 	double x,y;
 
@@ -158,6 +160,17 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				+ (long)pb->inRowBytes*(pb->filterRect.top - pb->inRect.top)
 				+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
 
+	if (state_changing_funcs_used) {
+		for (y = pb->filterRect.top; y < filterPiece->top - pb->filterRect.top; ++y) {
+			var['y'] = y;
+			inrow = image_ptr + (long)(y)*pb->inRowBytes;
+			for (x = pb->filterRect.left; x < pb->filterRect.right; ++x) {
+				var['x'] = x;
+				evalpixel(NULL,inrow + (long)(x)*nplanes);
+			}
+		}
+	}
+
 	// j indexes scaled output rows
 	for( j = outPiece->top, outrow = (unsigned char*)outData, y = filterPiece->top - pb->filterRect.top ;
 		 j < outPiece->bottom ; ++j, outrow += outRowBytes, y += zoom )
@@ -165,12 +178,42 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		var['y'] = y;  // index of corresponding *input* row, top of selection == 0
 		inrow = image_ptr + (long)y*pb->inRowBytes;
 
+		if (state_changing_funcs_used) {
+			for (x = pb->filterRect.left; x < filterPiece->left - pb->filterRect.left; ++x) {
+				var['x'] = x;
+				evalpixel(NULL,inrow + (long)(x)*nplanes);
+			}
+		}
+
 		// i indexes scaled output columns
 		for( outp = outrow, i = outPiece->left, x = filterPiece->left - pb->filterRect.left ;
 			 i < outPiece->right ; ++i, outp += nplanes, x += zoom )
 		{
 			var['x'] = x;  // index of corresponding *input* column, left of selection == 0
 			evalpixel(outp,inrow + (long)x*nplanes); /* var['x'] & var['y'] are implicit parameters */
+
+			if (state_changing_funcs_used) {
+				for (k = x+1; k < floor(x + zoom); ++k) {
+					var['x'] = k;
+					evalpixel(NULL,inrow + (long)(k)*nplanes);
+				}
+			}
+		}
+
+		if (state_changing_funcs_used) {
+			for (x = filterPiece->right; x < pb->filterRect.right; ++x) {
+				var['x'] = x;
+				evalpixel(NULL,inrow + (long)(x)*nplanes);
+			}
+
+			for (k = y+1; k < floor(y + zoom); ++k) {
+				var['y'] = k;
+				inrow = image_ptr + (long)(k)*pb->inRowBytes;
+				for (x = pb->filterRect.left; x < pb->filterRect.right; ++x) {
+					var['x'] = x;
+					evalpixel(NULL,inrow + (long)(x)*nplanes);
+				}
+			}
 		}
 
 		if(progress){

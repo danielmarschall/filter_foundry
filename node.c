@@ -3,7 +3,7 @@
     Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -55,7 +55,7 @@ struct node *newnode(int k){
 		p->kind = k;
 		for( i = 0 ; i < MAXCHILDREN ; ++i )
 			p->child[i] = 0;
-		
+
 		/* add this new node to the list of allocated nodes */
 		p->next = node_list;
 		node_list = p;
@@ -91,37 +91,37 @@ void dumptree(struct node *root,int level){
 			for(i=level;i--;)
 				putchar('\t');
 			switch(root->kind){
-			case TOK_NUM: 
+			case TOK_NUM:
 #ifdef FP_VALUE
-				printf("constant: %g\n",root->v.value); 
+				printf("constant: %g\n",root->v.value);
 #else
-				printf("constant: %ld\n",root->v.value); 
+				printf("constant: %ld\n",root->v.value);
 #endif
 				break;
-			case TOK_SPECIALVAR: 
-				printf("special variable: %c\n",root->v.specialvar); 
+			case TOK_SPECIALVAR:
+				printf("special variable: %c\n",root->v.specialvar);
 				break;
-			case TOK_VAR: 
+			case TOK_VAR:
 #ifdef FP_VALUE
-				printf("variable: %s (%g)\n",root->v.sym->name,*root->v.sym->pvar); 
+				printf("variable: %s (%g)\n",root->v.sym->name,*root->v.sym->pvar);
 #else
-				printf("variable: %s (%ld)\n",root->v.sym->name,*root->v.sym->pvar); 
+				printf("variable: %s (%ld)\n",root->v.sym->name,*root->v.sym->pvar);
 #endif
 				break;
-			case TOK_FN1: 
-			case TOK_FN2: 
-			case TOK_FN3: 
-				printf("function: %s\n",root->v.sym->name); 
+			case TOK_FN1:
+			case TOK_FN2:
+			case TOK_FN3:
+				printf("function: %s\n",root->v.sym->name);
 				break;
-			default: 
-				printf(isprint(root->kind) ? "operator: %c\n" : "operator: %d\n",root->kind); 
+			default:
+				printf(isprint(root->kind) ? "operator: %c\n" : "operator: %d\n",root->kind);
 				break;
 			}
 			++level;
 			for( i = 0 ; i < MAXCHILDREN ; ++i )
 				dumptree(root->child[i],level);
 		}
-	
+
 }
 
 /* evaluate the expression tree (using current values of variables) */
@@ -130,7 +130,7 @@ value_type eval(struct node *root){
 	value_type t;
 	if(root){
 		switch(root->kind){
-		case TOK_NUM: return root->v.value; 
+		case TOK_NUM: return root->v.value;
 		case TOK_SPECIALVAR: return var[root->v.specialvar];
 		case TOK_VAR: return *root->v.sym->pvar;
 		case TOK_FN1: return root->v.sym->fn(eval(root->child[0]));
@@ -211,9 +211,9 @@ void freetree(struct node *root){
 
 /* tabulate usage of special variables, or any invocations of src()/rad()/cnv(), in the tree */
 
-void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */ ){
+void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */, int *state_changing_funcs_used ){
 	int i;
-	
+
 	if(p){
 		if(p->kind==TOK_SPECIALVAR)
 			f[p->v.specialvar] = 1;
@@ -223,7 +223,11 @@ void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */ ){
 			*cnv = 1;
 //		else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map))
 //			*mapused = 1;
+		else if ((p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_put) ||
+		         (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_rnd) ||
+		         (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_rst))
+			*state_changing_funcs_used = 1;
 		for( i = 0 ; i < MAXCHILDREN ; ++i )
-			checkvars(p->child[i],f,cnv,srcrad);
+			checkvars(p->child[i],f,cnv,srcrad/*,mapused*/,state_changing_funcs_used);
 	}
 }
