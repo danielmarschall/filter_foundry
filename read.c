@@ -289,15 +289,17 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 
 	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&r)){
 		if( (h = readfileintohandle(r)) ){
-			if( (res = readparams(h,true,reason)) )
+			if( (res = readparams(h,true,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
-			if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"pff")) {
-				char* tmp;
-				tmp = my_strdup(expr[0]);
-				memcpy((void*)expr[0], (void*)expr[2], sizeof(expr[0]));
-				memcpy((void*)expr[2], (void*)tmp, sizeof(expr[2]));
-				free(tmp);
+				if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"pff")) {
+					// If it is a Premiere settings file, we need to swap the channels red and blue
+					char* tmp;
+					tmp = my_strdup(expr[0]);
+					memcpy((void*)expr[0], (void*)expr[2], sizeof(expr[0]));
+					memcpy((void*)expr[2], (void*)tmp, sizeof(expr[2]));
+					free(tmp);
+				}
 			}
 
 			PIDISPOSEHANDLE(h);

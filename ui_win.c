@@ -43,7 +43,7 @@ void DoAbout(AboutRecordPtr pb){
 	PlatformData *p = (PlatformData*)pb->platformData;
 
 	n = sprintf(s, "Filter Foundry " VERSION_STR "\n"
-				   "(C) 2003-9 Toby Thain <toby@telegraphics.com.au>\n\n");
+				   "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n\n");
 	if(gdata && gdata->standalone)
 		sprintf(s+n, "Standalone filter:\n%s by %s.\n%s",
 			INPLACEP2CSTR(gdata->parm.title),

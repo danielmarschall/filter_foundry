@@ -139,6 +139,8 @@
                      This caused that expressions like "put(get(0)+1,0)" produced different results at each run.
                    - Adobe Premiere FilterFactory/TransitionFactory filters (.pff Settings and .prm 16/32 bit Windows Standalone Filters) can now be imported (*)
                    - Old FilterFactory standalone filters for MacOS can now be imported (*)
+                   - In Windows, the "load" algorithm will now first check if a file is an AFS/PFF file, and then if it is a standalone filter.
+                     Due to this, files can now opened, even if they have the wrong file extension.
                    - Bugfix: When state changing functions (rst, rnd or put) are used within the formula,
                      every pixel in the picture will now be evaluated during preview, even if the user
                      has zoomed in.
@@ -152,6 +154,8 @@
 #define VERSION_STR "1.7b1"
 #define VERSION_NUM 1,0x70,beta,1
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
+
+#define RELEASE_YEAR "2019"
 
 /* formatted for Win32 VERSIONINFO resource */
 #define VI_VERS_NUM 1,7,0,1

@@ -62,49 +62,46 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	return res;
 }
 
-// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
-
 Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	HMODULE hm;
 
 	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null
 
-	if(sfr->nFileExtension){
-		if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"bin")) { // FilterFactory Mac standalone plugin
-			if (readok = read8bfplugin(sfr, reason)) {
-				gdata->parmloaded = true;
-			} else {
-				*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
-			}
-		} else if ((!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")) || // FilterFactory/FilterFoundry Windows standalone plugin
-		    (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"prm"))) {        // Premiere Windows standalone plugin
-			// File extention is 8bf or prm
-			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
-				if(readPARMresource(hm,reason,0)){
-					if(gdata->parm.iProtected)
-						*reason = "The filter is protected.";
-					else
-						readok = gdata->parmloaded = true;
-				}else
-					*reason = "It is not a standalone filter made by Filter Factory/Filter Foundry.";
-				FreeLibrary(hm);
-			}else{
-				//*reason = "Could not open file (LoadLibrary failed).";
-				//dbglasterror("LoadLibraryEx");
+	// First, try to read the file as AFS/PFF/TXT file
+	if (readok = readfile(sfr,reason)) {
+		gdata->parmloaded = false;
+	}
 
-				// Maybe it is 16 bit Windows? Try to find the resource
-				if (readok = read8bfplugin(sfr, reason)) {
-					gdata->parmloaded = true;
+	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
+	if (!readok) {
+		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
+		if (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) {
+			if (readPARMresource(hm,reason,0)) {
+				if (gdata->parm.iProtected) {
+					*reason = "The filter is protected.";
 				} else {
-					*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
+					readok = gdata->parmloaded = true;
 				}
+			} else {
+				*reason = "It is not a standalone filter made by Filter Factory/Filter Foundry.";
 			}
-		}else{
-			// Try to read as AFS/PFF/TXT file
-			if( (readok = readfile(sfr,reason)) )
-				gdata->parmloaded = false;
+			FreeLibrary(hm);
 		}
+	}
+
+	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or NE executable on Win64)
+	if (!readok) {
+		if (readok = read8bfplugin(sfr, reason)) {
+			gdata->parmloaded = true;
+		} else {
+			*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
+		}
+	}
+
+	// Check if we had success
+	if (!readok) {
+		*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
 	}
 
 	return readok;
