@@ -23,6 +23,13 @@
 
 #ifdef MAC_ENV
 #include <Endian.h>
+#else
+int EndianS32_LtoN(int num) {
+	return ((num>>24)&0xff) | // move byte 3 to byte 0
+	       ((num<<8)&0xff0000) | // move byte 1 to byte 2
+	       ((num>>8)&0xff00) | // move byte 2 to byte 1
+	       ((num<<24)&0xff000000); // byte 0 to byte 3
+}
 #endif
 
 enum{
@@ -170,7 +177,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
 		// check DOS EXE magic number
 		count = 2;
-		if(!FSRead(refnum,&count,magic) && magic[0]=='M' && magic[1]=='Z'){
+		if(!FSRead(refnum,&count,magic) /*&& magic[0]=='M' && magic[1]=='Z'*/){
 			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
 				if( (h = readfileintohandle(refnum)) ){
 					long *q = (long*)PILOCKHANDLE(h,false);
@@ -178,11 +185,13 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 					// look for signature at start of valid PARM resource
 					// This signature is observed in Filter Factory standalones.
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
+					{
 
 #ifdef MAC_ENV
+						// Case #1: Mac is reading Windows (Win16/32) plugin
 						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIG_FOUNDRY_OLD)) && EndianS32_LtoN(q[1]) == 1
+						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
 							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
 						{
 							// these are the only numeric fields we *have* to swap
@@ -191,14 +200,29 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 								slider[i] = EndianS32_LtoN(slider[i]);
 						}
 #else
+						// Case #2: Windows is reading a Windows plugin (if Resource API failed, i.e. Win64 tries to open NE file)
 						if( ((q[0] == PARM_SIZE) ||
 						     (q[0] == PARM_SIZE_PREMIERE) ||
-						     (q[0] == PARM_SIG_FOUNDRY_OLD)) && q[1] == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
+						     (q[0] == PARM_SIG_MAC)) && q[1] == 1
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1)) )
 						{
+						}
+
+						// Case #3: Windows is reading an old FilterFactory Mac file (.bin)
+						else if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
+						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 0 /*Strings are already PStrings*/)) )
+						{
+							// these are the only numeric fields we *have* to swap
+							// all the rest are flags which (if we're careful) will work in either ordering
+							for(i = 0; i < 8; ++i)
+								slider[i] = EndianS32_LtoN(slider[i]);
 						}
 #endif
 
+						if (res) break;
+					}
 					PIDISPOSEHANDLE(h);
 				}
 			}

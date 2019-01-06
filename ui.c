@@ -334,7 +334,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		return false; // end dialog
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,
-					"All supported files (*.afs, *.8bf, *.pff, *.prm, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF Standalone Filter (*.prm)\0*.prm\0All files (*.*)\0*.*\0\0"
+					"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0"
 					#ifdef _WIN32
 					,gdata->hWndMainDlg
 					#endif /* _WIN32 */

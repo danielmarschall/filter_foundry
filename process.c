@@ -200,12 +200,13 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			}
 		}
 
-		if (state_changing_funcs_used) {
-			for (x = filterPiece->right; x < pb->filterRect.right; ++x) {
-				var['x'] = x;
-				evalpixel(NULL,inrow + (long)(x)*nplanes);
+		if (state_changing_funcs_used && (j+1 != outPiece->bottom)) {
+			if (state_changing_funcs_used) {
+				for (k = filterPiece->right; k < pb->filterRect.right; ++k) {
+					var['x'] = k;
+					evalpixel(NULL,inrow + (long)(k)*nplanes);
+				}
 			}
-
 			for (k = y+1; k < floor(y + zoom); ++k) {
 				var['y'] = k;
 				inrow = image_ptr + (long)(k)*pb->inRowBytes;

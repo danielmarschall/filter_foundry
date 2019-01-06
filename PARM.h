@@ -20,9 +20,9 @@
 // Reverse-Engineering of Filter Factory for Photoshop by Alex Hunter (7/1999)
 // Reverse-Engineering of Filter/Transition Factory for Premiere by Daniel Marschall (1/2019)
 
-#define PARM_SIZE/*_PHOTOSHOP*/  0x2068 // Photoshop FF
-#define PARM_SIG_FOUNDRY_OLD     0x1C68 // built filters by Filter Foundy <1.7 used 0x1C68 instead of 0x2068 as first member
+#define PARM_SIZE/*_PHOTOSHOP*/  0x2068 // Photoshop FF and Filter Foundry since 1.7
 #define PARM_SIZE_PREMIERE       0x206C // Premiere FF/TF
+#define PARM_SIG_MAC             0x1C68 // Mac OS Filter Factory and Filter Foundy <1.7 use 0x1C68 instead of 0x2068 as first member
 
 #ifdef Rez
 

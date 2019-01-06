@@ -71,8 +71,14 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null
 
 	if(sfr->nFileExtension){
-		if ((!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")) ||
-		    (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"prm"))) {
+		if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"bin")) { // FilterFactory Mac standalone plugin
+			if (readok = read8bfplugin(sfr, reason)) {
+				gdata->parmloaded = true;
+			} else {
+				*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
+			}
+		} else if ((!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"8bf")) || // FilterFactory/FilterFoundry Windows standalone plugin
+		    (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"prm"))) {        // Premiere Windows standalone plugin
 			// File extention is 8bf or prm
 			if( (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) ){
 				if(readPARMresource(hm,reason,0)){
@@ -88,8 +94,10 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				//dbglasterror("LoadLibraryEx");
 
 				// Maybe it is 16 bit Windows? Try to find the resource
-				if (!(readok = read8bfplugin(sfr, reason))) {
-					*reason = "PARM resource was not found in this plugin file";
+				if (readok = read8bfplugin(sfr, reason)) {
+					gdata->parmloaded = true;
+				} else {
+					*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
 				}
 			}
 		}else{
