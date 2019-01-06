@@ -1,19 +1,24 @@
 /*
-http://visca.com/ffactory/archives/7-99/msg00011.html
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
 
-Hi Dave,
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-Here's my reverse-engineered version of the Filter Factory PARM
-resource block.  Is this what you need?  It seems to be good for
-most known (PC) versions of FF.  You can use the Win32 FindResource
-API to locate the PARM resource.  E-mail me privately if you need
-more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-Cheers,
--Alex Hunter
-alex@afh.com
-FilterMeister Developer
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+// Reverse-Engineering of Filter Factory for Photoshop by Alex Hunter (7/1999)
+// Reverse-Engineering of Filter/Transition Factory for Premiere by Daniel Marschall (1/2019)
 
 #define PARM_SIZE/*_PHOTOSHOP*/  0x2068 // Photoshop FF
 #define PARM_SIG_FOUNDRY_OLD     0x1C68 // built filters by Filter Foundy <1.7 used 0x1C68 instead of 0x2068 as first member

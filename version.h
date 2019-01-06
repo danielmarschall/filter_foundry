@@ -119,6 +119,7 @@
                      for saving.) (*)
                    - The "caution" sign that indicates an error in the expression now has a hand cursor that shows up when
                      you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
+                   - The "caution" sign now has a sharper design (it was a bit pixelated).
                    - The expression input fields now have a vertical scrollbar (*)
                    - YUV formulas are now more accurate. They are slightly different, but not much.
                      The i range is now [0..255] instead of [0..254]. (This means that pure white has now i=255 instead of i=254)
