@@ -42,7 +42,7 @@
 EXEC = FilterFoundry
 
 # define location of Photoshop SDK headers
-PSAPI = "E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
+PSAPI = "D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
@@ -57,8 +57,8 @@ LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
 RFLAGS = -i$(PSAPI)\Photoshop
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
-FLEX = E:\FilterFoundry\win_flex_bison\win_flex
-BISON = E:\FilterFoundry\win_flex_bison\win_bison
+FLEX = D:\FilterFoundry\win_flex_bison\win_flex
+BISON = D:\FilterFoundry\win_flex_bison\win_bison
 
 OBJ = main.obj funcs.obj process.obj node.obj symtab.obj \
 	ui.obj ui_build.obj preview.obj read.obj save.obj make.obj \
@@ -74,7 +74,7 @@ all : parser lexer $(EXEC).8bf
 clean :
 	-del *.obj *.asm *.cod win_res.res $(EXEC).8bf $(EXEC).exp $(EXEC).lib $(EXEC).map
 
-win_res.res : win_res.rc PiPL.rc PiPL_body.rc ui_win.rc caution.ico ui.h version.h
+win_res.res : win_res.rc PiPL.rc PiPL_body.rc manifest.rc version_win.rc ui_win.rc caution.ico ui.h version.h
 	$(RC) $(RFLAGS) $(CPPFLAGS) win_res.rc
 	
 parser : parser.y

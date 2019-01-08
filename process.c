@@ -147,13 +147,21 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
  *                            e.g. 2.0 means 1 output pixel per 2 input pixels.
  */
 
+//#define PROCESS_SCALED_GAP_DEBUG 1
+
 OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			  Rect *filterPiece, Rect *outPiece,
 			  void *outData, long outRowBytes, double zoom){
 	unsigned char *inrow,*outrow,*outp;
-	int j,i,k;
+	int j,i;
 	long t,ticks = TICKCOUNT();
-	double x,y;
+	double x,y,k;
+
+	#ifdef PROCESS_SCALED_GAP_DEBUG
+	char s[0x200];
+	int last_good_x, last_good_y;
+	last_good_y = -1;
+	#endif
 
 	// find base pointer to selection image data
 	image_ptr = (unsigned char*)pb->inData
@@ -161,13 +169,31 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
 
 	if (state_changing_funcs_used) {
-		for (y = pb->filterRect.top; y < filterPiece->top - pb->filterRect.top; ++y) {
+		// Fill gap between selection/filter top border and top preview zoomed border
+		for (y = 0; y < filterPiece->top - pb->filterRect.top; ++y) {
+			#ifdef PROCESS_SCALED_GAP_DEBUG
+			if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
+			#endif
+
 			var['y'] = y;
 			inrow = image_ptr + (long)(y)*pb->inRowBytes;
-			for (x = pb->filterRect.left; x < pb->filterRect.right; ++x) {
+
+			#ifdef PROCESS_SCALED_GAP_DEBUG
+			last_good_x = -1;
+			#endif
+
+			for (x = 0; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 1a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
+				#endif
+
 				var['x'] = x;
 				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
+
+			#ifdef PROCESS_SCALED_GAP_DEBUG
+			if (var['x'] != var['X']-1) { sprintf(s, "X not at right border #1: x=%d, X=%d\n", var['x'], var['X']); simplealert(s); }
+			#endif
 		}
 	}
 
@@ -175,11 +201,24 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 	for( j = outPiece->top, outrow = (unsigned char*)outData, y = filterPiece->top - pb->filterRect.top ;
 		 j < outPiece->bottom ; ++j, outrow += outRowBytes, y += zoom )
 	{
+		#ifdef PROCESS_SCALED_GAP_DEBUG
+		if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
+		#endif
+
 		var['y'] = y;  // index of corresponding *input* row, top of selection == 0
 		inrow = image_ptr + (long)y*pb->inRowBytes;
 
+		#ifdef PROCESS_SCALED_GAP_DEBUG
+		last_good_x = -1;
+		#endif
+
 		if (state_changing_funcs_used) {
-			for (x = pb->filterRect.left; x < filterPiece->left - pb->filterRect.left; ++x) {
+			// Fill gap between left selection/image border and left border of the preview-area
+			for (x = 0; x < filterPiece->left - pb->filterRect.left; ++x) {
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
+				#endif
+
 				var['x'] = x;
 				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
@@ -189,31 +228,69 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		for( outp = outrow, i = outPiece->left, x = filterPiece->left - pb->filterRect.left ;
 			 i < outPiece->right ; ++i, outp += nplanes, x += zoom )
 		{
+			#ifdef PROCESS_SCALED_GAP_DEBUG
+			if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
+			#endif
+
 			var['x'] = x;  // index of corresponding *input* column, left of selection == 0
-			evalpixel(outp,inrow + (long)x*nplanes); /* var['x'] & var['y'] are implicit parameters */
+			evalpixel(outp,inrow + (long)(x)*nplanes); /* var['x'] & var['y'] are implicit parameters */
 
 			if (state_changing_funcs_used) {
-				for (k = x+1; k < floor(x + zoom); ++k) {
+				// Fill gap between each X-preview-pixel (discarded pixels due to zoom level)
+				for (k = x+1; floor(k) < floor(x + zoom); ++k) {
+					#ifdef PROCESS_SCALED_GAP_DEBUG
+					if (state_changing_funcs_used && last_good_x != (int)floor(k-1)) { sprintf(s, "Non calculated X gap, type 2c: %f (x=%f), last good %d, zoom %f\n", k, x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(k);
+					#endif
+
 					var['x'] = k;
+					if (var['x'] >= var['X']) break;
 					evalpixel(NULL,inrow + (long)(k)*nplanes);
 				}
 			}
 		}
 
-		if (state_changing_funcs_used && (j+1 != outPiece->bottom)) {
-			if (state_changing_funcs_used) {
-				for (k = filterPiece->right; k < pb->filterRect.right; ++k) {
-					var['x'] = k;
-					evalpixel(NULL,inrow + (long)(k)*nplanes);
-				}
+		if (state_changing_funcs_used) {
+			// Fill gap between right border of preview-area and right border of selection/image border
+
+			for (x = var['x']+1; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2d: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
+				#endif
+
+				var['x'] = x;
+				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
-			for (k = y+1; k < floor(y + zoom); ++k) {
+
+			#ifdef PROCESS_SCALED_GAP_DEBUG
+			if (var['x'] != var['X']-1) { sprintf(s, "X not at right border #2: x=%d, X=%d\n", var['x'], var['X']); simplealert(s);}
+			#endif
+
+			// Fill gap between each Y-preview-pixel (discarded pixels due to zoom level)
+			for (k = y+1; floor(k) < floor(y + zoom); ++k) {
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				if (state_changing_funcs_used && last_good_y != (int)floor(k-1)) { sprintf(s, "Non calculated Y gap, type 3a: %f (y=%f), last good %d, zoom %f\n", k, y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(k);
+				#endif
+
 				var['y'] = k;
+				if (var['y'] >= var['Y']) break;
 				inrow = image_ptr + (long)(k)*pb->inRowBytes;
-				for (x = pb->filterRect.left; x < pb->filterRect.right; ++x) {
+
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				last_good_x = -1;
+				#endif
+
+				for (x = 0; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+					#ifdef PROCESS_SCALED_GAP_DEBUG
+					if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 3b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
+					#endif
+
 					var['x'] = x;
 					evalpixel(NULL,inrow + (long)(x)*nplanes);
 				}
+
+				#ifdef PROCESS_SCALED_GAP_DEBUG
+				if (var['x'] != var['X']-1) {sprintf(s, "X not at right border #3: x=%d, X=%d\n", var['x'], var['X']); simplealert(s);}
+				#endif
 			}
 		}
 
@@ -236,6 +313,10 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		}
 #endif
 	}
+
+	// Note for state_changing_funcs_used: We will not evaluate the gap between bottom border
+	// of preview area and the bottom border of the selection/filter, because there are no
+	// preview output pixels left that could be affected by these gap evaluations.
 
 	return noErr;
 }

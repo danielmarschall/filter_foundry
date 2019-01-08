@@ -164,7 +164,7 @@ obj_w32/%.o : %.c
 
 # note dependencies on version.h:
 
-obj_w32/res.o : win_res.rc PiPL.rc PiPL_body.rc ui_win.rc caution.ico ui.h version.h
+obj_w32/res.o : win_res.rc PiPL.rc PiPL_body.rc manifest.rc version_win.rc ui_win.rc caution.ico ui.h version.h
 	$(WINDRES) -o $@ -i $< --language=0 $(CPPFLAGS)
 
 lex.yy.c : lexer.l y.tab.h

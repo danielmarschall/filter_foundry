@@ -292,7 +292,7 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 			if( (res = readparams(h,true,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
-				if (!strcasecmp((char*)sfr->sfFile.name + 1 + sfr->nFileExtension,"pff")) {
+				if (sfr->nFileExtension && !strcasecmp((char*)sfr->sfFile.name + sfr->nFileExtension,".pff")) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					char* tmp;
 					tmp = my_strdup(expr[0]);

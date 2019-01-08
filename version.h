@@ -144,6 +144,7 @@
                    - Bugfix: When state changing functions (rst, rnd or put) are used within the formula,
                      every pixel in the picture will now be evaluated during preview, even if the user
                      has zoomed in.
+                   - Added Application Manifest resource
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
