@@ -43,9 +43,9 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 	double zh,zv;
 
 	if(pb->displayPixels && pb->advanceState){
-		preview_w = MIN(preview_rect.right - preview_rect.left - 2,
+		preview_w = MIN(preview_rect.right - preview_rect.left,
 						pb->filterRect.right - pb->filterRect.left);
-		preview_h = MIN(preview_rect.bottom - preview_rect.top - 2,
+		preview_h = MIN(preview_rect.bottom - preview_rect.top,
 						pb->filterRect.bottom - pb->filterRect.top);
 		zh = (pb->filterRect.right - pb->filterRect.left)/(double)preview_w;
 		zv = (pb->filterRect.bottom - pb->filterRect.top)/(double)preview_h;

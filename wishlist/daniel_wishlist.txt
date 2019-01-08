@@ -71,8 +71,6 @@ Minor priority stuff or ideas
   The problem is that the offset of the preview area is always different, and if the zoom
   level is not a multiple of two, you will always "pick" other bars.
 
-* When Picture-1.jpg is scaled down, you can still pan left and right by 1 pixel
-
 
 Design/UI Tweaks
 ----------------

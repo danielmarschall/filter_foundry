@@ -265,8 +265,9 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			if (var['x'] != var['X']-1) { sprintf(s, "X not at right border #2: x=%d, X=%d\n", var['x'], var['X']); simplealert(s);}
 			#endif
 
-			// Fill gap between each Y-preview-pixel (discarded pixels due to zoom level)
-			for (k = y+1; floor(k) < floor(y + zoom); ++k) {
+			// Fill gap between each Y-preview-pixel (discarded pixels due to zoom level),
+			// but not for the very last line, since we are then done drawing our preview picture
+			for (k = y+1; floor(k) < floor(y + zoom) && (j < outPiece->bottom-1); ++k) {
 				#ifdef PROCESS_SCALED_GAP_DEBUG
 				if (state_changing_funcs_used && last_good_y != (int)floor(k-1)) { sprintf(s, "Non calculated Y gap, type 3a: %f (y=%f), last good %d, zoom %f\n", k, y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(k);
 				#endif
