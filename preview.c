@@ -100,6 +100,27 @@ void dispose_preview(){
 	}
 }
 
+#define COLORMODE_PLAIN 0
+#define COLORMODE_DARKDITHER 1
+void* memset_color(void* ptr, DWORD color, size_t num, int colormode) {
+	int i = 0;
+	byte* p;
+	p = (byte*)ptr;
+	for (i=0; i<num; ++i) {
+		if (colormode == COLORMODE_PLAIN) {
+			if (i%3 == 0) p[i] = GetRValue(color);
+			if (i%3 == 1) p[i] = GetGValue(color);
+			if (i%3 == 2) p[i] = GetBValue(color);
+		} else if (colormode == COLORMODE_DARKDITHER) {
+			if (i%4 == 0) p[i] = (0x30  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
+			if (i%4 == 1) p[i] = (0x60  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
+			if (i%4 == 2) p[i] = (0x90  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
+			if (i%4 == 3) p[i] = (0x120 + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
+		}
+	}
+	return ptr;
+}
+
 void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	OSErr e;
 	int j,n,scaledw,scaledh,imgw,imgh;
@@ -178,16 +199,16 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			e = process_scaled(pb, false, &r, &outRect,
 					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
 			if(blankrows){
-				memset(outptr, 0xff, pmrb*blankrows);
+				memset_color(outptr, GetSysColor(COLOR_3DFACE), pmrb*blankrows, COLORMODE_DARKDITHER);
 				n = preview_h - blankrows - imgh; /* blank rows below preview */
-				memset(outptr + pmrb*(blankrows+imgh), 0xff, pmrb*n);
+				memset_color(outptr + pmrb*(blankrows+imgh), GetSysColor(COLOR_3DFACE), pmrb*n, COLORMODE_DARKDITHER);
 			}
 			if(blankcols){
 				n = preview_w - blankcols - imgw; /* blank columns on right side of preview */
 				outrow = outptr + pmrb*blankrows;
 				for(j = blankrows; j < preview_h - blankrows; ++j){
-					memset(outrow, 0xff, nplanes*blankcols);
-					memset(outrow + nplanes*(blankcols+imgw), 0xff, nplanes*n);
+					memset_color(outrow, GetSysColor(COLOR_3DFACE), nplanes*blankcols, COLORMODE_DARKDITHER);
+					memset_color(outrow + nplanes*(blankcols+imgw), GetSysColor(COLOR_3DFACE), nplanes*n, COLORMODE_DARKDITHER);
 					outrow += pmrb;
 				}
 			}

@@ -75,9 +75,16 @@ PRIORITY NEEDS:
 			5c-c. Attempted different frames in ResHacker to see
 			      if the issue would go away - results same.
 
-	6. Prefer Preview default with no background color.
+(FIXED)	6. Prefer Preview default with no background color.
 
 		6a. Currently white background for Preview.
+		
+		Fixed by DM 10 Jan 2018: There are now two possibilities in the code:
+		- COLORMODE_PLAIN:      Use the window-background-color for the
+		                        off-canvas color
+		- COLORMODE_DARKDITHER: Use a dark dithered color (based on the
+		                        window-background-color) for the off-canvas color
+		                        (this option was chosen)
 
 (ADDED)	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
 

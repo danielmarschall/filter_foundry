@@ -70,6 +70,15 @@ Minor priority stuff or ideas
   bars change during panning. It does not look "smooth" like in 100%, 50%, or 25% zoom.
   The problem is that the offset of the preview area is always different, and if the zoom
   level is not a multiple of two, you will always "pick" other bars.
+  
+* In regards "Apple scripting" (AETE resource):
+
+	a) Why do we include the AETE resource in Windows, and use fixaete() in the build-process,
+	   although there is no AppleScript support on Windows?
+	   
+	b) In a standalone filter, should the AETE dictionary only contain the controls which are used
+	   by the built filter, and should these dictionary entries have the correct user-defined
+	   control/slider name?
 
 
 Design/UI Tweaks

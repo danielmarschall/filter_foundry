@@ -146,6 +146,7 @@
                      has zoomed in.
                    - Added Application Manifest resource
                    - Fixed "off by one" bug where you could pan a fit-zoomed picture by 1 pixel in the preview
+                   - The preview area now has a dark dithered off canvas area
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
