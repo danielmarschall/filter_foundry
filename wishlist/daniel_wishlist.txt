@@ -13,8 +13,8 @@ Important/Bugs
 
 * Create and evaluate more testcases, and either fix differences between FilterFactory and
   FilterFoundry, or document them in "Filter Factory Compatibility.txt"
-  
-  
+
+
 Minor priority stuff or ideas
 -----------------------------
 
@@ -79,6 +79,11 @@ Minor priority stuff or ideas
 	b) In a standalone filter, should the AETE dictionary only contain the controls which are used
 	   by the built filter, and should these dictionary entries have the correct user-defined
 	   control/slider name?
+
+* Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
+
+* If you click on the label which contains the zoom-factor, the preview is resized to 100%.
+  But if the picture is smaller than the preview area, the zoom will go >100% .
 
 
 Design/UI Tweaks

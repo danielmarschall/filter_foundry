@@ -43,10 +43,19 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 	double zh,zv;
 
 	if(pb->displayPixels && pb->advanceState){
+		// Possibility 1: Only the part of the preview rect is filled with background color,
+		// which can be occupied by image data if zoom factor becomes 100%
+		/*
 		preview_w = MIN(preview_rect.right - preview_rect.left,
 						pb->filterRect.right - pb->filterRect.left);
 		preview_h = MIN(preview_rect.bottom - preview_rect.top,
 						pb->filterRect.bottom - pb->filterRect.top);
+		*/
+		// Possibility 2: The whole preview rect is always filled with the background color,
+		// so you can easily see what is the preview area and what is not
+		preview_w = preview_rect.right - preview_rect.left;
+		preview_h = preview_rect.bottom - preview_rect.top;
+
 		zh = (pb->filterRect.right - pb->filterRect.left)/(double)preview_w;
 		zv = (pb->filterRect.bottom - pb->filterRect.top)/(double)preview_h;
 		fitzoom = zh > zv ? zh : zv;
@@ -102,20 +111,36 @@ void dispose_preview(){
 
 #define COLORMODE_PLAIN 0
 #define COLORMODE_DARKDITHER 1
-void* memset_color(void* ptr, DWORD color, size_t num, int colormode) {
-	int i = 0;
+void* memset_bgcolor(void* ptr, size_t num, int colormode, int ditherOffset) {
+	int i;
+	byte r, g, b;
 	byte* p;
+
+#ifdef WIN_ENV
+	DWORD color;
+	color = GetSysColor(COLOR_3DFACE);
+	r = GetRValue(color);
+	g = GetGValue(color);
+	b = GetBValue(color);
+#else
+	// light gray
+	r = 0xF0;
+	g = 0xF0;
+	b = 0xF0;
+#endif
+
+	i = 0;
 	p = (byte*)ptr;
 	for (i=0; i<num; ++i) {
 		if (colormode == COLORMODE_PLAIN) {
-			if (i%3 == 0) p[i] = GetRValue(color);
-			if (i%3 == 1) p[i] = GetGValue(color);
-			if (i%3 == 2) p[i] = GetBValue(color);
+			if (i%3 == 0) p[i] = r;
+			if (i%3 == 1) p[i] = g;
+			if (i%3 == 2) p[i] = b;
 		} else if (colormode == COLORMODE_DARKDITHER) {
-			if (i%4 == 0) p[i] = (0x30  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
-			if (i%4 == 1) p[i] = (0x60  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
-			if (i%4 == 2) p[i] = (0x90  + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
-			if (i%4 == 3) p[i] = (0x120 + GetRValue(color) + GetGValue(color) + GetBValue(color)) / 6;
+			if ((i+ditherOffset*2)%4 == 0) p[i] = (0x40  + r + g + b) / 6;
+			if ((i+ditherOffset*2)%4 == 1) p[i] = (0x70  + r + g + b) / 6;
+			if ((i+ditherOffset*2)%4 == 2) p[i] = (0x100 + r + g + b) / 6;
+			if ((i+ditherOffset*2)%4 == 3) p[i] = (0x130 + r + g + b) / 6;
 		}
 	}
 	return ptr;
@@ -199,16 +224,20 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			e = process_scaled(pb, false, &r, &outRect,
 					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
 			if(blankrows){
-				memset_color(outptr, GetSysColor(COLOR_3DFACE), pmrb*blankrows, COLORMODE_DARKDITHER);
-				n = preview_h - blankrows - imgh; /* blank rows below preview */
-				memset_color(outptr + pmrb*(blankrows+imgh), GetSysColor(COLOR_3DFACE), pmrb*n, COLORMODE_DARKDITHER);
+				// blank rows on top of preview:
+				memset_bgcolor(outptr, pmrb*blankrows, COLORMODE_DARKDITHER, 0);
+				// blank rows below preview:
+				n = preview_h - blankrows - imgh;
+				memset_bgcolor(outptr + pmrb*(blankrows+imgh), pmrb*n, COLORMODE_DARKDITHER, 0);
 			}
 			if(blankcols){
-				n = preview_w - blankcols - imgw; /* blank columns on right side of preview */
+				n = preview_w - blankcols - imgw;
 				outrow = outptr + pmrb*blankrows;
 				for(j = blankrows; j < preview_h - blankrows; ++j){
-					memset_color(outrow, GetSysColor(COLOR_3DFACE), nplanes*blankcols, COLORMODE_DARKDITHER);
-					memset_color(outrow + nplanes*(blankcols+imgw), GetSysColor(COLOR_3DFACE), nplanes*n, COLORMODE_DARKDITHER);
+					// blank columns on left side of preview (if picture is smaller than the preview area):
+					memset_bgcolor(outrow, nplanes*blankcols, COLORMODE_DARKDITHER, j);
+					// blank columns on right side of preview (if picture is smaller than the preview area):
+					memset_bgcolor(outrow + nplanes*(blankcols+imgw), nplanes*n, COLORMODE_DARKDITHER, j+1);
 					outrow += pmrb;
 				}
 			}
