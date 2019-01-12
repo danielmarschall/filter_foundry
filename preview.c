@@ -109,39 +109,30 @@ void dispose_preview(){
 	}
 }
 
-#define COLORMODE_PLAIN 0
-#define COLORMODE_DARKDITHER 1
-void* memset_bgcolor(void* ptr, size_t num, int colormode, int ditherOffset) {
+void* memset_bgcolor(void* ptr, size_t num) {
 	int i;
 	byte r, g, b;
 	byte* p;
-
 #ifdef WIN_ENV
 	DWORD color;
-	color = GetSysColor(COLOR_3DFACE);
-	r = GetRValue(color);
-	g = GetGValue(color);
-	b = GetBValue(color);
-#else
-	// light gray
-	r = 0xF0;
-	g = 0xF0;
-	b = 0xF0;
 #endif
 
 	i = 0;
 	p = (byte*)ptr;
 	for (i=0; i<num; ++i) {
-		if (colormode == COLORMODE_PLAIN) {
-			if (i%3 == 0) p[i] = r;
-			if (i%3 == 1) p[i] = g;
-			if (i%3 == 2) p[i] = b;
-		} else if (colormode == COLORMODE_DARKDITHER) {
-			if ((i+ditherOffset*2)%4 == 0) p[i] = (0x40  + r + g + b) / 6;
-			if ((i+ditherOffset*2)%4 == 1) p[i] = (0x70  + r + g + b) / 6;
-			if ((i+ditherOffset*2)%4 == 2) p[i] = (0x100 + r + g + b) / 6;
-			if ((i+ditherOffset*2)%4 == 3) p[i] = (0x130 + r + g + b) / 6;
-		}
+#ifdef WIN_ENV
+		color = GetSysColor(COLOR_APPWORKSPACE);
+		// FIXME: If we are in a non-RGB color mode, e.g. plugInModeLabColor,
+		//        then these RGB codes are all wrong!
+		if (i%nplanes == 0) p[i] = GetRValue(color);
+		if (i%nplanes == 1) p[i] = GetGValue(color);
+		if (i%nplanes == 2) p[i] = GetBValue(color);
+		if (i%nplanes == 3) p[i] = 255; // alpha channel
+#else
+		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)
+		// FIXME: Should we do something fancy here, too?
+		p[i] = 0xFF;
+#endif
 	}
 	return ptr;
 }
@@ -225,19 +216,19 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
 			if(blankrows){
 				// blank rows on top of preview:
-				memset_bgcolor(outptr, pmrb*blankrows, COLORMODE_DARKDITHER, 0);
+				memset_bgcolor(outptr, pmrb*blankrows);
 				// blank rows below preview:
 				n = preview_h - blankrows - imgh;
-				memset_bgcolor(outptr + pmrb*(blankrows+imgh), pmrb*n, COLORMODE_DARKDITHER, 0);
+				memset_bgcolor(outptr + pmrb*(blankrows+imgh), pmrb*n);
 			}
 			if(blankcols){
 				n = preview_w - blankcols - imgw;
 				outrow = outptr + pmrb*blankrows;
 				for(j = blankrows; j < preview_h - blankrows; ++j){
 					// blank columns on left side of preview (if picture is smaller than the preview area):
-					memset_bgcolor(outrow, nplanes*blankcols, COLORMODE_DARKDITHER, j);
+					memset_bgcolor(outrow, nplanes*blankcols);
 					// blank columns on right side of preview (if picture is smaller than the preview area):
-					memset_bgcolor(outrow + nplanes*(blankcols+imgw), nplanes*n, COLORMODE_DARKDITHER, j+1);
+					memset_bgcolor(outrow + nplanes*(blankcols+imgw), nplanes*n);
 					outrow += pmrb;
 				}
 			}

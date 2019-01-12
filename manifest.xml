@@ -7,7 +7,7 @@
 	    processorArchitecture="*"
 	    version="1.7.0.1"
 	    type="win32"/>
-	<description></description>
+	<description>Filter Foundry</description>
 	<dependency>
 		<dependentAssembly>
 			<assemblyIdentity

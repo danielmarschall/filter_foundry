@@ -82,8 +82,18 @@ Minor priority stuff or ideas
 
 * Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
 
-* If you click on the label which contains the zoom-factor, the preview is resized to 100%.
-  But if the picture is smaller than the preview area, the zoom will go >100% .
+* FilterFoundry does not work on Windows 98. Unresolved Kernel32.dll symbols:
+	ActivateActCtx
+	CreateActCtxA
+	DeactivateActCtx
+	DecodePointer
+	GetFileSizeEx
+	GetModuleHandleExW
+	InitializeSListHead
+	InterlockedFlushSList
+	ReleaseActCtx
+	SetFilePointerEx
+   Note: FilterFoundry 1.6b1 didn't work in Win98 either, although there were no unresolved symbols.
 
 
 Design/UI Tweaks

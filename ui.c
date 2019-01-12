@@ -389,7 +389,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		recalc_preview(gpb,dp);
 		break;
 	case ZOOMLEVELITEM:
-		zoomfactor = zoomfactor > 1. ? 1. : fitzoom;
+		zoomfactor = zoomfactor > 1. ? 1. : (fitzoom < 1. ? 1. : fitzoom);
 		updatezoom(dp);
 		previewerr = false;
 		recalc_preview(gpb,dp);

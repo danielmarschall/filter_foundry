@@ -102,6 +102,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		SetClassLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandQuestion);
 
+		for(i = 0; i < 4; ++i){
+			// If Visual Themes are applied, SS_ICON will be ignored for controls which are not exactly "STATIC" class.
+			// Our derivated "CautionSign" class won't work. So we need to set the icon explicitly.
+			SendDlgItemMessage(hDlg, FIRSTICONITEM+i, STM_SETICON, (WPARAM)LoadImage(hDllInstance, "CAUTION_ICO",IMAGE_ICON,16,16, LR_DEFAULTCOLOR), 0);
+		}
+
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETTICFREQ,SLIDERPAGE,0);
@@ -185,13 +191,13 @@ Boolean maindialog(FilterRecordPtr pb){
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
 	clx.cbSize = sizeof(WNDCLASSEX);
-	GetClassInfoEx(hDllInstance, "Static", &clx);
+	GetClassInfoEx(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "Preview";
 	RegisterClassEx(&clx);
 
 	// For the caution images, we register a class, so that we can assign a mouse cursor to this class.
 	clx.cbSize = sizeof(WNDCLASSEX);
-	GetClassInfoEx(hDllInstance, "Static", &clx);
+	GetClassInfoEx(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "CautionSign";
 	RegisterClassEx(&clx);
 

@@ -29,7 +29,7 @@
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
-value_type slider[8],cell[0x100],map[4][0x100];
+value_type slider[8],cell[NUM_CELLS],map[4][0x100];
 char *expr[4];
 // long maxSpace;
 globals_t *gdata;
@@ -53,6 +53,28 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	static Boolean wantdialog = false;
 	OSErr e = noErr;
 	char *reason;
+
+#ifdef WIN_ENV
+	// For Windows, we use an activation context to enforce that our Manifest resource will
+	// be used. This allows us to use Visual Styles, even if the host application does not
+	// support it.
+	HANDLE hActCtx;
+	ACTCTX actCtx;
+	ULONG_PTR cookie;
+	BOOL activationContextUsed = FALSE;
+
+	ZeroMemory(&actCtx, sizeof(actCtx));
+	actCtx.cbSize = sizeof(actCtx);
+	actCtx.hModule = hDllInstance;
+	actCtx.lpResourceName = MAKEINTRESOURCE(1); // ID of manifest resource
+	actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
+
+	hActCtx = CreateActCtx(&actCtx);
+	if (hActCtx != INVALID_HANDLE_VALUE) {
+		ActivateActCtx(hActCtx, &cookie);
+		activationContextUsed = TRUE;
+	}
+#endif
 
 	if(selector != filterSelectorAbout && !*data){
 		BufferID tempId;
@@ -123,6 +145,13 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	*result = e;
 
 	ExitCodeResource();
+
+#ifdef WIN_ENV
+	if (activationContextUsed) {
+		DeactivateActCtx(0, cookie);
+		ReleaseActCtx(hActCtx);
+	}
+#endif
 }
 
 int checkandinitparams(Handle params){

@@ -1,6 +1,6 @@
 
 Implementation detail differences			Daniel Marschall
-=================================			03 January 2018
+=================================			08 January 2018
 
 FilterFoundry tries to be as compatible with Filter Factory as possible.
 However, results are usually not 100% equal, because functions like
@@ -10,7 +10,7 @@ implementation.
 Furthermore, there are following known differences between Filter Foundry
 and Filter Factory:
 
-i, u, v
+i, u, v (Testcase iuv.afs)
 -------
 
 Filter Foundry <1.7 uses the same formulas as in Filter Factory:
