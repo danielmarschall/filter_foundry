@@ -111,23 +111,78 @@ void dispose_preview(){
 
 void* memset_bgcolor(void* ptr, size_t num) {
 	int i;
-	byte r, g, b;
 	byte* p;
-#ifdef WIN_ENV
-	DWORD color;
-#endif
 
 	i = 0;
 	p = (byte*)ptr;
 	for (i=0; i<num; ++i) {
 #ifdef WIN_ENV
+		DWORD color;
+
 		color = GetSysColor(COLOR_APPWORKSPACE);
-		// FIXME: If we are in a non-RGB color mode, e.g. plugInModeLabColor,
-		//        then these RGB codes are all wrong!
-		if (i%nplanes == 0) p[i] = GetRValue(color);
-		if (i%nplanes == 1) p[i] = GetGValue(color);
-		if (i%nplanes == 2) p[i] = GetBValue(color);
-		if (i%nplanes == 3) p[i] = 255; // alpha channel
+
+		if (gpb->imageMode == plugInModeRGBColor) {
+			if (i%nplanes == 0) p[i] = GetRValue(color);
+			if (i%nplanes == 1) p[i] = GetGValue(color);
+			if (i%nplanes == 2) p[i] = GetBValue(color);
+			if (i%nplanes == 3) p[i] = 255; // alpha channel
+		} else if (gpb->imageMode == plugInModeGrayScale) {
+			byte r, g, b;
+
+			r = GetRValue(color);
+			g = GetGValue(color);
+			b = GetBValue(color);
+
+			if (i%nplanes == 0) p[i] = ((299L*r)+(587L*g)+(114L*b))/1000;
+			if (i%nplanes == 1) p[i] = 255; // alpha channel
+		} else if (gpb->imageMode == plugInModeCMYKColor) {
+			byte r, g, b;
+			double dr, dg, db, k, c, m, y;
+
+			r = GetRValue(color);
+			g = GetGValue(color);
+			b = GetBValue(color);
+
+			dr = (double)r / 255;
+			dg = (double)g / 255;
+			db = (double)b / 255;
+			k = 1 - max(max(dr, dg), db);
+			c = (1 - dr - k) / (1 - k);
+			m = (1 - dg - k) / (1 - k);
+			y = (1 - db - k) / (1 - k);
+
+			if (i%nplanes == 0) p[i] = 255 - c * 255;
+			if (i%nplanes == 1) p[i] = 255 - m * 255;
+			if (i%nplanes == 2) p[i] = 255 - y * 255;
+			if (i%nplanes == 3) p[i] = 255 - k * 255;
+		} else {
+			// FIXME: If we are in such a non supported color mode, then
+			//        these color codes would be all wrong!
+			//        Just to be safe use (what is probably) white
+			p[i] = 0xFF;
+
+			/*
+			#define plugInModeBitmap			0
+			#define plugInModeGrayScale			1 supported
+			#define plugInModeIndexedColor		2
+			#define plugInModeRGBColor			3 supported
+			#define plugInModeCMYKColor			4 supported
+			#define plugInModeHSLColor			5
+			#define plugInModeHSBColor			6
+			#define plugInModeMultichannel		7
+			#define plugInModeDuotone			8
+			#define plugInModeLabColor			9
+			#define plugInModeGray16			10
+			#define plugInModeRGB48				11
+			#define plugInModeLab48				12
+			#define plugInModeCMYK64			13
+			#define plugInModeDeepMultichannel	14
+			#define plugInModeDuotone16			15
+			#define plugInModeRGB96   			16
+			#define plugInModeGray32   			17
+			*/
+
+		}
 #else
 		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)
 		// FIXME: Should we do something fancy here, too?

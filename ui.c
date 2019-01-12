@@ -239,7 +239,7 @@ void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;
 	char *channelsuffixes[] = {
-		"", "GA", "I", "RGBA",
+		"", "KA", "I", "RGBA",
 		"CMYK", "HSL", "HSB", "1234",
 		"DA", "LabA"
 	};

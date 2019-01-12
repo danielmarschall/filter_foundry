@@ -39,6 +39,10 @@ FilterRecordPtr gpb;
 	#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
+#ifdef WIN_ENV
+#include "manifest.h"
+#endif
+
 extern struct sym_rec predefs[];
 extern int nplanes,varused[];
 
@@ -58,22 +62,12 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	// For Windows, we use an activation context to enforce that our Manifest resource will
 	// be used. This allows us to use Visual Styles, even if the host application does not
 	// support it.
-	HANDLE hActCtx;
-	ACTCTX actCtx;
-	ULONG_PTR cookie;
-	BOOL activationContextUsed = FALSE;
+	ManifestActivationCtx manifestVars;
+	BOOL activationContextUsed;
 
-	ZeroMemory(&actCtx, sizeof(actCtx));
-	actCtx.cbSize = sizeof(actCtx);
-	actCtx.hModule = hDllInstance;
-	actCtx.lpResourceName = MAKEINTRESOURCE(1); // ID of manifest resource
-	actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
+	activationContextUsed = ActivateManifest(hDllInstance, 1, &manifestVars);
 
-	hActCtx = CreateActCtx(&actCtx);
-	if (hActCtx != INVALID_HANDLE_VALUE) {
-		ActivateActCtx(hActCtx, &cookie);
-		activationContextUsed = TRUE;
-	}
+	__try {
 #endif
 
 	if(selector != filterSelectorAbout && !*data){
@@ -147,9 +141,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	ExitCodeResource();
 
 #ifdef WIN_ENV
-	if (activationContextUsed) {
-		DeactivateActCtx(0, cookie);
-		ReleaseActCtx(hActCtx);
+	} __finally {
+		if (activationContextUsed) DeactivateManifest(&manifestVars);
 	}
 #endif
 }

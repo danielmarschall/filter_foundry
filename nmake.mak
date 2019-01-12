@@ -42,7 +42,7 @@
 EXEC = FilterFoundry
 
 # define location of Photoshop SDK headers
-PSAPI = "D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
+PSAPI = "E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
@@ -57,12 +57,12 @@ LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
 RFLAGS = -i$(PSAPI)\Photoshop
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
-FLEX = D:\FilterFoundry\win_flex_bison\win_flex
-BISON = D:\FilterFoundry\win_flex_bison\win_bison
+FLEX = E:\FilterFoundry\win_flex_bison\win_flex
+BISON = E:\FilterFoundry\win_flex_bison\win_bison
 
 OBJ = main.obj funcs.obj process.obj node.obj symtab.obj \
 	ui.obj ui_build.obj preview.obj read.obj save.obj make.obj \
-	scripting.obj lex.yy.obj ui_win.obj make_win.obj versioninfo_modify_win.obj load_win.obj \
+	scripting.obj lex.yy.obj manifest.obj ui_win.obj make_win.obj versioninfo_modify_win.obj load_win.obj \
 	..\common\tt\dbg_win.obj ..\common\tt\ui_compat_win.obj \
 	..\common\tt\choosefile_win.obj ui_build_win.obj \
 	..\common\tt\compat_string.obj ..\common\tt\compat_win.obj \

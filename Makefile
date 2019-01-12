@@ -58,7 +58,7 @@ SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
 SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
 	choosefile_nav.c preview_mac.c \
 	MoreFilesExtras.c MoreFiles.c MoreDesktopMgr.c FileCopy.c Search.c
-SRC_W32 = dbg_win.c ui_win.c make_win.c versioninfo_modify_win.c load_win.c ui_compat_win.c \
+SRC_W32 = dbg_win.c manifest.c ui_win.c make_win.c versioninfo_modify_win.c load_win.c ui_compat_win.c \
 	choosefile_win.c ui_build_win.c compat_string.c compat_win.c \
 	file_compat_win.c dllmain.c
 
@@ -191,6 +191,7 @@ obj_w32/ui.o : ff.h funcs.h symtab.h ui.h PARM.h node.h y.tab.h
 obj_w32/ui_build.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/ui_build_win.o : ff.h funcs.h symtab.h ui.h PARM.h version.h
 obj_w32/ui_win.o : ff.h funcs.h symtab.h ui.h PARM.h version.h
+obj_w32/manifest.o : manifest.h
 
 obj/funcs.o : ff.h funcs.h symtab.h ui.h PARM.h y.tab.h
 obj/lex.yy.o : node.h symtab.h y.tab.h
