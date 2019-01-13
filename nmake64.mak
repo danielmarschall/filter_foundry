@@ -72,7 +72,7 @@ OBJ = main.obj funcs.obj process.obj node.obj symtab.obj \
 all : parser lexer $(EXEC)64.8bf
 
 clean :
-	-del *.obj *.asm *.cod win_res.res $(EXEC)64.8bf $(EXEC).exp $(EXEC).lib $(EXEC).map
+	-del *.obj *.asm *.cod win_res.res $(EXEC)64.8bf $(EXEC)64.exp $(EXEC)64.lib $(EXEC)64.map
 
 win_res.res : win_res.rc PiPL.rc PiPL_body.rc manifest.rc version_win.rc ui_win.rc caution.ico ui.h version.h
 	$(RC) $(RFLAGS) $(CPPFLAGS) win_res.rc

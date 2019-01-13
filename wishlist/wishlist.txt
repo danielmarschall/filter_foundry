@@ -79,12 +79,9 @@ PRIORITY NEEDS:
 
 		6a. Currently white background for Preview.
 		
-		Fixed by DM 10 Jan 2018: There are now two possibilities in the code:
-		- COLORMODE_PLAIN:      Use the window-background-color for the
-		                        off-canvas color
-		- COLORMODE_DARKDITHER: Use a dark dithered color (based on the
-		                        window-background-color) for the off-canvas color
-		                        (this option was chosen)
+		Fixed by DM 10 Jan 2018: For Windows, the preview area is now inside a
+		"sunken" border, and the area is filled with the Windows
+		"workspace background" color.
 
 (ADDED)	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
 

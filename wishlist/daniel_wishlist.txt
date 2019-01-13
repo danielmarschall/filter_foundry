@@ -10,15 +10,16 @@ Important/Bugs
 
 * Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
   Windows 64 is already tested. We just need an updated Makefile.
-
-* Create and evaluate more testcases, and either fix differences between FilterFactory and
-  FilterFoundry, or document them in "Filter Factory Compatibility.txt"
+  
+* For Mac, please look at the (*) marked entries in version.h and verify the bugs/fixes
+  and/or apply the changes on Mac.
 
 
 Minor priority stuff or ideas
 -----------------------------
 
-* Create more test cases and compare various functions between Filter Foundry and Filter Factory.
+* Create and evaluate more testcases, and either fix differences between FilterFactory and
+  FilterFoundry, or document them in "Filter Factory Compatibility.txt"
 
 * Should an expression like "----r" be forbidden? (Multiple negate signs) On the other hand, FilterFactory
   didn't forbit them either.
