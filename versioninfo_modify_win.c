@@ -390,7 +390,7 @@ BOOL CALLBACK EnumResLangProc(HMODULE hModule, PCTSTR lpszType, PCTSTR lpszName,
 				{
 					if (UpdateVersionRaw(pv, size, &pv, &size, Ctx->changes))
 					{
-						if (UpdateResource(Ctx->hUpdate, lpszType, lpszName, wIDLanguage, pv, size))
+						if (_UpdateResource(Ctx->hUpdate, lpszType, lpszName, wIDLanguage, pv, size))
 						{
 							Ctx->fDiscard = FALSE;
 						}
@@ -418,7 +418,7 @@ ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes) {
 
 	ctx.changes = changes;
 
-	if (ctx.hUpdate = BeginUpdateResource(FileName, FALSE))
+	if (ctx.hUpdate = _BeginUpdateResource(FileName, FALSE))
 	{
 		ctx.fDiscard = TRUE;
 
@@ -438,7 +438,7 @@ ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes) {
 			dwError = GetLastError();
 		}
 
-		if (!dwError && !EndUpdateResource(ctx.hUpdate, ctx.fDiscard))
+		if (!dwError && !_EndUpdateResource(ctx.hUpdate, ctx.fDiscard))
 		{
 			dwError = GetLastError();
 		}

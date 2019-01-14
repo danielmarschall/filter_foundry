@@ -304,13 +304,6 @@ void maindlginit(DIALOGREF dp){
 		HideDialogItem(dp,ZOOMLEVELITEM);
 	}
 
-#ifdef WIN_ENV
-  // can't build standalone filter on less than NT platform :-(
-  // due to absence of resource editing API (UpdateResource etc)
-  if(!isWin32NT())
-    HideDialogItem(dp,MAKEITEM);
-#endif
-
 	updatedialog(dp);
 	maindlgupdate(dp);
 }

@@ -149,6 +149,8 @@
                    - The preview area now has a dark off-canvas area and for Windows, a "sunken" border
                    - Windows: Visual Styles are now supported and always be applied
                    - Bugfix: If you click the zoomlevel-caption for a tiny picture, the zoom ("fit zoom") won't zoom in to >100% anymore.
+                   - Building of standalone filters is now possible with Windows 9x
+                     (requires compilation using an old Windows SDK, or compilation using OpenWatcom)
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

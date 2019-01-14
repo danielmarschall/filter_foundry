@@ -57,13 +57,25 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
-	LPWSTR changeRequestStr;
+	LPWSTR changeRequestStr, tmp;
 	char* soleFilename;
+
+	if (!isWin32NT()) {
+		HMODULE hLib;
+
+		hLib = LoadLibraryA("UNICOWS.DLL");
+		if (!hLib) {
+			alertuser("To build standalone plugins using Windows 9x, you need to install UNICOWS.DLL; please download it and place it in your SYSTEM directory.","");
+			return false;
+		} else {
+			FreeLibrary(hLib);
+		}
+	}
 
 //	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))
 //		dbglasterror("EnumResourceLanguages");
 
-	if( (hupdate = BeginUpdateResource(dstname,false)) ){
+	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
 		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA))
 			&& (datah = LoadResource(srcmod,datarsrc))
@@ -125,11 +137,11 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				   language than the resource we are saving (Neutral), so we might end up having
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the PIPL.RC file, for the resources PIPL and AETE. */
-				if( UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000),
+				if( _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,piplsize)
-				 && UpdateResource(hupdate,"AETE" /* note: caps!! */,MAKEINTRESOURCE(16000),
+				 && _UpdateResource(hupdate,"AETE" /* note: caps!! */,MAKEINTRESOURCE(16000),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newaete,aetesize)
-				 && UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id),
+				 && _UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 					discard = false;
 				else
@@ -145,19 +157,42 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				// You can CHANGE values for any given name
 				// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
 				// You cannot (yet) ADD entries.
-				changeRequestStr = (LPWSTR)malloc(1024);
-				wsprintfW(changeRequestStr, L"Comments\aBuilt using Filter Foundry %S\aCompanyName\a%S\aLegalCopyright\a%S\aFileDescription\a%S\aOriginalFilename\a%S\aLicense\a%S\a",
-					                         VERSION_STR,
-					/* CompanyName =      */ pparm->author,
-					/* LegalCopyright =   */ pparm->copyright,
-					/* FileDescription =  */ pparm->title,
-					/* OriginalFilename = */ soleFilename,
-					/* License =          */ "\b" /* remove, since filter is standalone and might have its own license */
-					);
-				for (i=wcslen(changeRequestStr)-1; i>=0; --i) {
-					if (changeRequestStr[i] == '\a') // we need to do this weird replacement, because wsprintfW() cannot produce a string with \0 in it
-					changeRequestStr[i] = '\0';
-				}
+				changeRequestStr = (LPWSTR)malloc(6*2*100+1);
+
+				tmp = changeRequestStr ;
+
+				tmp += mbstowcs(tmp, "Comments", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, "Built using Filter Foundry " VERSION_STR, 100);
+				tmp++;
+
+				tmp += mbstowcs(tmp, "CompanyName", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, pparm->author, 100);
+				tmp++;
+
+				tmp += mbstowcs(tmp, "LegalCopyright", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, pparm->copyright, 100);
+				tmp++;
+
+				tmp += mbstowcs(tmp, "FileDescription", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, pparm->title, 100);
+				tmp++;
+
+				tmp += mbstowcs(tmp, "OriginalFilename", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, soleFilename, 100);
+				tmp++;
+
+				tmp += mbstowcs(tmp, "License", 100);
+				tmp++;
+				tmp += mbstowcs(tmp, "\b", 100); // \b = remove, since filter is standalone and might have its own license
+				tmp++;
+
+				tmp += mbstowcs(tmp, "", 1);
+
 				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
 					alertuser("UpdateVersionInfoWithHandle failed","");
 				}
@@ -165,7 +200,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 		}else dbglasterror("Find-, Load- or LockResource");
 
-		if(!EndUpdateResource(hupdate,discard))
+		if(!_EndUpdateResource(hupdate,discard))
 			dbglasterror("EndUpdateResource");
 
 		if(pparm) free(pparm);

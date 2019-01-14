@@ -1,11 +1,11 @@
 
-SYSTEM REQUIREMENTS
-===================
+SYSTEM REQUIREMENTS / TESTS
+===========================
 
 Windows:
 	OS:         Windows XP (if built with Win10 SDK)
-	            If built with older SDKs, it works with older OS too: Tested with Windows 2000
-	Software:   Tested with Photoshop 7 (tbd: Minimum supported version)
+	            Windows 98 (if built with OpenWatcom), maybe even Win95
+	Hosts:      Tested with Photoshop 3.0.5, 4.0, 4.0.1, 5, 7.0.1, CS6
 	            Tested with Corel Paint Shop Pro X
 	Machine:    Any x86 or x64 CPU
 	
