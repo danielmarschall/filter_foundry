@@ -3,10 +3,12 @@ SYSTEM REQUIREMENTS / TESTS
 ===========================
 
 Windows:
-	OS:         Windows XP (if built with Win10 SDK)
-	            Windows 98 (if built with OpenWatcom), maybe even Win95
-	Hosts:      Tested with Photoshop 3.0.5, 4.0, 4.0.1, 5, 7.0.1, CS6
+	OS:         Minimum Windows XP (if plugin is built with a modern Windows SDK / modern VC++ compiler)
+	            Minimum Windows 95 (if plugin is built with OpenWatcom)
+	            Latest OS tested: Windows 10
+	Hosts:      Tested with Adobe Photoshop 3 - CS6
 	            Tested with Corel Paint Shop Pro X
+	            It should work on most programs that support "8BF" Photoshop filters
 	Machine:    Any x86 or x64 CPU
 	
 Mac:

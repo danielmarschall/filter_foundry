@@ -65,7 +65,13 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 		hLib = LoadLibraryA("UNICOWS.DLL");
 		if (!hLib) {
-			alertuser("To build standalone plugins using Windows 9x, you need to install UNICOWS.DLL; please download it and place it in your SYSTEM directory.","");
+			char* sysdir;
+
+			sysdir = (char*)malloc(MAX_PATH);
+			GetSystemDirectoryA(sysdir, MAX_PATH);
+			alertuser("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:",sysdir);
+			free(sysdir);
+
 			return false;
 		} else {
 			FreeLibrary(hLib);
@@ -196,6 +202,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
 					alertuser("UpdateVersionInfoWithHandle failed","");
 				}
+
+				free(changeRequestStr);
 			}
 
 		}else dbglasterror("Find-, Load- or LockResource");

@@ -83,26 +83,6 @@ Minor priority stuff or ideas
 
 * Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
 
-* Should we make FilterFoundry compatible with very old Windows OS?
-  In re WinXP compatibility:
-	Works!
-  In re Win2000 compatibility:
-	Unresolved Kernel32.dll symbols (reason: used Windows SDK is "too new"):
-	- DecodePointer
-	- GetModuleHandleExW
-	- InitializeSListHead
-	- InterlockedFlushSList
-  In re Win98 compatibility:
-	Unresolved Kernel32.dll symbols (reason: used Windows SDK is "too new"):
-	- DecodePointer
-	- GetModuleHandleExW
-	- InitializeSListHead
-	- InterlockedFlushSList
-	- GetFileSizeEx
-	- SetFilePointerEx
-	Note: FilterFoundry 1.6b1 didn't work in Win98 either, although there
-	      were no unresolved symbols; so there seem to be other problems as well.
-	
 * Support more colors modes and 16bit. Why is Lab color not accepted, although doesSupportLABColor is set?
 	
 * Add Unicode support? (Does PiPL support Unicode at all?)
@@ -131,3 +111,6 @@ Design/UI Tweaks
 
 * simplealert() is only "appmodal" and has no hWnd. Due to this, the window is not blinking when
   the user tries to click on a parent window. (Is this a Windows bug?)
+
+* When a standalone filter is built, maybe the user should get a notification that it was successful.
+  Something like a simplealert(), but with "information" as message type, not "error"
