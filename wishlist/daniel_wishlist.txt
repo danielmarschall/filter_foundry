@@ -25,6 +25,7 @@ Important/Bugs
 	   Workaround: You need to set needall=1, i.e. by using src() somewhere
 	3. When you re-open the main window, the formulas of the previous session vanish.
 	   (But maybe the full unloading of the plugin is actually intended by GIMP?)
+	4. 1920x1080 picture: The fitzoom is not correct. It is 8% on GIMP, but should be 7%
 	Once GIMP is fully compatible, remove incompatibility notice in README.html
 
 

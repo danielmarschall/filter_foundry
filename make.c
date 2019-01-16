@@ -31,10 +31,10 @@ long event_id;
 
 /*
 Find a printable 4-character key, remembering (see PS API guide):
-All IDÕs starting with an uppercase letter are reserved by Adobe.
-All IDÕs that are all uppercase are reserved by Apple.
-All IDÕs that are all lowercase are reserved by Apple.
-This leaves all IDÕs that begin with a lowercase letter and have at least
+All IDs starting with an uppercase letter are reserved by Adobe.
+All IDs that are all uppercase are reserved by Apple.
+All IDs that are all lowercase are reserved by Apple.
+This leaves all IDs that begin with a lowercase letter and have at least
 one uppercase letter for you and other plug-in developers.
 */
 unsigned long printablehash(unsigned long hash){
@@ -42,6 +42,12 @@ unsigned long printablehash(unsigned long hash){
 	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	return  (key<<8) | ('A' + (hash % 26));             // last upper case
+}
+
+long roundToNext4(long x) {
+	int pad = 4 - (x % 4);
+	if (pad == 0) pad = 4;
+	return x+pad;
 }
 
 long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
@@ -58,7 +64,6 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	struct hstm_data *hstm;
 	int scopelen;
 	unsigned long hash;
-	int pad;
 
 	pipl->count += 3; // more keys in PiPL
 
@@ -70,9 +75,7 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PINameProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = title[0]+1;
-	pad = 4 - (prop->propertyLength % 4);
-	prop->propertyLength += pad == 0 ? 4 : pad;
+	prop->propertyLength = roundToNext4(title[0]+1);
 	PLstrcpy((StringPtr)prop->propertyData,title);
 
 	// skip past new property record, and any padding
@@ -84,9 +87,7 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PICategoryProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = gdata->parm.category[0]+1;
-	pad = 4 - (prop->propertyLength % 4);
-	prop->propertyLength += pad == 0 ? 4 : pad;
+	prop->propertyLength = roundToNext4(gdata->parm.category[0]+1);
 	PLstrcpy((StringPtr)prop->propertyData,gdata->parm.category);
 
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
@@ -102,16 +103,14 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
 	// Codereview DM 16 Jan 2019: Since RCDATA already contains 'hstm', the resulting 8BF will contain
-	//                            two 'hstm' entries. Is that correct?
+	//                            two 'hstm' entries. (But we only have one AETE) Is that correct?
 	hash = djb2(hstm->scope);
 	event_id = printablehash(hash); /* this is used by fixaete() later... */
 
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PIHasTerminologyProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = offsetof(struct hstm_data,scope) + scopelen;
-	pad = 4 - (prop->propertyLength % 4);
-	prop->propertyLength += pad == 0 ? 4 : pad;
+	prop->propertyLength = roundToNext4(offsetof(struct hstm_data,scope) + scopelen);
 
 	hstm->version = 0;
 	hstm->class_id = plugInClassID;
