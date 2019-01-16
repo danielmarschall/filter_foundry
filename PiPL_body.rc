@@ -21,12 +21,13 @@ VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),	/* Filter module */
 VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion,latestFilterVersion, /* Version Number */
 
 #ifdef _WIN64
-    VENDORID, LC(8,6,6,4), NULLID, 11L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+    VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 #else
-    VENDORID, LC(w,x,8,6), NULLID, 11L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+    VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 #endif
 
-VENDORID, LC(m,o,d,e), NULLID, 2L, flagSupportsGrayScale|flagSupportsIndexedColor|flagSupportsRGBColor|flagSupportsCMYKColor|flagSupportsHSLColor|flagSupportsHSBColor|flagSupportsMultichannel,flagSupportsDuotone|flagSupportsLABColor,
+VENDORID, LC(m,o,d,e), NULLID, 4L, /* first 2 bytes:  */ flagSupportsGrayScale|flagSupportsIndexedColor|flagSupportsRGBColor|flagSupportsCMYKColor|flagSupportsHSLColor|flagSupportsHSBColor|flagSupportsMultichannel,
+                                   /* second 2 bytes: */ flagSupportsDuotone|flagSupportsLABColor,
 /* FilterCaseInfo - in all cases:
 	   inStraightData,
 	   outStraightData,
@@ -39,10 +40,10 @@ VENDORID, LC(f,i,c,i), NULLID, 28L,
 	"\001\001\003\000","\001\001\003\000","\001\001\003\000",
 
 /* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
-VENDORID, LC(h,s,t,m), NULLID, 41L, /* = 14 + sizeof(c string) */
+VENDORID, LC(h,s,t,m), NULLID, 44L, /* = 3*4 + 2 + sizeof(c string) + padding */
 	0L,								/* version */
 	LC(f,i,F,o),					/* Class ID, always required.  Can be Suite ID. */
 	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
-	AETE_ID,						/* Dictionary ('AETE') resource ID. */
+	AETE_ID,						/* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
 	"Telegraphics FilterFoundry\0\0\0\0" /* Unique scope string, C format, long padded.
-											 Always required in Photoshop 5.0 and later. */
+											Always required in Photoshop 5.0 and later. */

@@ -36,8 +36,8 @@ BEGIN
 	0L, 			/* kCurrentPiPLVersion */
 	8L, 			/* Property Count */
 
-	VENDORID, LC(c,a,t,g), NULLID, 13L, "\014Telegraphics\0\0\0", /* PString */
-	VENDORID, LC(n,a,m,e), NULLID, 18L, "\021Filter Foundry...\0\0", /* PString */
+	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0", /* PString */
+	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
 #include "PiPL_body.rc"
 
 END

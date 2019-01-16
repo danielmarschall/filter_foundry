@@ -14,6 +14,19 @@ Important/Bugs
 * For Mac, please look at the (*) marked entries in version.h and verify the bugs/fixes
   and/or apply the changes on Mac.
 
+* Bugs in re GIMP/PSPI:
+	1. FIXED: Filter cannot be loaded by PSPI, because of a memory error.
+	   FilterFoundry 1.6 used wrong length values for the TLV (Type, Length, Value) members
+	   of the PIPL structury (in RC files, and in fixpipl()).
+	   The length value must include everything, including paddings of strings.
+	   Adobe writes in SPPiPL.h "Number of characters in the data array. Rounded to a multiple of 4."
+	2. The filter "R: x" will only fill the bottom of the picture, not the whole canvas
+	   Problem in main.c:RequestNext().
+	   Workaround: You need to set needall=1, i.e. by using src() somewhere
+	3. When you re-open the main window, the formulas of the previous session vanish.
+	   (But maybe the full unloading of the plugin is actually intended by GIMP?)
+	Once GIMP is fully compatible, remove incompatibility notice in README.html
+
 
 Minor priority stuff or ideas
 -----------------------------
@@ -91,6 +104,10 @@ Minor priority stuff or ideas
 
 * Picture with 78x63 in grayscale mode: In preview on the left side there is a black bar
 
+* With the change in 1.7 in re "preview evaluates whole picture if state changing functions rst,put,rnd are
+  used": Is there anything we can do to make it more performant when the user changes sliders?
+  Especially with large pictures, the process becomes a bit laggy!
+
 
 Design/UI Tweaks
 ----------------
@@ -114,3 +131,12 @@ Design/UI Tweaks
 
 * When a standalone filter is built, maybe the user should get a notification that it was successful.
   Something like a simplealert(), but with "information" as message type, not "error"
+
+
+Things to check/correct for other Telegraphics plugins (fixed in FilterFoundry)
+------------------------------------------------------
+
+* The lengths of the PIPL TLV structure must include everything, including string paddings.
+  Adobe writes in SPPiPL.h "Number of characters in the data array. Rounded to a multiple of 4."
+
+* The language/country code in VarFileInfo must be a code that exists in StringFileInfo.

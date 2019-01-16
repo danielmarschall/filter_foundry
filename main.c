@@ -223,6 +223,10 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	if(needall){
 		SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
 	}else{
+		// TODO: This does not work with GIMP. So, if we are using GIMP, we should
+		//       somehow always use "needall=true", and/or find out why this doesn't work
+		//       with GIMP.
+
 		// otherwise, process the filtered area, by chunksize parts
 		pb->inRect.left = pb->filterRect.left;
 		pb->inRect.right = pb->filterRect.right;

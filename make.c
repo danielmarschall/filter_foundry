@@ -58,6 +58,7 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	struct hstm_data *hstm;
 	int scopelen;
 	unsigned long hash;
+	int pad;
 
 	pipl->count += 3; // more keys in PiPL
 
@@ -70,10 +71,12 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->propertyKey = PINameProperty;
 	prop->propertyID = 0;
 	prop->propertyLength = title[0]+1;
+	pad = 4 - (prop->propertyLength % 4);
+	prop->propertyLength += pad == 0 ? 4 : pad;
 	PLstrcpy((StringPtr)prop->propertyData,title);
 
 	// skip past new property record, and any padding
-	p += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	p += offsetof(PIProperty,propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
 
 	/* add Category property key */
@@ -82,9 +85,11 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->propertyKey = PICategoryProperty;
 	prop->propertyID = 0;
 	prop->propertyLength = gdata->parm.category[0]+1;
+	pad = 4 - (prop->propertyLength % 4);
+	prop->propertyLength += pad == 0 ? 4 : pad;
 	PLstrcpy((StringPtr)prop->propertyData,gdata->parm.category);
 
-	p += (offsetof(PIProperty,propertyData) + prop->propertyLength + 3) & -4;
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
 
 	/* add HasTerminology property key */
@@ -96,19 +101,24 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 					   INPLACEP2CSTR(title));
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
+	// Codereview DM 16 Jan 2019: Since RCDATA already contains 'hstm', the resulting 8BF will contain
+	//                            two 'hstm' entries. Is that correct?
 	hash = djb2(hstm->scope);
-	event_id = printablehash(hash); /* this is used by fix_aete later... */
+	event_id = printablehash(hash); /* this is used by fixaete() later... */
 
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PIHasTerminologyProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = offsetof(struct hstm_data,scope) + scopelen + 1;
+	prop->propertyLength = offsetof(struct hstm_data,scope) + scopelen;
+	pad = 4 - (prop->propertyLength % 4);
+	prop->propertyLength += pad == 0 ? 4 : pad;
+
 	hstm->version = 0;
 	hstm->class_id = plugInClassID;
 	hstm->event_id = event_id;
 	hstm->aete_resid = AETE_ID;
 
-	p += (16+prop->propertyLength+3) & -4;
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 
 	return p - (char*)pipl;  // figure how many bytes were added
 }

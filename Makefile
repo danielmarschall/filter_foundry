@@ -149,11 +149,6 @@ $(DISTZIP) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.afs
 		rm -fr $$T
 	ls -l $@
 
-dist/gpl.html : 
-	curl http://www.gnu.org/licenses/gpl.html | \
-		sed -e 's%</HEAD>%<BASE HREF="http://www.gnu.org/"> </HEAD>%' \
-			-e 's%</head>%<BASE HREF="http://www.gnu.org/"> </HEAD>%' > $@
-
 
 # ---------- compile rules ----------
 
