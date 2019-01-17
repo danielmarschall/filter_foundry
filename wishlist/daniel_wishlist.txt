@@ -15,18 +15,19 @@ Important/Bugs
   and/or apply the changes on Mac.
 
 * Bugs in re GIMP/PSPI:
-	1. FIXED: Filter cannot be loaded by PSPI, because of a memory error.
+	1. FIXED (Bug in FF): Filter cannot be loaded by PSPI, because of a memory error.
 	   FilterFoundry 1.6 used wrong length values for the TLV (Type, Length, Value) members
 	   of the PIPL structury (in RC files, and in fixpipl()).
 	   The length value must include everything, including paddings of strings.
 	   Adobe writes in SPPiPL.h "Number of characters in the data array. Rounded to a multiple of 4."
-	2. The filter "R: x" will only fill the bottom of the picture, not the whole canvas
-	   Problem in main.c:RequestNext().
-	   Workaround: You need to set needall=1, i.e. by using src() somewhere
+	2. FIXED (Workaround): Filters will only fill the bottom of the picture, not the whole canvas.
+	   The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
+	   and probably due to a bug, PSPI only applies the image data of the last chunk.
+	   Workaround applied in FF 1.7: If the host signature is 'GIMP', then we set
+	   needall=1 to disable chunked processing.
 	3. When you re-open the main window, the formulas of the previous session vanish.
-	   (But maybe the full unloading of the plugin is actually intended by GIMP?)
+	   It is probably another bug of PSPI. (Is pb->parameters not handled correctly?)
 	4. 1920x1080 picture: The fitzoom is not correct. It is 8% on GIMP, but should be 7%
-	Once GIMP is fully compatible, remove incompatibility notice in README.html
 
 
 Minor priority stuff or ideas
@@ -51,7 +52,7 @@ Minor priority stuff or ideas
 
 * Create a Visual Studio project file
 
-* Search for TODO and FIXME in the code
+* Search for "TODO", "FIXME" and "Codereview" in the code
 
 * Evaluate the file "Filter Factory Compatibility.txt" and think about if we should
   change some of our functions to become 100% compatible with Filter Factory.
@@ -108,6 +109,10 @@ Minor priority stuff or ideas
 * With the change in 1.7 in re "preview evaluates whole picture if state changing functions rst,put,rnd are
   used": Is there anything we can do to make it more performant when the user changes sliders?
   Especially with large pictures, the process becomes a bit laggy!
+  
+* Currently, we use WIN_ENV and MAC_ENV to decide which Endianess we use. However, if we want to support
+  Linux (with GIMP?), then we should use other compiler defines.
+  Check, what is necessary to support Linux?
 
 
 Design/UI Tweaks
@@ -133,6 +138,8 @@ Design/UI Tweaks
 * When a standalone filter is built, maybe the user should get a notification that it was successful.
   Something like a simplealert(), but with "information" as message type, not "error"
 
+* Support BigDocument
+
 
 Things to check/correct for other Telegraphics plugins (fixed in FilterFoundry)
 ------------------------------------------------------
@@ -141,3 +148,7 @@ Things to check/correct for other Telegraphics plugins (fixed in FilterFoundry)
   Adobe writes in SPPiPL.h "Number of characters in the data array. Rounded to a multiple of 4."
 
 * The language/country code in VarFileInfo must be a code that exists in StringFileInfo.
+
+* 64 Bit Windows builds
+
+* XP Manifests (+ activation contexts)

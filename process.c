@@ -81,6 +81,20 @@ Boolean setup(FilterRecordPtr pb){
 		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
 
+	/*
+	 * Workaround for PSPI for GIMP:
+	 * Filters will only fill the bottom of the picture, not the whole canvas.
+	 * The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
+	 * and probably due to a bug, PSPI only applies the image data of the last chunk.
+	 * Workaround applied in FF 1.7: If the host signature is 'GIMP', then we set
+	 * needall=1 to disable chunked processing.
+	 */
+	#if MAC_ENV
+	if (pb->hostSig == 'GIMP') needall = true;
+	#else
+	if (pb->hostSig == 'PMIG') needall = true;
+	#endif
+
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */
 }

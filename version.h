@@ -153,6 +153,7 @@
                      (requires compilation using an old Windows SDK, or compilation using OpenWatcom)
                    - Fixed TLV lengths in the PIPL structure (includes now paddings).
                      This might solve incompatibilities with non-Photoshop hosts (i.e. GIMP).
+                   - GIMP (using PSPI) is now partially compatible.
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
