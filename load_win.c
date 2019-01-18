@@ -66,8 +66,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	HMODULE hm;
 
-	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null  // FIXME: Is it possible that sfFile is too short for the additional null?
-
 	// First, try to read the file as AFS/PFF/TXT file
 	if (readok = readfile(sfr,reason)) {
 		gdata->parmloaded = false;
@@ -76,7 +74,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
 	if (!readok) {
 		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
-		if (hm = LoadLibraryEx((char*)sfr->sfFile.name+1,NULL,LOAD_LIBRARY_AS_DATAFILE)) {
+		if (hm = LoadLibraryEx(myp2cstr(sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm,reason,0)) {
 				if (gdata->parm.iProtected) {
 					*reason = "The filter is protected.";
