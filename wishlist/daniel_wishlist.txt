@@ -14,24 +14,14 @@ Important/Bugs
 * For Mac, please look at the (*) marked entries in version.h and verify the bugs/fixes
   and/or apply the changes on Mac.
 
-* Bugs in re GIMP/PSPI:
-	1. FIXED (Bug in FF): Filter cannot be loaded by PSPI, because of a memory error.
-	   FilterFoundry 1.6 used wrong length values for the TLV (Type, Length, Value) members
-	   of the PIPL structury (in RC files, and in fixpipl()).
-	   The length value must include everything, including paddings of strings.
-	   Adobe writes in SPPiPL.h "Number of characters in the data array. Rounded to a multiple of 4."
-	2. FIXED (Workaround): Filters will only fill the bottom of the picture, not the whole canvas.
-	   The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
-	   and probably due to a bug, PSPI only applies the image data of the last chunk.
-	   Workaround applied in FF 1.7: If the host signature is 'GIMP', then we set
-	   needall=1 to disable chunked processing.
-	3. When you re-open the main window, the formulas of the previous session vanish.
-	   It is probably another bug of PSPI. (Is pb->parameters not handled correctly?)
-	4. 1920x1080 picture: The fitzoom is not correct. It is 8% on GIMP, but should be 7%
-
 
 Minor priority stuff or ideas
 -----------------------------
+
+* persistent_savestate (enabled with GIMP/PSPI) should somehow delete the temporary AFS file
+  at each restart of GIMP. Otherwise, the user would always see the previous session when they re-open GIMP.
+
+* 1920x1080 picture: The fitzoom in GIMP/PSPI is not correct. It is 8% on GIMP, but should be 7%.
 
 * Create and evaluate more testcases, and either fix differences between FilterFactory and
   FilterFoundry, or document them in "Filter Factory Compatibility.txt"

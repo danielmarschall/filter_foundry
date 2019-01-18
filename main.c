@@ -45,6 +45,7 @@ FilterRecordPtr gpb;
 
 extern struct sym_rec predefs[];
 extern int nplanes,varused[];
+extern int persistent_savestate = false;
 
 int checkandinitparams(Handle params);
 
@@ -68,6 +69,18 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	activationContextUsed = ActivateManifest(hDllInstance, 1, &manifestVars);
 
 	__try {
+#endif
+
+	/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
+	   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
+	   Also, all global variables are unloaded, so the plugin cannot preserve any data.
+	   Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
+	   This mode saves the filter data into a temporary file "tmp.afs" and loads it
+	   when the window is opened again. */
+#if MAC_ENV
+	if (pb->hostSig == 'GIMP') persistent_savestate = true;
+#else
+	if (pb->hostSig == 'PMIG') persistent_savestate = true;
 #endif
 
 	if(selector != filterSelectorAbout && !*data){
@@ -103,13 +116,24 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	case filterSelectorStart:
 		/* initialise the parameter handle that Photoshop keeps for us */
 		if(!pb->parameters)
-			pb->parameters = PINEWHANDLE(0);
+			pb->parameters = PINEWHANDLE(1); // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 
 		wantdialog |= checkandinitparams(pb->parameters);
 
 		/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
+				if (persistent_savestate) {
+					StandardFileReply sfr;
+					sfr.sfGood = true;
+					sfr.sfReplacing = true;
+					sfr.sfType = PS_FILTER_FILETYPE;
+					myc2pstrcpy(sfr.sfFile.name, "tmp.afs");
+					sfr.nFileExtension = 3; // length of "tmp"
+					sfr.sfScript = 0; // FIXME: is that ok?
+					savefile(&sfr);
+				}
+
 				/* update stored parameters from new user settings */
 				saveparams(pb->parameters);
 			}else
@@ -150,6 +174,17 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
 	int i,f,showdialog;
+
+	if (persistent_savestate) {
+		StandardFileReply sfr;
+		sfr.sfGood = true;
+		sfr.sfReplacing = true;
+		sfr.sfType = PS_FILTER_FILETYPE;
+		myc2pstrcpy(sfr.sfFile.name, "tmp.afs");
+		sfr.nFileExtension = 3; // length of "tmp"
+		sfr.sfScript = 0; // FIXME: is that ok?
+		if (loadfile(&sfr, &reason)) return true;
+	}
 
 	if( (f = !(params && readparams(params,false,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,

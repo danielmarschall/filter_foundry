@@ -109,7 +109,7 @@ Boolean savefile(StandardFileReply *sfr){
 	if(!FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript))
 		if(!FSpOpenDF(&sfr->sfFile,fsWrPerm,&r)){
 
-			if( (h = PINEWHANDLE(0)) ){
+			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.				res = !(saveparams(h) || savehandleintofile(h,r)) ;
 				res = !(saveparams(h) || savehandleintofile(h,r)) ;
 				PIDISPOSEHANDLE(h);
 			}

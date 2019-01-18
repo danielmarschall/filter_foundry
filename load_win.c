@@ -66,7 +66,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	HMODULE hm;
 
-	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null
+	sfr->sfFile.name[*sfr->sfFile.name+1] = 0; // add terminating null  // FIXME: Is it possible that sfFile is too short for the additional null?
 
 	// First, try to read the file as AFS/PFF/TXT file
 	if (readok = readfile(sfr,reason)) {
