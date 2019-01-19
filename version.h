@@ -144,7 +144,6 @@
                    - Bugfix: When state changing functions (rst, rnd or put) are used within the formula,
                      every pixel in the picture will now be evaluated during preview, even if the user
                      has zoomed in.
-                   - Added Application Manifest resource
                    - Fixed "off by one" bug where you could pan a fit-zoomed picture by 1 pixel in the preview
                    - The preview area now has a dark off-canvas area and for Windows, a "sunken" border
                    - Windows: Visual Styles are now supported and always be applied

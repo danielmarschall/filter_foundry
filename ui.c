@@ -291,11 +291,23 @@ void maindlginit(DIALOGREF dp){
 		// (e.g., on a 1GB WinXP system, PS CS2 reports 520MB maxSpace, so this will let us
 		// preview about 50MB of image data.)
 
-		zoomfactor = sqrt(gpb->maxSpace/(10.*preview_w*preview_h*nplanes));
-		if(zoomfactor > fitzoom)
+		/* Workaround: GIMP/PSPI sets maxSpace to 100 MB hardcoded, so the zoom is not adjusted correctly. */
+		int disable_zoom_memory_check = false;
+		#if MAC_ENV
+			if (gpb->hostSig == 'GIMP') disable_zoom_memory_check = true;
+		#else
+			if (gpb->hostSig == 'PMIG') disable_zoom_memory_check = true;
+		#endif
+
+		if (!disable_zoom_memory_check) {
+			zoomfactor = sqrt(gpb->maxSpace/(10.*preview_w*preview_h*nplanes));
+			if(zoomfactor > fitzoom)
+				zoomfactor = fitzoom;
+			if(zoomfactor < 1.)
+				zoomfactor = 1.;
+		} else {
 			zoomfactor = fitzoom;
-		if(zoomfactor < 1.)
-			zoomfactor = 1.;
+		}
 
 		updatezoom(dp);
 	}else{
