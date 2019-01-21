@@ -176,35 +176,43 @@ value_type ff_scl(value_type a,value_type il,value_type ih,
 	return ih==il ? 0 : ol + ((long)(oh-ol)*(a-il))/(ih-il);
 }
 
-/* adapted from http://remus.rutgers.edu/~rhoads/Code/isqrt.c */
-/* also see http://www.freaknet.org/martin/tape/gos/misc/personal/msc/sqrt/sqrt.c */
-#define NBITS (sizeof(long)*8)
-#define TOP2BITS(x) (x>>(NBITS-2))
+inline uint32_t isqrt(uint32_t x) {
+	// based on https://gist.github.com/orlp/3481770
 
-unsigned long isqrt (unsigned long x)
-{
-	// TODO: Make somehow more performant
-    unsigned i;
-    unsigned long a = 0, e = 0, r = 0;
+	static uint32_t lkpSquares[65535];
+	static int lkpInitialized = 0;
+	const uint32_t *p;
+	int i;
 
-
-    for (i=0; i < (NBITS >> 1); i++)
-	{
-        r <<= 2;
-        r +=  TOP2BITS(x);
-        x <<= 2;
-
-        a <<= 1;
-        e  =  (a<<1) | 1;
-
-        if (r >= e)
-            {
-            r -= e;
-            a++;
-            }
+	while (lkpInitialized == 1) { /* If other thread is currently creating the lookup table, then wait */ }
+	if (!lkpInitialized) {
+		lkpInitialized = 1;
+		for (i = 0; i < 65535; ++i) {
+			lkpSquares[i] = i * i;
+		}
+		lkpInitialized = 2;
 	}
 
-    return a;
+	p = lkpSquares;
+
+	if (p[32768] <= x) p += 32768;
+	if (p[16384] <= x) p += 16384;
+	if (p[8192] <= x) p += 8192;
+	if (p[4096] <= x) p += 4096;
+	if (p[2048] <= x) p += 2048;
+	if (p[1024] <= x) p += 1024;
+	if (p[512] <= x) p += 512;
+	if (p[256] <= x) p += 256;
+	if (p[128] <= x) p += 128;
+	if (p[64] <= x) p += 64;
+	if (p[32] <= x) p += 32;
+	if (p[16] <= x) p += 16;
+	if (p[8] <= x) p += 8;
+	if (p[4] <= x) p += 4;
+	if (p[2] <= x) p += 2;
+	if (p[1] <= x) p += 1;
+
+	return p - lkpSquares;
 }
 
 /* sqr(x) Square root of x */

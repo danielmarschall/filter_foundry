@@ -153,6 +153,7 @@
                    - Fixed TLV lengths in the PIPL structure (includes now paddings).
                      This might solve incompatibilities with non-Photoshop hosts (i.e. GIMP).
                    - GIMP (using PSPI to load 8BF plugins) is now compatible.
+                   - c2m() and sqr() are now approximately 3 times faster
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

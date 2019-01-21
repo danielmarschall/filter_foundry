@@ -63,7 +63,6 @@ value_type ff_rnd(value_type a,value_type b);
 value_type ff_mix(value_type a,value_type b,value_type n,value_type d);
 value_type ff_scl(value_type a,value_type il,value_type ih,
 				  value_type ol,value_type oh);
-unsigned long isqrt (unsigned long x);
 value_type ff_sqr(value_type x);
 value_type ff_sin(value_type x);
 value_type ff_cos(value_type x);
