@@ -100,7 +100,7 @@
                    - Fixed crash where built obfuscated filters could not be opened.
                    - Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
                    - Size PARM_SIZE in PARM ressource corrected.
-                   - Extended NMake file to support flex and bison compilation.
+                   - Added Visual Studio project file, and extended NMake script to support flex and bison compilation.
                    - Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
                    - The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
                    - Dialog boxes now have an [X] button to close the window.

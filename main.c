@@ -23,6 +23,7 @@
 #include "ff.h"
 
 #include "node.h"
+#include "funcs.h"
 #include "y.tab.h"
 #include "scripting.h"
 

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{156A2EDB-4922-422D-80DD-3A52308C7C15}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>FilterFoundry</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <ProjectName>FilterFoundry</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <TargetExt>.8bf</TargetExt>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <TargetExt>.8bf</TargetExt>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>$(ProjectName)64</TargetName>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <TargetExt>.8bf</TargetExt>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <TargetExt>.8bf</TargetExt>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>$(ProjectName)64</TargetName>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;WIN_ENV;YY_SKIP_YYWRAP;YY_NO_UNISTD_H;_DEBUG;DLL3_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);WIN32;WIN_ENV;YY_SKIP_YYWRAP</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary />
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>cd ..
+D:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
+D:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;WIN_ENV;YY_SKIP_YYWRAP;YY_NO_UNISTD_H;_DEBUG;DLL3_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);WIN32;WIN_ENV;YY_SKIP_YYWRAP</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary />
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>cd ..
+D:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
+D:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;WIN_ENV;YY_SKIP_YYWRAP;YY_NO_UNISTD_H;NDEBUG;DLL3_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);WIN32;WIN_ENV;YY_SKIP_YYWRAP</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary />
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>cd ..
+D:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
+D:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;WIN_ENV;YY_SKIP_YYWRAP;YY_NO_UNISTD_H;NDEBUG;DLL3_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);WIN32;WIN_ENV;YY_SKIP_YYWRAP</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary />
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>cd ..
+D:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
+D:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\adobeplugin\dllmain.c" />
+    <ClCompile Include="..\..\common\tt\choosefile_win.c" />
+    <ClCompile Include="..\..\common\tt\compat_string.c" />
+    <ClCompile Include="..\..\common\tt\compat_win.c" />
+    <ClCompile Include="..\..\common\tt\dbg_win.c" />
+    <ClCompile Include="..\..\common\tt\file_compat_win.c" />
+    <ClCompile Include="..\..\common\tt\str.c" />
+    <ClCompile Include="..\..\common\tt\ui_compat_win.c" />
+    <ClCompile Include="..\funcs.c" />
+    <ClCompile Include="..\lex_yy.c" />
+    <ClCompile Include="..\load_win.c" />
+    <ClCompile Include="..\main.c" />
+    <ClCompile Include="..\make.c" />
+    <ClCompile Include="..\make_win.c" />
+    <ClCompile Include="..\manifest.c" />
+    <ClCompile Include="..\node.c" />
+    <ClCompile Include="..\preview.c" />
+    <ClCompile Include="..\process.c" />
+    <ClCompile Include="..\read.c" />
+    <ClCompile Include="..\save.c" />
+    <ClCompile Include="..\scripting.c" />
+    <ClCompile Include="..\symtab.c" />
+    <ClCompile Include="..\ui.c" />
+    <ClCompile Include="..\ui_build.c" />
+    <ClCompile Include="..\ui_build_win.c" />
+    <ClCompile Include="..\ui_win.c" />
+    <ClCompile Include="..\versioninfo_modify_win.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\win_res.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

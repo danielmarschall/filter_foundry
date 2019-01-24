@@ -42,46 +42,46 @@
 EXEC = FilterFoundry
 
 # define location of Photoshop SDK headers
-PSAPI = "E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
+PSAPI = "D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
            -I$(PSAPI)\Pica_sp -I$(PSAPI)\Photoshop -I$(PSAPI)\General \
-           -I..\common\adobeplugin -I..\common\tt -I.
+           -I..\..\common\adobeplugin -I..\..\common\tt -I..
 CFLAGS = -O2 $(CPPFLAGS)
 
 # Note since VS8 it is necessary to link with multithreaded standard lib, using /MT
 LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
 
 # resource compiler flags
-RFLAGS = -i$(PSAPI)\Photoshop -d_WIN64
+RFLAGS = -i$(PSAPI)\Photoshop
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
-FLEX = E:\FilterFoundry\win_flex_bison\win_flex
-BISON = E:\FilterFoundry\win_flex_bison\win_bison
+FLEX = D:\FilterFoundry\win_flex_bison\win_flex
+BISON = D:\FilterFoundry\win_flex_bison\win_bison
 
-OBJ = main.obj funcs.obj process.obj node.obj symtab.obj \
-	ui.obj ui_build.obj preview.obj read.obj save.obj make.obj \
-	scripting.obj lex.yy.obj manifest.obj ui_win.obj make_win.obj versioninfo_modify_win.obj load_win.obj \
-	..\common\tt\dbg_win.obj ..\common\tt\ui_compat_win.obj \
-	..\common\tt\choosefile_win.obj ui_build_win.obj \
-	..\common\tt\compat_string.obj ..\common\tt\compat_win.obj \
-	..\common\tt\file_compat_win.obj ..\common\tt\str.obj \
-	..\common\adobeplugin\dllmain.obj
+OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
+	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj \
+	..\scripting.obj ..\lex.yy.obj ..\manifest.obj ..\ui_win.obj ..\make_win.obj ..\versioninfo_modify_win.obj ..\load_win.obj \
+	..\..\common\tt\dbg_win.obj ..\..\common\tt\ui_compat_win.obj \
+	..\..\common\tt\choosefile_win.obj ..\ui_build_win.obj \
+	..\..\common\tt\compat_string.obj ..\..\common\tt\compat_win.obj \
+	..\..\common\tt\file_compat_win.obj ..\..\common\tt\str.obj \
+	..\..\common\adobeplugin\dllmain.obj
 
-all : parser lexer $(EXEC)64.8bf
+all : parser lexer $(EXEC).8bf
 
 clean :
-	-del *.obj *.asm *.cod win_res.res $(EXEC)64.8bf $(EXEC)64.exp $(EXEC)64.lib $(EXEC)64.map
+	-del *.obj *.asm *.cod win_res.res $(EXEC).8bf $(EXEC).exp $(EXEC).lib $(EXEC).map
 
-win_res.res : win_res.rc PiPL.rc PiPL_body.rc manifest.rc version_win.rc ui_win.rc caution.ico ui.h version.h
-	$(RC) $(RFLAGS) $(CPPFLAGS) win_res.rc
+win_res.res : ..\win_res.rc ..\PiPL.rc ..\PiPL_body.rc ..\manifest.rc ..\version_win.rc ..\ui_win.rc ..\caution.ico ..\ui.h ..\version.h
+	$(RC) $(RFLAGS) $(CPPFLAGS) -fowin_res.res ..\win_res.rc
 	
-parser : parser.y
-	$(BISON)  parser.y -d -y
+parser : ..\parser.y
+	$(BISON)  ..\parser.y -d -y
 	
-lexer : lexer.l
-	$(FLEX)  lexer.l y.tab.c
+lexer : ..\lexer.l
+	$(FLEX)  ..\lexer.l y.tab.c
 
-$(EXEC)64.8bf : $(OBJ) win_res.res
+$(EXEC).8bf : $(OBJ) win_res.res
 	$(CC) /Fe$@ $(**F) $(LDFLAGS)

@@ -26,6 +26,7 @@
 #include "y.tab.h"
 #include "choosefile.h"
 #include "sprintf_tiny.h"
+#include "compat_string.h"
 
 #ifdef MAC_ENV
 	#include <plstringfuncs.h>

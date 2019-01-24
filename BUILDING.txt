@@ -88,51 +88,48 @@ is left in the "dist" directory.
 Windows notes
 -------------
 
-BUILDING WITH VISUAL STUDIO:
+BUILDING WITH VISUAL STUDIO
+(Most recently tested with Visual C++ 2017 with Adobe Photoshop SDK CC 2017):
 
-To build with Visual Studio, you have to use nmake.
-Currently, there is no Visual Studio project file.
+	1. First download Flex and Bison from https://sourceforge.net/projects/winflexbison/
+	   and unpack them on your disk.
+	2. Download the Adobe Photoshop SDK from https://www.adobe.com/devnet/photoshop/sdk.html
+	   and unpack it on your disk.
+	3. Download the Telegraphics common library from http://telegraphics.com.au/svn/common/trunk/
+	   and unpack it on your disk. Please make sure that "common" and "Source" (of FilterFoundry)
+	   are placed in the same directory.
+	4. a) If you want to use the IDE:
+	      - Open the visual_studio\FilterFoundry.sln
+	      - Adjust the paths in the project settings:
+	        Path to Adobe plugin SDK (in C/C++ category, and Resource category)
+	        Path to win_flex and win_bison (pre-build-events)
+	      - You can now compile the x86 and x64 plugin inside the IDE.
+	   b) If you want to use CLI/nmake:
+	      - Adjust the paths in the visual_studio\nmake.mak and visual_studio\nmake64.mak files:
+	        Path to Adobe plugin SDK (in C/C++ category, and Resource category)
+	        Path to win_flex and win_bison (pre-build-events)
+	      - Edit visual_studio\vc_make_3264.bat: Change the Visual Studio path to the one you have on your system.
+	      - You can now use the script visual_studio\vc_make_3264.bat to build both x86 and x64 with one click.
 
-To compile:
-1. First download Flex and Bison from https://sourceforge.net/projects/winflexbison/
-   and unpack them on your disk.
-2. Download the Adobe Photoshop SDK from https://www.adobe.com/devnet/photoshop/sdk.html
-   and unpack it on your disk.
-3. Download the telegraphics common library from http://telegraphics.com.au/svn/common/trunk/
-   and unpack it on your disk.
-4. Adjust paths in the nmake.mak and nmake64.mak files.
-5. For building the 32 bit plugin:
-	5.1 Run "x86 Native Tools Command Promt" from the start menu
-	5.2 Navigate to the Filter Foundry dir and run
-		nmake /f nmake.mak clean
-		nmake /f nmake.mak
-   For building the 64 bit plugin:
-	5.1 Run "x64 Native Tools Command Promt" from the start menu
-	5.2 Navigate to the Filter Foundry dir and run
-		nmake /f nmake64.mak clean
-		nmake /f nmake64.mak
-   You can use the script vc_make_3264.bat to build both 32- and 64-bit with one click.
-   Please first edit this batch file and adjust the Visual Studio path.
+	Troubleshooting:
+	- If "rc" can't be found, install the Windows 10 SDK, and then copy
+	  C:\Program Files (x86)\Windows Kits\10\bin\...\x64 to C:\Program Files (x86)\Windows Kits\10\bin\x86
+	  see also https://stackoverflow.com/questions/43847542/rc-exe-no-longer-found-in-vs-2015-command-prompt
+	- If lex.yy.c can't be found, check the flex command (it generates lex.yy.c)
+	- If nmake gives the error message "makefile(28) : fatal error U1000: Syntax error: ")" missing in macro invocation"
+	  then run nmake with the parameter "/f nmake.mak" or "/f nmake64.mak"
+	  (nmake calls Makefile by default, which is not optimized for nmake)
+	- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak",
+	  or for 64 bit: "nmake /f nmake64.mak clean" followed by "nmake /f nmake64.mak"
+	  It is necessary to run the "clean" command when switching between 32bit and 64 bit building.
+	- Since the RC files have a complex structure, you cannot edit the resources inside the IDE. You have to edit
+	  the *.rc files manually.
 
-Troubleshooting:
-- If "rc" can't be found, install the Windows 10 SDK, and then copy
-  C:\Program Files (x86)\Windows Kits\10\bin\...\x64 to C:\Program Files (x86)\Windows Kits\10\bin\x86
-  see also https://stackoverflow.com/questions/43847542/rc-exe-no-longer-found-in-vs-2015-command-prompt
-- If lex.yy.c can't be found, check the flex command (it generates lex.yy.c)
-- If nmake gives the error message "makefile(28) : fatal error U1000: Syntax error: ")" missing in macro invocation"
-  then run nmake with the parameter "/f nmake.mak" or "/f nmake64.mak"
-  (nmake calls Makefile by default, which is not optimized for nmake)
-- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak",
-  or for 64 bit: "nmake /f nmake64.mak clean" followed by "nmake /f nmake64.mak"
-  It is necessary to run the "clean" command when switching between 32bit and 64 bit building.
+BUILDING WITH OPEN WATCOM
+(Most recently tested with Open Watcom 1.9 with Adobe Photoshop SDK CC 2017):
 
-Most recently tested with Visual C++ 2017 with Adobe Photoshop SDK CC 2017.
-
-
-BUILDING WITH OPEN WATCOM:
-
-To build in Windows with the OpenWatcom IDE, see the wpj
-subdirectory and notes (README.TXT) kindly provided by Peter Heckert and Daniel Marschall.
+	To build in Windows with the OpenWatcom IDE, see the wpj
+	subdirectory and notes (README.TXT) kindly provided by Peter Heckert and Daniel Marschall.
 
 
 Development systems
