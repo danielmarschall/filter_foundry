@@ -38,8 +38,6 @@ Minor priority stuff or ideas
 
 * Add pow() or "**" operator?
 
-* Create a Visual Studio project file
-
 * Search for "TODO", "FIXME" and "Codereview" in the code
 
 * Evaluate the file "Filter Factory Compatibility.txt" and think about if we should
