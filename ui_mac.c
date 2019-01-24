@@ -1,9 +1,9 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -95,7 +95,7 @@ pascal void slideraction(ControlRef theControl,short partCode){
 	EXITCALLBACK();
 }
 
-pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){	
+pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 	int i;
 	short part;
 	ControlHandle c;
@@ -112,7 +112,7 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 
 /* !(result = standardfilter(dialog,event,item)) && */
 
-	if( !event->what || (event->what == updateEvt 
+	if( !event->what || (event->what == updateEvt
 						 && (WindowRef)event->message != GetDialogWindow(dialog)) )
 	{	// pass null events and update events to Photoshop
 		gpb->processEvent(event);
@@ -121,7 +121,7 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 
 		pt = event->where;
 		GlobalToLocal(&pt);
-	
+
 		i = trackingitem = FindDialogItem(dialog,pt)+1;
 /*			if( (c = FindControlUnderMouse(pt,GetDialogWindow(dialog),&part))
 					&& part && HandleControlClick(c,pt,event->modifiers,action_UPP) )*/
@@ -146,19 +146,19 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 			*item = i;
 			result = true;
 		}
-		
+
 	}
 	else{
 		GetKeyboardFocus(GetDialogWindow(dialog),&focus);
 		/* handle return keypresses */
 		if( event->what == keyDown && (char)event->message == CR
-				&& ( focus==exprctls[0] || focus==exprctls[1] 
+				&& ( focus==exprctls[0] || focus==exprctls[1]
 				  || focus==exprctls[2] || focus==exprctls[3] ) )
 			result = false;
 		else
 			result = StdFilterProc(dialog,event,item);
 	}
-		
+
 	SetPort(oldport);
 
 	EXITCALLBACK();
@@ -185,11 +185,11 @@ Boolean maindialog(FilterRecordPtr pb){
 	SetDialogItem(dp,PREVIEWITEM,itemType,(Handle)preview_image_UPP,&preview_rect);
 	handcursor = GetCursor(ID_HANDCURSOR);
 	ibeamcursor = GetCursor(iBeamCursor);
-	
+
 	SetDialogDefaultItem(dp,ok);
 	SetDialogCancelItem(dp,cancel);
 	SetDialogTracksCursor(dp,true);
-	
+
 	if(!gdata->standalone)
 		for(i = 0; i < 4; ++i)
 			GetDialogItemAsControl(dp,FIRSTEXPRITEM+i,&exprctls[i]);
@@ -201,11 +201,11 @@ Boolean maindialog(FilterRecordPtr pb){
 	}while(maindlgitem(dp,item));
 
 	DisposeDialog(dp);
-	
+
 	DisposeUserItemUPP(preview_image_UPP);
 	DisposeModalFilterUPP(sliderfilter_UPP);
 	DisposeControlActionUPP(action_UPP);
-	
+
 	return item == ok;
 }
 
@@ -214,7 +214,7 @@ Boolean builddialog(FilterRecordPtr pb){
 	DIALOGREF dp;
 
 	dp = thedialog = GetNewDialog(ID_BUILDDLG,nil,(WindowPtr)-1);
-		
+
 	SetDialogDefaultItem(dp,ok);
 	SetDialogCancelItem(dp,cancel);
 
@@ -224,6 +224,6 @@ Boolean builddialog(FilterRecordPtr pb){
 	}while(builddlgitem(dp,item));
 
 	DisposeDialog(dp);
-	
+
 	return item == ok;
 }

@@ -101,6 +101,8 @@ Minor priority stuff or ideas
 * Currently, we use WIN_ENV and MAC_ENV to decide which Endianess we use. However, if we want to support
   Linux (with GIMP?), then we should use other compiler defines.
   Check, what is necessary to support Linux?
+  
+* Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
 
 
 Design/UI Tweaks

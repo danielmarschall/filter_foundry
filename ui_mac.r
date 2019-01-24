@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -45,7 +45,7 @@ resource 'DITL' (ID_ABOUTDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-7 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-2019 Toby Thain <toby@telegraphics.com.au>."
 			"\nLatest version available from\nhttp://www.telegraphics.com.au/sw/\n"
 		},
 		{104, 20, 216, 340},
@@ -70,7 +70,7 @@ resource 'DITL' (ID_ABOUTSTANDALONEDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-7 Toby Thain <toby@telegraphics.com.au>."
+			"\n© 2003-2019 Toby Thain <toby@telegraphics.com.au>."
 		},
 		{88, 20, 200, 340},
 		StaticText {
@@ -407,7 +407,7 @@ resource 'DITL' (ID_BUILDDLG, purgeable) {
 		EditText { enabled,"Untitled" },
 		/* [5] */
 		{60, 92, 92, 395},
-		EditText { enabled,"" }, /* Filter Foundry Copyright (C) 2003-7 Toby Thain, <toby@telegraphics.com.au> */
+		EditText { enabled,"" }, /* Filter Foundry Copyright (C) 2003-2019 Toby Thain, <toby@telegraphics.com.au> */
 		/* [6] */
 		{100, 92, 116, 395},
 		EditText { enabled,"Anonymous" },

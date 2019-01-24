@@ -1,9 +1,9 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -26,7 +26,7 @@
 #include "file_compat.h"
 
 // MoreFiles headers
-#include "FileCopy.h" 
+#include "FileCopy.h"
 #include "MoreFilesExtras.h"
 
 // prototype for a function included in Carbon's stdlib and declared in /usr/include/string.h
@@ -65,16 +65,16 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	if(!e){
 		/* create a new PiPL resource for the standalone plugin,
 		   with updated title and category strings */
-	
-		if( (hpipl = Get1Resource('DATA',16000)) 
+
+		if( (hpipl = Get1Resource('DATA',16000))
 		 && (h = Get1Resource('PiPL',16000)) )
 		{
 			RemoveResource(h);
-			
+
 			DetachResource(hpipl);
 
 			PLstrcpy(title,gdata->parm.title);
-			if(gdata->parm.popDialog) 
+			if(gdata->parm.popDialog)
 				PLstrcat(title,"\pÉ");
 
 			origsize = GetHandleSize(hpipl);
@@ -83,13 +83,13 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title);
 			HUnlock(hpipl);
 			SetHandleSize(hpipl,newsize);
-			
+
 			AddResource(hpipl,'PiPL',16000,"\p");
-			
+
 			if( !(e = ResError()) ){
 				/* do a similar trick with the terminology resource,
 				   so the scripting system can distinguish the standalone plugin */
-		
+
 				if( (h = Get1Resource(typeAETE,AETE_ID)) ){
 					origsize = GetHandleSize(h);
 					SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
@@ -97,9 +97,9 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 					newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
 					HUnlock(h);
 					SetHandleSize(h,newsize);
-					
+
 					ChangedResource(h);
-					
+
 					if( !(e = ResError()) ){
 						/* add PARM resource */
 						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
@@ -117,9 +117,9 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 						}
 					}
 				}
-					
+
 			}
-			
+
 		}
 		if(!e)
 			e = ResError();
@@ -127,7 +127,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 		CloseResFile(dstrn);
 		CloseResFile(srcrn);
 	}
-	
+
 	return e;
 }
 
@@ -152,7 +152,7 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 	short rn,dstrn,i,n,m;
 	long eof,count;
 	OSErr e;
-	
+
 	if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){
 		if( !(e = HOpenDF(dstvol,dstdir,fname,fsWrPerm,&dstrn)) ){
 			if( !(e = FSpOpenDF(fss,fsRdPerm,&rn)) ){
@@ -163,7 +163,7 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 							p += strlen(key);
 							// store text after matched string
 							strcpy(save,p);
-							
+
 							*p++ = '.';
 							n = copyletters(p,gdata->parm.category);
 							p += n;
@@ -177,10 +177,10 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 									*p++ = 'a' + (rand() % 26);
 							}
 							strcpy(p,save);
-							
+
 							count = strlen(buf);
 							e = FSWrite(dstrn,&count,buf);
-							
+
 							free(save);
 						}else e = paramErr; // not found?? shouldn't happen
 					}
@@ -262,7 +262,7 @@ static OSErr make_singlefile(StandardFileReply *sfr, short plugvol, long plugdir
 		return userCanceledErr;
 	}
 
-	if( !(e = FileCopy(plugvol,plugdir,plugname, sfr->sfFile.vRefNum,sfr->sfFile.parID,NULL, sfr->sfFile.name,NULL,0,false)) 
+	if( !(e = FileCopy(plugvol,plugdir,plugname, sfr->sfFile.vRefNum,sfr->sfFile.parID,NULL, sfr->sfFile.name,NULL,0,false))
 	 && !(e = FSMakeFSSpec(plugvol,plugdir,plugname,&origfss)) )
 		/* add PARM resources, and edit PiPL */
 		e = doresources(&origfss, &sfr->sfFile);
@@ -276,7 +276,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	long plugdir;
 	Str255 plugname;
 	char reason[0x100] = {0};
-	
+
 	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname))){
 #ifdef MACMACHO
 		e = make_bundle(sfr,plugvol,plugdir,plugname,reason);
@@ -285,8 +285,8 @@ OSErr make_standalone(StandardFileReply *sfr){
 #endif
 	}
 
-	if(e && e != userCanceledErr) 
+	if(e && e != userCanceledErr)
 		alertuser("Could not create standalone plugin.",reason);
-	
+
 	return e;
 }

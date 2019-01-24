@@ -1,9 +1,9 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -39,7 +39,7 @@ OSErr put_cstring(PIWriteDescriptor token,DescriptorKeyID key,char *s){
 	p = PILOCKHANDLE(h,false);
 	memcpy(p,s,n);
 	PIUNLOCKHANDLE(h);
-	return PIPutText(token,key,h); 
+	return PIPutText(token,key,h);
 	/* FIXME: not sure if we are supposed to dispose of handle */
 }
 
@@ -75,7 +75,7 @@ Boolean ReadScriptParamsOnRead(void)
 	int32 flags;
 	OSErr stickyError;
 	long v;
-	
+
 	if (DescriptorAvailable(NULL)){ /* playing back.  Do our thing. */
 		token = OpenReader(array);
 		if (token){
@@ -87,22 +87,22 @@ Boolean ReadScriptParamsOnRead(void)
 					case PARAM_A_KEY: expr[3] = get_cstring(token); break;
 					default:
 						if(key >= PARAM_CTL0_KEY && key <= PARAM_CTL7_KEY){
-							PIGetInt(token,&v); 
-							slider[key - PARAM_CTL0_KEY] = v; 
+							PIGetInt(token,&v);
+							slider[key - PARAM_CTL0_KEY] = v;
 						}
 						break;
 				}
 			}
 
 			stickyError = CloseReader(&token); // closes & disposes.
-				
+
 			// all Filter Foundry parameters are optional,
 			// so we needn't worry if any are missing
 		}
-		
-		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */		
+
+		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */
 	}
-	
+
 	return false;
 }
 
@@ -112,7 +112,7 @@ OSErr WriteScriptParamsOnRead(void)
 	OSErr gotErr = noErr;
 	extern int ctls[],maps[];
 	int i,allctls;
-			
+
 	if (DescriptorAvailable(NULL)){ /* recording.  Do our thing. */
 		token = OpenWriter();
 		if (token){
@@ -141,7 +141,7 @@ OSErr WriteScriptParamsOnRead(void)
 //-------------------------------------------------------------------------------
 //
 //	HostDescriptorAvailable
-//	
+//
 //	Determines whether the PIDescriptorParameters callback is available.
 //
 //	Check for valid suite version, routine suite version, and routine count.
@@ -156,7 +156,7 @@ Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
 		*outNewerVersion = procs->descriptorParametersVersion > kCurrentDescriptorParametersVersion
 			|| procs->readDescriptorProcs->readDescriptorProcsVersion > kCurrentReadDescriptorProcsVersion
 			|| procs->writeDescriptorProcs->writeDescriptorProcsVersion > kCurrentWriteDescriptorProcsVersion ;
-	
+
 	return procs != NULL
 		&& procs->descriptorParametersVersion == kCurrentDescriptorParametersVersion
 
@@ -174,7 +174,7 @@ Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
 		&& procs->writeDescriptorProcs->numWriteDescriptorProcs >= kCurrentWriteDescriptorProcsCount
 		&& procs->writeDescriptorProcs->openWriteDescriptorProc != NULL
 		&& procs->writeDescriptorProcs->closeWriteDescriptorProc != NULL
-		&& procs->writeDescriptorProcs->putTextProc != NULL 
+		&& procs->writeDescriptorProcs->putTextProc != NULL
 		&& procs->writeDescriptorProcs->putIntegerProc != NULL ;
 }
 
@@ -182,7 +182,7 @@ Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
 //-------------------------------------------------------------------------------
 //
 //	HostCloseReader
-//	
+//
 //	Closes a read token, disposes its handle, sets the token to NULL, and
 //	sets the parameter blocks' descriptor to NULL.
 //
@@ -213,14 +213,14 @@ OSErr HostCloseReader (PIDescriptorParameters *procs,
 {
 	// Close token:
 	OSErr err = procs->readDescriptorProcs->closeReadDescriptorProc(*token);
-	
+
 	// Dispose the parameter block descriptor:
 	hProcs->disposeProc(procs->descriptor);
-	
+
 	// Set the descriptor and the read token to NULL:
 	procs->descriptor = NULL;
 	*token = NULL;
-	
+
 	return err;
 
 } // end HostCloseReader
@@ -228,9 +228,9 @@ OSErr HostCloseReader (PIDescriptorParameters *procs,
 //-------------------------------------------------------------------------------
 //
 //	HostCloseWriter
-//	
+//
 //	Closes a write token, stores its handle in the global parameter block for
-//	the host to use, sets the token to NULL, and sets the recordInfo to 
+//	the host to use, sets the token to NULL, and sets the recordInfo to
 //	plugInDialogOptional (the default).
 //
 //	The Descriptor Parameters suite are callbacks designed for
@@ -261,18 +261,18 @@ OSErr	HostCloseWriter(PIDescriptorParameters *procs,
 {
 	OSErr err = noErr; // assume no error
 	PIDescriptorHandle h = NULL;
-	
+
 	if (procs->descriptor != NULL) // don't need descriptor passed to us
 		hProcs->disposeProc(procs->descriptor); // dispose.
 	procs->writeDescriptorProcs->closeWriteDescriptorProc(*token, &h);
 	procs->descriptor = h;
-	
+
 	// Set recordInfo to default.  Options are: plugInDialogOptional,
 	// plugInDialogRequire, plugInDialogNone:
 	procs->recordInfo = plugInDialogOptional;
 
 	*token = NULL;
-	
+
 	return err;
-	
+
 } // end HostCloseWriter

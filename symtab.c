@@ -1,9 +1,9 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-5 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -24,7 +24,7 @@
 
 unsigned long djb2(char *str);
 
-/* following constant (need not) be prime. for a list of prime numbers, 
+/* following constant (need not) be prime. for a list of prime numbers,
    see http://www.utm.edu/research/primes/lists/small/1000.txt */
 #define TABLE_SIZE 128 // if you're anticipating many symbols, increase this value!
 #define HASH(s) (djb2(s) % TABLE_SIZE)
@@ -32,7 +32,7 @@ unsigned long djb2(char *str);
 struct sym_rec *hash_table[TABLE_SIZE];
 extern struct sym_rec predefs[];
 
-// hash function recommended by Ozan Yigit 
+// hash function recommended by Ozan Yigit
 // http://www.cs.yorku.ca/~oz/hash.html
 // "this algorithm (k=33) was first reported by dan bernstein"
 unsigned long djb2(char *str){
@@ -81,7 +81,7 @@ void dump_symbols(){
 struct sym_rec *lookup(char *s){
 	struct sym_rec *p;
 	int idx = HASH(s);
-//	printf("# lookup \"%s\" hash=%5d\n",s,idx); 
+//	printf("# lookup \"%s\" hash=%5d\n",s,idx);
 	for(p=hash_table[idx];p;p=p->next)
 		if(!strcmp(s,p->name))
 			return p;
