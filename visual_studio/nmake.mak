@@ -1,5 +1,5 @@
 # This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-# Copyright (C) 2002-9 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2002-2019 Toby Thain, toby@telegraphics.com.au
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by  

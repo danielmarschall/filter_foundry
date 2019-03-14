@@ -60,7 +60,7 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	
 	The reason is that FilterFoundry adjusts the zoom level if the available memory is low.
 	PSPI sets maxSpace to 100 MB hardcoded. It is probably only a dummy value and don't
-	resemble the actualy space GIMP can assign to the plugin.
+	resemble the actual space GIMP can assign to the plugin.
 	In Photoshop, maxSpace is 825 MB.
 
 	Workaround in FF 1.7: If GIMP/PSPI is detected, the adjustment of the zoom level is disabled.
