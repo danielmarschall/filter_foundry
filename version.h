@@ -96,7 +96,7 @@
 02-Aug-2007: 1.5b4 - fix debug message spotted by Daniel Denk
 26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
 07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
-24-Jan-2019: 1.7b1 - Fixed crash at filter startup when computer had too much RAM.
+20-Sep-2019: 1.7b1 - Fixed crash at filter startup when computer had too much RAM.
                    - Fixed crash where built obfuscated filters could not be opened.
                    - Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
                    - Size PARM_SIZE in PARM ressource corrected.
@@ -154,6 +154,8 @@
                      This might solve incompatibilities with non-Photoshop hosts (i.e. GIMP).
                    - GIMP (using PSPI to load 8BF plugins) is now compatible.
                    - c2m() and sqr() are now approximately 3 times faster
+                   - Build of plugins with empty title or category will now be prevented,
+                     since plugins with empty category or title won't be shown in the filter menu.
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

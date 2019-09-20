@@ -94,6 +94,19 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 	switch(item){
 	case IDOK:
+		// Do a few checks first
+		GetDlgItemText(dp, CATEGORYITEM, s, MAXFIELD);
+		if (strlen(s) == 0) {
+			simplealert("Category must not be empty!");
+			return;
+		}
+		GetDlgItemText(dp, TITLEITEM, s, MAXFIELD);
+		if (strlen(s) == 0) {
+			simplealert("Title must not be empty!");
+			return;
+		}
+
+		// Now begin
 		memset(&gdata->parm,0,sizeof(PARM_T));
 		GetDlgItemText(dp,CATEGORYITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.category,s);
 		GetDlgItemText(dp,TITLEITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.title,s);
