@@ -143,8 +143,8 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 	  photoshop->map_used[i] = premiere->map_used[i];
 	for (i=0;i<8;++i)
 	  photoshop->ctl_used[i] = premiere->ctl_used[i];
-	memcpy((void*)photoshop->category, (void*)premiere->category, sizeof(photoshop->category));
-	photoshop->iProtected = premiere->iProtected;
+	sprintf(photoshop->category, "Filter Factory"); // Premiere plugins do not have a category attribute
+	photoshop->iProtected = 0; // Premiere plugins do not have a protect flag
 	memcpy((void*)photoshop->title, (void*)premiere->title, sizeof(photoshop->title));
 	memcpy((void*)photoshop->copyright, (void*)premiere->copyright, sizeof(photoshop->copyright));
 	memcpy((void*)photoshop->author, (void*)premiere->author, sizeof(photoshop->author));

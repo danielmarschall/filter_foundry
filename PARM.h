@@ -85,12 +85,10 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	long unknown3;
 	long map_used[4];   //true if map(n) is used
 	long ctl_used[8];   //true if ctl(n) is used
-	unsigned char category[252];    //Category name
-	// Michael Johannhanwahr's protect flag...
-	long iProtected;            // == 1 means protected
-	unsigned char title[256];       //Filter title
-	unsigned char copyright[256];   //Copyright info
-	unsigned char author[256];      //Filter author(s)
+	unsigned char title[256]; // in Photoshop Filter Factory: Category
+	unsigned char author[256]; // in Photoshop Filter Factory: Title
+	unsigned char modulename[256]; // in Photoshop Filter Factory: Copyright
+	unsigned char copyright[256]; // in Photoshop Filter Factory: Author
 	unsigned char map[4][256];      //4 map labels
 	unsigned char ctl[8][256];      //8 control labels
 	char formula[4][1024];          //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
