@@ -98,11 +98,16 @@ BUILDING WITH VISUAL STUDIO
 	3. Download the Telegraphics common library from http://telegraphics.com.au/svn/common/trunk/
 	   and unpack it on your disk. Please make sure that "common" and "Source" (of FilterFoundry)
 	   are placed in the same directory.
-	4. a) If you want to use the IDE:
+	4. Download the Windows SDK https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
+	   and install the following components:
+	   - Windows SDK for Desktop C++ x86 Apps
+	   - Windows SDK for Desktop C++ amd64 Apps
+	5. a) If you want to use the IDE:
 	      - Open the visual_studio\FilterFoundry.sln
 	      - Adjust the paths in the project settings:
 	        Path to Adobe plugin SDK (in C/C++ category, and Resource category)
 	        Path to win_flex and win_bison (pre-build-events)
+	        Your specific version of the Windows SDK
 	      - You can now compile the x86 and x64 plugin inside the IDE.
 	   b) If you want to use CLI/nmake:
 	      - Adjust the paths in the visual_studio\nmake.mak and visual_studio\nmake64.mak files:
@@ -122,8 +127,8 @@ BUILDING WITH VISUAL STUDIO
 	- If you run into any problems, try "nmake /f nmake.mak clean" followed by "nmake /f nmake.mak",
 	  or for 64 bit: "nmake /f nmake64.mak clean" followed by "nmake /f nmake64.mak"
 	  It is necessary to run the "clean" command when switching between 32bit and 64 bit building.
-	- Since the RC files have a complex structure, you cannot edit the resources inside the IDE. You have to edit
-	  the *.rc files manually.
+	- Since the RC files have a complex structure, you cannot edit the resources inside the IDE.
+	  You need to edit the *.rc files manually.
 
 BUILDING WITH OPEN WATCOM
 (Most recently tested with Open Watcom 1.9 with Adobe Photoshop SDK CC 2017):

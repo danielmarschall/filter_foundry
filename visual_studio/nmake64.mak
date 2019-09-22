@@ -42,7 +42,7 @@
 EXEC = FilterFoundry
 
 # define location of Photoshop SDK headers
-PSAPI = "D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
+PSAPI = "E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
@@ -57,8 +57,8 @@ LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
 RFLAGS = -i$(PSAPI)\Photoshop -d_WIN64
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
-FLEX = D:\FilterFoundry\win_flex_bison\win_flex
-BISON = D:\FilterFoundry\win_flex_bison\win_bison
+FLEX = E:\FilterFoundry\win_flex_bison\win_flex
+BISON = E:\FilterFoundry\win_flex_bison\win_bison
 
 OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
 	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj \
@@ -78,10 +78,18 @@ win_res.res : ..\win_res.rc ..\PiPL.rc ..\PiPL_body.rc ..\manifest.rc ..\version
 	$(RC) $(RFLAGS) $(CPPFLAGS) -fowin_res.res ..\win_res.rc
 	
 parser : ..\parser.y
-	$(BISON)  ..\parser.y -d -y
+	rem $(BISON)  ..\parser.y -d -y
+	rem We need to switch the path, because otherwise y.tab.c will be created in visual_studio and not the source directory
+	cd ..
+	$(BISON)  parser.y -d -y
+	cd visual_studio
 	
 lexer : ..\lexer.l
-	$(FLEX)  ..\lexer.l y.tab.c
+	rem $(FLEX)  ..\lexer.l y.tab.c
+	rem We need to switch the path, because otherwise lex.yy.c will be created in visual_studio and not the source directory
+	cd ..
+	$(FLEX) lexer.l y.tab.c
+	cd visual_studio
 
 $(EXEC)64.8bf : $(OBJ) win_res.res
 	$(CC) /Fe$@ $(**F) $(LDFLAGS)
