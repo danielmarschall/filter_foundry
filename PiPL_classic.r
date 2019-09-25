@@ -36,6 +36,8 @@ resource 'PiPL' (16000, purgeable)
 #ifdef BUILD68K
 		Code68K { Filter, 16000 },
 #endif
+
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 	}
 };
 

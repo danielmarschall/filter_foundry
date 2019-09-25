@@ -51,5 +51,3 @@ FilterCaseInfo {
 	inStraightData, outStraightData, doNotWriteOutsideSelection, doesNotFilterLayerMasks, worksWithBlankData, doNotCopySourceToDestination,
 	}
 },
-
-HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },

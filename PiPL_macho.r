@@ -41,6 +41,8 @@ resource 'PiPL' (16000, purgeable)
 #if (defined(__ppc__))
 		CodeMachOPowerPC { 0, 0, "PluginMain" },
 #endif
+
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 	}
 };
 

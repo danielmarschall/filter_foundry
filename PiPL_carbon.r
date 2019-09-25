@@ -33,6 +33,8 @@ resource 'PiPL' (16000, purgeable)
 		Name { "Filter Foundry…" },
 #include "pipl_common.r"
 		CodeCarbonPowerPC { 0, 0, "" },
+
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
 	}
 };
 
