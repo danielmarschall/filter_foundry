@@ -159,6 +159,7 @@
                    - Fixed Actions (recording/playback). Several things like the AETE resource were broken.
                      The classID had to be changed to 'Fltr' so that the parameters are shown in the
                      Photoshop Action tab. (*)
+                   - "MaxSpace64" will now be used, if supported by the host
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

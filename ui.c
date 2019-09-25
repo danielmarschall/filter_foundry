@@ -301,7 +301,7 @@ void maindlginit(DIALOGREF dp){
 		#endif
 
 		if (!disable_zoom_memory_check) {
-			zoomfactor = sqrt(gpb->maxSpace/(10.*preview_w*preview_h*nplanes));
+			zoomfactor = sqrt(MaxSpace()/(10.*preview_w*preview_h*nplanes));
 			if(zoomfactor > fitzoom)
 				zoomfactor = fitzoom;
 			if(zoomfactor < 1.)

@@ -223,6 +223,19 @@ int checkandinitparams(Handle params){
 	return f || showdialog;
 }
 
+int64_t MaxSpace(){
+	if (gpb->maxSpace64 != 0) {
+		// If this is non-zero, the host either support 64-bit OR the host ignored the rule "set reserved fields to 0".
+		uint64_t maxSpace64 = gpb->maxSpace64;
+		return maxSpace64;
+	} else {
+		// Note: If maxSpace gets converted from Int32 to unsigned int, we can reach up to 4 GB RAM. However, after this, there will be a wrap to 0 GB again.
+		unsigned int maxSpace32 = (unsigned int) gpb->maxSpace;
+		uint64_t maxSpace64 = maxSpace32;
+		return maxSpace64;
+	}
+}
+
 void DoPrepare(FilterRecordPtr pb){
 	int i;
 
@@ -244,8 +257,7 @@ void DoPrepare(FilterRecordPtr pb){
 	*/
 
 	// New variant:
-	// TODO: Programmatically test if host supports pb->maxSpace64, and if it does so, use this value instead.
-	pb->maxSpace = ((double)pb->maxSpace/10)*9; // don't ask for more than 90% of available memory
+	pb->maxSpace = (MaxSpace()/10.)*9; // don't ask for more than 90% of available memory
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){
