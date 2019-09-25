@@ -73,8 +73,8 @@
 #define AETE_ID			16000
 #define vendorName		"Telegraphics"
 #define plugInSuiteID	'tELE'
-#define plugInClassID	'fiFo'
-#define plugInEventID	plugInClassID //typeNull // must be this
+#define plugInClassID	'Fltr'
+#define plugInEventID	'fiFo' //typeNull // must be this
 
 #define PARAM_R_KEY		'xprR'
 #define PARAM_G_KEY		'xprG'

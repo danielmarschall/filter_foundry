@@ -7,7 +7,7 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	Status: FIXED (Bug in FF) in FilterFoundry 1.7
 	
 	FilterFoundry 1.6 used wrong length values for the TLV (Type, Length, Value) members
-	of the PIPL structury (in RC files, and in fixpipl()).
+	of the PIPL structure (in RC files, and in fixpipl()).
 	The length value must include everything, including paddings of strings.
 	
 	Adobe writes in SPPiPL.h:

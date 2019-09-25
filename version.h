@@ -156,6 +156,9 @@
                    - c2m() and sqr() are now approximately 3 times faster
                    - Build of plugins with empty title or category will now be prevented,
                      since plugins with empty category or title won't be shown in the filter menu.
+                   - Fixed Actions (recording/playback). Several things like the AETE resource were broken.
+                     The classID had to be changed to 'Fltr' so that the parameters are shown in the
+                     Photoshop Action tab. (*)
                    (Changes by Daniel Marschall)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.

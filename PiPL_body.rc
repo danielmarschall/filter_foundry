@@ -17,6 +17,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// The PiPL_body contains the properties which are added to PIPL and RCDATA.
+// PIPL will additionally receive name, catg and hstm
+// Attention: This file may only contain 5 properties. If this number changes, please also change PiPL.rc
+
 VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),	/* Filter module */
 VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion,latestFilterVersion, /* Version Number */
 
@@ -39,11 +43,3 @@ VENDORID, LC(f,i,c,i), NULLID, 28L,
 	"\001\001\003\000","\001\001\003\000","\001\001\003\000","\001\001\003\000",
 	"\001\001\003\000","\001\001\003\000","\001\001\003\000",
 
-/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
-VENDORID, LC(h,s,t,m), NULLID, 44L, /* = 3*4 + 2 + sizeof(c string) + padding */
-	0L,								/* version */
-	LC(f,i,F,o),					/* Class ID, always required.  Can be Suite ID. */
-	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
-	AETE_ID,						/* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
-	"Telegraphics FilterFoundry\0\0\0\0" /* Unique scope string, C format, long padded.
-											Always required in Photoshop 5.0 and later. */

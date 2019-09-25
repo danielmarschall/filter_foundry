@@ -110,7 +110,7 @@ OSErr WriteScriptParamsOnRead(void)
 {
 	PIWriteDescriptor token;
 	OSErr gotErr = noErr;
-	extern int ctls[],maps[];
+	extern int ctls[],maps[],nplanes;
 	int i,allctls;
 
 	if (DescriptorAvailable(NULL)){ /* recording.  Do our thing. */
@@ -118,10 +118,10 @@ OSErr WriteScriptParamsOnRead(void)
 		if (token){
 			// write keys here
 			if(!gdata->standalone){
-				put_cstring(token, PARAM_R_KEY, expr[0]);
-				put_cstring(token, PARAM_G_KEY, expr[1]);
-				put_cstring(token, PARAM_B_KEY, expr[2]);
-				put_cstring(token, PARAM_A_KEY, expr[3]);
+				if (nplanes > 0) put_cstring(token, PARAM_R_KEY, expr[0]);
+				if (nplanes > 1) put_cstring(token, PARAM_G_KEY, expr[1]);
+				if (nplanes > 2) put_cstring(token, PARAM_B_KEY, expr[2]);
+				if (nplanes > 3) put_cstring(token, PARAM_A_KEY, expr[3]);
 			}
 
 			/* only write values for the sliders that are actually used! */

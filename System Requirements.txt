@@ -9,6 +9,7 @@ Windows:
 	Hosts:      Tested with Adobe Photoshop 3 - CS6
 	            Tested with Corel Paint Shop Pro X
 	            Tested with GIMP for Windows (using PSPI)
+	            Tested with PluginCommander 1.62 (Revision 2)
 	            It should work on most programs that support "8BF" Photoshop filters
 	Machine:    Any x86 or x64 CPU
 	

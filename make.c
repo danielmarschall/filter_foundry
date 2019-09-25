@@ -65,7 +65,7 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	int scopelen;
 	unsigned long hash;
 
-	pipl->count += 3; // more keys in PiPL
+	pipl->count += 3; // 3 more keys in PiPL: name, catg, hstm
 
 	p = (char*)pipl + origsize;
 	prop = (PIProperty*)p;
@@ -102,8 +102,6 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 					   INPLACEP2CSTR(title));
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
-	// Codereview DM 16 Jan 2019: Since RCDATA already contains 'hstm', the resulting 8BF will contain
-	//                            two 'hstm' entries. (But we only have one AETE) Is that correct?
 	hash = djb2(hstm->scope);
 	event_id = printablehash(hash); /* this is used by fixaete() later... */
 
@@ -136,8 +134,8 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 
 	offset = 8; /* point at suite name */
 
-	SKIP_PSTR(offset); /* skip suite name (vendor) [maybe this should become author??] */
-	SKIP_PSTR(offset); /* skip suite description [set this from dialog field??] */
+	SKIP_PSTR(offset); /* skip suite name (vendor) [TODO maybe this should become author??] */
+	SKIP_PSTR(offset); /* skip suite description [TODO set this from dialog field??] */
 	ALIGNWORD(offset);
 	offset += 4+2+2+2; /* offset now points to filter name. */
 
@@ -160,7 +158,7 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 		   origsize-offset-1-oldlen-oldpad); /* phew! */
 	/* copy in new title string */
 	PLstrcpy((StringPtr)(aete+offset),title);
-	/* copy description string into right place... [this could be new description from dialog field??] */
+	/* copy description string into right place... [TODO this could be new description from dialog field??] */
 	PLstrcpy((StringPtr)(aete+offset+1+newlen),desc);
 
 	SKIP_PSTR(offset); /* skip (new) event name */
@@ -169,6 +167,8 @@ long fixaete(unsigned char *aete,long origsize,StringPtr title){
 
 	/* set event ID */
 	*(unsigned long*)(aete+offset+4) = event_id; /* FIXME: this might be unaligned access on some platforms?? */
+
+	// TODO: We should additionally replace the cTl0...cTl7 descriptions with the names of the slider!
 
 	return origsize-oldlen-oldpad+newlen+newpad;
 }

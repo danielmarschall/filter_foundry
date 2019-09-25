@@ -38,6 +38,17 @@ BEGIN
 
 	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0", /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
+
+/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
+VENDORID, LC(h,s,t,m), NULLID, 44L, /* = 3*4 + 2 + sizeof(c string) + padding */
+	0L,								/* version */
+	LC(F,l,t,r),					/* Class ID, always required.  Can be Suite ID. */
+	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
+	AETE_ID,						/* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
+	"Telegraphics FilterFoundry\0\0\0\0" /* Unique scope string, C format, long padded.
+											Always required in Photoshop 5.0 and later. */
+
+
 #include "PiPL_body.rc"
 
 END
@@ -47,7 +58,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
-	6L, 			/* Property Count */
+	5L, 			/* Property Count */
 
 #include "PiPL_body.rc"
 
@@ -87,11 +98,11 @@ END
 #define RC_NO_REPLY \
 	LC(n,u,l,l),	/*noReply*/ \
 	"\0", \
-	"\000\000"		/* 00 000 000|00 000 000 */
+	0x0000 /* 00 000 000 00 000 000 */
 #define RC_IMAGE_DIRECT_PARAM \
-	LC('#',I,m,R),	/*typeImageReference*/ \
+	"RmI#"/*LC(#,I,m,R)*/,	/*typeImageReference; written as string because the Stringizing operator cannot handle '#' */ \
 	"\0", \
-	"\260\000"		/* 10 110 000|00 000 000 */
+	0xB000 /* 10 110 000 00 000 000 */
 
 #define FLAGS_SINGLE_PROP	"\020\000" /* 00 010 000|00 000 000 */
 #define FLAGS_1_OPT_PARAM	"\200\000" /* 10 000 000|00 000 000 */
@@ -115,14 +126,14 @@ AETE_ID aete
 		"\014Telegraphics",				/* vendor suite name */
 		"\0",							/* optional description */
 		LC(t,E,L,E),					/* suite ID */
-		1,								/* suite code, must be 1 */
-		1,								/* suite level, must be 1 */
+		1,	/* is 0 at Pointelize*/		/* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		1,	/* is 0 at Pointelize*/		/* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 
 		1, /*events*/					/* structure for filters */
 
 			"\015FilterFoundry",		/* event name               */
 			"\0",						/* event description        */
-			LC(f,i,F,o),				/* event class              */
+			LC(F,l,t,r),				/* event class              */
 			LC(f,i,F,o),				/* event ID                 */
 			RC_NO_REPLY,
 			RC_IMAGE_DIRECT_PARAM,

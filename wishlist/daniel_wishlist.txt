@@ -73,14 +73,8 @@ Minor priority stuff or ideas
   The problem is that the offset of the preview area is always different, and if the zoom
   level is not a multiple of two, you will always "pick" other bars.
   
-* In regards "Apple scripting" (AETE resource):
-
-	a) Why do we include the AETE resource in Windows, and use fixaete() in the build-process,
-	   although there is no AppleScript support on Windows?
-	   
-	b) In a standalone filter, should the AETE dictionary only contain the controls which are used
-	   by the built filter, and should these dictionary entries have the correct user-defined
-	   control/slider name?
+* In regards "Actions/Scripting":
+  fixaete(): Replace the cTl0...cTl7 descriptions with the names of the slider!	   
 
 * Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
 
