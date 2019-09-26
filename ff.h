@@ -34,6 +34,11 @@
 #ifndef INCLUDED_FF_H
 #define INCLUDED_FF_H
 
+#define HOSTSIG_GIMP 'PMIG'
+#define HOSTSIG_IRFANVIEW 'UP20'
+#define HOSTSIG_PHOTOSHOP '8BIM'
+#define HOSTSIG_PLUGINCOMMANDER '8BIM' // meh.
+
 enum{
 	TAB = 011,
 	LF  = 012,
@@ -114,6 +119,7 @@ void dbglasterror(char*);
 // from main.c
 int64_t maxspace();
 int maxspace_available();
+int host_preserves_parameters();
 
 // from parser.y
 struct node *parseexpr(char *s);

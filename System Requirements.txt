@@ -10,6 +10,7 @@ Windows:
 	            Tested with Corel Paint Shop Pro X
 	            Tested with GIMP for Windows (using PSPI)
 	            Tested with PluginCommander 1.62 (Revision 2)
+	            Tested with IrfanView 4.53 (32+64 Bit)
 	            It should work on most programs that support "8BF" Photoshop filters
 	Machine:    Any x86 or x64 CPU
 	

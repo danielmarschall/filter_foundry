@@ -72,17 +72,6 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	__try {
 #endif
 
-	/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
-	   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
-	   Also, all global variables are unloaded, so the plugin cannot preserve any data.
-	   Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
-	   This mode saves the filter data into a temporary file "FilterFoundryGIMP.afs" and loads it
-	   when the window is opened again. */
-
-	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
-	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
-	if (pb->hostSig == 'PMIG') persistent_savestate = true;
-
 	if(selector != filterSelectorAbout && !*data){
 		BufferID tempId;
 		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) )
@@ -123,8 +112,14 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
-				if (persistent_savestate) {
-					// GIMP Workaround: Save settings in "FilterFoundryGIMP.afs", becase pb->parameters is not preserved by GIMP/PSPI
+				if (!host_preserves_parameters()) {
+					/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
+					   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
+					   Also, all global variables are unloaded, so the plugin cannot preserve any data.
+					   Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
+					   This mode saves the filter data into a temporary file "FilterFoundry.afs" and loads it
+					   when the window is opened again. */
+					// Workaround: Save settings in "FilterFoundry.afs" if the host does not preserve pb->parameters
 					char outfilename[255];
 					char* tempdir;
 					StandardFileReply sfr;
@@ -138,7 +133,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					#else
 					if (strlen(tempdir) > 0) strcat(tempdir, "/");
 					#endif
-					sprintf(outfilename, "%sFilterFoundryGIMP.afs", tempdir);
+					sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 					myc2pstrcpy(sfr.sfFile.name, outfilename);
 					sfr.nFileExtension = strlen(outfilename)-strlen(".afs");
@@ -187,8 +182,8 @@ int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
 	int i,f,showdialog;
 
-	if (persistent_savestate) {
-		// GIMP Workaround: Load settings in "FilterFoundryGIMP.afs", becase pb->parameters is not preserved by GIMP/PSPI
+	if (!host_preserves_parameters()) {
+		// Workaround: Load settings in "FilterFoundry.afs" if host does not preserve pb->parameters
 		char outfilename[255];
 		char* tempdir;
 		StandardFileReply sfr;
@@ -202,7 +197,7 @@ int checkandinitparams(Handle params){
 		#else
 		if (strlen(tempdir) > 0) strcat(tempdir, "/");
 		#endif
-		sprintf(outfilename, "%sFilterFoundryGIMP.afs", tempdir);
+		sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 		myc2pstrcpy(sfr.sfFile.name, outfilename);
 		sfr.nFileExtension = strlen(outfilename) - strlen(".afs");
@@ -246,24 +241,52 @@ int checkandinitparams(Handle params){
 	return f || showdialog;
 }
 
+int host_preserves_parameters() {
+	if (gpb->hostSig == HOSTSIG_GIMP) return false;
+	if (gpb->hostSig == HOSTSIG_IRFANVIEW) return false;
+
+	/*
+	char x[100];
+	sprintf(x, "Host Signature: %u", gpb->hostSig);
+	simplealert(x);
+	*/
+
+	// We just assume the other hosts preserve the parameters
+	return true;
+}
+
 int64_t maxspace(){
 	if (gpb->maxSpace64 != 0) {
 		// If this is non-zero, the host either support 64-bit OR the host ignored the rule "set reserved fields to 0".
 		uint64_t maxSpace64 = gpb->maxSpace64;
+
+		/*
+		char x[100];
+		sprintf(x, "maxSpace64: %lld", maxSpace64);
+		simplealert(x);
+		*/
+
+		// Note: IrfanView currently does not support maxSpace64, so we don't handle HOSTSIG_IRFANVIEW
 		return maxSpace64;
 	} else {
 		// Note: If maxSpace gets converted from Int32 to unsigned int, we can reach up to 4 GB RAM. However, after this, there will be a wrap to 0 GB again.
 		unsigned int maxSpace32 = (unsigned int) gpb->maxSpace;
 		uint64_t maxSpace64 = maxSpace32;
+
+		/*
+		char x[100];
+		sprintf(x, "maxSpace32: %lld", maxSpace64);
+		simplealert(x);
+		*/
+
+		if (gpb->hostSig == HOSTSIG_IRFANVIEW) maxSpace64 *= 1024; // IrfanView is giving Kilobytes instead of Bytes
 		return maxSpace64;
 	}
 }
 
 int maxspace_available() {
 	// GIMP sets MaxSpace to hardcoded 100 MB
-	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
-	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
-	if (gpb->hostSig == 'PMIG') return false;
+	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 
 	return true;
 }

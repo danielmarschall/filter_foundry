@@ -89,10 +89,7 @@ Boolean setup(FilterRecordPtr pb){
 	 * Workaround applied in FF 1.7: If the host is GIMP, then we set
 	 * needall=1 to disable chunked processing.
 	 */
-
-	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
-	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
-	if (pb->hostSig == 'PMIG') needall = true;
+	if (pb->hostSig == HOSTSIG_GIMP) needall = true;
 
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */

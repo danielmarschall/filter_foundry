@@ -152,7 +152,7 @@
                      (requires compilation using an old Windows SDK, or compilation using OpenWatcom)
                    - Fixed TLV lengths in the PIPL structure (includes now paddings).
                      This might solve incompatibilities with non-Photoshop hosts (i.e. GIMP).
-                   - GIMP (using PSPI to load 8BF plugins) is now compatible.
+                   - GIMP (using PSPI to load 8BF plugins) and IrfanView is now compatible.
                    - c2m() and sqr() are now approximately 3 times faster
                    - Build of plugins with empty title or category will now be prevented,
                      since plugins with empty category or title won't be shown in the filter menu.
