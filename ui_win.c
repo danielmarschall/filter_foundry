@@ -38,28 +38,46 @@ HCURSOR hCurHandQuestion;
 extern HANDLE hDllInstance;
 
 void DoAbout(AboutRecordPtr pb){
-	char s[0x200];
-	int n;
+	char text[1000];
+	char title[200];
 	PlatformData *p = (PlatformData*)pb->platformData;
 
-	n = sprintf(s, "Filter Foundry " VERSION_STR "\n"
-				   "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n\n");
-	if(gdata && gdata->standalone)
-		sprintf(s+n, "Standalone filter:\n%s by %s.\n%s",
-			INPLACEP2CSTR(gdata->parm.title),
-			INPLACEP2CSTR(gdata->parm.author),
-			INPLACEP2CSTR(gdata->parm.copyright));
-	else
-		strcat(s,
-"Latest version available from http://www.telegraphics.com.au/sw/\n\
-Please contact the author with any bug reports, suggestions or comments.\n\
-If you use this program and like it, please consider making a donation\n\
-through www.paypal.com (US$5 suggested) to the address above.");
-	MessageBox((HWND)p->hwnd, s, "About Filter Foundry", MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
+	if (gdata && gdata->standalone) {
+		sprintf(title, "About %s", INPLACEP2CSTR(gdata->parm.title));
+		sprintf(text,  "%s by %s\n" /* {Title} by {Author} */
+		               "%s\n" /* {Copyright} */
+		               "\n"
+		               "This plugin was built using Filter Foundry " VERSION_STR "\n"
+		               "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n"
+		               "available from http://www.telegraphics.com.au/sw/",
+		               INPLACEP2CSTR(gdata->parm.title),
+		               INPLACEP2CSTR(gdata->parm.author),
+		               INPLACEP2CSTR(gdata->parm.copyright));
+	} else {
+		sprintf(title, "About Filter Foundry");
+		sprintf(text,  "Filter Foundry " VERSION_STR "\n"
+		               "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n"
+		               "\n"
+	                   "Latest version available from\n"
+	                   "http://www.telegraphics.com.au/sw/\n"
+	                   "Please contact the author with any bug reports,\n"
+	                   "suggestions or comments.\n"
+	                   "If you use this program and like it, please consider\n"
+	                   "making a donation through www.paypal.com\n"
+	                   "(US$5 suggested) to the address above.");
+	}
+
+	MessageBox((HWND)p->hwnd, text, title, MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
 }
 
 Boolean simplealert(char *s){
-	return MessageBox(NULL,s,"Filter Foundry",MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
+	char* title;
+	if (gdata && gdata->standalone) {
+		title = INPLACEP2CSTR(gdata->parm.title);
+	} else {
+		title = "Filter Foundry";
+	}
+	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);

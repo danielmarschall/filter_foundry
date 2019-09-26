@@ -111,6 +111,10 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc);
 
 void dbglasterror(char*);
 
+// from main.c
+int64_t maxspace();
+int maxspace_available();
+
 // from parser.y
 struct node *parseexpr(char *s);
 

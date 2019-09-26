@@ -119,7 +119,7 @@ struct node *updateexpr(DIALOGREF dp,int item){
 void updatezoom(DIALOGREF dp){
 	char s[10];
 	sprintf(s, "%d%%", (int)(100./zoomfactor));
-SETCTLTEXT(dp,ZOOMLEVELITEM,s);
+	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
 	if(zoomfactor > 1.)
 		ShowDialogItem(dp,ZOOMINITEM);
 	else
@@ -293,15 +293,11 @@ void maindlginit(DIALOGREF dp){
 		// preview about 50MB of image data.)
 
 		/* Workaround: GIMP/PSPI sets maxSpace to 100 MB hardcoded, so the zoom is not adjusted correctly. */
-		int disable_zoom_memory_check = false;
-		#if MAC_ENV
-			if (gpb->hostSig == 'GIMP') disable_zoom_memory_check = true;
-		#else
-			if (gpb->hostSig == 'PMIG') disable_zoom_memory_check = true;
-		#endif
+		int disable_zoom_memory_check;
+		disable_zoom_memory_check = !maxspace_available();
 
 		if (!disable_zoom_memory_check) {
-			zoomfactor = sqrt(MaxSpace()/(10.*preview_w*preview_h*nplanes));
+			zoomfactor = sqrt(maxspace()/(10.*preview_w*preview_h*nplanes));
 			if(zoomfactor > fitzoom)
 				zoomfactor = fitzoom;
 			if(zoomfactor < 1.)

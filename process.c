@@ -86,14 +86,13 @@ Boolean setup(FilterRecordPtr pb){
 	 * Filters will only fill the bottom of the picture, not the whole canvas.
 	 * The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
 	 * and probably due to a bug, PSPI only applies the image data of the last chunk.
-	 * Workaround applied in FF 1.7: If the host signature is 'GIMP', then we set
+	 * Workaround applied in FF 1.7: If the host is GIMP, then we set
 	 * needall=1 to disable chunked processing.
 	 */
-	#if MAC_ENV
-	if (pb->hostSig == 'GIMP') needall = true;
-	#else
+
+	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
+	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
 	if (pb->hostSig == 'PMIG') needall = true;
-	#endif
 
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */

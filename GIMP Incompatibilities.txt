@@ -30,7 +30,7 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
 	and probably due to a bug, PSPI only applies the image data of the last chunk.
 
-	Workaround applied in FF 1.7: If the host signature is 'GIMP', then we set
+	Workaround applied in FF 1.7: If the host signature is "GIMP" (PMIG), then we set
 	needall=1 to disable chunked processing.
 
 

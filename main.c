@@ -76,13 +76,12 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
 	   Also, all global variables are unloaded, so the plugin cannot preserve any data.
 	   Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
-	   This mode saves the filter data into a temporary file "tmp.afs" and loads it
+	   This mode saves the filter data into a temporary file "FilterFoundryGIMP.afs" and loads it
 	   when the window is opened again. */
-#if MAC_ENV
-	if (pb->hostSig == 'GIMP') persistent_savestate = true;
-#else
+
+	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
+	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
 	if (pb->hostSig == 'PMIG') persistent_savestate = true;
-#endif
 
 	if(selector != filterSelectorAbout && !*data){
 		BufferID tempId;
@@ -125,12 +124,24 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
 				if (persistent_savestate) {
+					// GIMP Workaround: Save settings in "FilterFoundryGIMP.afs", becase pb->parameters is not preserved by GIMP/PSPI
+					char outfilename[255];
+					char* tempdir;
 					StandardFileReply sfr;
 					sfr.sfGood = true;
 					sfr.sfReplacing = true;
 					sfr.sfType = PS_FILTER_FILETYPE;
-					myc2pstrcpy(sfr.sfFile.name, "tmp.afs");
-					sfr.nFileExtension = 3; // length of "tmp"
+
+					tempdir = getenv("TMP");
+					#ifdef WIN_ENV
+					if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+					#else
+					if (strlen(tempdir) > 0) strcat(tempdir, "/");
+					#endif
+					sprintf(outfilename, "%sFilterFoundryGIMP.afs", tempdir);
+
+					myc2pstrcpy(sfr.sfFile.name, outfilename);
+					sfr.nFileExtension = strlen(outfilename)-strlen(".afs");
 					sfr.sfScript = 0; // FIXME: is that ok?
 					savefile(&sfr);
 				}
@@ -177,12 +188,24 @@ int checkandinitparams(Handle params){
 	int i,f,showdialog;
 
 	if (persistent_savestate) {
+		// GIMP Workaround: Load settings in "FilterFoundryGIMP.afs", becase pb->parameters is not preserved by GIMP/PSPI
+		char outfilename[255];
+		char* tempdir;
 		StandardFileReply sfr;
 		sfr.sfGood = true;
 		sfr.sfReplacing = true;
 		sfr.sfType = PS_FILTER_FILETYPE;
-		myc2pstrcpy(sfr.sfFile.name, "tmp.afs");
-		sfr.nFileExtension = 3; // length of "tmp"
+
+		tempdir = getenv("TMP");
+		#ifdef WIN_ENV
+		if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+		#else
+		if (strlen(tempdir) > 0) strcat(tempdir, "/");
+		#endif
+		sprintf(outfilename, "%sFilterFoundryGIMP.afs", tempdir);
+
+		myc2pstrcpy(sfr.sfFile.name, outfilename);
+		sfr.nFileExtension = strlen(outfilename) - strlen(".afs");
 		sfr.sfScript = 0; // FIXME: is that ok?
 		if (loadfile(&sfr, &reason)) return true;
 	}
@@ -223,7 +246,7 @@ int checkandinitparams(Handle params){
 	return f || showdialog;
 }
 
-int64_t MaxSpace(){
+int64_t maxspace(){
 	if (gpb->maxSpace64 != 0) {
 		// If this is non-zero, the host either support 64-bit OR the host ignored the rule "set reserved fields to 0".
 		uint64_t maxSpace64 = gpb->maxSpace64;
@@ -234,6 +257,15 @@ int64_t MaxSpace(){
 		uint64_t maxSpace64 = maxSpace32;
 		return maxSpace64;
 	}
+}
+
+int maxspace_available() {
+	// GIMP sets MaxSpace to hardcoded 100 MB
+	// GIMP/PSPI uses the hostSig "GIMP" (string!) which is the Windows OSType 'PMIG'.
+	// There are no further steps to do for Mac OS, because PSPI will not be available for Mac OS
+	if (gpb->hostSig == 'PMIG') return false;
+
+	return true;
 }
 
 void DoPrepare(FilterRecordPtr pb){
@@ -257,7 +289,9 @@ void DoPrepare(FilterRecordPtr pb){
 	*/
 
 	// New variant:
-	pb->maxSpace = (MaxSpace()/10.)*9; // don't ask for more than 90% of available memory
+	if (maxspace_available()) {
+		pb->maxSpace = (maxspace()/10.)*9; // don't ask for more than 90% of available memory
+	}
 }
 
 void RequestNext(FilterRecordPtr pb,long toprow){
