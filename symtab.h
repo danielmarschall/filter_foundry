@@ -25,7 +25,11 @@
 #define NEW(P) ( (P) = malloc(sizeof(*(P))) )
 
 /* if this type is floating point, then #define FP_VALUE */
+#ifdef FP_VALUE
+typedef double value_type;
+#else
 typedef long value_type;
+#endif
 typedef value_type (*pfunc_type)(value_type,...);
 
 struct sym_rec{

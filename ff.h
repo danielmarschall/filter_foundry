@@ -107,8 +107,8 @@ Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
 unsigned long printablehash(unsigned long hash);
-long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title);
-long fixaete(unsigned char *p,long origsize,StringPtr title);
+size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title);
+size_t aete_generate(void* aeteptr, PARM_T *pparm);
 void obfusc(unsigned char *pparm,size_t size);
 
 Boolean loadfile(StandardFileReply *sfr,char **reason);
@@ -118,8 +118,8 @@ void dbglasterror(char*);
 
 // from main.c
 int64_t maxspace();
-int maxspace_available();
-int host_preserves_parameters();
+Boolean maxspace_available();
+Boolean host_preserves_parameters();
 
 // from parser.y
 struct node *parseexpr(char *s);

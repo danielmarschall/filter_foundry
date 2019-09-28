@@ -115,7 +115,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 
 	i = 0;
 	p = (byte*)ptr;
-	for (i=0; i<num; ++i) {
+	for (i=0; i<(int)num; ++i) {
 #ifdef WIN_ENV
 		DWORD color;
 
@@ -133,7 +133,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			g = GetGValue(color);
 			b = GetBValue(color);
 
-			if (i%nplanes == 0) p[i] = ((299L*r)+(587L*g)+(114L*b))/1000;
+			if (i%nplanes == 0) p[i] = (byte)(((299L*r)+(587L*g)+(114L*b))/1000);
 			if (i%nplanes == 1) p[i] = 255; // alpha channel
 		} else if (gpb->imageMode == plugInModeCMYKColor) {
 			byte r, g, b;
@@ -151,10 +151,10 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			m = (1 - dg - k) / (1 - k);
 			y = (1 - db - k) / (1 - k);
 
-			if (i%nplanes == 0) p[i] = 255 - c * 255;
-			if (i%nplanes == 1) p[i] = 255 - m * 255;
-			if (i%nplanes == 2) p[i] = 255 - y * 255;
-			if (i%nplanes == 3) p[i] = 255 - k * 255;
+			if (i%nplanes == 0) p[i] = (byte)(255 - c * 255);
+			if (i%nplanes == 1) p[i] = (byte)(255 - m * 255);
+			if (i%nplanes == 2) p[i] = (byte)(255 - y * 255);
+			if (i%nplanes == 3) p[i] = (byte)(255 - k * 255);
 		} else {
 			// FIXME: If we are in such a non supported color mode, then
 			//        these color codes would be all wrong!
@@ -194,7 +194,8 @@ void* memset_bgcolor(void* ptr, size_t num) {
 
 void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 	OSErr e;
-	int j,n,scaledw,scaledh,imgw,imgh;
+	double scaledw, scaledh;
+	int j,n,imgw,imgh;
 	Rect r,outRect;
 	Ptr outrow;
 
@@ -210,41 +211,41 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			scaledh = pb->filterRect.bottom - pb->filterRect.top;
 
 		/* scale clipped preview area down again - this becomes the pixel size of preview */
-		imgw = ceil(scaledw/zoomfactor);
+		imgw = (int)ceil(scaledw/zoomfactor);
 		if(imgw > preview_w)
 			imgw = preview_w;
-		imgh = ceil(scaledh/zoomfactor);
+		imgh = (int)ceil(scaledh/zoomfactor);
 		if(imgh > preview_h)
 			imgh = preview_h;
 
 		/* compute source data rectangle (inRect) */
 
 		/* centre preview on filtered part of input image, adding scroll offset */
-		r.left = (pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h;
+		r.left = (int16)((pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h);
 		/* make sure it does not go outside the input area */
 		if(r.left < pb->filterRect.left) {
 			preview_scroll.h += pb->filterRect.left - r.left;
 			r.left = pb->filterRect.left;
 		}
 		else if(r.left+scaledw > pb->filterRect.right) {
-			preview_scroll.h += pb->filterRect.right - (r.left+scaledw);
-			r.left = pb->filterRect.right - scaledw;
+			preview_scroll.h += (int16)(pb->filterRect.right - (r.left+scaledw));
+			r.left = (int16)(pb->filterRect.right - scaledw);
 		}
-		r.right = r.left + scaledw;
-		preview_pmap.maskPhaseCol = (preview_scroll.h)/zoomfactor; // phase of the checkerboard
+		r.right = (int16)(r.left + scaledw);
+		preview_pmap.maskPhaseCol = (int32)((preview_scroll.h)/zoomfactor); // phase of the checkerboard
 
 		/* now compute for vertical */
-		r.top = (pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v;
+		r.top = (int16)((pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v);
 		if(r.top < pb->filterRect.top) {
 			preview_scroll.v += pb->filterRect.top - r.top;
 			r.top = pb->filterRect.top;
 		}
 		else if(r.top+scaledh > pb->filterRect.bottom) {
-			preview_scroll.v += pb->filterRect.bottom - (r.top+scaledh);
-			r.top = pb->filterRect.bottom - scaledh;
+			preview_scroll.v += (int16)(pb->filterRect.bottom - (r.top+scaledh));
+			r.top = (int16)(pb->filterRect.bottom - scaledh);
 		}
-		r.bottom = r.top + scaledh;
-		preview_pmap.maskPhaseRow = (preview_scroll.v)/zoomfactor; // phase of the checkerboard
+		r.bottom = (int16)(r.top + scaledh);
+		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v)/zoomfactor); // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
 		if(needall)

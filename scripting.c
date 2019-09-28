@@ -33,9 +33,9 @@
 //extern FilterRecordPtr gpb;
 
 OSErr put_cstring(PIWriteDescriptor token,DescriptorKeyID key,char *s){
-	int n = strlen(s);
+	size_t n = strlen(s);
 	Ptr p;
-	Handle h = PINEWHANDLE(n);
+	Handle h = PINEWHANDLE((int32)n);
 	p = PILOCKHANDLE(h,false);
 	memcpy(p,s,n);
 	PIUNLOCKHANDLE(h);

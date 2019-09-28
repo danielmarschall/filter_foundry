@@ -349,7 +349,7 @@ BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULO
 
 						if (cb != (wcslen(newValue)+1)*sizeof(wchar_t) || (wcscmp(prevValue, newValue)))
 						{
-							NodeSetValue(p, newValue, (wcslen(newValue)+1)*sizeof(wchar_t));
+							NodeSetValue(p, newValue, (ULONG)((wcslen(newValue)+1)*sizeof(wchar_t)));
 							changesMade = TRUE;
 						}
 					}

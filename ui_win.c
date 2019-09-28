@@ -188,8 +188,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 //	case WM_LBUTTONDOWN: break;
 	case WM_MOUSEMOVE:
 		if(panning && GetCursorPos(&newpos)){
-			newscroll.h = origscroll.h - zoomfactor*(newpos.x - origpos.x);
-			newscroll.v = origscroll.v - zoomfactor*(newpos.y - origpos.y);
+			newscroll.h = (int16)(origscroll.h - zoomfactor*(newpos.x - origpos.x));
+			newscroll.v = (int16)(origscroll.v - zoomfactor*(newpos.y - origpos.y));
 			if( newscroll.h != preview_scroll.h || newscroll.v != preview_scroll.v ){
 				preview_scroll = newscroll;
 				recalc_preview(gpb,hDlg);
@@ -215,7 +215,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	WNDCLASSEX clx;
-	INT_PTR res;
+	Boolean res;
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
 	clx.cbSize = sizeof(WNDCLASSEX);

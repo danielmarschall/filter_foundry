@@ -185,7 +185,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
 			#endif
 
-			var['y'] = y;
+			var['y'] = (value_type)y;
 			inrow = image_ptr + (long)(y)*pb->inRowBytes;
 
 			#ifdef PROCESS_SCALED_GAP_DEBUG
@@ -197,7 +197,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 1a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
 
-				var['x'] = x;
+				var['x'] = (value_type)x;
 				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
 
@@ -215,7 +215,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
 		#endif
 
-		var['y'] = y;  // index of corresponding *input* row, top of selection == 0
+		var['y'] = (value_type)y;  // index of corresponding *input* row, top of selection == 0
 		inrow = image_ptr + (long)y*pb->inRowBytes;
 
 		#ifdef PROCESS_SCALED_GAP_DEBUG
@@ -229,7 +229,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
 
-				var['x'] = x;
+				var['x'] = (value_type)x;
 				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
 		}
@@ -242,7 +242,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 			#endif
 
-			var['x'] = x;  // index of corresponding *input* column, left of selection == 0
+			var['x'] = (value_type)x;  // index of corresponding *input* column, left of selection == 0
 			evalpixel(outp,inrow + (long)(x)*nplanes); /* var['x'] & var['y'] are implicit parameters */
 
 			if (state_changing_funcs_used) {
@@ -252,7 +252,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 					if (state_changing_funcs_used && last_good_x != (int)floor(k-1)) { sprintf(s, "Non calculated X gap, type 2c: %f (x=%f), last good %d, zoom %f\n", k, x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(k);
 					#endif
 
-					var['x'] = k;
+					var['x'] = (value_type)k;
 					if (var['x'] >= var['X']) break;
 					evalpixel(NULL,inrow + (long)(k)*nplanes);
 				}
@@ -267,7 +267,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2d: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
 
-				var['x'] = x;
+				var['x'] = (value_type)x;
 				evalpixel(NULL,inrow + (long)(x)*nplanes);
 			}
 
@@ -282,7 +282,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				if (state_changing_funcs_used && last_good_y != (int)floor(k-1)) { sprintf(s, "Non calculated Y gap, type 3a: %f (y=%f), last good %d, zoom %f\n", k, y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(k);
 				#endif
 
-				var['y'] = k;
+				var['y'] = (value_type)k;
 				if (var['y'] >= var['Y']) break;
 				inrow = image_ptr + (long)(k)*pb->inRowBytes;
 
@@ -295,7 +295,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 					if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 3b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 					#endif
 
-					var['x'] = x;
+					var['x'] = (value_type)x;
 					evalpixel(NULL,inrow + (long)(x)*nplanes);
 				}
 

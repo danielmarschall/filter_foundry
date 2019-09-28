@@ -70,7 +70,7 @@ void updateglobals(DIALOGREF dp){
 	char s[MAXEXPR+1];
 
 	for(i = 0; i < 8; ++i)
-		slider[i] = GETSLIDERVALUE(dp,FIRSTCTLITEM+i);
+		slider[i] = (value_type)(GETSLIDERVALUE(dp,FIRSTCTLITEM+i));
 
 	if(!gdata->standalone)
 		for(i = 0; i < 4; ++i){
@@ -182,7 +182,7 @@ int checksliders(int exprs,int ctlflags[],int mapflags[]){
 void slidermoved(DIALOGREF dp,int i){
 	int v = GETSLIDERVALUE(dp,i);
 	i -= FIRSTCTLITEM;
-	slider[i] = v;
+	slider[i] = v; 
 	SETCTLTEXTINT(dp,i+FIRSTCTLTEXTITEM,v,false);
 }
 
@@ -335,7 +335,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		dispose_preview();
 		return false; // end dialog
 	case OPENITEM:
-		if(!gdata->standalone && choosefiletypes("\pChoose filter settings",&sfr,&reply,types,2,
+		if(!gdata->standalone && choosefiletypes(
+					#ifdef MAC_ENV
+					(StringPtr)"\pChoose filter settings",
+					#else
+					(StringPtr)"Choose filter settings",
+					#endif
+					&sfr,&reply,types,2,
 					"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0"
 					#ifdef _WIN32
 					,gdata->hWndMainDlg
@@ -349,13 +355,19 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		}
 		break;
 	case SAVEITEM:
-		if(!gdata->standalone && putfile("\pSave filter settings",(StringPtr)"",
-										 TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										 "afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
-										 #ifdef _WIN32
-										 ,gdata->hWndMainDlg
-										 #endif /* _WIN32 */
-										 )){
+		if(!gdata->standalone && putfile(
+										#ifdef MAC_ENV
+										(StringPtr)"\pSave filter settings",
+										#else
+										(StringPtr)"Save filter settings",
+										#endif
+										(StringPtr)"",
+										TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
+										"afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
+										#ifdef _WIN32
+										,gdata->hWndMainDlg
+										#endif /* _WIN32 */
+										)){
 			if(savefile(&sfr))
 				completesave(&reply);
 		}
@@ -366,7 +378,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 #ifdef MACMACHO
 			PLstrcat(fname,(StringPtr)"\p.plugin");
 #endif
-			if( putfile("\pMake standalone filter",fname,
+			if( putfile(
+						#ifdef MAC_ENV
+						(StringPtr)"\pMake standalone filter",
+						#else
+						(StringPtr)"Make standalone filter",
+						#endif
+						fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
 						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1
 						#ifdef _WIN32

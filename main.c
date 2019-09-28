@@ -26,6 +26,7 @@
 #include "funcs.h"
 #include "y.tab.h"
 #include "scripting.h"
+#include <math.h>
 
 struct node *tree[4];
 char *err[4];
@@ -136,7 +137,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 					myc2pstrcpy(sfr.sfFile.name, outfilename);
-					sfr.nFileExtension = strlen(outfilename)-strlen(".afs");
+					sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
 					sfr.sfScript = 0; // FIXME: is that ok?
 					savefile(&sfr);
 				}
@@ -200,7 +201,7 @@ int checkandinitparams(Handle params){
 		sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 		myc2pstrcpy(sfr.sfFile.name, outfilename);
-		sfr.nFileExtension = strlen(outfilename) - strlen(".afs");
+		sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
 		sfr.sfScript = 0; // FIXME: is that ok?
 		if (loadfile(&sfr, &reason)) return true;
 	}
@@ -241,7 +242,7 @@ int checkandinitparams(Handle params){
 	return f || showdialog;
 }
 
-int host_preserves_parameters() {
+Boolean host_preserves_parameters() {
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 	if (gpb->hostSig == HOSTSIG_IRFANVIEW) return false;
 
@@ -284,7 +285,7 @@ int64_t maxspace(){
 	}
 }
 
-int maxspace_available() {
+Boolean maxspace_available() {
 	// GIMP sets MaxSpace to hardcoded 100 MB
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 
@@ -313,7 +314,8 @@ void DoPrepare(FilterRecordPtr pb){
 
 	// New variant:
 	if (maxspace_available()) {
-		pb->maxSpace = (maxspace()/10.)*9; // don't ask for more than 90% of available memory
+		pb->maxSpace = (int32)ceil((maxspace()/10.)*9); // don't ask for more than 90% of available memory
+		// FIXME: Also maxSpace64
 	}
 }
 
@@ -335,8 +337,8 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 		// otherwise, process the filtered area, by chunksize parts
 		pb->inRect.left = pb->filterRect.left;
 		pb->inRect.right = pb->filterRect.right;
-		pb->inRect.top = toprow;
-		pb->inRect.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
+		pb->inRect.top = (int16)toprow;
+		pb->inRect.bottom = (int16)MIN(toprow + chunksize,pb->filterRect.bottom);
 
 		if(cnvused){
 			// cnv() needs one extra pixel in each direction

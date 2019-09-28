@@ -29,9 +29,9 @@ OSErr putstr(Handle h,char *s);
 OSErr putstr(Handle h,char *s){
 	Ptr p;
 	OSErr e;
-	long size = PIGETHANDLESIZE(h),n = strlen(s);
+	size_t size = PIGETHANDLESIZE(h),n = strlen(s);
 
-	if(!(e = PISETHANDLESIZE(h,size+n))){
+	if(!(e = PISETHANDLESIZE(h,(int32)(size+n)))){
 		p = PILOCKHANDLE(h,false);
 		memcpy(p+size,s,n);
 		PIUNLOCKHANDLE(h);
@@ -41,9 +41,10 @@ OSErr putstr(Handle h,char *s){
 
 OSErr saveparams(Handle h){
 	char outbuf[CHOPLINES*2+2],*q,*p,*r,*start;
-	int i,j,chunk,n;
+	size_t n, chunk, j;
+	int i;
 	OSErr e;
-	long est;
+	size_t est;
 	static char afs_sig[] = "%RGB-1.0\r";
 
 	if(!h) DBG("saveparams: Null handle!");
@@ -53,7 +54,7 @@ OSErr saveparams(Handle h){
 	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
 
 	PIUNLOCKHANDLE(h); // should not be necessary
-	if( !(e = PISETHANDLESIZE(h,est)) && (p = start = PILOCKHANDLE(h,false)) ){
+	if( !(e = PISETHANDLESIZE(h,(int32)(est))) && (p = start = PILOCKHANDLE(h,false)) ){
 		// build one long string in AFS format
 		p = cat(p,afs_sig); // first the header signature
 
@@ -85,7 +86,7 @@ OSErr saveparams(Handle h){
 //		*p = 0; dbg(start);
 
 		PIUNLOCKHANDLE(h);
-		e = PISETHANDLESIZE(h,p - start); // could ignore this error, maybe
+		e = PISETHANDLESIZE(h,(int32)(p - start)); // could ignore this error, maybe
 	}
 
 	return e;

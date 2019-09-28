@@ -52,7 +52,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	HANDLE datah,aeteh,hupdate;
 	Ptr newpipl = NULL,newaete = NULL,datap,aetep;
 	PARM_T *pparm = NULL;
-	long piplsize,aetesize,origsize;
+	size_t piplsize,aetesize,origsize;
 	Str255 title;
 	LPCTSTR parm_type;
 	int i,parm_id;
@@ -138,9 +138,9 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the PIPL.RC file, for the resources PIPL and AETE. */
 				if( _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000),
-								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,piplsize)
+								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 				 && _UpdateResource(hupdate,"AETE" /* note: caps!! */,MAKEINTRESOURCE(16000),
-								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newaete,aetesize)
+								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newaete,(DWORD)aetesize)
 				 && _UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 					discard = false;

@@ -19,6 +19,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "ff.h"
 #include "symtab.h"
@@ -51,7 +52,7 @@ long roundToNext4(long x) {
 	return x + pad;
 }
 
-long fixpipl(PIPropertyList *pipl, long origsize, StringPtr title) {
+size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title) {
 	PIProperty *prop;
 	char *p;
 	struct hstm_data {
@@ -104,7 +105,7 @@ long fixpipl(PIPropertyList *pipl, long origsize, StringPtr title) {
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
 	hash = djb2(hstm->scope);
-	event_id = printablehash(hash); /* this is used by fixaete() later... */
+	event_id = printablehash(hash); /* this is used by aete_generate() later... */
 
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PIHasTerminologyProperty;
@@ -121,22 +122,47 @@ long fixpipl(PIPropertyList *pipl, long origsize, StringPtr title) {
 	return p - (char*)pipl;  // figure how many bytes were added
 }
 
-#define AETE_WRITE_BYTE(i) *((int8_t*)aeteptr) = (i); (byte*)aeteptr += 1
-#define AETE_WRITE_WORD(i) *((int16_t*)aeteptr) = (i); (byte*)aeteptr += 2
-#define AETE_WRITE_DWORD(i) *((int32_t*)aeteptr) = (i); (byte*)aeteptr += 4
-#define AETE_WRITE_STR(s) *((int8_t*)aeteptr) = strlen(s); (byte*)aeteptr += 1; strcpy((char*)aeteptr, s); (byte*)aeteptr += strlen(s)
+#define AETE_WRITE_BYTE(i) *((uint8_t*)aeteptr) = (i); (byte*)aeteptr += 1
+#define AETE_WRITE_WORD(i) *((uint16_t*)aeteptr) = (i); (byte*)aeteptr += 2
+#define AETE_WRITE_DWORD(i) *((uint32_t*)aeteptr) = (i); (byte*)aeteptr += 4
+#define AETE_WRITE_STR(s) assert(strlen((s))<=255); AETE_WRITE_BYTE((uint8_t)strlen((s))); strcpy((char*)aeteptr, (s)); (byte*)aeteptr += strlen((s))
 #ifdef MAC_ENV
 #define AETE_ALIGN_WORD() (byte*)aeteptr += (intptr_t)aeteptr & 1
 #else
 #define AETE_ALIGN_WORD() /*nothing*/
 #endif
 
-long aete_generate(void* aeteptr, PARM_T *pparm) {
+void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSType key) {
+	char tmp[256];
+
+	if (pparm->ctl_used[ctlidx] || pparm->map_used[mapidx]) {
+		if (pparm->map_used[mapidx]) {
+			if (ctlidx & 1) {
+				sprintf(tmp, "... %s", (char*)pparm->map[mapidx]);
+			} else {
+				sprintf(tmp, "%s ...", (char*)pparm->map[mapidx]);
+			}
+			AETE_WRITE_STR(tmp);
+		} else {
+			AETE_WRITE_STR((char*)pparm->ctl[ctlidx]);
+		}
+		AETE_ALIGN_WORD();
+		AETE_WRITE_DWORD(key);
+		AETE_WRITE_DWORD(typeSInt32);
+		AETE_WRITE_STR("");
+		AETE_ALIGN_WORD();
+		AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+	}
+
+	return aeteptr;
+}
+
+size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 	int numprops;
 	void *beginptr = aeteptr;
 
 	// Attention!
-	// - On some systems (ARM) this will cause unaligned memory access exception.
+	// - On some systems (e.g. ARM based CPUs) this will cause an unaligned memory access exception.
 	//   For X86, memory access just becomes slower.
 	// - If you change something here, please also change it in PiPL.rc (Windows) and scripting.r (Mac OS)
 
@@ -154,14 +180,14 @@ long aete_generate(void* aeteptr, PARM_T *pparm) {
 	AETE_WRITE_WORD(1); /* 1 suite */
 	{
 		AETE_WRITE_STR(/*"Telegraphics"*/(char*)pparm->author); /* vendor suite name */
-		AETE_WRITE_STR(/*""*/(char*)pparm->title); /* optional description */
+		AETE_WRITE_STR(""); /* optional description */
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(plugInSuiteID); /* suite ID */
 		AETE_WRITE_WORD(1); /* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 		AETE_WRITE_WORD(1); /* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 		AETE_WRITE_WORD(1); /* 1 event (structure for filters) */
 		{
-			AETE_WRITE_STR("FilterFoundry"); /* event name */
+			AETE_WRITE_STR(/*"FilterFoundry"*/(char*)pparm->title); /* event name */
 			AETE_WRITE_STR(""); /* event description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_DWORD(plugInClassID); /* event class */
@@ -172,7 +198,7 @@ long aete_generate(void* aeteptr, PARM_T *pparm) {
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0);
 			/* IMAGE_DIRECT_PARAM: */
-			AETE_WRITE_DWORD(typeImageReference); /* '#ImR' */
+			AETE_WRITE_DWORD(typeImageReference); /* typeImageReference='#ImR' */
 			AETE_WRITE_STR(""); /* direct parm description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0xB000);
@@ -223,85 +249,14 @@ long aete_generate(void* aeteptr, PARM_T *pparm) {
 				AETE_WRITE_WORD(0x8000);
 				*/
 
-				if (pparm->ctl_used[0] || pparm->map_used[0]) {
-					AETE_WRITE_STR(/*"ctl0"*/pparm->map_used[0] ? (char*)pparm->map[0] : (char*)pparm->ctl[0]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL0_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(0) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[1] || pparm->map_used[0]) {
-					AETE_WRITE_STR(/*"ctl1"*/pparm->map_used[0] ? (char*)pparm->map[0] : (char*)pparm->ctl[1]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL1_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(1) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[2] || pparm->map_used[1]) {
-					AETE_WRITE_STR(/*"ctl2"*/pparm->map_used[1] ? (char*)pparm->map[1] : (char*)pparm->ctl[2]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL2_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(2) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[3] || pparm->map_used[1]) {
-					AETE_WRITE_STR(/*"ctl3"*/pparm->map_used[1] ? (char*)pparm->map[1] : (char*)pparm->ctl[3]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL3_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(3) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[4] || pparm->map_used[2]) {
-					AETE_WRITE_STR(/*"ctl4"*/pparm->map_used[2] ? (char*)pparm->map[2] : (char*)pparm->ctl[4]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL4_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(4) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[5] || pparm->map_used[2]) {
-					AETE_WRITE_STR(/*"ctl5"*/pparm->map_used[2] ? (char*)pparm->map[2] : (char*)pparm->ctl[5]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL5_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(5) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[6] || pparm->map_used[3]) {
-					AETE_WRITE_STR(/*"ctl6"*/pparm->map_used[3] ? (char*)pparm->map[3] : (char*)pparm->ctl[6]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL6_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(6) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
-
-				if (pparm->ctl_used[7] || pparm->map_used[3]) {
-					AETE_WRITE_STR(/*"ctl7"*/pparm->map_used[3] ? (char*)pparm->map[3] : (char*)pparm->ctl[7]);
-					AETE_ALIGN_WORD();
-					AETE_WRITE_DWORD(PARAM_CTL7_KEY);
-					AETE_WRITE_DWORD(typeSInt32);
-					AETE_WRITE_STR("ctl(7) setting");
-					AETE_ALIGN_WORD();
-					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
-				}
+				aeteptr = _aete_property(aeteptr, pparm, 0, 0, PARAM_CTL0_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 1, 0, PARAM_CTL1_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 2, 1, PARAM_CTL2_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 3, 1, PARAM_CTL3_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 4, 2, PARAM_CTL4_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 5, 2, PARAM_CTL5_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 6, 3, PARAM_CTL6_KEY);
+				aeteptr = _aete_property(aeteptr, pparm, 7, 3, PARAM_CTL7_KEY);
 			}
 		}
 
@@ -313,13 +268,13 @@ long aete_generate(void* aeteptr, PARM_T *pparm) {
 		AETE_WRITE_WORD(0); /* 0 enumerations */
 		{}
 	}
-	AETE_WRITE_DWORD(0); /* padding */
+	AETE_WRITE_DWORD(0); /* padding (FIXME: do we need that? Adobe's Windows filters don't) */
 
 	return (byte*)aeteptr - (byte*)beginptr; // length of stuff written
 }
 
 void obfusc(unsigned char *pparm, size_t size) {
-	int i;
+	size_t i;
 	unsigned char *p;
 	uint32_t x32;
 

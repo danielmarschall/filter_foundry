@@ -118,6 +118,7 @@
 	Boolean maindialog(FilterRecordPtr pb);
 	Boolean builddialog(FilterRecordPtr pb);
 	Boolean simplealert(char *s);
+	Boolean showmessage(char *s);
 
 	// platform independent
 	Boolean alertuser(char *err,char *more);

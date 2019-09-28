@@ -169,7 +169,7 @@ value_type eval(struct node *root){
 		case '*': return eval(root->child[0]) * eval(root->child[1]);
 		case '/': t = eval(root->child[1]); return t ? eval(root->child[0]) / t : 0;
 		case '%': t = eval(root->child[1]); return t ? eval(root->child[0]) % t : 0;
-		case EXP: return pow(eval(root->child[0]),eval(root->child[1]));
+		case EXP: return (value_type)(pow(eval(root->child[0]), eval(root->child[1])));
 
 		case EQ:  return eval(root->child[0]) == eval(root->child[1]);
 		case NE:  return eval(root->child[0]) != eval(root->child[1]);
@@ -194,7 +194,11 @@ value_type eval(struct node *root){
 		case ',': eval(root->child[0]); return eval(root->child[1]);
 		}
 	}
+	#ifdef FP_VALUE
 	return 0.;
+	#else
+	return 0;
+#endif
 }
 
 /* free the memory for a tree's nodes */

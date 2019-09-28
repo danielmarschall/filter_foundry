@@ -212,7 +212,7 @@ inline uint32_t isqrt(uint32_t x) {
 	if (p[2] <= x) p += 2;
 	if (p[1] <= x) p += 1;
 
-	return p - lkpSquares;
+	return (uint32_t)(p - lkpSquares);
 }
 
 /* sqr(x) Square root of x */
@@ -235,7 +235,7 @@ value_type ff_sin(value_type x){
    1024, inclusive (Mac OS) */
 value_type ff_cos(value_type x){
 	//return RINT(TRIGAMP*cos(FFANGLE(x)));
-	return RINT(TRIGAMP*costab[abs(x) % COSTABSIZE]);
+	return (value_type)RINT(TRIGAMP*costab[abs(x) % COSTABSIZE]);
 }
 
 /* tan(x) Bounded tangent function of x, where x is an integer
@@ -246,19 +246,19 @@ value_type ff_tan(value_type x){
 	// TODO: Shouldn't the output be bounded to -1024..1024, or do I understand the definition wrong?
 	if (x < 0) x--; /* required for FilterFactory compatibility */
 	while (x < 0) x += TANTABSIZE;
-	return RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); /* FIXME: why do we need factor 2? */
+	return (value_type)RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); /* FIXME: why do we need factor 2? */
 }
 
 /* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
    from an arbitrary center */
 value_type ff_r2x(value_type d,value_type m){
-	return RINT(m*costab[abs(d) % COSTABSIZE]);
+	return (value_type)RINT(m*costab[abs(d) % COSTABSIZE]);
 }
 
 /* r2y(d,m) y displacement of the pixel m units away, at an angle of d,
    from an arbitrary center */
 value_type ff_r2y(value_type d,value_type m){
-	return RINT(m*costab[abs(d-256) % COSTABSIZE]);
+	return (value_type)RINT(m*costab[abs(d-256) % COSTABSIZE]);
 }
 
 /* c2d(x,y) Angle displacement of the pixel at coordinates x,y */
@@ -269,7 +269,7 @@ value_type ff_c2d(value_type x,value_type y){
 	//return RINT(TO_FFANGLE(atan2(-y,-x)));
 
 	// Behavior in FilterFoundry 1.7+: Matches FilterFactory
-	return RINT(TO_FFANGLE(atan2(y,x)));
+	return (value_type)RINT(TO_FFANGLE(atan2(y,x)));
 }
 
 /* c2m(x,y) Magnitude displacement of the pixel at coordinates x,y */
