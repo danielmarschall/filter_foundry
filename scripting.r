@@ -32,6 +32,8 @@
 
 resource 'aete' (AETE_ID, "FilterFoundry scripting dictionary", purgeable)
 {
+	/* Attention: If you change something here, please also change it in PiPL.rc (Windows) and make.c */
+	
 	1, 0, english, roman,				/* aete version and language specifiers */
 	{
 		vendorName,						/* vendor suite name */

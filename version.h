@@ -159,6 +159,8 @@
                    - Fixed Actions (recording/playback). Several things like the AETE resource were broken.
                      The classID had to be changed to 'Fltr' so that the parameters are shown in the
                      Photoshop Action tab. (*)
+                   - Scripting/Actions: For standalone filters, the name of the sliders
+                     are now written in the 'Actions' tab. The function 'fixaete' was replaced with 'aete_generate'. (*)
                    - "MaxSpace64" will now be used, if supported by the host
                    (Changes by Daniel Marschall)
 

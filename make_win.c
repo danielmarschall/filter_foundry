@@ -97,25 +97,16 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				PLstrcat(title,(StringPtr)"\003...");
 
 			origsize = SizeofResource(srcmod,datarsrc);
-			aetesize = SizeofResource(srcmod,aetersrc);
 
 			if( (newpipl = malloc(origsize+0x300))
-			 && (newaete = malloc(aetesize+0x100))
+			 && (newaete = malloc(4096))
 			 && (pparm = malloc(sizeof(PARM_T))) )
 			{
 				/* add user-specified title and category to new PiPL */
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
-
 				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,title) + 2;
-//sprintf(s,"origsize=%d titlesize=%d catsize=%d piplsize=%d",origsize,titlesize,catsize,piplsize);dbg(s);
-
-				/* copy old aete data to new block */
-				/* Windows 'aete' also has 2 byte version prefix */
-				memcpy(newaete,aetep,aetesize);
-
-				aetesize = fixaete((unsigned char*)newaete+2,aetesize-2,gdata->parm.title) + 2;
 
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));
@@ -129,6 +120,9 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 					myp2cstr(pparm->map[i]);
 				for(i=0;i<8;++i)
 					myp2cstr(pparm->ctl[i]);
+
+				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
+				aetesize = aete_generate(newaete, pparm);
 
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;
@@ -229,8 +223,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 		  && CopyFile(srcname,dstname,false)
 		  && doresources(hDllInstance,dstname);
 
-	if(!res)
+	if(!res) {
 		alertuser("Could not create standalone plugin.","");
+	} else {
+		showmessage("Filter was sucessfully created");
+	}
 
 	return res ? ioErr : noErr;
 }

@@ -104,8 +104,8 @@ END
 	"\0", \
 	0xB000 /* 10 110 000 00 000 000 */
 
-#define FLAGS_SINGLE_PROP	"\020\000" /* 00 010 000|00 000 000 */
-#define FLAGS_1_OPT_PARAM	"\200\000" /* 10 000 000|00 000 000 */
+#define FLAGS_SINGLE_PROP	0x1000 /* 00 010 000 00 000 000 */
+#define FLAGS_1_OPT_PARAM	0x8000 /* 10 000 000 00 000 000 */
 
 #define RC_typeChar			LC(T,E,X,T)
 #define RC_typeInteger		LC(l,o,n,g)
@@ -118,6 +118,8 @@ END
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 AETE_ID aete
 {
+	// Attention! If you change something here, please also change it in make.c and scripting.r (Mac OS)
+
 	0x0001, 		/* Reserved (for Photoshop) */
 
 	"\1\0", english, roman,				/* aete version and language specifiers */
@@ -126,8 +128,8 @@ AETE_ID aete
 		"\014Telegraphics",				/* vendor suite name */
 		"\0",							/* optional description */
 		LC(t,E,L,E),					/* suite ID */
-		1,	/* is 0 at Pointelize*/		/* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
-		1,	/* is 0 at Pointelize*/		/* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		1,								/* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		1,								/* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 
 		1, /*events*/					/* structure for filters */
 

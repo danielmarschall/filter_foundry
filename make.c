@@ -1,20 +1,20 @@
 /*
-    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+	Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include <stddef.h>
@@ -24,6 +24,7 @@
 #include "symtab.h"
 
 #include "PIActions.h"
+#include "PITerminology.h"
 
 #include "compat_string.h"
 
@@ -37,23 +38,23 @@ All IDs that are all lowercase are reserved by Apple.
 This leaves all IDs that begin with a lowercase letter and have at least
 one uppercase letter for you and other plug-in developers.
 */
-unsigned long printablehash(unsigned long hash){
+unsigned long printablehash(unsigned long hash) {
 	unsigned long key = 'a' + (hash % 26);  hash /= 26; // first lower case
-	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
-	key =   (key<<8) | (' ' + (hash % 95)); hash /= 95; // any printable
-	return  (key<<8) | ('A' + (hash % 26));             // last upper case
+	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
+	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
+	return  (key << 8) | ('A' + (hash % 26));             // last upper case
 }
 
 long roundToNext4(long x) {
 	int pad = 4 - (x % 4);
 	if (pad == 0) pad = 4;
-	return x+pad;
+	return x + pad;
 }
 
-long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
+long fixpipl(PIPropertyList *pipl, long origsize, StringPtr title) {
 	PIProperty *prop;
 	char *p;
-	struct hstm_data{
+	struct hstm_data {
 		/* this structure must be 14+1 bytes long, to match PiPL structure */
 		long version; /* = 0 */
 		long class_id;
@@ -75,11 +76,11 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PINameProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = roundToNext4(title[0]+1);
-	PLstrcpy((StringPtr)prop->propertyData,title);
+	prop->propertyLength = roundToNext4(title[0] + 1);
+	PLstrcpy((StringPtr)prop->propertyData, title);
 
 	// skip past new property record, and any padding
-	p += offsetof(PIProperty,propertyData) + prop->propertyLength;
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
 
 	/* add Category property key */
@@ -87,8 +88,8 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PICategoryProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = roundToNext4(gdata->parm.category[0]+1);
-	PLstrcpy((StringPtr)prop->propertyData,gdata->parm.category);
+	prop->propertyLength = roundToNext4(gdata->parm.category[0] + 1);
+	PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
 
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
@@ -97,9 +98,9 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 
 	/* construct scope string by concatenating Category and Title - hopefully unique! */
 	hstm = (struct hstm_data*)prop->propertyData;
-	scopelen = sprintf(hstm->scope,"%s %s",
-					   INPLACEP2CSTR(gdata->parm.category),
-					   INPLACEP2CSTR(title));
+	scopelen = sprintf(hstm->scope, "%s %s",
+		INPLACEP2CSTR(gdata->parm.category),
+		INPLACEP2CSTR(title));
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
 	hash = djb2(hstm->scope);
@@ -108,7 +109,7 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PIHasTerminologyProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = roundToNext4(offsetof(struct hstm_data,scope) + scopelen);
+	prop->propertyLength = roundToNext4(offsetof(struct hstm_data, scope) + scopelen);
 
 	hstm->version = 0;
 	hstm->class_id = plugInClassID;
@@ -120,66 +121,210 @@ long fixpipl(PIPropertyList *pipl,long origsize,StringPtr title){
 	return p - (char*)pipl;  // figure how many bytes were added
 }
 
-/* Mac aete resources include word alignments after string pairs; Windows ones apparently don't */
+#define AETE_WRITE_BYTE(i) *((int8_t*)aeteptr) = (i); (byte*)aeteptr += 1
+#define AETE_WRITE_WORD(i) *((int16_t*)aeteptr) = (i); (byte*)aeteptr += 2
+#define AETE_WRITE_DWORD(i) *((int32_t*)aeteptr) = (i); (byte*)aeteptr += 4
+#define AETE_WRITE_STR(s) *((int8_t*)aeteptr) = strlen(s); (byte*)aeteptr += 1; strcpy((char*)aeteptr, s); (byte*)aeteptr += strlen(s)
 #ifdef MAC_ENV
-	#define ALIGNWORD(j) (j += j & 1)
+#define AETE_ALIGN_WORD() (byte*)aeteptr += (intptr_t)aeteptr & 1
 #else
-	#define ALIGNWORD(j)
+#define AETE_ALIGN_WORD() /*nothing*/
 #endif
-#define SKIP_PSTR(j) (j += 1+aete[j])
 
-long fixaete(unsigned char *aete,long origsize,StringPtr title){
-	int offset,oldlen,newlen,desclen,oldpad,newpad;
-	Str255 desc;
+long aete_generate(void* aeteptr, PARM_T *pparm) {
+	int numprops;
+	void *beginptr = aeteptr;
 
-	offset = 8; /* point at suite name */
+	// Attention!
+	// - On some systems (ARM) this will cause unaligned memory access exception.
+	//   For X86, memory access just becomes slower.
+	// - If you change something here, please also change it in PiPL.rc (Windows) and scripting.r (Mac OS)
 
-	SKIP_PSTR(offset); /* skip suite name (vendor) [TODO maybe this should become author??] */
-	SKIP_PSTR(offset); /* skip suite description [TODO set this from dialog field??] */
-	ALIGNWORD(offset);
-	offset += 4+2+2+2; /* offset now points to filter name. */
+	// Note:
+	// - The 'aete' resource for Mac OS has word alignments after strings (but not if the next element is also a string)
+	//   see https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf page 8-9
 
-	oldlen = aete[offset];
-	newlen = title[0];
-
-	/* shift aete data taking into account new title string */
-	desclen = aete[offset+1+oldlen];
-	PLstrcpy(desc,(StringPtr)(aete+offset+1+oldlen));  /* save description string... */
-#ifdef MAC_ENV
-	/* see if alignment padding is necessary */
-	oldpad = (oldlen + desclen) & 1;
-	newpad = (newlen + desclen) & 1;
-#else
-	oldpad = newpad = 0;
+#ifdef WIN_ENV
+	AETE_WRITE_WORD(0x0001); /* Reserved (for Photoshop) */
 #endif
-	/* shift latter part of aete data, taking into account new string lengths */
-	memcpy(aete+offset+1+newlen+newpad,
-		   aete+offset+1+oldlen+oldpad,
-		   origsize-offset-1-oldlen-oldpad); /* phew! */
-	/* copy in new title string */
-	PLstrcpy((StringPtr)(aete+offset),title);
-	/* copy description string into right place... [TODO this could be new description from dialog field??] */
-	PLstrcpy((StringPtr)(aete+offset+1+newlen),desc);
+	AETE_WRITE_BYTE(0x01); /* aete version */
+	AETE_WRITE_BYTE(0x00); /* aete version */
+	AETE_WRITE_WORD(english); /* language specifiers */
+	AETE_WRITE_WORD(roman);
+	AETE_WRITE_WORD(1); /* 1 suite */
+	{
+		AETE_WRITE_STR(/*"Telegraphics"*/(char*)pparm->author); /* vendor suite name */
+		AETE_WRITE_STR(/*""*/(char*)pparm->title); /* optional description */
+		AETE_ALIGN_WORD();
+		AETE_WRITE_DWORD(plugInSuiteID); /* suite ID */
+		AETE_WRITE_WORD(1); /* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		AETE_WRITE_WORD(1); /* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		AETE_WRITE_WORD(1); /* 1 event (structure for filters) */
+		{
+			AETE_WRITE_STR("FilterFoundry"); /* event name */
+			AETE_WRITE_STR(""); /* event description */
+			AETE_ALIGN_WORD();
+			AETE_WRITE_DWORD(plugInClassID); /* event class */
+			AETE_WRITE_DWORD(/*plugInEventID*/event_id); /* event ID */
+			/* NO_REPLY: */
+			AETE_WRITE_DWORD(noReply); /* noReply='null' */
+			AETE_WRITE_STR(""); /* reply description */
+			AETE_ALIGN_WORD();
+			AETE_WRITE_WORD(0);
+			/* IMAGE_DIRECT_PARAM: */
+			AETE_WRITE_DWORD(typeImageReference); /* '#ImR' */
+			AETE_WRITE_STR(""); /* direct parm description */
+			AETE_ALIGN_WORD();
+			AETE_WRITE_WORD(0xB000);
 
-	SKIP_PSTR(offset); /* skip (new) event name */
-	SKIP_PSTR(offset); /* skip event description */
-	ALIGNWORD(offset);
+			numprops = 0;
+			if (pparm->ctl_used[0] || pparm->map_used[0]) numprops++;
+			if (pparm->ctl_used[1] || pparm->map_used[0]) numprops++;
+			if (pparm->ctl_used[2] || pparm->map_used[1]) numprops++;
+			if (pparm->ctl_used[3] || pparm->map_used[1]) numprops++;
+			if (pparm->ctl_used[4] || pparm->map_used[2]) numprops++;
+			if (pparm->ctl_used[5] || pparm->map_used[2]) numprops++;
+			if (pparm->ctl_used[6] || pparm->map_used[3]) numprops++;
+			if (pparm->ctl_used[7] || pparm->map_used[3]) numprops++;
+			AETE_WRITE_WORD(numprops);
+			{
+				// Standalone filters don't need RGBA expressions
+				/*
+				AETE_WRITE_STR("R");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_DWORD(PARAM_R_KEY);
+				AETE_WRITE_DWORD(typeText);
+				AETE_WRITE_STR("R channel expression");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_WORD(0x8000);
 
-	/* set event ID */
-	*(unsigned long*)(aete+offset+4) = event_id; /* FIXME: this might be unaligned access on some platforms?? */
+				AETE_WRITE_STR("G");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_DWORD(PARAM_G_KEY);
+				AETE_WRITE_DWORD(typeText);
+				AETE_WRITE_STR("G channel expression");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_WORD(0x8000);
 
-	// TODO: We should additionally replace the cTl0...cTl7 descriptions with the names of the slider!
+				AETE_WRITE_STR("B");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_DWORD(PARAM_B_KEY);
+				AETE_WRITE_DWORD(typeText);
+				AETE_WRITE_STR("B channel expression");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_WORD(0x8000);
 
-	return origsize-oldlen-oldpad+newlen+newpad;
+				AETE_WRITE_STR("A");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_DWORD(PARAM_A_KEY);
+				AETE_WRITE_DWORD(typeText);
+				AETE_WRITE_STR("A channel expression");
+				AETE_ALIGN_WORD();
+				AETE_WRITE_WORD(0x8000);
+				*/
+
+				if (pparm->ctl_used[0] || pparm->map_used[0]) {
+					AETE_WRITE_STR(/*"ctl0"*/pparm->map_used[0] ? (char*)pparm->map[0] : (char*)pparm->ctl[0]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL0_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(0) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[1] || pparm->map_used[0]) {
+					AETE_WRITE_STR(/*"ctl1"*/pparm->map_used[0] ? (char*)pparm->map[0] : (char*)pparm->ctl[1]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL1_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(1) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[2] || pparm->map_used[1]) {
+					AETE_WRITE_STR(/*"ctl2"*/pparm->map_used[1] ? (char*)pparm->map[1] : (char*)pparm->ctl[2]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL2_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(2) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[3] || pparm->map_used[1]) {
+					AETE_WRITE_STR(/*"ctl3"*/pparm->map_used[1] ? (char*)pparm->map[1] : (char*)pparm->ctl[3]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL3_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(3) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[4] || pparm->map_used[2]) {
+					AETE_WRITE_STR(/*"ctl4"*/pparm->map_used[2] ? (char*)pparm->map[2] : (char*)pparm->ctl[4]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL4_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(4) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[5] || pparm->map_used[2]) {
+					AETE_WRITE_STR(/*"ctl5"*/pparm->map_used[2] ? (char*)pparm->map[2] : (char*)pparm->ctl[5]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL5_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(5) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[6] || pparm->map_used[3]) {
+					AETE_WRITE_STR(/*"ctl6"*/pparm->map_used[3] ? (char*)pparm->map[3] : (char*)pparm->ctl[6]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL6_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(6) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+
+				if (pparm->ctl_used[7] || pparm->map_used[3]) {
+					AETE_WRITE_STR(/*"ctl7"*/pparm->map_used[3] ? (char*)pparm->map[3] : (char*)pparm->ctl[7]);
+					AETE_ALIGN_WORD();
+					AETE_WRITE_DWORD(PARAM_CTL7_KEY);
+					AETE_WRITE_DWORD(typeSInt32);
+					AETE_WRITE_STR("ctl(7) setting");
+					AETE_ALIGN_WORD();
+					AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
+				}
+			}
+		}
+
+		/* non-filter plug-in class here */
+		AETE_WRITE_WORD(0); /* 0 classes */
+		{}
+		AETE_WRITE_WORD(0); /* 0 comparison ops (not supported) */
+		{}
+		AETE_WRITE_WORD(0); /* 0 enumerations */
+		{}
+	}
+	AETE_WRITE_DWORD(0); /* padding */
+
+	return (byte*)aeteptr - (byte*)beginptr; // length of stuff written
 }
 
-void obfusc(unsigned char *pparm,size_t size){
+void obfusc(unsigned char *pparm, size_t size) {
 	int i;
 	unsigned char *p;
 	uint32_t x32;
 
 	x32 = 0x95D4A68F; // Hardcoded seed
-	for(i = size, p = pparm; i--;) {
+	for (i = size, p = pparm; i--;) {
 		// https://de.wikipedia.org/wiki/Xorshift
 		*p++ ^= (x32 ^= (x32 ^= (x32 ^= x32 << 13) >> 17) << 5);
 	}

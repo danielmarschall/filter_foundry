@@ -91,10 +91,9 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 				   so the scripting system can distinguish the standalone plugin */
 
 				if( (h = Get1Resource(typeAETE,AETE_ID)) ){
-					origsize = GetHandleSize(h);
-					SetHandleSize(h,origsize+0x100); /* slop for fixup to work with */
+					SetHandleSize(h,4096);
 					HLock(h);
-					newsize = fixaete((unsigned char*)*h,origsize,gdata->parm.title);
+					newsize = aete_generate((unsigned char*)*h, &gdata->parm);
 					HUnlock(h);
 					SetHandleSize(h,newsize);
 
@@ -285,8 +284,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 #endif
 	}
 
-	if(e && e != userCanceledErr)
+	if(e && e != userCanceledErr) {
 		alertuser("Could not create standalone plugin.",reason);
+	} else {
+		showmessage("Filter was sucessfully created");
+	}
 
 	return e;
 }

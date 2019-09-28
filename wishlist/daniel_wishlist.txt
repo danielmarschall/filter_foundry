@@ -73,9 +73,6 @@ Minor priority stuff or ideas
   The problem is that the offset of the preview area is always different, and if the zoom
   level is not a multiple of two, you will always "pick" other bars.
   
-* In regards "Actions/Scripting":
-  fixaete(): Replace the cTl0...cTl7 descriptions with the names of the slider!	   
-
 * Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
 
 * Support more colors modes and 16bit. Why is Lab color not accepted, although doesSupportLABColor is set?

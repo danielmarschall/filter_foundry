@@ -80,6 +80,16 @@ Boolean simplealert(char *s){
 	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
+Boolean showmessage(char *s){
+	char* title;
+	if (gdata && gdata->standalone) {
+		title = INPLACEP2CSTR(gdata->parm.title);
+	} else {
+		title = "Filter Foundry";
+	}
+	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONINFORMATION|MB_OK) == IDOK;
+}
+
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
