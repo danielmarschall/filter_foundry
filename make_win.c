@@ -136,7 +136,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				/* Attention: The resource we have found using FindResource() might have a different
 				   language than the resource we are saving (Neutral), so we might end up having
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
-				   set in the PIPL.RC file, for the resources PIPL and AETE. */
+				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
 				if( _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000),
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 				 && _UpdateResource(hupdate,"AETE" /* note: caps!! */,MAKEINTRESOURCE(16000),

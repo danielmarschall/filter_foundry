@@ -19,6 +19,7 @@
 
 /* wrapper file for Windows resource compiler input */
 
+#include "Scripting.rc"
 #include "PiPL.rc"
 #include "ui_win.rc"
 #include "manifest.rc"

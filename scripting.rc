@@ -1,0 +1,127 @@
+/*
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+#include "PIResDefines.h"
+#include "PIActions.h"
+
+#include "ui.h"
+#include "version.h"
+
+#define LC(a,b,c,d)		#d, #c, #b, #a
+
+#define VENDORID LC(8,B,I,M)
+#define NULLID 0L
+
+/*	Dictionary (scripting) resource */
+/* also see ui.h */
+
+/*
+#define NO_REPLY		\
+	noReply,			\
+	"",					\
+	replyRequired,	singleItem,	notEnumerated,	notTightBindingFunction,	\
+	reserved,		reserved,	reserved,		reserved,					\
+	reserved,		reserved,	reserved,		reserved,					\
+	verbEvent,		reserved,	reserved,		reserved
+#define IMAGE_DIRECT_PARAMETER	\
+	typeImageReference,			\
+	"",							\
+	flagsOptionalEnumeratedChangesDirect
+#define flagsOptionalEnumeratedChangesDirect	\
+	directParamOptional,	singleItem,	enumerated,	changesState,	\
+	reserved,				reserved,	reserved,	reserved,		\
+	reserved,				reserved,	reserved,	reserved,		\
+	reserved,				reserved,	reserved,	reserved
+#define flagsSingleParameter					\
+	required,			singleItem,		notEnumerated,	reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	prepositionParam,	notFeminine,	notMasculine,	singular
+#define flagsSingleProperty						\
+	reserved,			singleItem,		notEnumerated,	readWrite,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	reserved,			reserved,		reserved,		reserved,	\
+	noApostrophe,		notFeminine,	notMasculine,	singular
+*/
+#define RC_NO_REPLY \
+	LC(n,u,l,l),	/*noReply*/ \
+	"\0", \
+	0x0000 /* 00 000 000 00 000 000 */
+#define RC_IMAGE_DIRECT_PARAM \
+	"RmI#"/*LC(#,I,m,R)*/,	/*typeImageReference; written as string because the Stringizing operator cannot handle '#' */ \
+	"\0", \
+	0xB000 /* 10 110 000 00 000 000 */
+
+#define FLAGS_SINGLE_PROP	0x1000 /* 00 010 000 00 000 000 */
+#define FLAGS_1_OPT_PARAM	0x8000 /* 10 000 000 00 000 000 */
+
+#define RC_typeChar			LC(T,E,X,T)
+#define RC_typeInteger		LC(l,o,n,g)
+
+/* Nota Bene: UNLIKE the Macintosh format of the 'aete' resource,
+   the Windows resource does NOT have word alignment constraints
+   after its embedded strings. */
+
+/* Note: make_win.c writes language 0. So, this should be language 0, too, otherwise the standalone filter would have 2 languages for this resource. */
+LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
+AETE_ID aete
+{
+	// Attention! If you change something here, please also change it in make.c and scripting.r (Mac OS)
+
+	0x0001, 		/* Reserved (for Photoshop) */
+
+	"\1\0", english, roman,				/* aete version and language specifiers */
+
+	1, /*suites*/
+		"\014Telegraphics",				/* vendor suite name */
+		"\0",							/* optional description */
+		LC(t,E,L,E),					/* suite ID */
+		1,								/* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+		1,								/* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
+
+		1, /*events*/					/* structure for filters */
+
+			"\015FilterFoundry",		/* event name               */
+			"\0",						/* event description        */
+			LC(F,l,t,r),				/* event class              */
+			LC(f,i,F,o),				/* event ID                 */
+			RC_NO_REPLY,
+			RC_IMAGE_DIRECT_PARAM,
+			12,
+				"\001R", LC(x,p,r,R), RC_typeChar, "\024R channel expression", FLAGS_1_OPT_PARAM,
+				"\001G", LC(x,p,r,G), RC_typeChar, "\024G channel expression", FLAGS_1_OPT_PARAM,
+				"\001B", LC(x,p,r,B), RC_typeChar, "\024B channel expression", FLAGS_1_OPT_PARAM,
+				"\001A", LC(x,p,r,A), RC_typeChar, "\024A channel expression", FLAGS_1_OPT_PARAM,
+				"\004ctl0", LC(c,T,l,0), RC_typeInteger, "\016ctl(0) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl1", LC(c,T,l,1), RC_typeInteger, "\016ctl(1) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl2", LC(c,T,l,2), RC_typeInteger, "\016ctl(2) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl3", LC(c,T,l,3), RC_typeInteger, "\016ctl(3) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl4", LC(c,T,l,4), RC_typeInteger, "\016ctl(4) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl5", LC(c,T,l,5), RC_typeInteger, "\016ctl(5) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl6", LC(c,T,l,6), RC_typeInteger, "\016ctl(6) setting", FLAGS_1_OPT_PARAM,
+				"\004ctl7", LC(c,T,l,7), RC_typeInteger, "\016ctl(7) setting", FLAGS_1_OPT_PARAM,
+
+		0, /*classes*/					/* non-filter plug-in class here */
+
+		0, /* comparison ops (not supported) */
+
+		0, /* any enumerations */
+
+	0L /* padding */
+}

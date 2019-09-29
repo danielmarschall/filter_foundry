@@ -65,7 +65,7 @@ http://developer.apple.com/ if you have an ADC login).
 Mac notes
 ---------
 The Mac build requires Apple's MoreFiles library, which can be obtained via
-http://developer.apple.com/samplecode/Sample_Code/Files/MoreFiles.htm
+https://developer.apple.com/library/archive/samplecode/MoreFiles/
 
 Depending on how the source files were extracted, it may be necessary to set
 the correct Mac file types before attempting to build. In MPW, this can
