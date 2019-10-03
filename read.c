@@ -174,11 +174,11 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	FILEREF refnum;
 	int i;
 
-	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum)){
+	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum) == noErr){
 		// check DOS EXE magic number
 		count = 2;
-		if(!FSRead(refnum,&count,magic) /*&& magic[0]=='M' && magic[1]=='Z'*/){
-			if(!GetEOF(refnum,&count) && count < 256L<<10){ // sanity check file size < 256K
+		if(FSRead(refnum,&count,magic) == noErr /*&& magic[0]=='M' && magic[1]=='Z'*/){
+			if(GetEOF(refnum,&count) == noErr && count < 256L<<10){ // sanity check file size < 256K
 				if( (h = readfileintohandle(refnum)) ){
 					long *q = (long*)PILOCKHANDLE(h,false);
 
@@ -271,9 +271,9 @@ Handle readfileintohandle(FILEREF r){
 	Handle h;
 	Ptr p;
 
-	if( !GetEOF(r,&n) && (h = PINEWHANDLE(n)) ){
+	if( GetEOF(r,&n) == noErr && (h = PINEWHANDLE(n)) ){
 		p = PILOCKHANDLE(h,false);
-		if(!SetFPos(r,fsFromStart,0) && !FSRead(r,&n,p)){
+		if(SetFPos(r,fsFromStart,0) == noErr && FSRead(r,&n,p) == noErr){
 			PIUNLOCKHANDLE(h);
 			return h;
 		}
@@ -282,17 +282,28 @@ Handle readfileintohandle(FILEREF r){
 	return NULL;
 }
 
+Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
+#ifdef WIN_ENV
+	char name[MAX_PATH+1];
+	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name,sfr->sfFile.name) + sfr->nFileExtension,extension);
+#else
+	char name[1025]; // https://stackoverflow.com/questions/1295135/longest-pathname-string-in-mac-os-x-hfs
+	char* s = myp2cstrcpy(name,sfr->sfFile.name);
+	return strcmp(s + strlen(s) - strlen(extension), extension) == 0;
+#endif
+}
+
 Boolean readfile(StandardFileReply *sfr,char **reason){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
 
-	if(!FSpOpenDF(&sfr->sfFile,fsRdPerm,&r)){
+	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
 			if( (res = readparams(h,true,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
-				if (sfr->nFileExtension && !strcasecmp((char*)sfr->sfFile.name + sfr->nFileExtension,".pff")) {
+				if (fileHasExtension(sfr, ".pff")) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					char* tmp;
 					tmp = my_strdup(expr[0]);

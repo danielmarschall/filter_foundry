@@ -58,7 +58,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	FInfo fndrInfo;
 
-	if(!FSpGetFInfo(&sfr->sfFile,&fndrInfo)){
+	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
 		if( (readok = readfile(sfr,reason)) )
 			gdata->parmloaded = false;

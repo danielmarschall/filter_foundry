@@ -107,8 +107,8 @@ Boolean savefile(StandardFileReply *sfr){
 	char *reasonstr = "";
 
 	FSpDelete(&sfr->sfFile);
-	if(!FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript))
-		if(!FSpOpenDF(&sfr->sfFile,fsWrPerm,&r)){
+	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
+		if(FSpOpenDF(&sfr->sfFile,fsWrPerm,&r) == noErr){
 
 			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.				res = !(saveparams(h) || savehandleintofile(h,r)) ;
 				res = !(saveparams(h) || savehandleintofile(h,r)) ;

@@ -137,7 +137,9 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 					myc2pstrcpy(sfr.sfFile.name, outfilename);
+					#ifdef WIN_ENV
 					sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
+					#endif
 					sfr.sfScript = 0; // FIXME: is that ok?
 					savefile(&sfr);
 				}
@@ -201,7 +203,9 @@ int checkandinitparams(Handle params){
 		sprintf(outfilename, "%sFilterFoundry.afs", tempdir);
 
 		myc2pstrcpy(sfr.sfFile.name, outfilename);
+		#ifdef WIN_ENV
 		sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
+		#endif
 		sfr.sfScript = 0; // FIXME: is that ok?
 		if (loadfile(&sfr, &reason)) return true;
 	}
