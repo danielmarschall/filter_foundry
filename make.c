@@ -122,15 +122,48 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title) {
 	return p - (char*)pipl;  // figure how many bytes were added
 }
 
-#define AETE_WRITE_BYTE(i) *((uint8_t*)aeteptr) = (i); (byte*)aeteptr += 1
-#define AETE_WRITE_WORD(i) *((uint16_t*)aeteptr) = (i); (byte*)aeteptr += 2
-#define AETE_WRITE_DWORD(i) *((uint32_t*)aeteptr) = (i); (byte*)aeteptr += 4
-#define AETE_WRITE_STR(s) assert(strlen((s))<=255); AETE_WRITE_BYTE((uint8_t)strlen((s))); strcpy((char*)aeteptr, (s)); (byte*)aeteptr += strlen((s))
-#ifdef MAC_ENV
-#define AETE_ALIGN_WORD() (byte*)aeteptr += (intptr_t)aeteptr & 1
-#else
-#define AETE_ALIGN_WORD() /*nothing*/
-#endif
+void _aete_write_byte(void** aeteptr, uint8_t val) {
+	uint8_t* tmp = *((uint8_t**)aeteptr);
+	*tmp = val;
+	*aeteptr = (void*)((unsigned char*)tmp + 1);
+}
+#define AETE_WRITE_BYTE(i) _aete_write_byte(&aeteptr, (i));
+
+void _aete_write_word(void** aeteptr, uint16_t val) {
+	uint16_t* tmp = *((uint16_t**)aeteptr);
+	*tmp = val;
+	*aeteptr = (void*)((unsigned char*)tmp + 2);
+}
+#define AETE_WRITE_WORD(i) _aete_write_word(&aeteptr, (i));
+
+void _aete_write_dword(void** aeteptr, uint32_t val) {
+	uint32_t* tmp = *((uint32_t**)aeteptr);
+	*tmp = val;
+	*aeteptr = (void*)((unsigned char*)tmp + 4);
+}
+#define AETE_WRITE_DWORD(i) _aete_write_dword(&aeteptr, (i));
+
+void _aete_write_pstr(void** aeteptr, char* str) {
+	char* tmp;
+
+	assert(strlen(str) <= 255);
+
+	_aete_write_byte(aeteptr, (uint8_t)strlen(str));
+
+	tmp = *((char**)aeteptr);
+	strcpy(tmp, str);
+	*aeteptr = (void*)((unsigned char*)tmp + strlen(str));
+}
+#define AETE_WRITE_PSTR(s) _aete_write_pstr(&aeteptr, (s));
+
+void _aete_align_word(void** aeteptr) {
+	#ifdef MAC_ENV
+	unsigned char* tmp = *((unsigned char**)aeteptr);
+	tmp += (intptr_t)tmp & 1;
+	*aeteptr = (void*)tmp;
+	#endif
+}
+#define AETE_ALIGN_WORD() _aete_align_word(&aeteptr);
 
 void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSType key) {
 	char tmp[256];
@@ -142,14 +175,14 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 			} else {
 				sprintf(tmp, "%s ...", (char*)pparm->map[mapidx]);
 			}
-			AETE_WRITE_STR(tmp);
+			AETE_WRITE_PSTR(tmp);
 		} else {
-			AETE_WRITE_STR((char*)pparm->ctl[ctlidx]);
+			AETE_WRITE_PSTR((char*)pparm->ctl[ctlidx]);
 		}
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(key);
 		AETE_WRITE_DWORD(typeSInt32);
-		AETE_WRITE_STR("");
+		AETE_WRITE_PSTR("");
 		AETE_ALIGN_WORD();
 		AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
 	}
@@ -179,27 +212,27 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 	AETE_WRITE_WORD(roman);
 	AETE_WRITE_WORD(1); /* 1 suite */
 	{
-		AETE_WRITE_STR(/*"Telegraphics"*/(char*)pparm->author); /* vendor suite name */
-		AETE_WRITE_STR(""); /* optional description */
+		AETE_WRITE_PSTR(/*"Telegraphics"*/(char*)pparm->author); /* vendor suite name */
+		AETE_WRITE_PSTR(""); /* optional description */
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(plugInSuiteID); /* suite ID */
 		AETE_WRITE_WORD(1); /* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 		AETE_WRITE_WORD(1); /* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 		AETE_WRITE_WORD(1); /* 1 event (structure for filters) */
 		{
-			AETE_WRITE_STR(/*"FilterFoundry"*/(char*)pparm->title); /* event name */
-			AETE_WRITE_STR(""); /* event description */
+			AETE_WRITE_PSTR(/*"FilterFoundry"*/(char*)pparm->title); /* event name */
+			AETE_WRITE_PSTR(""); /* event description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_DWORD(plugInClassID); /* event class */
 			AETE_WRITE_DWORD(/*plugInEventID*/event_id); /* event ID */
 			/* NO_REPLY: */
 			AETE_WRITE_DWORD(noReply); /* noReply='null' */
-			AETE_WRITE_STR(""); /* reply description */
+			AETE_WRITE_PSTR(""); /* reply description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0);
 			/* IMAGE_DIRECT_PARAM: */
 			AETE_WRITE_DWORD(typeImageReference); /* typeImageReference='#ImR' */
-			AETE_WRITE_STR(""); /* direct parm description */
+			AETE_WRITE_PSTR(""); /* direct parm description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0xB000);
 
@@ -216,35 +249,35 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 			{
 				// Standalone filters don't need RGBA expressions
 				/*
-				AETE_WRITE_STR("R");
+				AETE_WRITE_PSTR("R");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_DWORD(PARAM_R_KEY);
 				AETE_WRITE_DWORD(typeText);
-				AETE_WRITE_STR("R channel expression");
+				AETE_WRITE_PSTR("R channel expression");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_WORD(0x8000);
 
-				AETE_WRITE_STR("G");
+				AETE_WRITE_PSTR("G");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_DWORD(PARAM_G_KEY);
 				AETE_WRITE_DWORD(typeText);
-				AETE_WRITE_STR("G channel expression");
+				AETE_WRITE_PSTR("G channel expression");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_WORD(0x8000);
 
-				AETE_WRITE_STR("B");
+				AETE_WRITE_PSTR("B");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_DWORD(PARAM_B_KEY);
 				AETE_WRITE_DWORD(typeText);
-				AETE_WRITE_STR("B channel expression");
+				AETE_WRITE_PSTR("B channel expression");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_WORD(0x8000);
 
-				AETE_WRITE_STR("A");
+				AETE_WRITE_PSTR("A");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_DWORD(PARAM_A_KEY);
 				AETE_WRITE_DWORD(typeText);
-				AETE_WRITE_STR("A channel expression");
+				AETE_WRITE_PSTR("A channel expression");
 				AETE_ALIGN_WORD();
 				AETE_WRITE_WORD(0x8000);
 				*/

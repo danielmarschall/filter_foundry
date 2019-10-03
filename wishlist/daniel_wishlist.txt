@@ -8,11 +8,14 @@ Important/Bugs
 * In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
   to write an expression longer than 1023 bytes, which would lead to a crash?
 
-* Test with 64 Bit Mac, and publish 1.7 (when can we leave the beta state?)
-  Windows 64 is already tested. We just need an updated Makefile.
-  
-* For Mac, please look at the (*) marked entries in version.h and verify the bugs/fixes
+* Macintosh: Please look at the (*) marked entries in version.h and verify the bugs/fixes
   and/or apply the changes on Mac.
+
+* Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
+  Do we need to rewrite the UI code because the Carbon Framework is not available in 64 bit?
+
+* Release version 1.7 (when can we leave the beta state?)
+  Windows 32+64 is already tested and ready to publish.
 
 
 Minor priority stuff or ideas
@@ -29,9 +32,6 @@ Minor priority stuff or ideas
   
 * CMYK mode is possible (although a bit misleading to have r=c, g=m, b=y, a=k), but then it is impossible to
   control the alpha channel.
-
-* Other Telegraphics Filters have the same problem in VERSIONINFO where the translation
-  strings "04900000" don't fit together "080904B0" (fixed in Filter Foundry)
 
 * I have found following in the source code: Do we need to do something here?
 	strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
@@ -87,11 +87,9 @@ Minor priority stuff or ideas
   used": Is there anything we can do to make it more performant when the user changes sliders?
   Especially with large pictures, the process becomes a bit laggy!
   
-* Currently, we use WIN_ENV and MAC_ENV to decide which Endianess we use. However, if we want to support
-  Linux (with GIMP?), then we should use other compiler defines.
-  Check, what is necessary to support Linux?
-  
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
+
+* Support BigDocument
 
 
 Design/UI Tweaks
@@ -105,7 +103,7 @@ Design/UI Tweaks
 * The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac)
   Unfortunately, this task is very hard in WIN32 API.
 
-* Should there be more space for expressions, like in Filter Factory?
+* Should there be more (visual) space for expressions, like in Filter Factory?
 
 * Standalone filter: Map labels should be centered between two sliders, like in Filter Factory
 
@@ -114,19 +112,15 @@ Design/UI Tweaks
 * simplealert() is only "appmodal" and has no hWnd. Due to this, the window is not blinking when
   the user tries to click on a parent window. (Is this a Windows bug?)
 
-* When a standalone filter is built, maybe the user should get a notification that it was successful.
-  Something like a simplealert(), but with "information" as message type, not "error"
 
-* Support BigDocument
-
-
-Things to check/correct for other Telegraphics plugins (fixed in FilterFoundry)
+Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 ------------------------------------------------------
 
 * The lengths of the PIPL TLV structure must include everything, including string paddings,
   with 1 zero padding guaranteed. See annotations in "GIMP Incompatibilities".
 
 * The language/country code in VarFileInfo must be a code that exists in StringFileInfo.
+  The translation strings "04900000" don't fit together "080904B0".
 
 * 64 Bit Windows builds
 
