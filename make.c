@@ -303,7 +303,7 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 	}
 	AETE_WRITE_DWORD(0); /* padding (FIXME: do we need that? Adobe's Windows filters don't) */
 
-	return (byte*)aeteptr - (byte*)beginptr; // length of stuff written
+	return (unsigned char*)aeteptr - (unsigned char*)beginptr; // length of stuff written
 }
 
 void obfusc(unsigned char *pparm, size_t size) {

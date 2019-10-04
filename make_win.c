@@ -168,17 +168,17 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 				tmp += mbstowcs(tmp, "CompanyName", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, pparm->author, 100);
+				tmp += mbstowcs(tmp, (char*)pparm->author, 100);
 				tmp++;
 
 				tmp += mbstowcs(tmp, "LegalCopyright", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, pparm->copyright, 100);
+				tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
 				tmp++;
 
 				tmp += mbstowcs(tmp, "FileDescription", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, pparm->title, 100);
+				tmp += mbstowcs(tmp, (char*)pparm->title, 100);
 				tmp++;
 
 				tmp += mbstowcs(tmp, "OriginalFilename", 100);

@@ -111,10 +111,10 @@ void dispose_preview(){
 
 void* memset_bgcolor(void* ptr, size_t num) {
 	int i;
-	byte* p;
+	unsigned char* p;
 
 	i = 0;
-	p = (byte*)ptr;
+	p = (unsigned char*)ptr;
 	for (i=0; i<(int)num; ++i) {
 #ifdef WIN_ENV
 		DWORD color;
@@ -127,16 +127,16 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			if (i%nplanes == 2) p[i] = GetBValue(color);
 			if (i%nplanes == 3) p[i] = 255; // alpha channel
 		} else if (gpb->imageMode == plugInModeGrayScale) {
-			byte r, g, b;
+			uint8_t r, g, b;
 
 			r = GetRValue(color);
 			g = GetGValue(color);
 			b = GetBValue(color);
 
-			if (i%nplanes == 0) p[i] = (byte)(((299L*r)+(587L*g)+(114L*b))/1000);
+			if (i%nplanes == 0) p[i] = (uint8_t)(((299L*r)+(587L*g)+(114L*b))/1000);
 			if (i%nplanes == 1) p[i] = 255; // alpha channel
 		} else if (gpb->imageMode == plugInModeCMYKColor) {
-			byte r, g, b;
+			uint8_t r, g, b;
 			double dr, dg, db, k, c, m, y;
 
 			r = GetRValue(color);
@@ -151,10 +151,10 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			m = (1 - dg - k) / (1 - k);
 			y = (1 - db - k) / (1 - k);
 
-			if (i%nplanes == 0) p[i] = (byte)(255 - c * 255);
-			if (i%nplanes == 1) p[i] = (byte)(255 - m * 255);
-			if (i%nplanes == 2) p[i] = (byte)(255 - y * 255);
-			if (i%nplanes == 3) p[i] = (byte)(255 - k * 255);
+			if (i%nplanes == 0) p[i] = (uint8_t)(255 - c * 255);
+			if (i%nplanes == 1) p[i] = (uint8_t)(255 - m * 255);
+			if (i%nplanes == 2) p[i] = (uint8_t)(255 - y * 255);
+			if (i%nplanes == 3) p[i] = (uint8_t)(255 - k * 255);
 		} else {
 			// FIXME: If we are in such a non supported color mode, then
 			//        these color codes would be all wrong!

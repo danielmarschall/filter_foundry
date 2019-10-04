@@ -149,7 +149,8 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 	static unsigned char *fname="\pInfo.plist";
 	char *buf,*save,*p;
 	short rn,dstrn,i,n,m;
-	long eof,count;
+	FILEPOS eof;
+	FILECOUNT count;
 	OSErr e;
 
 	if( !(e = HCreate(dstvol,dstdir,fname,'pled','TEXT')) ){

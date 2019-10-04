@@ -74,7 +74,7 @@ Boolean ReadScriptParamsOnRead(void)
 	DescriptorKeyIDArray array = { NULLID };
 	int32 flags;
 	OSErr stickyError;
-	long v;
+	int32 v;
 
 	if (DescriptorAvailable(NULL)){ /* playing back.  Do our thing. */
 		token = OpenReader(array);

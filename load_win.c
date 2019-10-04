@@ -52,9 +52,9 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm,resinfo);
-			byte* copy = malloc(resSize);
+			char* copy = malloc(resSize);
 			memcpy(copy, pparm, resSize);
-			obfusc(copy, resSize);
+			obfusc((unsigned char*)copy, resSize);
 			res = readPARM(copy,&gdata->parm,reason,1);
 			free(copy);
 		}
