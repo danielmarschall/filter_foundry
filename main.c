@@ -285,6 +285,7 @@ int64_t maxspace(){
 		*/
 
 		if (gpb->hostSig == HOSTSIG_IRFANVIEW) maxSpace64 *= 1024; // IrfanView is giving Kilobytes instead of Bytes
+		// TODO: Serif PhotoPlus also gives Kilobytes instead of bytes. But since it uses not a unique host signature, there is nothing we can do???
 		return maxSpace64;
 	}
 }
