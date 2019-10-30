@@ -12,6 +12,7 @@ Windows:
 	            Tested with PluginCommander 1.62 (Revision 2)
 	            Tested with IrfanView 4.53 (32+64 Bit)
 	            Tested with Serif PhotoPlus 6
+	            Tested with Paint.net
 	            It should work on most programs that support "8BF" Photoshop filters
 	Machine:    Any x86 or x64 CPU
 	

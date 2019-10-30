@@ -9,6 +9,7 @@ PluginCommander 1.62    '8BIM'      Bytes            Not in use      No
 Corel Paint Shop Pro X  'PSP9'      Bytes            Not in use      Yes
 GIMP (using PSPI)       'PMIG'      Bytes            Not in use      No
 IrfanView 4.53 (32+64)  'UP20'      Kilobytes        Not in use      No
+Paint.Net               'NDP.'      ???              ???             Yes
 ------------------------------------------------------------------------------------------------
 
 More hosts to test:
