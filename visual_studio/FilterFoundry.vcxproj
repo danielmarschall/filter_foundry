@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
@@ -91,7 +91,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -100,7 +100,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
@@ -122,13 +122,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
-E:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
-E:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c
+win_flex_bison\win_bison.exe parser.y -d -y
+win_flex_bison\win_flex.exe lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -147,13 +147,13 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
-E:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
-E:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c
+win_flex_bison\win_bison.exe parser.y -d -y
+win_flex_bison\win_flex.exe lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -176,13 +176,13 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
-E:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
-E:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c
+win_flex_bison\win_bison.exe parser.y -d -y
+win_flex_bison\win_flex.exe lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -205,13 +205,13 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\pica_sp;D:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
-E:\FilterFoundry\win_flex_bison\win_bison parser.y -d -y
-E:\FilterFoundry\win_flex_bison\win_flex lexer.l y.tab.c
+win_flex_bison\win_bison.exe parser.y -d -y
+win_flex_bison\win_flex.exe lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

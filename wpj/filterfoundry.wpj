@@ -12,21 +12,18 @@ WRect
 MProject
 3
 MCommand
-445
-set PSSDK=E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk
-set PSAPI=E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi
+347
+set PSSDK=..\photoshop_sdk\pluginsdk
+set PSAPI=..\photoshop_sdk\pluginsdk\photoshopapi
 cd ..
 if exist y_tab.c del y_tab.c 
 if exist lex_yy.c del lex_yy.c
-E:\FilterFoundry\win_flex_bison\win_bison  parser.y -d -y
-E:\FilterFoundry\win_flex_bison\win_flex  lexer.l y.tab.c
+win_flex_bison\win_bison.exe parser.y -d -y
+win_flex_bison\win_flex.exe lexer.l y.tab.c
 rem IDE doesnt like multiple dots in filenames
 ren y.tab.c y_tab.c
 ren lex.yy.c lex_yy.c
 cd wpj
-
-
-
 4
 MCommand
 0

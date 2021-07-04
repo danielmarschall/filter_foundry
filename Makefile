@@ -1,5 +1,6 @@
 # This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-# Copyright (C) 2003-7 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by  
@@ -17,8 +18,6 @@
 
 # GNU Makefile
 # builds Win32 DLL and CS2/Mac Mach-O plugin bundle
-
-# by Toby Thain <toby@telegraphics.com.au>
 
 
 # ---------- variables & flags ----------
@@ -38,7 +37,7 @@ LEX = flex
 YACC = bison -y
 YFLAGS = -d
 
-PSAPI = "../Adobe Photoshop CS3 Public Beta SDK/photoshopapi"
+PSAPI = "photoshop_sdk/pluginsdk/photoshopapi"
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -DYY_SKIP_YYWRAP \

@@ -1,6 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,7 +49,7 @@ void DoAbout(AboutRecordPtr pb){
 		               "%s\n" /* {Copyright} */
 		               "\n"
 		               "This plugin was built using Filter Foundry " VERSION_STR "\n"
-		               "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n"
+		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "available from http://www.telegraphics.com.au/sw/",
 		               INPLACEP2CSTR(gdata->parm.title),
 		               INPLACEP2CSTR(gdata->parm.author),
@@ -56,7 +57,7 @@ void DoAbout(AboutRecordPtr pb){
 	} else {
 		sprintf(title, "About Filter Foundry");
 		sprintf(text,  "Filter Foundry " VERSION_STR "\n"
-		               "(C) 2003-" RELEASE_YEAR " Toby Thain <toby@telegraphics.com.au>\n"
+		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "\n"
 	                   "Latest version available from\n"
 	                   "http://www.telegraphics.com.au/sw/\n"

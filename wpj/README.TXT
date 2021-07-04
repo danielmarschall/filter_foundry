@@ -2,63 +2,60 @@
 BUILDING FILTER FOUNDRY ON OPENWATCOM
 by Peter Heckert and Daniel Marschall
 
-Most recently tested with OpenWatcom 1.9 with Adobe Photoshop SDK CC 2017
+Most recently tested with OpenWatcom 1.9 and Adobe Photoshop SDK CC 2017.
 
 
-Prerequisites:
-================
+Prerequisites
+-------------
 
 1) Flex and Bison
-Available here:
-https://sourceforge.net/projects/winflexbison/
+   Available here:
+   https://sourceforge.net/projects/winflexbison/
 
 2) Adobe Photoshop SDK
-Available on some Photoshop CDs, or can be downloaded at
-https://www.adobe.com/devnet/photoshop/sdk.html
+   Available on some Photoshop CDs, or can be downloaded at
+   https://www.adobe.com/devnet/photoshop/sdk.html
 
 3) Watcom 1.6beta RC1 or later
-Available here:
-http://www.openwatcom.org/
+   Available here:
+   http://www.openwatcom.org/
+   After installing, do a reboot, or set the environment manually.
 
 4) SVN client
-After installing Watcom get the command line svn client:
-https://tortoisesvn.net/index.de.html
-After installing all these reboot, or set the environment manually
+   Get an SVN client, e.g. TortoiseSVN:
+   https://tortoisesvn.net/downloads.html
+   Make sure you include the command line tools during the install.
 
 
-How to get FilterFoundry:
-===========================
+How to get FilterFoundry
+------------------------
 
-Make a directory anywhere for telegraphics plugins, remember, no spaces in pathname
-cd into the directory.
-type
-svn checkout https://www.telegraphics.com.au/svn/common/trunk common
-svn checkout https://www.telegraphics.com.au/svn/filterfoundry/trunk filterfoundry
+Make a directory anywhere (e.g. C:\FilterFoundry\) for telegraphics plugins,
+then open the command line and type:
+	cd /d "C:\FilterFoundry\"
+	svn checkout https://www.telegraphics.com.au/svn/common/trunk common
+	svn checkout https://www.telegraphics.com.au/svn/filterfoundry/trunk filterfoundry
 
+In our example, you should now have the directories
+	C:\FilterFoundry\common\
+	C:\FilterFoundry\filterfoundry\
 
-Build setup:
-==============
-
-Hint:
-  If you never used Watcom to build Photoshop plugins best start with the 
-  countcolours plugin and ensure it compiles. Read the HowTo.
-  Look for it at https://www.telegraphics.com.au/sw/ or get it with
-  svn checkout https://www.telegraphics.com.au/svn/countcolours/trunk countcolours
-
-1. Open filterfoundry.wpj in Watcom's IDE.
-
-2. In menu File->Before set the path to your Photoshop SDK,
-   Flex and Bison.
-   If this doesn't work (there seem to be a bug in OpenWatcom 1.9 where you can only make the
-   text smaller, but not bigger), you have to edit the WPJ file with an text editor.
-   Remember how many characters you have added or deleted, and subtract or add them
-   to the number written above the before-instructions (currently 445).
-
-3. Thats all, you can build the project then.
+IMPORTANT: Your path must not contain whitespaces!
+For example, you must not use "C:\Users\John Doe\SVN\Filter Foundry\".
 
 
-Troubleshooting:
-==================
+Build setup
+-----------
+
+There is no special build setup required.
+Just open wpj\filterfoundry.wpj in Watcom's IDE
+and click "Make target".
+
+
+Troubleshooting
+---------------
+
+- Please make sure that you must not have whitespaces in the pathname.
 
 - If you get the error message "Fatal Error! 62:  Unable to open 'sdkddkver.h'", please open 
   pluginsdk\photoshopapi\photoshop\PITypes.h in your Adobe Photoshop SDK and
@@ -74,16 +71,26 @@ Troubleshooting:
 
 - If you receive the error message "lex.yy.c(580): Error! E1009: Expecting ';' but found '1'",
   check if the compiler directive "YY_SKIP_YYWRAP" is set.
-  Go to Options -> C Compiler Switches -> Source switches , and add YY_SKIP_YYWRAP=1 .
+  Go to Options -> C Compiler Switches -> Source switches, and add YY_SKIP_YYWRAP=1 .
   The wpj project should already have this setting applied.
+
+- The path to the Photoshop SDK and to Win Flex/Bison (PreBuild event)
+  is already set in the project file. Please note that changing these
+  paths is a bit complicated. There are several bugs in OpenWatcom
+  where you can only make the pre-build-events shorter, but not longer).
+  Sometimes, some lines aren't even displayed!
+  You have to edit the WPJ file with a text editor.
+  Remember how many characters you have added or deleted,
+  and subtract or add them to the number written above the before-instructions
+  (currently 347). This is the number of bytes of the commands.
 
 
 Remarks
-=========
+-------
 
-flex and bison are currently invoked as batch process.
+flex and bison are currently invoked as a batch process.
 This is defined in the menu File->Before.
-The ide fails to build the project when filenames contain more than one dot.
+The IDE fails to build the project when filenames contain more than one dot.
 Therefore the output files of bison and lex are renamed.
 There is no error checking done.
 Probably it would be better to write a small wmake file for this purpose.

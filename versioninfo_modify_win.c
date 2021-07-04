@@ -1,6 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2019 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -486,9 +487,12 @@ ULONG UpdateVersionInfoWithHandle(PCTSTR FileName, HANDLE hUpdate, PCWSTR change
 Usage example:
 
 int main(int argc, char** argv) {
-	static const PCWSTR changes = L"Blabla\0Tennis\0CompanyName\0NewCompany\0LegalCopyright\0\b\0OriginalFilename\0Tristan.bay\0";
+	// Set CompanyName to "Contoso Ltd."
+	// Delete LegalCopyright
+	// Set OriginalFilename to "Test.dll"
+	static const PCWSTR changes = L"Foo\0Bar\0CompanyName\0Contoso Ltd.\0LegalCopyright\0\b\0OriginalFilename\0Test.dll\0";
 
-	UpdateVersionInfoByFilename("E:\\_test\\rand_test\\test.dll", changes);
+	UpdateVersionInfoByFilename("C:\\Test.dll", changes);
 	return 0;
 }
 */

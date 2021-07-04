@@ -3,12 +3,12 @@ Implementation detail differences			Daniel Marschall
 =================================			08 January 2018
 
 FilterFoundry tries to be as compatible with Filter Factory as possible.
-However, results are usually not 100% equal, because functions like
-cos, sin, sqr, etc. have different accuracy due to the underlying
+However, results are usually not 100% equal because functions like
+cos, sin, sqr, etc., have different accuracy due to the underlying
 implementation.
 
-Furthermore, there are following known differences between Filter Foundry
-and Filter Factory:
+Furthermore, there are the following known differences between
+Filter Foundry and Filter Factory:
 
 i, u, v (Testcase iuv.afs)
 -------
@@ -25,7 +25,7 @@ Filter Foundry 1.7 uses more accurate formulas:
 	u=(-147407*r-289391*g+436798*b)/2000000  Output range is -55..55
 	v=614777*r-514799*g-99978*b)/2000000     Output range is -78..78
 
-Both formulas follow the same YUV standard, but have different accuracy.
+Both formulas follow the same YUV standard but have different accuracy.
 
 
 get(i) (Testcase getput.afs)
@@ -50,8 +50,8 @@ Filter Foundry initializes it as r=g=b=255
 rnd(a,b) and rst(i) (Testcases rst_*.afs)
 -------------------
 
-Filter Foundry's implementation of rst(i) (undocumented function that sets the seed for the PRG)
-and rnd(a,b) (generate random number between a and b, inclusively)
+Filter Foundry's implementation of rst(i) (an undocumented function that sets the seed for the PRG)
+and rnd(a,b) (generate a random number between a and b, inclusively)
 differs from the implementation of Filter Factory in many ways.
 
 1. In Filter Foundry, the random seed is automatically initialized with seed 691204.
@@ -65,7 +65,7 @@ differs from the implementation of Filter Factory in many ways.
    If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
    to extract the low 15 bits.
 
-3. In Filter Foundry, the function rnd(a,b) retrieves a random number at realtime; therefore, if the
+3. In Filter Foundry, the function rnd(a,b) retrieves a random number in realtime; therefore, if the
    seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.
    For example, following filter would generate an one-colored picture without any randomness:
 	R: rst(123), rnd(0,255)

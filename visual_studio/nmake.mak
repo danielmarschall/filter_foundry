@@ -1,5 +1,6 @@
 # This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-# Copyright (C) 2002-2019 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+# Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by  
@@ -42,7 +43,7 @@
 EXEC = FilterFoundry
 
 # define location of Photoshop SDK headers
-PSAPI = "E:\FilterFoundry\adobe_photoshop_sdk_cc_2017_win\pluginsdk\photoshopapi"
+PSAPI = "..\photoshop_sdk\pluginsdk\photoshopapi"
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
@@ -57,8 +58,8 @@ LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
 RFLAGS = -i$(PSAPI)\Photoshop
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
-FLEX = E:\FilterFoundry\win_flex_bison\win_flex
-BISON = E:\FilterFoundry\win_flex_bison\win_bison
+FLEX = win_flex_bison\win_flex
+BISON = win_flex_bison\win_bison
 
 OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
 	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj \

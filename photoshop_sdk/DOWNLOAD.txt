@@ -1,0 +1,10 @@
+
+Please download "Adobe Photoshop SDK" here:
+https://www.adobe.com/devnet/photoshop/sdk.html
+
+Then extract its contents in this directory:
+- connectionsdk/
+- images/
+- pluginsdk/
+- license.html
+- ReadMe.html

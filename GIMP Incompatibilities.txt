@@ -20,7 +20,7 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	
 	I think this is not correct, since even official plugins of Adobe (e.g. "3D Transform.8bf")
 	are rounding the length to a multiple of 4 (actually, rounding to the next possible multiple 4,
-	so that a padding is always guaranteed).
+	so that padding is always guaranteed).
 
 
 2. Filters will only fill the bottom of the picture, not the whole canvas.
@@ -54,12 +54,12 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	(PINEWHANDLE), so FF 1.7 is now assigning 1 byte for these.
 
 
-5. For a 1920x1080 picture, the fitzoom in GIMP/PSPI is not correct. It is 8% on GIMP, but should be 7%.
+5. For a 1920x1080 picture, the fitzoom in GIMP/PSPI is not correct. It is 8% on GIMP but should be 7%.
 
 	Status: FIXED (Workaround) in FilterFoundry 1.7
 	
 	The reason is that FilterFoundry adjusts the zoom level if the available memory is low.
-	PSPI sets maxSpace to 100 MB hardcoded. It is probably only a dummy value and don't
+	PSPI sets maxSpace to 100 MB hardcoded. It is probably only a dummy value and doesn't
 	resemble the actual space GIMP can assign to the plugin.
 	In Photoshop, maxSpace is 825 MB.
 
