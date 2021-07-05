@@ -20,28 +20,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\adobeplugin\dllmain.c">
+    <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\choosefile_win.c">
+    <ClCompile Include="..\telegraphics_common\tt\choosefile_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\compat_string.c">
+    <ClCompile Include="..\telegraphics_common\tt\compat_string.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\compat_win.c">
+    <ClCompile Include="..\telegraphics_common\tt\compat_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\dbg_win.c">
+    <ClCompile Include="..\telegraphics_common\tt\dbg_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\file_compat_win.c">
+    <ClCompile Include="..\telegraphics_common\tt\file_compat_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\str.c">
+    <ClCompile Include="..\telegraphics_common\tt\str.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\tt\ui_compat_win.c">
+    <ClCompile Include="..\telegraphics_common\tt\ui_compat_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\funcs.c">

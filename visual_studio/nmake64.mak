@@ -48,7 +48,7 @@ PSAPI = "..\photoshop_sdk\pluginsdk\photoshopapi"
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
            -I$(PSAPI)\Pica_sp -I$(PSAPI)\Photoshop -I$(PSAPI)\General \
-           -I..\..\common\adobeplugin -I..\..\common\tt -I..
+           -I..\telegraphics_common\adobeplugin -I..\telegraphics_common\tt -I..
 CFLAGS = -O2 $(CPPFLAGS)
 
 # Note since VS8 it is necessary to link with multithreaded standard lib, using /MT
@@ -64,11 +64,11 @@ BISON = win_flex_bison\win_bison
 OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
 	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj \
 	..\scripting.obj ..\lex.yy.obj ..\manifest.obj ..\ui_win.obj ..\make_win.obj ..\versioninfo_modify_win.obj ..\load_win.obj \
-	..\..\common\tt\dbg_win.obj ..\..\common\tt\ui_compat_win.obj \
-	..\..\common\tt\choosefile_win.obj ..\ui_build_win.obj \
-	..\..\common\tt\compat_string.obj ..\..\common\tt\compat_win.obj \
-	..\..\common\tt\file_compat_win.obj ..\..\common\tt\str.obj \
-	..\..\common\adobeplugin\dllmain.obj
+	..\telegraphics_common\tt\dbg_win.obj ..\telegraphics_common\tt\ui_compat_win.obj \
+	..\telegraphics_common\tt\choosefile_win.obj ..\ui_build_win.obj \
+	..\telegraphics_common\tt\compat_string.obj ..\telegraphics_common\tt\compat_win.obj \
+	..\telegraphics_common\tt\file_compat_win.obj ..\telegraphics_common\tt\str.obj \
+	..\telegraphics_common\adobeplugin\dllmain.obj
 
 all : parser lexer $(EXEC)64.8bf
 

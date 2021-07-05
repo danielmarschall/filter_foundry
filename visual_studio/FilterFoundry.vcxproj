@@ -24,32 +24,32 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>FilterFoundry</RootNamespace>
     <ProjectName>FilterFoundry</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
@@ -91,7 +91,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -100,7 +100,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;.\;$(IncludePath)</IncludePath>
+    <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
@@ -122,7 +122,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
@@ -147,7 +147,7 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
@@ -176,7 +176,7 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
@@ -205,7 +205,7 @@ move lex.yy.c lex_yy.c</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\..\common\adobeplugin;..\..\common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
@@ -219,14 +219,14 @@ move lex.yy.c lex_yy.c</Command>
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\adobeplugin\dllmain.c" />
-    <ClCompile Include="..\..\common\tt\choosefile_win.c" />
-    <ClCompile Include="..\..\common\tt\compat_string.c" />
-    <ClCompile Include="..\..\common\tt\compat_win.c" />
-    <ClCompile Include="..\..\common\tt\dbg_win.c" />
-    <ClCompile Include="..\..\common\tt\file_compat_win.c" />
-    <ClCompile Include="..\..\common\tt\str.c" />
-    <ClCompile Include="..\..\common\tt\ui_compat_win.c" />
+    <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />
+    <ClCompile Include="..\telegraphics_common\tt\choosefile_win.c" />
+    <ClCompile Include="..\telegraphics_common\tt\compat_string.c" />
+    <ClCompile Include="..\telegraphics_common\tt\compat_win.c" />
+    <ClCompile Include="..\telegraphics_common\tt\dbg_win.c" />
+    <ClCompile Include="..\telegraphics_common\tt\file_compat_win.c" />
+    <ClCompile Include="..\telegraphics_common\tt\str.c" />
+    <ClCompile Include="..\telegraphics_common\tt\ui_compat_win.c" />
     <ClCompile Include="..\funcs.c" />
     <ClCompile Include="..\lex_yy.c" />
     <ClCompile Include="..\load_win.c" />

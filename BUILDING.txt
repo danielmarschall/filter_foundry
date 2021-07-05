@@ -31,12 +31,17 @@ and mingw32 (Win32 target).
 A Photoshop SDK is required (available from Adobe Systems,
 https://www.adobe.com/devnet/photoshop/sdk.html ).
 The SDK was also distributed with Photoshop 6.0 and earlier.
-The source code has been built with SDK 6.0, CS2, CS3 beta, and 2017 but older
-versions can be used.
+The source code has been built with SDK 6.0, CS2, CS3 beta, and CC 2017 but older
+versions should work, too.
 (If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
 to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace
 with a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency"
 from PiPL_common.r.)
+
+The dependency "telegraphics_common" is available here
+http://www.telegraphics.com.au/svn/common/
+Revision 84 (dated 9 October 2019) is included in this repository
+to simplify the build process.
 
 
 Mac notes

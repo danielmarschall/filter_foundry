@@ -21,35 +21,15 @@ Prerequisites
    http://www.openwatcom.org/
    After installing, do a reboot, or set the environment manually.
 
-4) SVN client
-   Get an SVN client, e.g. TortoiseSVN:
-   https://tortoisesvn.net/downloads.html
-   Make sure you include the command line tools during the install.
-
-
-How to get FilterFoundry
-------------------------
-
-Make a directory anywhere (e.g. C:\FilterFoundry\) for telegraphics plugins,
-then open the command line and type:
-	cd /d "C:\FilterFoundry\"
-	svn checkout https://www.telegraphics.com.au/svn/common/trunk common
-	svn checkout https://www.telegraphics.com.au/svn/filterfoundry/trunk filterfoundry
-
-In our example, you should now have the directories
-	C:\FilterFoundry\common\
-	C:\FilterFoundry\filterfoundry\
-
-IMPORTANT: Your path must not contain whitespaces!
-For example, you must not use "C:\Users\John Doe\SVN\Filter Foundry\".
-
 
 Build setup
 -----------
 
 There is no special build setup required.
-Just open wpj\filterfoundry.wpj in Watcom's IDE
-and click "Make target".
+Just open wpj\filterfoundry.wpj in Watcom's IDE and click "Make target".
+
+IMPORTANT: Your path must not contain whitespaces!
+For example, you must not use "C:\Users\John Doe\SVN\Filter Foundry\".
 
 
 Troubleshooting

@@ -42,13 +42,13 @@ PSAPI = "photoshop_sdk/pluginsdk/photoshopapi"
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar
 CPPFLAGS += -DYY_SKIP_YYWRAP \
             -I$(PSAPI)/pica_sp -I$(PSAPI)/photoshop -I$(PSAPI)/general \
-            -I../common/adobeplugin -I../common/tt
+            -Itelegraphics_common/adobeplugin -Itelegraphics_common/tt
 
 
 # ---------- source & object files ----------
 
 # where to find .c source files
-vpath %.c ../common/tt ../common/adobeplugin ../MoreFiles/Sources
+vpath %.c telegraphics_common/tt telegraphics_common/adobeplugin ../MoreFiles/Sources
 
 # list of source files
 SRC_COMMON = main.c funcs.c process.c node.c symtab.c \

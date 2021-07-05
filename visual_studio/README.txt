@@ -22,12 +22,7 @@ Prerequisites
    https://www.adobe.com/devnet/photoshop/sdk.html
    Extract the contents of the package in the directory "..\photoshop_sdk"
 
-4) SVN client
-   Get an SVN client, e.g. TortoiseSVN:
-   https://tortoisesvn.net/downloads.html
-   Make sure you include the command line tools during the install.
-
-5) Windows SDK
+4) Windows SDK
    Download the Windows SDK here:
    https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk/
    and install the following components:
@@ -35,20 +30,6 @@ Prerequisites
    - Windows SDK for Desktop C++ amd64 Apps
    For some reason, you only need to install the Windows SDK if you
    build using the IDE, but not if you build using command-line (*.mak files).
-
-
-How to get FilterFoundry
-------------------------
-
-Make a directory anywhere (e.g. C:\FilterFoundry\) for telegraphics plugins,
-then open the command line and type:
-	cd /d "C:\FilterFoundry\"
-	svn checkout https://www.telegraphics.com.au/svn/common/trunk common
-	svn checkout https://www.telegraphics.com.au/svn/filterfoundry/trunk filterfoundry
-
-In our example, you should now have the directories
-	C:\FilterFoundry\common\
-	C:\FilterFoundry\filterfoundry\
 
 
 Build setup using the IDE
