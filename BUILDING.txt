@@ -118,12 +118,14 @@ BUILDING WITH OPEN WATCOM
 	  subdirectory and notes (README.TXT), kindly provided by Peter Heckert and Daniel Marschall.
 	* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK CC 2017.
 
-BUILDING WITH MINGW32
+BUILDING WITH MINGW32/64
 	* Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
 	* Download: http://mingw-w64.org/doku.php/download/mingw-builds
-	* Do NOT install mingw32 to a directory that contains white-spaces (i.e. "C:\Program Files (x86)\")!
-	* Run "mingw-w64.bat" or use "Run terminal" in the start menu, or include the "mingw32\bin directory in your %PATH% environment variable.
-	* Navigate to your SVN directory, then type
-		mingw32-make -f Makefile.win clean
-		mingw32-make -f Makefile.win
-	* Most recently tested with mingw64 (i686-8.1.0-posix-dwarf-rt_v6-rev0) and Adobe Photoshop SDK CC 2017.
+	* Do NOT install mingw32 to a directory that contains white spaces (i.e. "C:\Program Files (x86)\")!
+	* To build both Win32 and Win64, you need to run setup two times:
+	  For 32 bit "i686" and for 64 bit "x86_64"
+	* Check if all paths inside the file "make_mingw32.bat" are valid, then run it.
+	  The files FilterFoundry.8bf (32 Bit) and FilterFoundry64.8bf (64 Bit) should now be generated.
+	* Most recently tested with mingw64 and Adobe Photoshop SDK CC 2017:
+	  - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
+	  - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit

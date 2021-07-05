@@ -169,7 +169,7 @@ struct node *parseexpr(char *s){
 		else /* ensure we don't leak memory, on an unsuccessful parse */
 			freeallnodes();
 	}else
-		yyerror(my_strdup("null string???"));
+		yyerror("null string???");
 	return 0;
 }
 

@@ -68,7 +68,7 @@ BOOL _EndUpdateResource/*A*/(
 
 	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
 	if (!hLib) return 0;
-	fEndUpdateResourceA = (f_EndUpdateResourceA)GetProcAddress(hLib, "EndUpdateResourceA");
+	fEndUpdateResourceA = (f_EndUpdateResourceA)(void*)GetProcAddress(hLib, "EndUpdateResourceA");
 	res = fEndUpdateResourceA(hUpdate, fDiscard);
 	FreeLibrary(hLib);
 
@@ -99,7 +99,7 @@ BOOL _UpdateResource/*A*/(
 
 	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
 	if (!hLib) return 0;
-	fUpdateResourceA = (f_UpdateResourceA)GetProcAddress(hLib, "UpdateResourceA");
+	fUpdateResourceA = (f_UpdateResourceA)(void*)GetProcAddress(hLib, "UpdateResourceA");
 	res = fUpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 	FreeLibrary(hLib);
 
