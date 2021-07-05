@@ -27,8 +27,8 @@ BOOL ActivateManifest(HMODULE hModule, int manifestResourceID, PManifestActivati
 
 	if (!(vars->hKernel32 = LoadLibraryA("KERNEL32.DLL"))) return FALSE;
 
-	if (!(fActivateActCtx = (f_ActivateActCtx)GetProcAddress(vars->hKernel32, "ActivateActCtx"))) { FreeLibrary(vars->hKernel32); return FALSE; }
-	if (!(fCreateActCtxA = (f_CreateActCtxA)GetProcAddress(vars->hKernel32, "CreateActCtxA"))) { FreeLibrary(vars->hKernel32); return FALSE; }
+	if (!(fActivateActCtx = (f_ActivateActCtx)(void*)GetProcAddress(vars->hKernel32, "ActivateActCtx"))) { FreeLibrary(vars->hKernel32); return FALSE; }
+	if (!(fCreateActCtxA = (f_CreateActCtxA)(void*)GetProcAddress(vars->hKernel32, "CreateActCtxA"))) { FreeLibrary(vars->hKernel32); return FALSE; }
 
 	ZeroMemory(&vars->actCtx, sizeof(vars->actCtx));
 	vars->actCtx.cbSize = sizeof(vars->actCtx);
@@ -48,8 +48,8 @@ BOOL DeactivateManifest(PManifestActivationCtx vars) {
 	f_DeactivateActCtx fDeactivateActCtx;
 	f_ReleaseActCtx fReleaseActCtx;
 
-	if (!(fDeactivateActCtx = (f_DeactivateActCtx)GetProcAddress(vars->hKernel32, "DeactivateActCtx"))) return FALSE;
-	if (!(fReleaseActCtx = (f_ReleaseActCtx)GetProcAddress(vars->hKernel32, "ReleaseActCtx"))) return FALSE;
+	if (!(fDeactivateActCtx = (f_DeactivateActCtx)(void*)GetProcAddress(vars->hKernel32, "DeactivateActCtx"))) return FALSE;
+	if (!(fReleaseActCtx = (f_ReleaseActCtx)(void*)GetProcAddress(vars->hKernel32, "ReleaseActCtx"))) return FALSE;
 
 	fDeactivateActCtx(0, vars->cookie);
 	fReleaseActCtx(vars->hActCtx);

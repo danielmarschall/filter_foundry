@@ -37,7 +37,8 @@ Build setup using the IDE
 
 1. Open the visual_studio\FilterFoundry.sln with Visual Studio
 
-2. Go to the project settings and change the Windows SDK version to the one you have installed.
+2. Go to the project settings and change the Windows SDK version and
+   Platform Toolset to the one you have installed.
 
 3. You can now compile the x86 and x64 plugins inside the IDE.
 	The output files are:

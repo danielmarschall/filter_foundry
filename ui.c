@@ -215,7 +215,7 @@ void maindlgupdate(DIALOGREF dp){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
 			if(gdata->standalone){
-				alertuser("Can't run this filter (there is a problem with the saved expressions).","");
+				alertuser(my_strdup("Can't run this filter (there is a problem with the saved expressions)."),my_strdup(""));
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
@@ -240,7 +240,7 @@ void maindlgupdate(DIALOGREF dp){
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;
-	char *channelsuffixes[] = {
+	const char *channelsuffixes[] = {
 		"", "KA", "I", "RGBA",
 		"CMYK", "HSL", "HSB", "1234",
 		"DA", "LabA"
@@ -338,12 +338,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes(
 					#ifdef MAC_ENV
-					(StringPtr)"\pChoose filter settings",
+					(StringPtr)my_strdup("\pChoose filter settings"),
 					#else
-					(StringPtr)"Choose filter settings",
+					(StringPtr)my_strdup("Choose filter settings"),
 					#endif
 					&sfr,&reply,types,2,
-					"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0"
+					my_strdup("All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0")
 					#ifdef _WIN32
 					,gdata->hWndMainDlg
 					#endif /* _WIN32 */
@@ -352,19 +352,19 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}else
-				alertuser("Cannot load settings.",reason);
+				alertuser(my_strdup("Cannot load settings."),reason);
 		}
 		break;
 	case SAVEITEM:
 		if(!gdata->standalone && putfile(
 										#ifdef MAC_ENV
-										(StringPtr)"\pSave filter settings",
+										(StringPtr)my_strdup("\pSave filter settings"),
 										#else
-										(StringPtr)"Save filter settings",
+										(StringPtr)my_strdup("Save filter settings"),
 										#endif
 										(StringPtr)"",
 										TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										"afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
+										my_strdup("afs"),my_strdup("Settings file (.afs, .txt)\0*.afs;*.txt\0\0"),1
 										#ifdef _WIN32
 										,gdata->hWndMainDlg
 										#endif /* _WIN32 */
@@ -381,13 +381,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 #endif
 			if( putfile(
 						#ifdef MAC_ENV
-						(StringPtr)"\pMake standalone filter",
+						(StringPtr)my_strdup("\pMake standalone filter"),
 						#else
-						(StringPtr)"Make standalone filter",
+						(StringPtr)my_strdup("Make standalone filter"),
 						#endif
 						fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1
+						my_strdup("8bf"),my_strdup("Filter plugin file (.8bf)\0*.8bf\0\0"),1
 						#ifdef _WIN32
 						,gdata->hWndMainDlg
 						#endif /* _WIN32 */
@@ -442,7 +442,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case FIRSTICONITEM+2:
 	case FIRSTICONITEM+3:
 		item -= FIRSTICONITEM;
-		alertuser(err[item],"");
+		alertuser(err[item],my_strdup(""));
 		SELECTCTLTEXT(dp,FIRSTEXPRITEM+item,errstart[item],errpos[item]);
 		break;
 	case FIRSTEXPRITEM:
@@ -460,7 +460,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 }
 
 Boolean alertuser(char *err,char *more){
-	char *s = malloc(strlen(err)+strlen(more)+2),*q;
+	char *s = (char*)malloc(strlen(err)+strlen(more)+2),*q;
 	Boolean res;
 
 	q = cat(s,err);

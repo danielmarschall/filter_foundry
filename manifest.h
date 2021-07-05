@@ -39,10 +39,10 @@ typedef struct _tagACTCTXA {
 	HMODULE hModule;
 } _ACTCTXA, *_PACTCTXA;
 
-typedef BOOL(__stdcall *f_ActivateActCtx)(HANDLE hActCtx, ULONG_PTR *lpCookie);
-typedef HANDLE(__stdcall *f_CreateActCtxA)(_PACTCTXA pActCtx);
-typedef BOOL(__stdcall *f_DeactivateActCtx)(DWORD dwFlags, ULONG_PTR ulCookie);
-typedef void(__stdcall *f_ReleaseActCtx)(HANDLE hActCtx);
+typedef BOOL(WINAPI *f_ActivateActCtx)(HANDLE hActCtx, ULONG_PTR *lpCookie);
+typedef HANDLE(WINAPI *f_CreateActCtxA)(_PACTCTXA pActCtx);
+typedef BOOL(WINAPI *f_DeactivateActCtx)(DWORD dwFlags, ULONG_PTR ulCookie);
+typedef void(WINAPI *f_ReleaseActCtx)(HANDLE hActCtx);
 
 typedef struct _tagManifestActivationCtx {
 	HANDLE hActCtx;

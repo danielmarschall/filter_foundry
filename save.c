@@ -117,11 +117,11 @@ Boolean savefile(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = ("Could not open the file.");
-	else reasonstr = ("Could not create the file.");
+		}else reasonstr = (my_strdup("Could not open the file."));
+	else reasonstr = (my_strdup("Could not create the file."));
 
 	if(!res)
-		alertuser("Could not save settings.",reasonstr);
+		alertuser(my_strdup("Could not save settings."),reasonstr);
 
 	return res;
 }

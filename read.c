@@ -114,9 +114,9 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                                         case 'r': c = CR;
                                         case '\\': break;
                                         default:
-                                                if(alerts) alertuser("Warning:","Unknown escape sequence in input.");
+                                                if(alerts) alertuser(my_strdup("Warning:"),my_strdup("Unknown escape sequence in input."));
                                         }
-                                }//else if(alerts) alertuser("Warning:","truncated escape sequence ends input");
+                                }//else if(alerts) alertuser(my_strdup("Warning:"),my_strdup("truncated escape sequence ends input"));
                         }
 
                         if(lineptr < MAXLINE)

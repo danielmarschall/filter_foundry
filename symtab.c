@@ -23,7 +23,7 @@
 
 #include "symtab.h"
 
-unsigned long djb2(char *str);
+unsigned long djb2(const char *str);
 
 /* following constant (need not) be prime. for a list of prime numbers,
    see http://www.utm.edu/research/primes/lists/small/1000.txt */
@@ -36,7 +36,7 @@ extern struct sym_rec predefs[];
 // hash function recommended by Ozan Yigit
 // http://www.cs.yorku.ca/~oz/hash.html
 // "this algorithm (k=33) was first reported by dan bernstein"
-unsigned long djb2(char *str){
+unsigned long djb2(const char *str){
 	unsigned long hash = 5381;
 	int c;
 
@@ -79,7 +79,7 @@ void dump_symbols(){
 }
 
 
-struct sym_rec *lookup(char *s){
+struct sym_rec *lookup(const char *s){
 	struct sym_rec *p;
 	int idx = HASH(s);
 //	printf("# lookup \"%s\" hash=%5d\n",s,idx);

@@ -62,10 +62,10 @@ Photoshop 7.0, CS, and CS2 will load Carbon/PEF plugins built in this manner.
 Only CodeWarrior and MPW can build these.
 
 Photoshop CS2 also supports Mach-O format plugins. For details on how
-these are built, see the Makefile (target "osx"). 
+these are built, see the Makefile.mac (target "osx"). 
 
 Photoshop CS3 supports "universal" (or "fat") plugins having native code
-for both PowerPC and Intel architectures. The provided Makefile can build
+for both PowerPC and Intel architectures. The provided Makefile.mac can build
 a "universal" plugin if you have the CS3 "Beta" SDK (use target "fat").
 
 Note that building Mach-O plugins requires Apple's Developer Tools
@@ -108,17 +108,22 @@ BUILDING WITH VISUAL STUDIO
 	* Download: https://visualstudio.microsoft.com/de/vs/community/
 	* To build in Windows with Visual Studio (IDE or command line), see the visual_studio
 	  subdirectory and notes (README.TXT).
-	* Most recently tested with Visual C++ 2019 with Adobe Photoshop SDK CC 2017
+	* Most recently tested with Visual C++ 2019 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH OPEN WATCOM
-	* OpenWatcom can also be used, but only for 32 Bit, and it is officially not
+	* OpenWatcom can be used, but only for 32 Bit, and it is officially not
 	  supported by Adobe.
 	* Download: https://sourceforge.net/projects/openwatcom/files/
 	* To build in Windows with the OpenWatcom IDE, see the wpj
 	  subdirectory and notes (README.TXT), kindly provided by Peter Heckert and Daniel Marschall.
-	* Most recently tested with Open Watcom 1.9 with Adobe Photoshop SDK CC 2017
+	* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH MINGW32
 	* Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
-	* Download: http://mingw-w64.org/doku.php/download
-	* Before attempting to build, you must edit the file "Makefile".
+	* Download: http://mingw-w64.org/doku.php/download/mingw-builds
+	* Do NOT install mingw32 to a directory that contains white-spaces (i.e. "C:\Program Files (x86)\")!
+	* Run "mingw-w64.bat" or use "Run terminal" in the start menu, or include the "mingw32\bin directory in your %PATH% environment variable.
+	* Navigate to your SVN directory, then type
+		mingw32-make -f Makefile.win clean
+		mingw32-make -f Makefile.win
+	* Most recently tested with mingw64 (i686-8.1.0-posix-dwarf-rt_v6-rev0) and Adobe Photoshop SDK CC 2017.

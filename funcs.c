@@ -177,7 +177,7 @@ value_type ff_scl(value_type a,value_type il,value_type ih,
 	return ih==il ? 0 : ol + ((long)(oh-ol)*(a-il))/(ih-il);
 }
 
-inline uint32_t isqrt(uint32_t x) {
+static uint32_t isqrt(uint32_t x) {
 	// based on https://gist.github.com/orlp/3481770
 
 	static uint32_t lkpSquares[65535];

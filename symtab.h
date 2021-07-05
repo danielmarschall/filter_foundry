@@ -36,14 +36,14 @@ typedef value_type (*pfunc_type)(value_type,...);
 struct sym_rec{
 	struct sym_rec *next;
 	int token;
-	char *name;
+	const char *name;
 
 	pfunc_type fn;
 	value_type *pvar;
 };
 
-unsigned long djb2(char *str);
-struct sym_rec *lookup(char *s);
+unsigned long djb2(const char *str);
+struct sym_rec *lookup(const char *s);
 void init_symtab(struct sym_rec *);
 void insert(struct sym_rec *p);
 void dump_symbols();

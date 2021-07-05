@@ -259,7 +259,7 @@ static OSErr make_singlefile(StandardFileReply *sfr, short plugvol, long plugdir
 
 	e = FSpDelete(&sfr->sfFile);
 	if(e && e != fnfErr){
-		alertuser("Can't replace the existing file. Try a different name or location.","");
+		alertuser(my_strdup("Can't replace the existing file. Try a different name or location."),my_strdup(""));
 		return userCanceledErr;
 	}
 
@@ -287,9 +287,9 @@ OSErr make_standalone(StandardFileReply *sfr){
 	}
 
 	if(e && e != userCanceledErr) {
-		alertuser("Could not create standalone plugin.",reason);
+		alertuser(my_strdup("Could not create standalone plugin."),reason);
 	} else {
-		showmessage("Filter was sucessfully created");
+		showmessage(my_strdup("Filter was sucessfully created"));
 	}
 
 	return e;

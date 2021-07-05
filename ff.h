@@ -79,7 +79,7 @@ extern char *expr[4];
 extern int tokpos,tokstart,varused[];
 extern char *errstr;
 
-#define DBG(x)
+#define DBG(x) {}
 //#define DEBUG
 
 #define PS_BUFFER_ALLOC  (pb->bufferProcs->allocateProc)

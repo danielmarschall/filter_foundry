@@ -138,7 +138,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			if (i%nplanes == 1) p[i] = 255; // alpha channel
 		} else if (gpb->imageMode == plugInModeCMYKColor) {
 			uint8_t r, g, b;
-			double dr, dg, db, k, c, m, y;
+			double dmax, dr, dg, db, k, c, m, y;
 
 			r = GetRValue(color);
 			g = GetGValue(color);
@@ -147,7 +147,12 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			dr = (double)r / 255;
 			dg = (double)g / 255;
 			db = (double)b / 255;
-			k = 1 - max(max(dr, dg), db);
+
+			dmax = dr;
+			if (dg>dmax) dmax = dg;
+			if (db>dmax) dmax = db;
+
+			k = 1 - dmax;
 			c = (1 - dr - k) / (1 - k);
 			m = (1 - dg - k) / (1 - k);
 			y = (1 - db - k) / (1 - k);
@@ -320,8 +325,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		}
 
 		if(e && !previewerr){
-			alertuser("Could not build preview at chosen zoom level.",
-			        e == memFullErr && !needall ? "The image is too large for available memory. Try zooming in.\nIf that does not help, Cancel and retry the filter." : "");
+			alertuser(my_strdup("Could not build preview at chosen zoom level."),
+			        e == memFullErr && !needall ? my_strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : my_strdup(""));
 			previewerr = true;
 		}
 

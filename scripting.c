@@ -55,7 +55,7 @@ char *get_cstring(PIReadDescriptor token){
 		n = PIGETHANDLESIZE(h);
 		p = PILOCKHANDLE(h,false);
 		//sprintf(str,"get_cstring: token=%#x s=%#x h=%#x p=%#x n=%d",token,s,h,p,n); dbg(str);
-		if( (str = malloc(n+1)) ){
+		if( (str = (char*)malloc(n+1)) ){
 			memcpy(str,p,n);
 			str[n] = 0;
 		}
@@ -74,7 +74,7 @@ Boolean ReadScriptParamsOnRead(void)
 	DescriptorTypeID type;
 	DescriptorKeyIDArray array = { NULLID };
 	int32 flags;
-	OSErr stickyError;
+	//OSErr stickyError;
 	int32 v;
 
 	if (DescriptorAvailable(NULL)){ /* playing back.  Do our thing. */
@@ -95,7 +95,7 @@ Boolean ReadScriptParamsOnRead(void)
 				}
 			}
 
-			stickyError = CloseReader(&token); // closes & disposes.
+			/*stickyError =*/ CloseReader(&token); // closes & disposes.
 
 			// all Filter Foundry parameters are optional,
 			// so we needn't worry if any are missing
@@ -163,7 +163,7 @@ Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
 
 		&& procs->readDescriptorProcs != NULL
 		&& procs->readDescriptorProcs->readDescriptorProcsVersion == kCurrentReadDescriptorProcsVersion
-		&& procs->readDescriptorProcs->numReadDescriptorProcs >= kCurrentReadDescriptorProcsCount
+		&& (unsigned int)(procs->readDescriptorProcs->numReadDescriptorProcs) >= kCurrentReadDescriptorProcsCount
 		&& procs->readDescriptorProcs->openReadDescriptorProc != NULL
 		&& procs->readDescriptorProcs->closeReadDescriptorProc != NULL
 		&& procs->readDescriptorProcs->getKeyProc != NULL
@@ -172,7 +172,7 @@ Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
 
 		&& procs->writeDescriptorProcs != NULL
 		&& procs->writeDescriptorProcs->writeDescriptorProcsVersion == kCurrentWriteDescriptorProcsVersion
-		&& procs->writeDescriptorProcs->numWriteDescriptorProcs >= kCurrentWriteDescriptorProcsCount
+		&& (unsigned int)(procs->writeDescriptorProcs->numWriteDescriptorProcs) >= kCurrentWriteDescriptorProcsCount
 		&& procs->writeDescriptorProcs->openWriteDescriptorProc != NULL
 		&& procs->writeDescriptorProcs->closeWriteDescriptorProc != NULL
 		&& procs->writeDescriptorProcs->putTextProc != NULL

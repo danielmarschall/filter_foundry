@@ -181,6 +181,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 				SetCapture(hDlg);
 				break;
 			}
+			/* ... falls through ... */
 		case EN_CHANGE:
 			if(doupdates && !maindlgitem(hDlg,item))
 				EndDialog(hDlg,item);

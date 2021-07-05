@@ -48,7 +48,6 @@ FilterRecordPtr gpb;
 
 extern struct sym_rec predefs[];
 extern int nplanes,varused[];
-extern int persistent_savestate = false;
 
 int checkandinitparams(Handle params);
 
@@ -69,15 +68,17 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	ManifestActivationCtx manifestVars;
 	BOOL activationContextUsed;
 
-	activationContextUsed = ActivateManifest(hDllInstance, 1, &manifestVars);
-
-	__try {
+	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
 #endif
 
 	if(selector != filterSelectorAbout && !*data){
 		BufferID tempId;
-		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) )
+		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) ) {
+#ifdef WIN_ENV
+			if (activationContextUsed) DeactivateManifest(&manifestVars);
+#endif
 			return;
+		}
 		*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
 		gdata = (globals_t*)*data;
 		gdata->standalone = gdata->parmloaded = false;
@@ -93,7 +94,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	switch (selector){
 	case filterSelectorAbout:
 		if(gdata && !gdata->parmloaded)
-			gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
+			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1);
 		DoAbout((AboutRecordPtr)pb);
 		break;
 	case filterSelectorParameters:
@@ -118,7 +119,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
 					   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
 					   Also, all global variables are unloaded, so the plugin cannot preserve any data.
-					   Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
+					   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
 					   This mode saves the filter data into a temporary file "FilterFoundry.afs" and loads it
 					   when the window is opened again. */
 					// Workaround: Save settings in "FilterFoundry.afs" if the host does not preserve pb->parameters
@@ -176,9 +177,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	ExitCodeResource();
 
 #ifdef WIN_ENV
-	} __finally {
-		if (activationContextUsed) DeactivateManifest(&manifestVars);
-	}
+	if (activationContextUsed) DeactivateManifest(&manifestVars);
 #endif
 }
 
@@ -216,7 +215,7 @@ int checkandinitparams(Handle params){
 		   or the parameter data couldn't be read; set default values */
 
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource(hDllInstance,&reason,1);
+		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1);
 
 		if(!gdata->standalone){
 			// no saved settings (not standalone)

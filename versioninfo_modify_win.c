@@ -427,7 +427,7 @@ ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes) {
 		{
 			if (!EnumResourceLanguages(hmod, RT_VERSION,
 				MAKEINTRESOURCE(VS_VERSION_INFO),
-				(ENUMRESLANGPROC)EnumResLangProc, (LONG_PTR)&ctx))
+				(ENUMRESLANGPROC)(void*)EnumResLangProc, (LONG_PTR)&ctx))
 			{
 				dwError = GetLastError();
 			}
@@ -468,7 +468,7 @@ ULONG UpdateVersionInfoWithHandle(PCTSTR FileName, HANDLE hUpdate, PCWSTR change
 	{
 		if (!EnumResourceLanguages(hmod, RT_VERSION,
 			MAKEINTRESOURCE(VS_VERSION_INFO),
-			(ENUMRESLANGPROC)EnumResLangProc, (LONG_PTR)&ctx))
+			(ENUMRESLANGPROC)(void*)EnumResLangProc, (LONG_PTR)&ctx))
 		{
 			dwError = GetLastError();
 		}

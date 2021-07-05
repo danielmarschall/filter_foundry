@@ -70,7 +70,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 			sysdir = (char*)malloc(MAX_PATH);
 			GetSystemDirectoryA(sysdir, MAX_PATH);
-			alertuser("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:",sysdir);
+			alertuser(my_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"),sysdir);
 			free(sysdir);
 
 			return false;
@@ -195,7 +195,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				tmp += mbstowcs(tmp, "", 1);
 
 				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
-					alertuser("UpdateVersionInfoWithHandle failed","");
+					alertuser(my_strdup("UpdateVersionInfoWithHandle failed"),my_strdup(""));
 				}
 
 				free(changeRequestStr);
@@ -225,9 +225,9 @@ OSErr make_standalone(StandardFileReply *sfr){
 		  && doresources(hDllInstance,dstname);
 
 	if(!res) {
-		alertuser("Could not create standalone plugin.","");
+		alertuser(my_strdup("Could not create standalone plugin."),my_strdup(""));
 	} else {
-		showmessage("Filter was sucessfully created");
+		showmessage(my_strdup("Filter was sucessfully created"));
 	}
 
 	return res ? ioErr : noErr;

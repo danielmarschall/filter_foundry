@@ -132,7 +132,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,OBFUSCITEM);
-
+		/* ... falls through ... */
 	case IDCANCEL:
 		return false; // end dialog
 	case PROTECTITEM:

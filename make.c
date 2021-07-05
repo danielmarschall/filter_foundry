@@ -315,6 +315,9 @@ void obfusc(unsigned char *pparm, size_t size) {
 	x32 = 0x95D4A68F; // Hardcoded seed
 	for (i = size, p = pparm; i--;) {
 		// https://de.wikipedia.org/wiki/Xorshift
-		*p++ ^= (x32 ^= (x32 ^= (x32 ^= x32 << 13) >> 17) << 5);
+		x32 ^= x32 << 13;
+		x32 ^= x32 >> 17;
+		x32 ^= x32 << 5;
+		*p++ ^= x32;
 	}
 }

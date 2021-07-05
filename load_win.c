@@ -53,7 +53,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm,resinfo);
-			char* copy = malloc(resSize);
+			char* copy = (char*)malloc(resSize);
 			memcpy(copy, pparm, resSize);
 			obfusc((unsigned char*)copy, resSize);
 			res = readPARM(copy,&gdata->parm,reason,1);
@@ -68,7 +68,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	HMODULE hm;
 
 	// First, try to read the file as AFS/PFF/TXT file
-	if (readok = readfile(sfr,reason)) {
+	if( (readok = readfile(sfr,reason)) ){
 		gdata->parmloaded = false;
 	}
 
@@ -92,7 +92,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or NE executable on Win64)
 	if (!readok) {
-		if (readok = read8bfplugin(sfr, reason)) {
+		if( (readok = read8bfplugin(sfr, reason)) ){
 			gdata->parmloaded = true;
 		} else {
 			*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";

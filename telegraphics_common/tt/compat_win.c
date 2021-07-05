@@ -44,7 +44,7 @@ HANDLE _BeginUpdateResource/*A*/(
 
 	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
 	if (!hLib) return 0;
-	fBeginUpdateResourceA = (f_BeginUpdateResourceA)GetProcAddress(hLib, "BeginUpdateResourceA");
+	fBeginUpdateResourceA = (f_BeginUpdateResourceA)(void*)GetProcAddress(hLib, "BeginUpdateResourceA");
 	res = fBeginUpdateResourceA(pFileName, bDeleteExistingResources);
 	FreeLibrary(hLib);
 
