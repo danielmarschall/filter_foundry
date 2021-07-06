@@ -107,7 +107,7 @@ BUILDING WITH VISUAL STUDIO
 	  and it can compile the 32-bit and 64-bit plugins for Windows.
 	* Download: https://visualstudio.microsoft.com/de/vs/community/
 	* To build in Windows with Visual Studio (IDE or command line), see the visual_studio
-	  subdirectory and notes (README.TXT).
+	  subdirectory and notes (README.md).
 	* Most recently tested with Visual C++ 2019 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH OPEN WATCOM
@@ -115,7 +115,7 @@ BUILDING WITH OPEN WATCOM
 	  supported by Adobe.
 	* Download: https://sourceforge.net/projects/openwatcom/files/
 	* To build in Windows with the OpenWatcom IDE, see the wpj
-	  subdirectory and notes (README.TXT), kindly provided by Peter Heckert and Daniel Marschall.
+	  subdirectory and notes (README.md), kindly provided by Peter Heckert and Daniel Marschall.
 	* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH MINGW32/64
