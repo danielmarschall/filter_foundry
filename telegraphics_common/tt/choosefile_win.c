@@ -31,11 +31,11 @@
 #include "compat_string.h"
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,char *lpstrFilter,HWND hwndOwner){
+						OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){
 	return choosefile(prompt,sfr,reply,types[0],lpstrFilter,hwndOwner);
 }
 
-Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,OSType type,char *lpstrFilter,HWND hwndOwner){
+Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,OSType type,const char *lpstrFilter,HWND hwndOwner){
 	OPENFILENAME ofn;
 	char file[MAX_PATH]={0};
 	char title[0x100];
@@ -70,7 +70,7 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
 				NavReplyRecord *reply,StandardFileReply *sfr,
-				char *lpstrDefExt,char *lpstrFilter,int nFilterIndex,
+				char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
 				HWND hwndOwner){
 	OPENFILENAME ofn;
 	char file[MAX_PATH];

@@ -157,7 +157,7 @@ pascal Boolean myFilterProc(AEDesc *theItem, void *info, void *callBackUD, NavFi
 }
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,char *lpstrFilter)
+						OSType types[],int ntypes,const char *lpstrFilter)
 {
 	//NavTypeListHandle tl = (NavTypeListHandle)NewHandle(sizeof(NavTypeList) + ntypes*sizeof(OSType));
 	OSErr e;
@@ -195,14 +195,14 @@ Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *
 }
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,
-				   NavReplyRecord *reply,OSType type,char *lpstrFilter)
+				   NavReplyRecord *reply,OSType type,const char *lpstrFilter)
 {
 	return choosefiletypes(prompt,sfr,reply,&type,1,lpstrFilter);
 }
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
                 NavReplyRecord *reply,StandardFileReply *sfr,
-                char *lpstrDefExt,char *lpstrFilter,int nFilterIndex){
+                char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex){
 //	NavReplyRecord reply;
 	NavDialogOptions dopts;
 //	AEDesc defaultLocation;

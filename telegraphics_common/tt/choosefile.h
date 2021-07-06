@@ -49,14 +49,14 @@ Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
 							 OSType tlist[], StringPtr extlist[],Boolean *premult);
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,char *lpstrFilter
+						OSType types[],int ntypes,const char *lpstrFilter
 		   				#ifdef _WIN32
 		   				,HWND hwndOwner
 		   				#endif /* _WIN32 */
 						);
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,
-				   NavReplyRecord *reply,OSType type,char *lpstrFilter
+				   NavReplyRecord *reply,OSType type,const char *lpstrFilter
 	   				#ifdef _WIN32
 	   				,HWND hwndOwner
 	   				#endif /* _WIN32 */
@@ -76,7 +76,7 @@ and the asterisk (*) wildcard character. Do not include spaces in the pattern st
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
    				NavReplyRecord *reply,StandardFileReply *sfr,
-   				char *lpstrDefExt,char *lpstrFilter,int nFilterIndex
+   				char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
    				#ifdef _WIN32
    				,HWND hwndOwner
    				#endif /* _WIN32 */
@@ -84,7 +84,7 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 OSErr completesave(NavReplyRecord *reply);
 
 Boolean choosefile_sf(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-					  OSType type,char *lpstrFilter);
+					  OSType type,const char *lpstrFilter);
 Boolean putfile_sf(StringPtr prompt,StringPtr fname,
 				   OSType fileType,OSType fileCreator,
 				   NavReplyRecord *reply,StandardFileReply *sfr);
@@ -93,7 +93,7 @@ OSErr completesave_sf(NavReplyRecord *reply);
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
 							 OSType tlist[], StringPtr extlist[],Boolean *premult);
 Boolean choosefile_nav(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-					   OSType type,char *lpstrFilter);
+					   OSType type,const char *lpstrFilter);
 Boolean putfile_nav(StringPtr prompt,StringPtr fname,
 					OSType fileType,OSType fileCreator,
 					NavReplyRecord *reply,StandardFileReply *sfr);
