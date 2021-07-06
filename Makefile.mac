@@ -74,7 +74,7 @@ BUNDLE = $(EXEC).plugin
 PLUGIN_OSX  = $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLUGIN_RSRC = $(BUNDLE)/Contents/Resources/$(EXEC).rsrc
 PLUGIN_PARTS = $(PLUGIN_OSX) $(PLUGIN_RSRC) $(BUNDLE)/Contents/Info.plist $(BUNDLE)/Contents/PkgInfo
-DISTDMG = dist/$(EXEC)-$(VERSION).dmg
+DISTDMG = $(EXEC)-$(VERSION).dmg
 
 $(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -DMACMACHO -Dmacintosh \
 	-I/Developer/Headers/FlatCarbon \
@@ -82,7 +82,7 @@ $(PLUGIN_OSX) : CPPFLAGS += -DMAC_ENV -DMACMACHO -Dmacintosh \
 
 # Win32 plugin DLL to build
 PLUGIN_W32 = $(EXEC).8bf
-DISTZIP = dist/$(EXEC)-$(VERSION)-win.zip
+DISTZIP = $(EXEC)-$(VERSION)-win.zip
 
 $(PLUGIN_W32) : CPPFLAGS += -DWIN_ENV
 
@@ -123,11 +123,11 @@ clean :
 dmg : $(DISTDMG)
 
 # create an Apple disk image (dmg) archive of the distribution kit
-$(DISTDMG) : $(PLUGIN_PARTS) dist/README.html dist/gpl.html
+$(DISTDMG) : $(PLUGIN_PARTS) README.md LICENSE_GPLv3.html LICENSE_GPLv2.txt
 	@ DIR=`mktemp -d $(EXEC)-XXXX`; \
-	cp -Rp dist/README.html dist/gpl.html $(BUNDLE) $$DIR; \
+	cp -Rp README.md LICENSE_GPLv3.html LICENSE_GPLv2.txt $(BUNDLE) $$DIR; \
 	mkdir -p $$DIR/examples; \
-	cp dist/examples/*.afs $$DIR/examples; \
+	cp examples/*.afs $$DIR/examples; \
 	/Developer/Tools/SetFile -t TEXT -c ttxt $$DIR/examples/*; \
 	hdiutil create -srcfolder $$DIR -ov -volname "$(EXEC) $(VERSION)" $@; \
 	rm -fr $$DIR
@@ -136,7 +136,7 @@ $(DISTDMG) : $(PLUGIN_PARTS) dist/README.html dist/gpl.html
 
 zip : $(DISTZIP)
 
-$(DISTZIP) : $(PLUGIN_W32) dist/README.html dist/gpl.html dist/examples/*.afs
+$(DISTZIP) : $(PLUGIN_W32) README.md LICENSE_GPLv3.html LICENSE_GPLv2.txt examples/*.afs
 	T=`mktemp -d`; \
 		D=$$T/FilterFoundry-$(VERSION); \
 		mkdir -p $$D/examples; \
