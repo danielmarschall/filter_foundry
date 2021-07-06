@@ -52,7 +52,7 @@ int pushflag(int x){
 	if(arglistptr < (PARENSTACK-1))
 		inarglist[++arglistptr] = x;
 	else{
-		yyerror("too many nested parentheses or function calls");
+		yyerror(_strdup("too many nested parentheses or function calls"));
 		return true;
 	}
 	return false;
@@ -144,15 +144,17 @@ expr : TOK_NUM
 	| '-' expr %prec NEG { $$ = $1; $$->child[0] = 0; $$->child[1] = $2; }
 	| '+' expr %prec NEG { $$ = $2; }
 /* error tokens */
-	| TOK_UNKNOWN { yyerror("unknown name"); YYERROR; }
-	| TOK_BADCHAR { yyerror("disallowed character"); YYERROR; }
+	| TOK_UNKNOWN { yyerror(_strdup("unknown name")); YYERROR; }
+	| TOK_BADCHAR { yyerror(_strdup("disallowed character")); YYERROR; }
 	;
 
 %%
 
+// Daniel 06 July 2021: Move these two lines out of the function parseexpr(), otherwise the code won't compile in G++
+struct yy_buffer_state *yy_scan_string(const char*); // hack. correct prototype is buried in lex output
+int yyparse(void); // hack. correct prototype appears just after this code, in yacc output
+
 struct node *parseexpr(char *s){
-	struct yy_buffer_state *yy_scan_string(const char*); // hack. correct prototype is buried in lex output
-	int yyparse(void); // hack. correct prototype appears just after this code, in yacc output
 	extern int tokpos,tokstart;
 	
 	tokstart = tokpos = 0;
@@ -169,7 +171,7 @@ struct node *parseexpr(char *s){
 		else /* ensure we don't leak memory, on an unsuccessful parse */
 			freeallnodes();
 	}else
-		yyerror("null string???");
+		yyerror(_strdup("null string???"));
 	return 0;
 }
 

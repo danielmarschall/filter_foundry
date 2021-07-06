@@ -44,7 +44,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
         int c,linecnt,lineptr,exprcnt;
 
         if(!h){
-                *reason = "readparams: Null parameter handle.";
+                *reason = _strdup("readparams: Null parameter handle.");
                 return false;
         }
 
@@ -54,7 +54,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
         q = curexpr;
         linecnt = exprcnt = lineptr = 0;
 
-        *reason = "File was too short.";
+        *reason = _strdup("File was too short.");
         while(p < dataend){
 
                 c = *p++;
@@ -71,7 +71,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                         if(linecnt==0){
                                 if(strcmp(linebuf,"%RGB-1.0")){
                                         if(alerts)
-                                                *reason = "This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").";
+                                                *reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").");
                                         break;
                                 }
                         }else if(linecnt<=8){
@@ -80,7 +80,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                                 if(lineptr){
                                         /* it's not an empty line; append it to current expr string */
                                         if( q+lineptr > curexpr+MAXEXPR ){
-                                                *reason = "Found an expression longer than 1024 characters.";
+                                                *reason = _strdup("Found an expression longer than 1024 characters.");
                                                 break;
                                         }
                                         q = cat(q,linebuf);
@@ -90,7 +90,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                                                 free(expr[exprcnt]);
                                         *q = 0;
                                         if(!(expr[exprcnt] = my_strdup(curexpr))){
-                                                *reason = "Could not get memory for expression.";
+                                                *reason = _strdup("Could not get memory for expression.");
                                                 break;
                                         }
 
@@ -114,9 +114,9 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                                         case 'r': c = CR;
                                         case '\\': break;
                                         default:
-                                                if(alerts) alertuser(my_strdup("Warning:"),my_strdup("Unknown escape sequence in input."));
+                                                if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));
                                         }
-                                }//else if(alerts) alertuser(my_strdup("Warning:"),my_strdup("truncated escape sequence ends input"));
+                                }//else if(alerts) alertuser(_strdup("Warning:"),_strdup("truncated escape sequence ends input"));
                         }
 
                         if(lineptr < MAXLINE)
@@ -230,7 +230,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
                 } // else no point in proceeding
                 FSClose(refnum);
         }else
-                *reason = "Could not open file.";
+                *reason = _strdup("Could not open file.");
         return res;
 }
 
@@ -318,7 +318,7 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
                 }
                 FSClose(r);
         }else
-                *reason = "Could not open the file.";
+                *reason = _strdup("Could not open the file.");
 
         return res;
 }

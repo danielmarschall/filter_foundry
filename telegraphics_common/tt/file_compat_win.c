@@ -120,7 +120,7 @@ HMODULE FSpOpenResFile(const FSSpec *  spec,SignedByte      permission){
 	HMODULE hm;
 	char name[MAX_PATH+1];
 	if( hm = LoadLibrary(myp2cstrcpy(name,spec->name)) ){
-		NEW(p);
+		p = (struct rchain_node*)malloc(sizeof(struct rchain_node)));
 		p->hmodule = hm;
 		p->next = resource_chain;
 		resource_chain = p;

@@ -1,6 +1,6 @@
 
-BUILDING FILTER FOUNDRY ON OPENWATCOM
-by Peter Heckert and Daniel Marschall
+Building FilterFoundry with OpenWatcom
+======================================
 
 Most recently tested with OpenWatcom 1.9 and Adobe Photoshop SDK CC 2017.
 
@@ -63,6 +63,10 @@ Troubleshooting
   Remember how many characters you have added or deleted,
   and subtract or add them to the number written above the before-instructions
   (currently 347). This is the number of bytes of the commands.
+
+- In the code, it is important that all variables are declared at the
+  top of the scope (curly brackets) and that there is no executable code or
+  assignments in between.
 
 
 Remarks

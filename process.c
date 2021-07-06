@@ -36,7 +36,7 @@ extern struct node *tree[];
 // this is used by src() and cnv() functions to access pixels
 unsigned char *image_ptr;
 
-int needinput;
+extern int needinput;
 int state_changing_funcs_used;
 
 /* get prepared to evaluate expression trees--

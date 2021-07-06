@@ -79,10 +79,10 @@ void updateglobals(DIALOGREF dp){
 			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){
 				if(expr[i])
 					free(expr[i]);
-				expr[i] = my_strdup(s);
+				expr[i] = _strdup(s);
 			}
 			if(!expr[i])
-				expr[i] = my_strdup("c");
+				expr[i] = _strdup("c");
 		}
 }
 
@@ -99,7 +99,7 @@ struct node *updateexpr(DIALOGREF dp,int item){
 
 		if(expr[i])
 			free(expr[i]);
-		expr[i] = my_strdup(s);
+		expr[i] = _strdup(s);
 	}
 
 	tree[i] = parseexpr(expr[i]);
@@ -215,7 +215,7 @@ void maindlgupdate(DIALOGREF dp){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
 			if(gdata->standalone){
-				alertuser(my_strdup("Can't run this filter (there is a problem with the saved expressions)."),my_strdup(""));
+				alertuser(_strdup("Can't run this filter (there is a problem with the saved expressions)."),_strdup(""));
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
@@ -338,12 +338,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes(
 					#ifdef MAC_ENV
-					(StringPtr)my_strdup("\pChoose filter settings"),
+					(StringPtr)_strdup("\pChoose filter settings"),
 					#else
-					(StringPtr)my_strdup("Choose filter settings"),
+					(StringPtr)_strdup("Choose filter settings"),
 					#endif
 					&sfr,&reply,types,2,
-					my_strdup("All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0")
+					_strdup("All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0")
 					#ifdef _WIN32
 					,gdata->hWndMainDlg
 					#endif /* _WIN32 */
@@ -352,19 +352,19 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}else
-				alertuser(my_strdup("Cannot load settings."),reason);
+				alertuser(_strdup("Cannot load settings."),reason);
 		}
 		break;
 	case SAVEITEM:
 		if(!gdata->standalone && putfile(
 										#ifdef MAC_ENV
-										(StringPtr)my_strdup("\pSave filter settings"),
+										(StringPtr)_strdup("\pSave filter settings"),
 										#else
-										(StringPtr)my_strdup("Save filter settings"),
+										(StringPtr)_strdup("Save filter settings"),
 										#endif
 										(StringPtr)"",
 										TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										my_strdup("afs"),my_strdup("Settings file (.afs, .txt)\0*.afs;*.txt\0\0"),1
+										_strdup("afs"),_strdup("Settings file (.afs, .txt)\0*.afs;*.txt\0\0"),1
 										#ifdef _WIN32
 										,gdata->hWndMainDlg
 										#endif /* _WIN32 */
@@ -381,13 +381,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 #endif
 			if( putfile(
 						#ifdef MAC_ENV
-						(StringPtr)my_strdup("\pMake standalone filter"),
+						(StringPtr)_strdup("\pMake standalone filter"),
 						#else
-						(StringPtr)my_strdup("Make standalone filter"),
+						(StringPtr)_strdup("Make standalone filter"),
 						#endif
 						fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-						my_strdup("8bf"),my_strdup("Filter plugin file (.8bf)\0*.8bf\0\0"),1
+						_strdup("8bf"),_strdup("Filter plugin file (.8bf)\0*.8bf\0\0"),1
 						#ifdef _WIN32
 						,gdata->hWndMainDlg
 						#endif /* _WIN32 */
@@ -442,7 +442,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case FIRSTICONITEM+2:
 	case FIRSTICONITEM+3:
 		item -= FIRSTICONITEM;
-		alertuser(err[item],my_strdup(""));
+		alertuser(err[item],_strdup(""));
 		SELECTCTLTEXT(dp,FIRSTEXPRITEM+item,errstart[item],errpos[item]);
 		break;
 	case FIRSTEXPRITEM:

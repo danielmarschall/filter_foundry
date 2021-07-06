@@ -97,7 +97,7 @@
 
 	#define DIRSEP '\\'
 
-	extern HANDLE hDllInstance;
+	extern HINSTANCE hDllInstance;
 #endif
 
 #define SETRECT(rect,l,t,r,b) \

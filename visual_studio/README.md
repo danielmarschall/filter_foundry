@@ -1,6 +1,7 @@
 
-BUILDING FILTER FOUNDRY ON VISUAL STUDIO
-by Daniel Marschall
+
+Building FilterFoundry with Visual Studio
+=========================================
 
 Most recently tested with Visual Studio 2019 and Adobe Photoshop SDK CC 2017.
 

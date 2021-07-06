@@ -67,7 +67,7 @@ OSErr saveparams(Handle h){
 		for( i=0 ; i<4 ; ++i ){
 			if( (r = expr[i]) )
 				for( n = strlen(r) ; n ; n -= chunk ){
-					chunk = n>CHOPLINES ? CHOPLINES : n;
+					chunk = n> (int)CHOPLINES ? (int)CHOPLINES : n;
 					for( j = chunk,q = outbuf ; j-- ; )
 						if(*r == CR){
 							*q++ = '\\';
@@ -80,7 +80,7 @@ OSErr saveparams(Handle h){
 					p = cat(p,outbuf);
 				}
 			else
-				p = cat(p,"(null expr)\r"); // this shouldn't happen
+				p = cat(p,_strdup("(null expr)\r")); // this shouldn't happen
 			*p++ = '\r';
 		}
 
@@ -105,7 +105,7 @@ Boolean savefile(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
-	char *reasonstr = "";
+	char *reasonstr = _strdup("");
 
 	FSpDelete(&sfr->sfFile);
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
@@ -117,11 +117,11 @@ Boolean savefile(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = (my_strdup("Could not open the file."));
-	else reasonstr = (my_strdup("Could not create the file."));
+		}else reasonstr = (_strdup("Could not open the file."));
+	else reasonstr = (_strdup("Could not create the file."));
 
 	if(!res)
-		alertuser(my_strdup("Could not save settings."),reasonstr);
+		alertuser(_strdup("Could not save settings."),reasonstr);
 
 	return res;
 }

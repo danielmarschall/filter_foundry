@@ -17,10 +17,6 @@ Important/Bugs
 * Release version 1.7 (when can we leave the beta state?)
   Windows 32+64 is already tested and ready to publish.
 
-* mingw32 g++ compilation doesn't work.
-  There are a lot of wrong typecasts, e.g. "const char*" and "char*" are often mixed and could
-  lead to memory corruption!
-
 
 Minor priority stuff or ideas
 -----------------------------

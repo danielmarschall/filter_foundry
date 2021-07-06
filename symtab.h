@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 
-#define NEW(P) ( (P) = malloc(sizeof(*(P))) )
+//#define NEW(P) ( (P) = malloc(sizeof(*(P))) )
 
 /* if this type is floating point, then #define FP_VALUE */
 #ifdef FP_VALUE

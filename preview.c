@@ -325,8 +325,8 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 		}
 
 		if(e && !previewerr){
-			alertuser(my_strdup("Could not build preview at chosen zoom level."),
-			        e == memFullErr && !needall ? my_strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : my_strdup(""));
+			alertuser(_strdup("Could not build preview at chosen zoom level."),
+			        e == memFullErr && !needall ? _strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : _strdup(""));
 			previewerr = true;
 		}
 

@@ -30,7 +30,7 @@
 #include "ff.h"
 #include "version.h"
 
-extern HANDLE hDllInstance;
+extern HINSTANCE hDllInstance;
 
 INT_PTR CALLBACK builddlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
@@ -59,7 +59,7 @@ INT_PTR CALLBACK builddlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam
 }
 
 Boolean builddialog(FilterRecordPtr pb){
-	PlatformData *p = pb->platformData;
+	PlatformData *p = (PlatformData *)pb->platformData;
 	return DialogBoxParam(hDllInstance,MAKEINTRESOURCE(ID_BUILDDLG),
 						  gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,builddlgproc,0) == IDOK;
 }

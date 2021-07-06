@@ -48,7 +48,7 @@ struct node *newnode(int k){
 	struct node *p;
 	int i;
 
-	if(NEW(p)){
+	if( (p = (struct node*)malloc(sizeof(struct node))) ){
 #ifdef DEBUG
 //		fprintf(stderr,"NEW(%#x)\n",p);
 		++allocs;

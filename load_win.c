@@ -46,10 +46,10 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){
-		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) )
+		if( (h = LoadResource(hm,resinfo)) && (pparm = (Ptr)LockResource(h)) )
 			res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
 	}else if( readobfusc && (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
-		if( (h = LoadResource(hm,resinfo)) && (pparm = LockResource(h)) ){
+		if( (h = LoadResource(hm,resinfo)) && (pparm = (Ptr)LockResource(h)) ){
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm,resinfo);
@@ -79,12 +79,12 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if (hm = LoadLibraryEx(myp2cstrcpy(name,sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm,reason,0)) {
 				if (gdata->parm.iProtected) {
-					*reason = "The filter is protected.";
+					*reason = _strdup("The filter is protected.");
 				} else {
 					readok = gdata->parmloaded = true;
 				}
 			} else {
-				*reason = "It is not a standalone filter made by Filter Factory/Filter Foundry.";
+				*reason = _strdup("It is not a standalone filter made by Filter Factory/Filter Foundry.");
 			}
 			FreeLibrary(hm);
 		}
@@ -95,13 +95,13 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if( (readok = read8bfplugin(sfr, reason)) ){
 			gdata->parmloaded = true;
 		} else {
-			*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
+			*reason = _strdup("PARM resource was not found in this plugin file, or this is not a standalone plugin.");
 		}
 	}
 
 	// Check if we had success
 	if (!readok) {
-		*reason = "PARM resource was not found in this plugin file, or this is not a standalone plugin.";
+		*reason = _strdup("PARM resource was not found in this plugin file, or this is not a standalone plugin.");
 	}
 
 	return readok;

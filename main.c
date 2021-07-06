@@ -39,6 +39,7 @@ globals_t *gdata;
 FilterRecordPtr gpb;
 
 #ifdef MAC_ENV
+	#define HINSTANCE HANDLE
 	#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
@@ -225,15 +226,15 @@ int checkandinitparams(Handle params){
 				if(expr[i])
 					free(expr[i]);
 			if(gpb->imageMode == plugInModeRGBColor){
-				expr[0] = my_strdup("r");
-				expr[1] = my_strdup("g");
-				expr[2] = my_strdup("b");
-				expr[3] = my_strdup("a");
+				expr[0] = _strdup("r");
+				expr[1] = _strdup("g");
+				expr[2] = _strdup("b");
+				expr[3] = _strdup("a");
 			}else{
-				expr[0] = my_strdup("c");
-				expr[1] = my_strdup("c");
-				expr[2] = my_strdup("c");
-				expr[3] = my_strdup("c");
+				expr[0] = _strdup("c");
+				expr[1] = _strdup("c");
+				expr[2] = _strdup("c");
+				expr[3] = _strdup("c");
 			}
 		}
 	}

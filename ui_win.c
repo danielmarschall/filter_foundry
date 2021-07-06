@@ -36,7 +36,7 @@ HCURSOR hCurHandOpen;
 HCURSOR hCurHandGrab;
 HCURSOR hCurHandQuestion;
 
-extern HANDLE hDllInstance;
+extern HINSTANCE hDllInstance;
 
 void DoAbout(AboutRecordPtr pb){
 	char text[1000];
@@ -76,7 +76,7 @@ Boolean simplealert(char *s){
 	if (gdata && gdata->standalone) {
 		title = INPLACEP2CSTR(gdata->parm.title);
 	} else {
-		title = "Filter Foundry";
+		title = _strdup("Filter Foundry");
 	}
 	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
@@ -86,7 +86,7 @@ Boolean showmessage(char *s){
 	if (gdata && gdata->standalone) {
 		title = INPLACEP2CSTR(gdata->parm.title);
 	} else {
-		title = "Filter Foundry";
+		title = _strdup("Filter Foundry");
 	}
 	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONINFORMATION|MB_OK) == IDOK;
 }
@@ -102,7 +102,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	POINT newpos;
 	DRAWITEMSTRUCT *pdi;
 	Point newscroll;
-	HFONT hfnt;
+	HGDIOBJ hfnt;
 	char s[0x100];
 
 	extern Boolean doupdates;
@@ -232,7 +232,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	RegisterClassEx(&clx);
 
 	// Now show the dialog
-	p = pb->platformData;
+	p = (PlatformData*)pb->platformData;
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0) == IDOK;
 

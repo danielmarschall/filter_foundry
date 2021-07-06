@@ -30,7 +30,7 @@
 
 Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 	//char s[0x100];
-	if( (*ppb = malloc(sizeof(**ppb))) ){
+	if( (*ppb = (BITMAPREF)malloc(sizeof(**ppb))) ){
 		BITMAPINFOHEADER *pbmih = &(*ppb)->bmi.bmiHeader;
 
         pbmih->biWidth = bounds->right - bounds->left;

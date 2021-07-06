@@ -98,12 +98,12 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		// Do a few checks first
 		GetDlgItemText(dp, CATEGORYITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert("Category must not be empty!");
+			simplealert(_strdup("Category must not be empty!"));
 			return false;
 		}
 		GetDlgItemText(dp, TITLEITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert("Title must not be empty!");
+			simplealert(_strdup("Title must not be empty!"));
 			return false;
 		}
 

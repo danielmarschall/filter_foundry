@@ -183,7 +183,7 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(key);
 		AETE_WRITE_DWORD(typeSInt32);
-		AETE_WRITE_PSTR("");
+		AETE_WRITE_PSTR(_strdup(""));
 		AETE_ALIGN_WORD();
 		AETE_WRITE_WORD(0x8000); /* FLAGS_1_OPT_PARAM / flagsOptionalSingleParameter */
 	}
@@ -214,7 +214,7 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 	AETE_WRITE_WORD(1); /* 1 suite */
 	{
 		AETE_WRITE_PSTR(/*"Telegraphics"*/(char*)pparm->author); /* vendor suite name */
-		AETE_WRITE_PSTR(""); /* optional description */
+		AETE_WRITE_PSTR(_strdup("")); /* optional description */
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(plugInSuiteID); /* suite ID */
 		AETE_WRITE_WORD(1); /* suite code, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
@@ -222,18 +222,18 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm) {
 		AETE_WRITE_WORD(1); /* 1 event (structure for filters) */
 		{
 			AETE_WRITE_PSTR(/*"FilterFoundry"*/(char*)pparm->title); /* event name */
-			AETE_WRITE_PSTR(""); /* event description */
+			AETE_WRITE_PSTR(_strdup("")); /* event description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_DWORD(plugInClassID); /* event class */
 			AETE_WRITE_DWORD(/*plugInEventID*/event_id); /* event ID */
 			/* NO_REPLY: */
 			AETE_WRITE_DWORD(noReply); /* noReply='null' */
-			AETE_WRITE_PSTR(""); /* reply description */
+			AETE_WRITE_PSTR(_strdup("")); /* reply description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0);
 			/* IMAGE_DIRECT_PARAM: */
 			AETE_WRITE_DWORD(typeImageReference); /* typeImageReference='#ImR' */
-			AETE_WRITE_PSTR(""); /* direct parm description */
+			AETE_WRITE_PSTR(_strdup("")); /* direct parm description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_WORD(0xB000);
 

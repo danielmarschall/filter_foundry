@@ -25,7 +25,7 @@
 #include "versioninfo_modify_win.h"
 #include "version.h"
 
-extern HANDLE hDllInstance;
+extern HINSTANCE hDllInstance;
 
 Boolean doresources(HMODULE srcmod,char *dstname);
 
@@ -50,8 +50,9 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 
 Boolean doresources(HMODULE srcmod,char *dstname){
 	HRSRC datarsrc,aetersrc;
-	HANDLE datah,aeteh,hupdate;
-	Ptr newpipl = NULL,newaete = NULL,datap,aetep;
+	HGLOBAL datah,aeteh,hupdate;
+	Ptr newpipl = NULL, newaete = NULL;
+	LPVOID datap, aetep;
 	PARM_T *pparm = NULL;
 	size_t piplsize,aetesize,origsize;
 	Str255 title;
@@ -70,7 +71,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 			sysdir = (char*)malloc(MAX_PATH);
 			GetSystemDirectoryA(sysdir, MAX_PATH);
-			alertuser(my_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"),sysdir);
+			alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"),sysdir);
 			free(sysdir);
 
 			return false;
@@ -86,10 +87,10 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 		DBG("BeginUpdateResource OK");
 		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA))
 			&& (datah = LoadResource(srcmod,datarsrc))
-			&& (datap = LockResource(datah))
+			&& (datap = (Ptr)LockResource(datah))
 			&& (aetersrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"AETE"))
 			&& (aeteh = LoadResource(srcmod,aetersrc))
-			&& (aetep = LockResource(aeteh)) )
+			&& (aetep = (Ptr)LockResource(aeteh)) )
 		{
 			DBG("loaded DATA, PiPL");
 
@@ -99,9 +100,9 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 			origsize = SizeofResource(srcmod,datarsrc);
 
-			if( (newpipl = malloc(origsize+0x300))
-			 && (newaete = malloc(4096))
-			 && (pparm = malloc(sizeof(PARM_T))) )
+			if( (newpipl = (Ptr)malloc(origsize+0x300))
+			 && (newaete = (Ptr)malloc(4096))
+			 && (pparm = (PARM_T*)malloc(sizeof(PARM_T))) )
 			{
 				/* add user-specified title and category to new PiPL */
 				memcpy(newpipl,datap,origsize);
@@ -146,7 +147,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 								   MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 					discard = false;
 				else
-					dbglasterror("UpdateResource");
+					dbglasterror(_strdup("UpdateResource"));
 
 				if (soleFilename = strrchr(dstname, '\\')) {
 				    ++soleFilename;
@@ -195,22 +196,22 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				tmp += mbstowcs(tmp, "", 1);
 
 				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
-					alertuser(my_strdup("UpdateVersionInfoWithHandle failed"),my_strdup(""));
+					alertuser(_strdup("UpdateVersionInfoWithHandle failed"),_strdup(""));
 				}
 
 				free(changeRequestStr);
 			}
 
-		}else dbglasterror("Find-, Load- or LockResource");
+		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
 
 		if(!_EndUpdateResource(hupdate,discard))
-			dbglasterror("EndUpdateResource");
+			dbglasterror(_strdup("EndUpdateResource"));
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
 	}else
-		dbglasterror("BeginUpdateResource");
+		dbglasterror(_strdup("BeginUpdateResource"));
 	return !discard;
 }
 
@@ -225,9 +226,9 @@ OSErr make_standalone(StandardFileReply *sfr){
 		  && doresources(hDllInstance,dstname);
 
 	if(!res) {
-		alertuser(my_strdup("Could not create standalone plugin."),my_strdup(""));
+		alertuser(_strdup("Could not create standalone plugin."),_strdup(""));
 	} else {
-		showmessage(my_strdup("Filter was sucessfully created"));
+		showmessage(_strdup("Filter was sucessfully created"));
 	}
 
 	return res ? ioErr : noErr;
