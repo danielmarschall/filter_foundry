@@ -22,7 +22,7 @@ The Macintosh version could not be taken over because Apple removed the "Carbon"
 
 Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters, for example:
 
--   Tested with Photoshop 3.0 through CS6, newer versions should work, too.
+-   Tested with Photoshop 3.0 (x86) through CC 2019 (x64)
 -   IrfanView 4.0 (32/64 bit) - Make sure you read the IrfanView documentation on how to load and run Adobe .8bf filters.
 -   JASC PSP 9, Corel's Paint Shop Pro XI - are compatible.
 -   The Gimp 2.2 with PSPI.exe extension (to run Photoshop .8bf files) is compatible with Filter Foundry 1.7.

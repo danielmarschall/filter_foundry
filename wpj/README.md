@@ -58,7 +58,6 @@ Troubleshooting
   is already set in the project file. Please note that changing these
   paths is a bit complicated. There are several bugs in OpenWatcom
   where you can only make the pre-build-events shorter, but not longer).
-  Sometimes, some lines aren't even displayed!
   You have to edit the WPJ file with a text editor.
   Remember how many characters you have added or deleted,
   and subtract or add them to the number written above the before-instructions
