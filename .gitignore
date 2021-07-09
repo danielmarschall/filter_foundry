@@ -31,6 +31,7 @@ win_flex_bison/README.txt
 win_flex_bison/UNISTD_ERROR.readme
 win_flex_bison/win_bison.exe
 win_flex_bison/win_flex.exe
+win_flex_bison/changelog.md
 
 wpj/*.err
 wpj/*.mk

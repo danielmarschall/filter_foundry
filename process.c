@@ -127,7 +127,7 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 #endif
 
 	}
-	if(varused['d']) var['d'] = ff_c2d(var['X']/2 - var['x'], var['Y']/2 - var['y']);
+	if(varused['d']) var['d'] = ff_c2d_negated(var['X']/2 - var['x'], var['Y']/2 - var['y']);
 	if(varused['m']) var['m'] = ff_c2m(var['X']/2 - var['x'], var['Y']/2 - var['y']);
 
 	for(k = 0; k < nplanes; ++k){

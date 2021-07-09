@@ -1,6 +1,6 @@
 
 Please download "Adobe Photoshop SDK" here:
-https://www.adobe.com/devnet/photoshop/sdk.html
+https://www.adobe.com/devnet/photoshop/sdk.html (*)
 
 Then extract its contents in this directory:
 - connectionsdk/
@@ -8,3 +8,12 @@ Then extract its contents in this directory:
 - pluginsdk/
 - license.html
 - ReadMe.html
+
+
+
+Note: The download of SDK 2017 at the end of the EULA page
+won't work on some browsers due to security settings:
+"adobe.com" uses HTTPS, while the download target "macromedia.com" uses HTTP.
+Therefore, the download does not work.
+Direct download of SDK 2017 here:
+http://download.macromedia.com/pub/developer/photoshop/sdk/adobe_photoshop_sdk_cc_2017_win.zip

@@ -216,6 +216,21 @@ move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\c.h" />
+    <ClInclude Include="..\cwprefix.h" />
+    <ClInclude Include="..\ff.h" />
+    <ClInclude Include="..\funcs.h" />
+    <ClInclude Include="..\manifest.h" />
+    <ClInclude Include="..\misc.h" />
+    <ClInclude Include="..\node.h" />
+    <ClInclude Include="..\PARM.h" />
+    <ClInclude Include="..\preview.h" />
+    <ClInclude Include="..\scripting.h" />
+    <ClInclude Include="..\symtab.h" />
+    <ClInclude Include="..\ui.h" />
+    <ClInclude Include="..\unistd.h" />
+    <ClInclude Include="..\version.h" />
+    <ClInclude Include="..\versioninfo_modify_win.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

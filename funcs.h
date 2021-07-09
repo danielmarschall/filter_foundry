@@ -70,7 +70,8 @@ value_type ff_cos(value_type x);
 value_type ff_tan(value_type x);
 value_type ff_r2x(value_type d,value_type m);
 value_type ff_r2y(value_type d,value_type m);
-value_type ff_c2d(value_type d,value_type m);
+value_type ff_c2d(value_type d, value_type m);
+value_type ff_c2d_negated(value_type d, value_type m); // not a function!
 value_type ff_c2m(value_type d,value_type m);
 value_type ff_get(value_type i);
 value_type ff_put(value_type v,value_type i);

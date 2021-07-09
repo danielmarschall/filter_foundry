@@ -262,12 +262,18 @@ value_type ff_r2y(value_type d,value_type m){
 	return (value_type)RINT(m*costab[abs(d-256) % COSTABSIZE]);
 }
 
+/* Attention! This is NOT a function. It is internally used to calculate the variable "d". */
+value_type ff_c2d_negated(value_type x, value_type y) {
+	// NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
+	// Due to compatibility reasons, we implement it the same way!
+	// Sign of y difference is negated, as we are dealing with top-down coordinates angle is "observed"
+	return (value_type)RINT(TO_FFANGLE(atan2(-y,-x)));
+}
+
 /* c2d(x,y) Angle displacement of the pixel at coordinates x,y */
-/* note, sign of y difference is negated, as we are dealing with top-down coordinates
-   angle is "observed" */
 value_type ff_c2d(value_type x,value_type y){
 	// Behavior of FilterFoundry <1.7:
-	//return RINT(TO_FFANGLE(atan2(-y,-x)));
+	//return ff_c2d_negated(x,y);
 
 	// Behavior in FilterFoundry 1.7+: Matches FilterFactory
 	return (value_type)RINT(TO_FFANGLE(atan2(y,x)));
