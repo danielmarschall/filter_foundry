@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+	Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ unsigned long printablehash(unsigned long hash) {
 	unsigned long key = 'a' + (hash % 26);  hash /= 26; // first lower case
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
-	return  (key << 8) | ('A' + (hash % 26));             // last upper case
+	return  (key << 8) | ('A' + (hash % 26));           // last upper case
 }
 
 long roundToNext4(long x) {

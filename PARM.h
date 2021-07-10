@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,11 +40,11 @@ type 'PARM' {
 	pstring[251];    //Category name
 	// Michael Johannhanwahr's protect flag...
 	longint notProtected,isProtected; // iProtected;            // == 1 means protected
-	pstring[255];       //Filter title
+	pstring[255];   //Filter title
 	pstring[255];   //Copyright info
-	pstring[255];      //Filter author(s)
-	array[4] { pstring[255]; };      //4 map labels
-	array[8] { pstring[255]; };      //8 control labels
+	pstring[255];   //Filter author(s)
+	array[4] { pstring[255]; };  //4 map labels
+	array[8] { pstring[255]; };  //8 control labels
 	array[4] { cstring[1024]; }; //4 channel formulas
 };
 

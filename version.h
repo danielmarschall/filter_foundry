@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@
 #define VERSION_NUM 1,0x70,beta,1
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
-#define RELEASE_YEAR "2019"
+#define RELEASE_YEAR "2021"
 
 /* formatted for Win32 VERSIONINFO resource */
 #define VI_VERS_NUM 1,7,0,1

@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void builddlginit(DIALOGREF dp){
 		   we can set initial values statically in the rez description */
 		SetDlgItemText(dp,CATEGORYITEM,	"Filter Foundry");
 		SetDlgItemText(dp,TITLEITEM,	"Untitled");
-		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-2019 Daniel Marschall");
+		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-2021 Daniel Marschall");
 		SetDlgItemText(dp,AUTHORITEM,	"Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){
