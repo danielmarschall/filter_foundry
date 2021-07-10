@@ -22,7 +22,14 @@ OSErr	HostCloseWriter(PIDescriptorParameters *procs,
 						PIWriteDescriptor *token);
 OSErr put_cstring(PIWriteDescriptor token,DescriptorKeyID key,char *s);
 char *get_cstring(PIReadDescriptor token);
-Boolean ReadScriptParamsOnRead(void);
+
+enum ScriptingShowDialog {
+	SCR_NO_SCRIPT,
+	SCR_SHOW_DIALOG,
+	SCR_HIDE_DIALOG
+};
+
+enum ScriptingShowDialog ReadScriptParamsOnRead(void);
 OSErr WriteScriptParamsOnRead(void);
 
 //-------------------------------------------------------------------------------

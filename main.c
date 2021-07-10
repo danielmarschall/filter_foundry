@@ -184,7 +184,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
-	int i,f,showdialog;
+	int i,bUninitializedParams,showdialog;
 
 	if (!host_preserves_parameters()) {
 		// Workaround: Load settings in "FilterFoundry.afs" if host does not preserve pb->parameters
@@ -211,7 +211,7 @@ int checkandinitparams(Handle params){
 		if (loadfile(&sfr, &reason)) return true;
 	}
 
-	if( (f = !(params && readparams(params,false,&reasonstr))) ){
+	if( (bUninitializedParams = !(params && readparams(params,false,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
@@ -241,10 +241,17 @@ int checkandinitparams(Handle params){
 
 	// let scripting system change parameters, if we're scripted;
 	// user may want to force display of dialog during scripting playback
-	showdialog = ReadScriptParamsOnRead();
-
-	saveparams(params);
-	return f || showdialog;
+	switch (ReadScriptParamsOnRead()) {
+		case SCR_SHOW_DIALOG:
+			return true;
+		case SCR_HIDE_DIALOG:
+			return false;
+		case SCR_NO_SCRIPT:
+			saveparams(params);
+			return bUninitializedParams;
+		default:
+			return false;
+	}
 }
 
 Boolean host_preserves_parameters() {

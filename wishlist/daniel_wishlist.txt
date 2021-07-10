@@ -112,6 +112,10 @@ Design/UI Tweaks
 * simplealert() is only "appmodal" and has no hWnd. Due to this, the window is not blinking when
   the user tries to click on a parent window. (Is this a Windows bug?)
 
+* "+" and "-" buttons with hand pointer cursor?
+
+* With some canvas formats, the initial zoom level is not "fully zoomed out"
+
 
 Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 ------------------------------------------------------

@@ -67,7 +67,7 @@ char *get_cstring(PIReadDescriptor token){
 
 /* return true if dialog should be shown */
 
-Boolean ReadScriptParamsOnRead(void)
+enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 {
 	PIReadDescriptor token;
 	DescriptorKeyID key;
@@ -101,10 +101,10 @@ Boolean ReadScriptParamsOnRead(void)
 			// so we needn't worry if any are missing
 		}
 
-		return gpb->descriptorParameters->playInfo == plugInDialogDisplay; /* TRUE if want to show our Dialog */
+		return gpb->descriptorParameters->playInfo == plugInDialogDi
 	}
 
-	return false;
+	return SCR_NO_SCRIPT;
 }
 
 OSErr WriteScriptParamsOnRead(void)
