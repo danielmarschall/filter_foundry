@@ -101,10 +101,10 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 			// so we needn't worry if any are missing
 		}
 
-		return gpb->descriptorParameters->playInfo == plugInDialogDi
+		return gpb->descriptorParameters->playInfo == plugInDialogDisplay ? SCR_SHOW_DIALOG : SCR_HIDE_DIALOG;
+	} else {
+		return SCR_NO_SCRIPT;
 	}
-
-	return SCR_NO_SCRIPT;
 }
 
 OSErr WriteScriptParamsOnRead(void)

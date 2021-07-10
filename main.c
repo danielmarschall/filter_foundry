@@ -184,7 +184,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
-	int i,bUninitializedParams,showdialog;
+	int i,bUninitializedParams;
+	Boolean showdialog;
 
 	if (!host_preserves_parameters()) {
 		// Workaround: Load settings in "FilterFoundry.afs" if host does not preserve pb->parameters
@@ -243,15 +244,20 @@ int checkandinitparams(Handle params){
 	// user may want to force display of dialog during scripting playback
 	switch (ReadScriptParamsOnRead()) {
 		case SCR_SHOW_DIALOG:
-			return true;
+			showdialog = true;
+			break;
 		case SCR_HIDE_DIALOG:
-			return false;
-		case SCR_NO_SCRIPT:
-			saveparams(params);
-			return bUninitializedParams;
+			showdialog = false;
+			break;
 		default:
-			return false;
+		case SCR_NO_SCRIPT:
+			showdialog = bUninitializedParams;
+			break;
 	}
+
+	saveparams(params);
+
+	return showdialog;
 }
 
 Boolean host_preserves_parameters() {
