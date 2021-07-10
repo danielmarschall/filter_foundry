@@ -59,13 +59,12 @@ void DoAbout(AboutRecordPtr pb){
 		sprintf(text,  "Filter Foundry " VERSION_STR "\n"
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "\n"
-	                   "Latest version available from\n"
-	                   "http://www.telegraphics.com.au/sw/\n"
-	                   "Please contact the author with any bug reports,\n"
-	                   "suggestions or comments.\n"
-	                   "If you use this program and like it, please consider\n"
-	                   "making a donation through www.paypal.com\n"
-	                   "(US$5 suggested) to the address above.");
+		               "Latest version available from\n"
+		               "\nhttps://github.com/danielmarschall/filter_foundry\n"
+		               "Please contact the author with any bug reports,\n"
+		               "suggestions or comments.\n"
+		               "If you use this program and like it, please consider\n"
+		               "making a donation.");
 	}
 
 	MessageBox((HWND)p->hwnd, text, title, MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
@@ -118,7 +117,6 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		}
 		centre_window(hDlg);
 
-		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/fontext_3pbo.asp
 		hfnt = GetStockObject(ANSI_FIXED_FONT);
 
 		hCurHandOpen = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_OPEN));

@@ -47,14 +47,15 @@ resource 'DITL' (ID_ABOUTDLG, purgeable) {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
 			"\n© 2003-2009 Toby Thain, 2018-2019 Daniel Marschall."
-			"\nLatest version available from\nhttp://www.telegraphics.com.au/sw/\n"
+			"\nLatest version available from"
+			"\nhttps://github.com/danielmarschall/filter_foundry"
+			"\n"
 		},
 		{104, 20, 216, 340},
 		StaticText {
 			disabled,
 			"Please contact the author with any bug reports, suggestions or comments."
-			" If you use this program and like it, please consider making a donation"
-			" through www.paypal.com (US$5 suggested) to the address above."
+			" If you use this program and like it, please consider making a donation."
 		}
 	}
 };
