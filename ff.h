@@ -110,8 +110,8 @@ Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
 unsigned long printablehash(unsigned long hash);
-size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title);
-size_t aete_generate(void* aeteptr, PARM_T *pparm);
+size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title, long *event_id);
+size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 void obfusc(unsigned char *pparm,size_t size);
 
 Boolean loadfile(StandardFileReply *sfr,char **reason);

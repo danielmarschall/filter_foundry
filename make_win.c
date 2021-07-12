@@ -61,6 +61,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	Boolean discard = true;
 	LPWSTR changeRequestStr, tmp;
 	char* soleFilename;
+	long event_id;
 
 	if (!isWin32NT()) {
 		HMODULE hLib;
@@ -108,7 +109,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
-				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,title) + 2;
+				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,title, &event_id) + 2;
 
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));
@@ -124,7 +125,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 					myp2cstr(pparm->ctl[i]);
 
 				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
-				aetesize = aete_generate(newaete, pparm);
+				aetesize = aete_generate(newaete, pparm, event_id);
 
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;

@@ -32,8 +32,6 @@
 
 //#define PRINTABLE_HASH_FF16
 
-long event_id;
-
 /*
 Find a printable 4-character key, remembering (see Photoshop API guide):
 - All IDs starting with an uppercase letter are reserved by Adobe.
@@ -149,7 +147,7 @@ long roundToNext4(long x) {
         return x + pad;
 }
 
-size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title) {
+size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *event_id) {
         PIProperty *prop;
         char *p;
         struct hstm_data {
@@ -202,7 +200,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title) {
 
         /* make up a new event ID for this aete, based on printable base-95 hash of scope */
         hash = djb2(hstm->scope);
-        event_id = printablehash(hash); /* this is used by aete_generate() later... */
+        *event_id = printablehash(hash); /* this is used by aete_generate() later... */
 
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PIHasTerminologyProperty;
@@ -287,7 +285,7 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
         return aeteptr;
 }
 
-size_t aete_generate(void* aeteptr, PARM_T *pparm) {
+size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
         int numprops;
         void *beginptr = aeteptr;
 
