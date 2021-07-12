@@ -209,7 +209,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 
         hstm->version = 0;
         hstm->class_id = plugInClassID;
-        hstm->event_id = event_id;
+        hstm->event_id = *event_id;
         hstm->aete_resid = AETE_ID;
 
         p += offsetof(PIProperty, propertyData) + prop->propertyLength;

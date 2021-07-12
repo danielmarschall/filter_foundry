@@ -42,6 +42,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	long origsize,newsize,parm_type,parm_id;
 	OSErr e = noErr;
 	Str255 title;
+	long event_id;
 
 #ifdef MACMACHO
 	FSRef inref,outref;
@@ -81,7 +82,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			origsize = GetHandleSize(hpipl);
 			SetHandleSize(hpipl,origsize+0x300); /* some slop for fixup to work with */
 			HLock(hpipl);
-			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title);
+			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title,&event_id);
 			HUnlock(hpipl);
 			SetHandleSize(hpipl,newsize);
 
@@ -94,7 +95,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 				if( (h = Get1Resource(typeAETE,AETE_ID)) ){
 					SetHandleSize(h,4096);
 					HLock(h);
-					newsize = aete_generate((unsigned char*)*h, &gdata->parm);
+					newsize = aete_generate((unsigned char*)*h, &gdata->parm, event_id);
 					HUnlock(h);
 					SetHandleSize(h,newsize);
 
