@@ -43,7 +43,7 @@ resource 'PiPL' (16000, purgeable)
 		CodeMachOPowerPC { 0, 0, "PluginMain" },
 #endif
 
-		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
 	}
 };
 

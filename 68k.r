@@ -35,7 +35,7 @@ resource 'PiPL' (16000, purgeable)
 	{
 		Category { "Telegraphics" },
 		Name { "Filter Foundry…" },
-		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
 #include "PiPL_common.r"
 		Code68K { Filter, 16000 },
 	}

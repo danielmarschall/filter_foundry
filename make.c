@@ -32,6 +32,7 @@
 #include "compat_string.h"
 
 //#define PRINTABLE_HASH_FF16
+#define ENABLE_APPLESCRIPT
 
 /*
 Find a printable 4-character key, remembering (see Photoshop API guide):
@@ -173,6 +174,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PINameProperty;
         prop->propertyID = 0;
+        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
         prop->propertyLength = roundToNext4(title[0] + 1);
         PLstrcpy((StringPtr)prop->propertyData, title);
 
@@ -185,6 +187,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PICategoryProperty;
         prop->propertyID = 0;
+        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
         prop->propertyLength = roundToNext4(gdata->parm.category[0] + 1);
         PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
 
@@ -193,14 +196,22 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 
         /* add HasTerminology property key */
 
-        /* construct scope string by concatenating Category and Title - hopefully unique! */
+        hstm = (struct hstm_data*)prop->propertyData;
+
+        #ifdef ENABLE_APPLESCRIPT
+        // If the uniqueString/scope is set, the plugin will only communicate with Photoshop.
+        // Otherwise it can be accessed with AppleScript, but the AETE keys need to be unique then.
+        // This is achieved with getAeteKey().
+        scopelen = sprintf(hstm->scope, "");
+        #else
+        // Construct scope string by concatenating Category and Title - hopefully unique!
         // Note: In doresources() we malloc'ed 300h additional bytes,
         // and in the build dialog, title and category are size-limited,
         // so we can write here without malloc.
-        hstm = (struct hstm_data*)prop->propertyData;
         scopelen = sprintf(hstm->scope, "%s %s",
-                INPLACEP2CSTR(gdata->parm.category),
-                INPLACEP2CSTR(title));
+            INPLACEP2CSTR(gdata->parm.category),
+            INPLACEP2CSTR(title));
+        #endif 
 
         /* make up a new event ID for this aete, based on printable base-95 hash of scope */
         hash = djb2(hstm->scope);
@@ -209,6 +220,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PIHasTerminologyProperty;
         prop->propertyID = 0;
+        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
         prop->propertyLength = roundToNext4(offsetof(struct hstm_data, scope) + scopelen);
 
         hstm->version = 0;

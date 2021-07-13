@@ -173,6 +173,7 @@
                      NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
                      Due to compatibility reasons, we implement it the same way!
                    - Bugfix: Standalone filters did not show the correct "About" dialog
+                   - FilterFoundry is now AppleScript aware (not tested)
                    - Fixed various smaller things and improved the source code building process
 */
 

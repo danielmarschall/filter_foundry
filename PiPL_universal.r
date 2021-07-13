@@ -35,7 +35,7 @@ resource 'PiPL' (16000, purgeable)
 #include "pipl_common.r"
 		CodeCarbonPowerPC { 0, CARBON_LENGTH, "" },
 		CodePowerPC { CARBON_LENGTH, CLASSIC_LENGTH, "" },
-		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
 	}
 };
 

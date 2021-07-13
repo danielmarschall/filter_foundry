@@ -38,7 +38,7 @@ resource 'PiPL' (16000, purgeable)
 		Code68K { Filter, 16000 },
 #endif
 
-		HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName },
+		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
 	}
 };
 
