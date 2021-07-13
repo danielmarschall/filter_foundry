@@ -12,12 +12,14 @@ Important/Bugs
   and/or apply the changes on Mac.
 
 * Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
-  Do we need to rewrite the UI code because the Carbon Framework is not available in 64 bit?
+  Do we need to rewrite the UI code because the Carbon Framework is replaced by Cocoa!
 
 * Release version 1.7 (when can we leave the beta state?)
   Windows 32+64 is already tested and ready to publish.
 
 * strdup() and my_strdup() need free() !
+
+* Some *.r files include "PiMI.r". Is this part of an old SDK or is a file missing?
 
 
 Minor priority stuff or ideas

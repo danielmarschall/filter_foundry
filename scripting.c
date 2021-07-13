@@ -78,8 +78,10 @@ OSType getAeteKey(char c, PARM_T* parm) {
                 // sprintf(debug, "getAeteKey %c with title %s/%s in STANDALONE PLUGIN", c, INPLACEP2CSTR(parm->title), INPLACEP2CSTR(parm->category));
                 // simplealert(debug);
 
+                // Use random AETE keys, because AppleScript has a global namespace
+                // and therefore requires unique AETE keys
                 data = (char*)malloc(0x300);
-                if (!data) return 'xxxx';
+                if (!data) return 0;
                 sprintf(data, "%s %s %c",
                         INPLACEP2CSTR(parm->category),
                         INPLACEP2CSTR(parm->title),
@@ -97,7 +99,8 @@ OSType getAeteKey(char c, PARM_T* parm) {
                 if (c == 'G') return 'xprG';
                 if (c == 'B') return 'xprB';
                 if (c == 'A') return 'xprA';
-                return 'cTl0' + (c - '0');
+                if ((c >= '0') && (c <= '9')) return 'cTl0' + (c - '0');
+                return 0;
         }
 }
 

@@ -419,3 +419,7 @@ void obfusc(unsigned char *pparm, size_t size) {
                 *p++ ^= x32;
         }
 }
+
+void deobfusc(unsigned char* pparm, size_t size) {
+    obfusc(pparm, size);
+}
