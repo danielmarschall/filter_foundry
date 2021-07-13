@@ -83,8 +83,9 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
 		gdata = (globals_t*)*data;
 		gdata->standalone = gdata->parmloaded = false;
-	}else
+	} else {
 		gdata = (globals_t*)*data;
+	}
 
 	EnterCodeResource();
 
@@ -94,9 +95,16 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	switch (selector){
 	case filterSelectorAbout:
-		if(gdata && !gdata->parmloaded)
-			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1);
-		DoAbout((AboutRecordPtr)pb);
+		if (!gdata) {
+			gdata = (globals_t*)malloc(sizeof(globals_t));
+			if (!gdata) break;
+			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1); // TODO: readobfusc as constant
+			DoAbout((AboutRecordPtr)pb);
+			free(gdata);
+			gdata = NULL;
+		} else {
+			DoAbout((AboutRecordPtr)pb);
+		}
 		break;
 	case filterSelectorParameters:
 		wantdialog = true;
@@ -175,11 +183,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	*result = e;
 
-	ExitCodeResource();
-
 #ifdef WIN_ENV
 	if (activationContextUsed) DeactivateManifest(&manifestVars);
 #endif
+
+	ExitCodeResource();
 }
 
 int checkandinitparams(Handle params){
@@ -217,7 +225,8 @@ int checkandinitparams(Handle params){
 		   or the parameter data couldn't be read; set default values */
 
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1);
+		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1); // TODO: readobfusc as constant
+
 
 		if(!gdata->standalone){
 			// no saved settings (not standalone)

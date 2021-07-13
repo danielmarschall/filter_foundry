@@ -50,7 +50,9 @@ type 'PARM' {
 
 #else
 
-/* N.B. under Windows, the strings are all C strings (!) */
+// Note: In Windows DLL/8BF files, the strings are C-strings, while in MAC-plugins they are Pascal-strings!
+// However, internally, we work with Pascal Strings:
+// readPARM() converts C to Pascal strings, and doresources() converts them back to C strings for saving.
 
 // Photoshop's Filter Factory has PARM:16
 typedef struct {   //structure of FF PARM resource

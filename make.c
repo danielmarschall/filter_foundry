@@ -25,6 +25,7 @@
 #include "ff.h"
 #include "symtab.h"
 
+#include "scripting.h"
 #include "PIActions.h"
 #include "PITerminology.h"
 
@@ -193,6 +194,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         /* add HasTerminology property key */
 
         /* construct scope string by concatenating Category and Title - hopefully unique! */
+        // Note: In doresources() we malloc'ed 300h additional bytes,
+        // and in the build dialog, title and category are size-limited,
+        // so we can write here without malloc.
         hstm = (struct hstm_data*)prop->propertyData;
         scopelen = sprintf(hstm->scope, "%s %s",
                 INPLACEP2CSTR(gdata->parm.category),
@@ -288,7 +292,7 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
         int numprops;
         void *beginptr = aeteptr;
-
+        
         // Attention!
         // - On some systems (e.g. ARM based CPUs) this will cause an unaligned memory access exception.
         //   For X86, memory access just becomes slower.
@@ -377,14 +381,14 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
                                 AETE_WRITE_WORD(0x8000);
                                 */
 
-                                aeteptr = _aete_property(aeteptr, pparm, 0, 0, PARAM_CTL0_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 1, 0, PARAM_CTL1_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 2, 1, PARAM_CTL2_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 3, 1, PARAM_CTL3_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 4, 2, PARAM_CTL4_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 5, 2, PARAM_CTL5_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 6, 3, PARAM_CTL6_KEY);
-                                aeteptr = _aete_property(aeteptr, pparm, 7, 3, PARAM_CTL7_KEY);
+                                aeteptr = _aete_property(aeteptr, pparm, 0, 0, getAeteKey('0', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 1, 0, getAeteKey('1', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 2, 1, getAeteKey('2', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 3, 1, getAeteKey('3', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 4, 2, getAeteKey('4', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 5, 2, getAeteKey('5', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 6, 3, getAeteKey('6', pparm));
+                                aeteptr = _aete_property(aeteptr, pparm, 7, 3, getAeteKey('7', pparm));
                         }
                 }
 

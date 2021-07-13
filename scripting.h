@@ -32,6 +32,8 @@ enum ScriptingShowDialog {
 enum ScriptingShowDialog ReadScriptParamsOnRead(void);
 OSErr WriteScriptParamsOnRead(void);
 
+OSType getAeteKey(char c, PARM_T *parm);
+
 //-------------------------------------------------------------------------------
 //	PIDescriptorParameters -- Macro definitions
 //-------------------------------------------------------------------------------

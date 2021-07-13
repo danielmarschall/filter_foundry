@@ -329,6 +329,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
 	char *reason;
 	Str255 fname;
+	Boolean bak_obfusc, bak_standalone, bak_parmloaded;
+	PARM_T bak_parm;
 
 	switch(item){
 	case IDOK:
@@ -374,6 +376,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		}
 		break;
 	case MAKEITEM:
+		bak_obfusc = gdata->obfusc;
+		bak_standalone = gdata->standalone;
+		bak_parmloaded = gdata->parmloaded;
+		memcpy(&bak_parm,&gdata->parm,sizeof(PARM_T));
+
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
 #ifdef MACMACHO
@@ -394,6 +401,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 						))
 				make_standalone(&sfr);
 		}
+
+		gdata->obfusc = bak_obfusc;
+		gdata->standalone = bak_standalone;
+		gdata->parmloaded = bak_parmloaded;
+		memcpy(&gdata->parm, &bak_parm, sizeof(PARM_T));
+
 		break;
 	case ZOOMINITEM:
 		zoomfactor = zoomfactor > 2. ? zoomfactor/2. : 1.;

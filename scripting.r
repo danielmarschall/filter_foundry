@@ -45,24 +45,25 @@ resource 'aete' (AETE_ID, "FilterFoundry scripting dictionary", purgeable)
 		{	/* structure for filters */
 			plugInName,					/* unique filter name */
 			"",							/* optional description */
-			plugInClassID,				/* event class ID, must be unique or Suite ID */
+			plugInClassID,				/* event class ID, must be eventFilter='Fltr' */
 			plugInEventID,				/* event ID, must be unique to class ID */
 			
 			NO_REPLY,					/* never a reply */
 			IMAGE_DIRECT_PARAMETER,		/* direct parameter, used by Photoshop */
 			{	/* parameters here, if any */
-				"R", PARAM_R_KEY, typeChar, "R channel expression", flagsOptionalSingleParameter,
-				"G", PARAM_G_KEY, typeChar, "G channel expression", flagsOptionalSingleParameter,
-				"B", PARAM_B_KEY, typeChar, "B channel expression", flagsOptionalSingleParameter,
-				"A", PARAM_A_KEY, typeChar, "A channel expression", flagsOptionalSingleParameter,
-				"ctl0", PARAM_CTL0_KEY, typeInteger, "ctl(0) setting", flagsOptionalSingleParameter,
-				"ctl1", PARAM_CTL1_KEY, typeInteger, "ctl(1) setting", flagsOptionalSingleParameter,
-				"ctl2", PARAM_CTL2_KEY, typeInteger, "ctl(2) setting", flagsOptionalSingleParameter,
-				"ctl3", PARAM_CTL3_KEY, typeInteger, "ctl(3) setting", flagsOptionalSingleParameter,
-				"ctl4", PARAM_CTL4_KEY, typeInteger, "ctl(4) setting", flagsOptionalSingleParameter,
-				"ctl5", PARAM_CTL5_KEY, typeInteger, "ctl(5) setting", flagsOptionalSingleParameter,
-				"ctl6", PARAM_CTL6_KEY, typeInteger, "ctl(6) setting", flagsOptionalSingleParameter,
-				"ctl7", PARAM_CTL7_KEY, typeInteger, "ctl(7) setting", flagsOptionalSingleParameter,
+				/* Attention: AETE keys (xpr#, cTl#) must be equal in scripting.r, scripting.rc and scripting.c(getAeteKey)! */
+				"R", 'xprR', typeChar, "R channel expression", flagsOptionalSingleParameter,
+				"G", 'xprG', typeChar, "G channel expression", flagsOptionalSingleParameter,
+				"B", 'xprB', typeChar, "B channel expression", flagsOptionalSingleParameter,
+				"A", 'xprA', typeChar, "A channel expression", flagsOptionalSingleParameter,
+				"ctl0", 'cTl0', typeInteger, "ctl(0) setting", flagsOptionalSingleParameter,
+				"ctl1", 'cTl1', typeInteger, "ctl(1) setting", flagsOptionalSingleParameter,
+				"ctl2", 'cTl2', typeInteger, "ctl(2) setting", flagsOptionalSingleParameter,
+				"ctl3", 'cTl3', typeInteger, "ctl(3) setting", flagsOptionalSingleParameter,
+				"ctl4", 'cTl4', typeInteger, "ctl(4) setting", flagsOptionalSingleParameter,
+				"ctl5", 'cTl5', typeInteger, "ctl(5) setting", flagsOptionalSingleParameter,
+				"ctl6", 'cTl6', typeInteger, "ctl(6) setting", flagsOptionalSingleParameter,
+				"ctl7", 'cTl7', typeInteger, "ctl(7) setting", flagsOptionalSingleParameter,
 			}
 		},
 		{ },

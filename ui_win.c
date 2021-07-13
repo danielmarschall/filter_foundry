@@ -60,8 +60,8 @@ void DoAbout(AboutRecordPtr pb){
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "\n"
 		               "Latest version available from\n"
-		               "\nhttps://github.com/danielmarschall/filter_foundry\n"
-		               "Please contact the author with any bug reports,\n"
+		               "https://github.com/danielmarschall/filter_foundry\n"
+		               "\nPlease contact the author with any bug reports,\n"
 		               "suggestions or comments.\n"
 		               "If you use this program and like it, please consider\n"
 		               "making a donation.");

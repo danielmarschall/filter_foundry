@@ -114,18 +114,19 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));
 
+				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
+				aetesize = aete_generate(newaete, pparm, event_id);
+
 				/* convert to C strings for Windows PARM resource */
+				// Don't do it before aete_generate, because they need Pascal strings
 				myp2cstr(pparm->category);
 				myp2cstr(pparm->title);
 				myp2cstr(pparm->copyright);
 				myp2cstr(pparm->author);
-				for(i=0;i<4;++i)
+				for (i = 0; i < 4; ++i)
 					myp2cstr(pparm->map[i]);
-				for(i=0;i<8;++i)
+				for (i = 0; i < 8; ++i)
 					myp2cstr(pparm->ctl[i]);
-
-				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
-				aetesize = aete_generate(newaete, pparm, event_id);
 
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;

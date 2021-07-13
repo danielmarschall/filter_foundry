@@ -105,6 +105,7 @@ AETE_ID aete
 			RC_NO_REPLY,
 			RC_IMAGE_DIRECT_PARAM,
 			12,
+				/* Attention: AETE keys (xpr#, cTl#) must be equal in scripting.r, scripting.rc and scripting.c(getAeteKey)! */
 				"\001R", LC(x,p,r,R), RC_typeChar, "\024R channel expression", FLAGS_1_OPT_PARAM,
 				"\001G", LC(x,p,r,G), RC_typeChar, "\024G channel expression", FLAGS_1_OPT_PARAM,
 				"\001B", LC(x,p,r,B), RC_typeChar, "\024B channel expression", FLAGS_1_OPT_PARAM,

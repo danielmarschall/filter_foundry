@@ -40,14 +40,14 @@ BEGIN
 	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0", /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
 
-/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
-VENDORID, LC(h,s,t,m), NULLID, 44L, /* = 3*4 + 2 + sizeof(c string) + padding */
+	/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
+	VENDORID, LC(h,s,t,m), NULLID, 44L, /* = 3*4 + 2 + sizeof(c string) + padding */
 	0L,								/* version */
-	LC(F,l,t,r),					/* Class ID, always required.  Can be Suite ID. */
+	LC(F,l,t,r),					/* Class ID, always required.  Must be eventFilter='Fltr' to show up in "Actions" tab. */
 	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
 	AETE_ID,						/* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
 	"Telegraphics FilterFoundry\0\0\0\0" /* Unique scope string, C format, long padded.
-											Always required in Photoshop 5.0 and later. */
+											If set, the plugin will only communicate with the host (Photoshop), not with AppleScript. */
 
 
 #include "PiPL_body.rc"

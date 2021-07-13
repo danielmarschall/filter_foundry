@@ -97,6 +97,7 @@
 02-Aug-2007: 1.5b4 - fix debug message spotted by Daniel Denk
 26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
 07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
+================== Following changes are done by Daniel Marschall ==================
 20-Sep-2019: 1.7b1 - Fixed crash at filter startup when computer had too much RAM.
                    - Fixed crash where built obfuscated filters could not be opened.
                    - Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
@@ -163,23 +164,29 @@
                    - Scripting/Actions: For standalone filters, the name of the sliders
                      are now written in the 'Actions' tab. The function 'fixaete' was replaced with 'aete_generate'. (*)
                    - "MaxSpace64" will now be used, if supported by the host
-                   (Changes by Daniel Marschall)
-
-(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
-
+                   (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
+13-Jul-2021: 1.7b2 - Project was forked by Daniel Marschall and released at GitHub
+                     For now, only the Windows version is supported 
+                   - Bugfix: If plugin is called from an recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
+                   - Bugfix: Variable "d" now works like FilterFactory/FilterFoundy1.6 again.
+                     (Bug introduced in FilterFoundry 1.7b1 due to the change of the c2d() function)
+                     NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
+                     Due to compatibility reasons, we implement it the same way!
+                   - Bugfix: Standalone filters did not show the correct "About" dialog
+                   - Fixed various smaller things and improved the source code building process
 */
 
 #define plugInName "FilterFoundry"
-#define VERSION_STR "1.7b1"
-#define VERSION_NUM 1,0x70,beta,1
+#define VERSION_STR "1.7b2"
+#define VERSION_NUM 1,0x70,beta,2
 #define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
 
 #define RELEASE_YEAR "2021"
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM 1,7,0,1
+#define VI_VERS_NUM 1,7,0,2
 #define VI_FLAGS	VS_FF_PRERELEASE /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
-#define VI_COMMENTS	"Beta.\r\n\r\nPlease contact support@telegraphics.com.au with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
+#define VI_COMMENTS	"Beta.\r\n\r\nPlease contact info@daniel-marschall.de with any bug reports, suggestions or comments.\0"	/* null terminated Comments field */
 
 /* wildcard signature in resources */
 #define ANY '    '

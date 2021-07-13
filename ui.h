@@ -77,20 +77,6 @@
 #define plugInClassID	'Fltr' //PITerminology.h:eventFilter
 #define plugInEventID	'fiFo' //typeNull // must be this
 
-#define PARAM_R_KEY		'xprR'
-#define PARAM_G_KEY		'xprG'
-#define PARAM_B_KEY		'xprB'
-#define PARAM_A_KEY		'xprA'
-
-#define PARAM_CTL0_KEY	'cTl0'	// some naughty parts of the code assume
-#define PARAM_CTL1_KEY	'cTl1'	// these are numerically sequential
-#define PARAM_CTL2_KEY	'cTl2'
-#define PARAM_CTL3_KEY	'cTl3'
-#define PARAM_CTL4_KEY	'cTl4'
-#define PARAM_CTL5_KEY	'cTl5'
-#define PARAM_CTL6_KEY	'cTl6'
-#define PARAM_CTL7_KEY	'cTl7'
-
 // Return value of checksliders() is a bitmask
 // If the CHECKSLIDERS_CTL_AMBIGUOUS bit is set, the function ctl() was called with a non-constant argument.
 // In this case, the ctlflags[] array is NOT populated correctly. The caller might want to handle this
