@@ -25,6 +25,7 @@ Boolean isWin32NT(void){
 	OSVERSIONINFO osv;
 
 	osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	#pragma warning(suppress : 4996 28159)
 	return GetVersionEx(&osv) && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
 }
 

@@ -33,7 +33,7 @@ WINDRES = windres.exe
 # use GNU flex and bison
 # these lines can be commented to use system lex and yacc
 # although this may result in a larger overall executable
-LEX = win_flex_bison\win_flex.exe
+LEX = win_flex_bison\win_flex.exe --never-interactive
 YACC = win_flex_bison\win_bison.exe -y
 YFLAGS = -d
 

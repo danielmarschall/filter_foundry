@@ -12,14 +12,14 @@ WRect
 MProject
 3
 MCommand
-347
+367
 set PSSDK=..\photoshop_sdk\pluginsdk
 set PSAPI=..\photoshop_sdk\pluginsdk\photoshopapi
 cd ..
 if exist y_tab.c del y_tab.c 
 if exist lex_yy.c del lex_yy.c
 win_flex_bison\win_bison.exe parser.y -d -y
-win_flex_bison\win_flex.exe lexer.l y.tab.c
+win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
 rem IDE doesnt like multiple dots in filenames
 ren y.tab.c y_tab.c
 ren lex.yy.c lex_yy.c

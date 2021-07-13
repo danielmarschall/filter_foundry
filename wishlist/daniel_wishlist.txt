@@ -14,8 +14,7 @@ Important/Bugs
 * Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
   Do we need to rewrite the UI code because the Carbon Framework is replaced by Cocoa!
 
-* Release version 1.7 (when can we leave the beta state?)
-  Windows 32+64 is already tested and ready to publish.
+* Release version 1.7b2 (or leave the beta state?)
 
 * strdup() and my_strdup() need free() !
 
@@ -24,6 +23,10 @@ Important/Bugs
 
 Minor priority stuff or ideas
 -----------------------------
+
+* Format the code!
+
+* Why can't we edit *.rc files in Visual Studio?
 
 * persistent_savestate (enabled with GIMP/PSPI) should somehow delete the temporary AFS file
   at each restart of GIMP. Otherwise, the user would always see the previous session when they re-open GIMP.

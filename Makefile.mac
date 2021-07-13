@@ -162,7 +162,7 @@ obj_w32/res.o : win_res.rc PiPL.rc PiPL_body.rc manifest.rc version_win.rc ui_wi
 	$(WINDRES) -o $@ -i $< --language=0 $(CPPFLAGS)
 
 lex.yy.c : lexer.l y.tab.h
-	$(LEX) $<
+	$(LEX) --never-interactive $<
 y.tab.c y.tab.h : parser.y
 	$(YACC) $< $(YFLAGS)
 

@@ -67,7 +67,7 @@ Troubleshooting
   You have to edit the WPJ file with a text editor.
   Remember how many characters you have added or deleted,
   and subtract or add them to the number written above the before-instructions
-  (currently 347). This is the number of bytes of the commands.
+  (currently 367). This is the number of bytes of the commands.
 
 - In the code, it is important that all variables are declared at the
   top of the scope (curly brackets) and that there is no executable code or

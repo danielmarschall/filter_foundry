@@ -79,17 +79,17 @@ win_res.res : ..\win_res.rc ..\Scripting.rc ..\PiPL.rc ..\PiPL_body.rc ..\manife
 	$(RC) $(RFLAGS) $(CPPFLAGS) -fowin_res.res ..\win_res.rc
 	
 parser : ..\parser.y
-	rem $(BISON)  ..\parser.y -d -y
+	rem $(BISON) ..\parser.y -d -y
 	rem We need to switch the path, because otherwise y.tab.c will be created in visual_studio and not the source directory
 	cd ..
-	$(BISON)  parser.y -d -y
+	$(BISON) parser.y -d -y
 	cd visual_studio
 	
 lexer : ..\lexer.l
-	rem $(FLEX)  ..\lexer.l y.tab.c
+	rem $(FLEX) --never-interactive ..\lexer.l y.tab.c
 	rem We need to switch the path, because otherwise lex.yy.c will be created in visual_studio and not the source directory
 	cd ..
-	$(FLEX) lexer.l y.tab.c
+	$(FLEX) --never-interactive lexer.l y.tab.c
 	cd visual_studio
 
 $(EXEC).8bf : $(OBJ) win_res.res
