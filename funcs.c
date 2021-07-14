@@ -53,9 +53,9 @@ void init_trigtab(){
 		costab[i] = cos(FFANGLE(i));
 	}
 	for(i=0;i<TANTABSIZE;++i){
-		if (i>=256) {
+		if (i>=TANTABSIZE/2) {
 			/* the last '-1' in the expression '512-i-1' is for FilterFactory compatibility, and to avoid the undefined pi/2 area */
-			tantab[i] = -tantab[512-i-1];
+			tantab[i] = -tantab[TANTABSIZE-i-1];
 		} else {
 			tantab[i] = tan(FFANGLE(i));
 		}
@@ -239,15 +239,20 @@ value_type ff_cos(value_type x){
 	return (value_type)RINT(TRIGAMP*costab[abs(x) % COSTABSIZE]);
 }
 
-/* tan(x) Bounded tangent function of x, where x is an integer
-   between -256 and 256, inclusive, and the value returned is
-   an integer between -512 and 512, inclusive (Windows) or
-   -1024 and 1024, inclusive (Mac OS) */
+/* tan(x) Tangent function of x, where x is an integer
+   between -256 and 256, inclusive. Althought the Filter Factory manual
+   stated that the return value is bounded to -512 and 512, inclusive (Windows) or
+   -1024 and 1024, inclusive (Mac OS), the output is actually NOT bounded! */
 value_type ff_tan(value_type x){
-	// TODO: Shouldn't the output be bounded to -1024..1024, or do I understand the definition wrong?
-	if (x < 0) x--; /* required for FilterFactory compatibility */
+	// Following filter shows that the Filter Factory manual differs from the implementation.
+	// 	   R = cos(x) > 1024 || cos(x) < -1024 || cos(-x) > 1024 || cos(-x) < -1024 ? 255 : 0
+	//     G = tan(x) > 1024 || tan(x) < -1024 || tan(-x) > 1024 || tan(-x) < -1024 ? 255 : 0
+	//     B = sin(x) > 1024 || sin(x) < -1024 || sin(-x) > 1024 || sin(-x) < -1024 ? 255 : 0
+	// It outputs green stripes, showing that the output of tan() is not bounded.
+	// So, we do it the same way to stay compatible.
+	if (x < 0) x--; /* required for Filter Factory compatibility */
 	while (x < 0) x += TANTABSIZE;
-	return (value_type)RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); /* FIXME: why do we need factor 2? */
+	return (value_type)RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); // We need the x2 multiplicator for some reason
 }
 
 /* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
@@ -300,6 +305,7 @@ value_type ff_put(value_type v,value_type i){
 	return v;
 }
 
+/* Convolve. Applies a convolution matrix and divides with d. */
 value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m21,value_type m22,value_type m23,
 				  value_type m31,value_type m32,value_type m33,
