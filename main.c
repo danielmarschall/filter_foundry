@@ -98,7 +98,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if (!gdata) {
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
-			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1); // TODO: readobfusc as constant
+			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
 			DoAbout((AboutRecordPtr)pb);
 			free(gdata);
 			gdata = NULL;
@@ -225,7 +225,7 @@ int checkandinitparams(Handle params){
 		   or the parameter data couldn't be read; set default values */
 
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,1); // TODO: readobfusc as constant
+		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
 
 
 		if(!gdata->standalone){

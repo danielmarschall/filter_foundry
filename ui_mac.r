@@ -46,9 +46,9 @@ resource 'DITL' (ID_ABOUTDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-2009 Toby Thain, 2018-2021 Daniel Marschall."
+			"\n© 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall."
 			"\nLatest version available from"
-			"\nhttps://github.com/danielmarschall/filter_foundry"
+			"\n" PROJECT_URL
 			"\n"
 		},
 		{104, 20, 216, 340},
@@ -72,7 +72,7 @@ resource 'DITL' (ID_ABOUTSTANDALONEDLG, purgeable) {
 		StaticText {
 			disabled,
 			"Filter Foundry, version " VERSION_STR
-			"\n© 2003-2009 Toby Thain, 2018-2021 Daniel Marschall."
+			"\n© 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall."
 		},
 		{88, 20, 200, 340},
 		StaticText {
@@ -409,7 +409,7 @@ resource 'DITL' (ID_BUILDDLG, purgeable) {
 		EditText { enabled,"Untitled" },
 		/* [5] */
 		{60, 92, 92, 395},
-		EditText { enabled,"" }, /* Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-2021 Daniel Marschall */
+		EditText { enabled,"" }, /* "Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall" */
 		/* [6] */
 		{100, 92, 116, 395},
 		EditText { enabled,"Anonymous" },

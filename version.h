@@ -19,170 +19,22 @@
 */
 
 /*
-22-Feb-2003: started 0.1b1
-23-Feb-2003: released 0.1b1,0.2b1
-24-Feb-2003: 0.3b1,b2
-25-Feb-2003: 0.3b3,b4
-27-Feb-2003: 0.4b1 - with preview
-01-Mar-2003: 0.4b4,5,6 - finally! live sliders
-02-Mar-2003: 0.4b7,8,9,10
-04-Mar-2003: 0.5b1 - first Windows beta released
-08-Mar-2003: 0.5b4 - first Mac 68K build (CW1)
-13-Mar-2003: 0.5b6 - finally caught divide-by-zero in Win version
-15-Mar-2003: 0.5b7 - Mac version uses edit controls, theme, is movable
-16-Mar-2003: 0.6b1,2 - zoomable preview
-16-Mar-2003: 0.6b3 - Windows preview pannable
-16-Mar-2003: 0.6b4 - fix map()
-16-Mar-2003: 0.7b1 - read Mac PARM resources
-18-Mar-2003: 0.7b2 - check for direct host callbacks before using them (preview)
-23-Mar-2003: 0.8b1 - can now make standalone filters (Mac only)
-26-Mar-2003: 0.8b3 - switch to "universal" PowerPC build in one file (inspired by Harald Heim)
-28-Mar-2003: 0.8b4 - Windows version can load PARM resource
-31-Mar-2003: 0.8b5 - Windows version can create standalone (?) NT platform only
-16-May-2003: 0.9b1 - added cnv() function, dmin, mmin
-17-May-2003: 0.9b2 - fix dmin/mmin crash
-17-May-2003: 0.9b3 - add Harry's suggestions: skip comments; other bugfixes
-19-May-2003: 0.9b4 - fix Make... suggested file name bug
-21-Jul-2003: 0.9b5 - fix crash on About box (!!)
-28-Jan-2004: 0.9b6 - fix problems with making standalone on Mac (thanks Chris Greene)
-31-Jan-2004: 1.0b1 - finally fix Win32 standalone filters - building and running
-06-Feb-2004: 1.0b2 - fix bufferSpace computation (Prepare call)
-21-Feb-2004: 1.0f1 - GPL source release
-20-Mar-2004: 1.0f2 - fix code to blank margins of preview... hunting David Owen's crash
-21-Mar-2004: 1.0f3 - alert when pb->inData is NULL - temporary workaround for crash bug
-23-May-2004: 1.0f4 - include missing license(!)
-25-Sep-2004: 1.0f5 - remove debug calls in Win build (!!) - thanks Shiro Akaishi;
-					 fix RC EDITTEXT syntax
-20-Dec-2004: 1.0f6 - fix bug in rad(d,m,z) -- wasn't relative to centre of image!
-					 also ff_c2d, needed to negate x and y arguments to atan2()
-02-Feb-2005: add Win VERSIONINFO
-06-Feb-2005: 1.1a1 - scripting support
-09-Feb-2005: 1.1b1 - incl aete for Windows
-			 1.1b2 - oops, forgot scripting.r (aete resource) in 68K build
-10-Feb-2005: 1.1b3 - various mostly cosmetic cleanups; switch to GNU flex and bison in Makefile
-				   - use monospaced font in Win expr text controls
-			 1.1b4 - fix crash blooper in make.c (fixpipl)
-11-Feb-2005: 1.1b5 - cosmetic fixes in Mac dialog (right justify slider text, etc)
-			 1.1b6 - fix aete key (hash) calculation for standalones to obey Adobe's stated rules
-			 1.1b7 - aaaargh fix stupid hex handling bug in lexer
-			 1.1b8 - remove dbg call in lexer (it's late :( )
-24-Jun-2005: 1.1b9 - Mach-O build for CS2/Mac
-25-Jun-2005: 1.1b10 - can make 'standalone' Mach-O bundles
-22-Jul-2005: 1.1b11 - merge changes to fix parameter bug reported by Demitrios Vassaras
-03-Oct-2005: 1.1f1 - fix dialog behaviour on repeated filter application
-18-Jan-2006: 1.1f2 - fix CS2/Mac build (missing fields in PiPL);
-                     scripting parameters were being ignored (!!)
-26-Feb-2006: 1.1f3 - fix plugin DLL extension; fix many source code warnings
-16-Mar-2006: 1.1f4,5 - add default extension AFS, 8BF for file saving (thanks Daniel Denk)
-17-Mar-2006: 1.1f6 - fix loading of Filter Factory saved PARM data on Windows
-18-Mar-2006: 1.1f7,8 - safer handling of previewing very large images, and clarify out-of-memory message
-21-Mar-2006: 1.1f9,10 - improve file filtering on OS X (parse Windows-style extension filter)
-22-Mar-2006: 1.2b1 - read parameters from Windows .8BF Filter Factory standalones, in Mac version
-23-Mar-2006: 1.2b2 - new release
-25-Mar-2006: 1.2b3 - include R,G,B,A,C,I,U,V undocumented(?) constants (per Harald Heim)
-06-May-2006: 1.2b4 - fix minor AFS saving bug
-05-Jun-2006: 1.3b1 - fix x,y,X,Y,M variables to use selection extent instead of image size (per Eiji Nishidai)
-01-Sep-2006: 1.3b2 - fix standalone UI bugs (thanks Craig Bickford)
-04-Jan-2007: 1.4b1 - Universal Binary on OS X (PPC+Intel)
-31-Jan-2007: 1.4b2 - fix selection bug reported by Daniel Denk
-01-Feb-2007: 1.4b3 - in cnv(), repeat pixels at edge of image, instead of using zero (reported by Daniel Denk)
-             1.4b4 - cnv() no longer requests entire filtered image in one piece; can now work in chunks
-                     improve the handling of edge pixels when filtering selection
-02-Feb-2007: 1.4b5 - minor changes to image sampling logic (ff_src(), rawsrc())
-16-Feb-2007: 1.4b6 - lowercase default file extensions (wishlist #1)
-18-Feb-2007: 1.4b7 - swap +/- zoom controls to match Photoshop builtins
-             1.4b8,9,10 - simple parameter obfuscation in standalone plugins (wishlist #7)
-19-Feb-2007: 1.5b1,2 - support remaining 8-bit image modes (wishlist proposal)
-13-Jul-2007: 1.5b3 - add instrumentation to try to find CS3/Intel Mac 'Make standalone' problem
-02-Aug-2007: 1.5b4 - fix debug message spotted by Daniel Denk
-26-Aug-2007: 1.5b6 - associativity of ?: operator (Harald Heim)
-07-Jun-2009: 1.6b1 - clean up for 64-bit Windows build
-================== Following changes are done by Daniel Marschall ==================
-20-Sep-2019: 1.7b1 - Fixed crash at filter startup when computer had too much RAM.
-                   - Fixed crash where built obfuscated filters could not be opened.
-                   - Added function rst(i) which is an undocumented function in Filter Factory for setting a random seed.
-                   - Size PARM_SIZE in PARM ressource corrected.
-                   - Added Visual Studio project file, and extended NMake script to support flex and bison compilation.
-                   - Dialogs (build dialog, open and save dialogs) are now modal, i.e. the main window is locked when they are open. (*)
-                   - The preview dialog has now a hand cursor. (Open hand on hover. Grabbing hand on panning) (*)
-                   - Dialog boxes now have an [X] button to close the window.
-                   - Preview: Checkerboard does only move when the panning actually suceeded (the picture didn't went off border)
-                   - Bugfix: In the preview window, you could (virtually) pan the image beyond the canvas,
-                             so that you needed to pan multiple times in the opposite direction to get to the position "0" again.
-                   - The "version information" of standalone filters is now individualized by the creators input
-                   - Win64 support (*)
-                   - All undocumented symbol aliases of FilterFactory are now supported (rmin, rmax, cnv0, etc.)
-                   - Bugfix: In some cases, the preview image had a small stripe of random pixels at the right or bottom.
-                   - For disabled sliders, the corresponding label is now also grayed out (*)
-                   - Bugfix: In standalone filters, the unused ctl() labels were not hidden. They are now invisible as intended.
-                   - Bugfix: At standalone filters, the "map" text was not displayed; instead, the two "ctl" texts were displayed.
-                   - AFS Files are now compatible with FilterFactory. (FilterFactory does ONLY understand "\r" (0D) linebreaks, while
-                     FilterFoundry always saved "\n" (0A) linebreaks, while being able to read "\r", "\n" or "\r\n". Now, "\r" is used
-                     for saving.) (*)
-                   - The "caution" sign that indicates an error in the expression now has a hand cursor that shows up when
-                     you hover over the icon, to indicate that the user will receive more information if they click on the icon (*)
-                   - The "caution" sign now has a sharper design (it was a bit pixelated).
-                   - The expression input fields now have a vertical scrollbar (*)
-                   - YUV formulas are now more accurate. They are slightly different, but not much.
-                     The i range is now [0..255] instead of [0..254]. (This means that pure white has now i=255 instead of i=254)
-                     The u range stays at [-55..55].
-                     The v range is now [-78..78] instead of [-77..77].
-                   - Bugfix: If ctl() or map() was called with a non-constant argument, the controls in the build dialogs
-                     were not correctly enabled/disabled, and built standalone filters did not get the correct
-                     "needs UI" flag. Fixed.
-                   - In the build dialog, if map() was used, the corresponding ctl()-labels now can't be changed anymore,
-                     since the resulting standalone filter won't show them anyway.
-                   - Warning windows (alertuser and simplealert function) are now modal. (*)
-                   - Bugfix: Trigonometry functions sin and cos had wrong output ranges for Windows (it was -1024..1024 instead of
-                     the documented output range -512..512). Fixed.
-                   - Bugfix: Trigonometry function tan now behaves like in Filter Factory
-                   - Bugfix: Function c2d() now behaves like in Filter Factory. Implementation changed from atan2(-y,-x) to atan2(y,x).
-                   - Bugfix: The cell values used by the functions get() and put() were not (re-)initialized before the filter started running.
-                     This caused that expressions like "put(get(0)+1,0)" produced different results at each run.
-                   - Adobe Premiere FilterFactory/TransitionFactory filters (.pff Settings and .prm 16/32 bit Windows Standalone Filters) can now be imported (*)
-                   - Old FilterFactory standalone filters for MacOS can now be imported (*)
-                   - In Windows, the "load" algorithm will now first check if a file is an AFS/PFF file, and then if it is a standalone filter.
-                     Due to this, files can now opened, even if they have the wrong file extension.
-                   - Bugfix: When state changing functions (rst, rnd or put) are used within the formula,
-                     every pixel in the picture will now be evaluated during preview, even if the user
-                     has zoomed in.
-                   - Fixed "off by one" bug where you could pan a fit-zoomed picture by 1 pixel in the preview
-                   - The preview area now has a dark off-canvas area and for Windows, a "sunken" border
-                   - Windows: Visual Styles are now supported and always be applied
-                   - Bugfix: If you click the zoomlevel-caption for a tiny picture, the zoom ("fit zoom") won't zoom in to >100% anymore.
-                   - Building of standalone filters is now possible with Windows 9x
-                     (requires compilation using an old Windows SDK, or compilation using OpenWatcom)
-                   - Fixed TLV lengths in the PIPL structure (includes now paddings).
-                     This might solve incompatibilities with non-Photoshop hosts (i.e. GIMP).
-                   - GIMP (using PSPI to load 8BF plugins) and IrfanView is now compatible.
-                   - c2m() and sqr() are now approximately 3 times faster
-                   - Build of plugins with empty title or category will now be prevented,
-                     since plugins with empty category or title won't be shown in the filter menu.
-                   - Fixed Actions (recording/playback). Several things like the AETE resource were broken.
-                     The classID had to be changed to 'Fltr' so that the parameters are shown in the
-                     Photoshop Action tab. (*)
-                   - Scripting/Actions: For standalone filters, the name of the sliders
-                     are now written in the 'Actions' tab. The function 'fixaete' was replaced with 'aete_generate'. (*)
-                   - "MaxSpace64" will now be used, if supported by the host
-                   (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
-13-Jul-2021: 1.7b2 - Project was forked by Daniel Marschall and released at GitHub
-                     For now, only the Windows version is supported 
-                   - Bugfix: If plugin is called from an recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
-                   - Bugfix: Variable "d" now works like FilterFactory/FilterFoundy1.6 again.
-                     (Bug introduced in FilterFoundry 1.7b1 due to the change of the c2d() function)
-                     NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
-                     Due to compatibility reasons, we implement it the same way!
-                   - Bugfix: Standalone filters did not show the correct "About" dialog
-                   - FilterFoundry is now AppleScript aware (not tested)
-                   - Fixed various smaller things and improved the source code building process
+
+Note: Changelog has been moved into the file CHANGELOG.md
+
 */
 
 #define plugInName "FilterFoundry"
+
+// Please also adjust the version in manifest.xml
 #define VERSION_STR "1.7b2"
 #define VERSION_NUM 1,0x70,beta,2
-#define VERS_RSRC VERSION_NUM,verAustralia,VERSION_STR,"Filter Foundry " VERSION_STR
+
+#define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 
 #define RELEASE_YEAR "2021"
+
+#define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
 /* formatted for Win32 VERSIONINFO resource */
 #define VI_VERS_NUM 1,7,0,2

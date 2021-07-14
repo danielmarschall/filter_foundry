@@ -54,7 +54,9 @@ enum{
 	OBFUSCDATA_ID = 16001,
 	TEXT_FILETYPE = 'TEXT',
 	SIG_SIMPLETEXT = 'ttxt',
-	PS_FILTER_FILETYPE = '8BFM'
+	PS_FILTER_FILETYPE = '8BFM',
+
+	READ_OBFUSC = 1
 };
 
 typedef struct{

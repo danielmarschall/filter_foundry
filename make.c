@@ -202,7 +202,8 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         // If the uniqueString/scope is set, the plugin will only communicate with Photoshop.
         // Otherwise it can be accessed with AppleScript, but the AETE keys need to be unique then.
         // This is achieved with getAeteKey().
-        scopelen = sprintf(hstm->scope, "");
+        hstm->scope[0] = '\0';
+        scopelen = 0;
         #else
         // Construct scope string by concatenating Category and Title - hopefully unique!
         // Note: In doresources() we malloc'ed 300h additional bytes,

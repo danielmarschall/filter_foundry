@@ -47,7 +47,7 @@ void builddlginit(DIALOGREF dp){
 		   we can set initial values statically in the rez description */
 		SetDlgItemText(dp,CATEGORYITEM,	"Filter Foundry");
 		SetDlgItemText(dp,TITLEITEM,	"Untitled");
-		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-2021 Daniel Marschall");
+		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
 		SetDlgItemText(dp,AUTHORITEM,	"Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){

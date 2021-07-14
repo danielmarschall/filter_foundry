@@ -50,7 +50,7 @@ void DoAbout(AboutRecordPtr pb){
 		               "\n"
 		               "This plugin was built using Filter Foundry " VERSION_STR "\n"
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
-		               "available from https://github.com/danielmarschall/filter_foundry",
+		               "available from " PROJECT_URL,
 		               INPLACEP2CSTR(gdata->parm.title),
 		               INPLACEP2CSTR(gdata->parm.author),
 		               INPLACEP2CSTR(gdata->parm.copyright));
@@ -60,7 +60,7 @@ void DoAbout(AboutRecordPtr pb){
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "\n"
 		               "Latest version available from\n"
-		               "https://github.com/danielmarschall/filter_foundry\n"
+		               PROJECT_URL "\n"
 		               "\nPlease contact the author with any bug reports,\n"
 		               "suggestions or comments.\n"
 		               "If you use this program and like it, please consider\n"
