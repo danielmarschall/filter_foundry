@@ -174,8 +174,8 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PINameProperty;
         prop->propertyID = 0;
-        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
         prop->propertyLength = roundToNext4(title[0] + 1);
+        memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, title);
 
         // skip past new property record, and any padding
@@ -187,8 +187,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PICategoryProperty;
         prop->propertyID = 0;
-        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
+
         prop->propertyLength = roundToNext4(gdata->parm.category[0] + 1);
+        memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
 
         p += offsetof(PIProperty, propertyData) + prop->propertyLength;
@@ -221,8 +222,11 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PIHasTerminologyProperty;
         prop->propertyID = 0;
-        // TODO: The padding should be zeroed out, otherwise we might have residues inside the PIPL
-        prop->propertyLength = roundToNext4(offsetof(struct hstm_data, scope) + scopelen);
+
+        size_t realLength = offsetof(struct hstm_data, scope) + scopelen + 1/*null-term*/;
+        size_t roundedLength = roundToNext4(realLength);
+        prop->propertyLength = roundedLength;
+        memset(prop->propertyData + realLength, 0x00, roundedLength - realLength); // fill padding with 00h bytes (cosmetics)
 
         hstm->version = 0;
         hstm->class_id = plugInClassID;
