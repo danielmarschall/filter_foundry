@@ -5,26 +5,15 @@ Wishlist/ToDo by Daniel Marschall <www.daniel-marschall.de>
 Important/Bugs
 --------------
 
-* In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
-  to write an expression longer than 1023 bytes, which would lead to a crash?
-
-* Macintosh: Please look at the (*) marked entries in version.h and verify the bugs/fixes
-  and/or apply the changes on Mac.
-
-* Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
-  Do we need to rewrite the UI code because the Carbon Framework is replaced by Cocoa!
-
 * Release version 1.7b2 (or leave the beta state?)
-
-* strdup() and my_strdup() need free() !
-
-* Some *.r files include "PiMI.r". Is this part of an old SDK or is a file missing?
 
 
 Minor priority stuff or ideas
 -----------------------------
 
 * Format the code!
+
+* Memory leak: strdup() and my_strdup() need free() !
 
 * Why can't we edit *.rc files in Visual Studio?
 
@@ -122,6 +111,21 @@ Design/UI Tweaks
 * "+" and "-" buttons with hand pointer cursor?
 
 * With some canvas formats, the initial zoom level is not "fully zoomed out"
+
+
+Regarding Macintosh
+-------------------
+
+* In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
+  to write an expression longer than 1023 bytes, which would lead to a crash?
+
+* Macintosh: Please look at the (*) marked entries in version.h and verify the bugs/fixes
+  and/or apply the changes on Mac.
+
+* Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
+  Do we need to rewrite the UI code because the Carbon Framework is replaced by Cocoa!
+
+* Some *.r files include "PiMI.r". Is this part of an old SDK or is a file missing?
 
 
 Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
