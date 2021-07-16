@@ -50,7 +50,30 @@ PRIORITY NEEDS:
 	  (If a documentation issue based on processing changes, then
 	  documentation required for the updated code structure.)
 
-		2a. See examples provided. (Blintz)
+(FIXED)	2a. See examples provided. (Blintz)
+				R := src(x+y<=X/2?Y/2-y:x-y>=X/2? y+Y/2: x-y<=-X/2? y-Y/2:x+y>=(3*X)
+				/2?3*Y/2-y:x,\r
+				x+y<=X/2?X/2-x:x-y>=X/2? x-X/2:x-y<=-X/2?x+X/2:x
+				+y>=(3*X)/2?3*X/2-x:y,z)
+
+				G := src(x+y<=X/2?Y/2-y:x-y>=X/2? y+Y/2: x-y<=-X/2? y-Y/2:x+y>=(3*X)
+				/2?3*Y/2-y:x,\r
+				x+y<=X/2?X/2-x:x-y>=X/2? x-X/2:x-y<=-X/2?x+X/2:x
+				+y>=(3*X)/2?3*X/2-x:y,z)
+
+				B := src(x+y<=X/2?Y/2-y:x-y>=X/2? y+Y/2: x-y<=-X/2? y-Y/2:x+y>=(3*X)
+				/2?3*Y/2-y:x,\r
+				x+y<=X/2?X/2-x:x-y>=X/2? x-X/2:x-y<=-X/2?x+X/2:x
+				+y>=(3*X)/2?3*X/2-x:y,z)
+
+				A := src(x+y<=X/2?Y/2-y:x-y>=X/2? y+Y/2: x-y<=-X/2? y-Y/2:x+y>=(3*X)
+				/2?3*Y/2-y:x,\r
+				x+y<=X/2?X/2-x:x-y>=X/2? x-X/2:x-y<=-X/2?x+X/2:x
+				+y>=(3*X)/2?3*X/2-x:y,z)
+
+		Daniel Marschall (16 July 2021): In the current version of Filter Foundry 1.7,
+		the output of Filter Foundry and Filter Factory is equal. So the bug has vanished.
+
 
 (FIXED)	3. Control captions currently not being applied in compiled plugins.
 
@@ -79,9 +102,9 @@ PRIORITY NEEDS:
 
 		6a. Currently white background for Preview.
 		
-		Fixed by DM 10 Jan 2018: For Windows, the preview area is now inside a
-		"sunken" border, and the area is filled with the Windows
-		"workspace background" color.
+		Fixed by Daniel Marschall (10 Jan 2018):
+		For Windows, the preview area is now inside a "sunken" border,
+		and the area is filled with the Windows "workspace background" color.
 
 (ADDED)	7. Obfuscation or hiding of PARM source in compiled binary .8bf.
 

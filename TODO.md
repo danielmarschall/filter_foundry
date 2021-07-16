@@ -1,6 +1,6 @@
 
-Wishlist/ToDo by Daniel Marschall <www.daniel-marschall.de>
-===========================================================
+Wishlist/ToDo-List
+==================
 
 Important/Bugs
 --------------
@@ -41,29 +41,10 @@ Minor priority stuff or ideas
   
 * There is no warning if a formula contains a number that exceeds 32 bits.
 
-* Check, if all combinations of imports work:
-
-	Category: Premiere                    Ext.   Sig.     Testcase file(s)         WinImport       MacImport
-	-----------------------------------------------------------------------------------------------------------
-	Premiere Settings File                .pff   n/a      premiere*.pff            Works           TODO: Check
-	Import Premiere for Windows 16bit     .prm   0x208C   premiere40.prm           Works           TODO: Check
-	Import Premiere for Windows 32bit     .prm   0x208C   premiere50*.prm          Works           TODO: Check
-	Import Premiere for MacOS             ???    ???      ???                      ???             ???
-
-	Category: FilterFactory               Ext.   Sig.     Testcase file(s)         WinImport       MacImport
-	-----------------------------------------------------------------------------------------------------------
-	FilterFactory Settings File           .afs   n/a      factory30.afs            Works           TODO: Check
-	Import FilterFactory for Windows      .8bf   0x2086   factory30.8bf            Works           TODO: Check
-	Import FilterFactory for MacOS        .bin   0x1C86   mac_filterfactory.bin    Works           TODO: Check
-
-	Category: FilterFoundry               Ext.   Sig.     Testcase file(s)         WinImport       MacImport
-	-----------------------------------------------------------------------------------------------------------
-	Import FilterFoundry 1.6 for Windows  .8bf   0x1C86   foundry16.8bf            Works           TODO: Check
-	Import FilterFoundry 1.7 for Windows  .8bf   0x2086   (Wait for 1.7 release)
-	Import FilterFoundry 1.6 for Mac      ???    ???      ???                      ???             ???
-	Import FilterFoundry 1.7 for Mac      ???    ???      (Wait for 1.7 release)
+* Check, if all combinations of imports work,
+	see testcases/import/import_testcases.md
   
-* Minor bug: Testcase rst_3.afs applied to a 1000x1000 canvas:
+* Minor bug: Testcase testcases/rst_3.afs applied to a 1000x1000 canvas:
   When the preview is zoomed in to 29% or 59%, and the preview is panned, the
   bars change during panning. It does not look "smooth" like in 100%, 50%, or 25% zoom.
   The problem is that the offset of the preview area is always different, and if the zoom

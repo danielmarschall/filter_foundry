@@ -1,5 +1,5 @@
 
-## FilterFoundry plugin for Photoshop
+## Filter Foundry plugin for Photoshop
 
 Filter Foundry is a compatible replacement for Adobe Filter Factory. For information about how to use the Filter Factory-compatible interface, see [The Filter Factory Programming Guide](http://thepluginsite.com/knowhow/ffpg/ffpg.htm). Several example effects come with Filter Factory.
 
@@ -10,30 +10,27 @@ Initially written by [Toby Thain](http://www.telegraphics.com.au/sw/) in 2003 - 
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf, [Download here](https://www.viathinksoft.de/download/248/FilterFoundry.8bf)) and a 64-Bit Windows plugin (FilterFoundry64.8bf, [Download here](https://www.viathinksoft.de/download/249/FilterFoundry64.8bf)).
 
-To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not FilterFoundry works on a non-Photoshop host application, please send us a message!
+To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not Filter Foundry works on a non-Photoshop host application, please send us a message!
 
 
 ### Macintosh version
 
-The Macintosh version could not be taken over because Apple removed the "Carbon" API, and the new "Cocoa" API is not compatible with the codebase. If you would like to help porting Filter Foundry to the latest OS X version, it would be highly appreciated! An old version of Filter Foundry for Mac 68k and Mac Classic (PowerPC) can be obtained here: http://www.telegraphics.com.au/sw/
+The Macintosh version could not be taken over because Apple removed the "Carbon" API, and the new "Cocoa" API is not compatible with the current codebase. If you would like to help porting Filter Foundry to the latest OS X version, it would be highly appreciated! An old version of Filter Foundry for Mac 68k (requires 68020 or later CPU and FPU) and Mac Classic (PowerPC) can be obtained here: http://www.telegraphics.com.au/sw/
 
 
 ### Compatibility
 
-Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters, for example:
+Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters. Following hosts have been tested with Filter Foundry 1.7:
 
--   Tested with Photoshop 3.0 (x86) through CC 2019 (x64)
--   IrfanView 4.0 (32/64 bit) - Make sure you read the IrfanView documentation on how to load and run Adobe .8bf filters.
+-   Photoshop 3.0 (x86) through CC 2019 (x64)
+-   IrfanView 4.53 (32/64 bit) - Make sure you read the IrfanView documentation on how to load and run Adobe .8bf filters.
 -   JASC PSP 9, Corel's Paint Shop Pro XI - are compatible.
--   The Gimp 2.2 with PSPI.exe extension (to run Photoshop .8bf files) is compatible with Filter Foundry 1.7.
--   Serif PhotoPlus 6 is compatible with Filter Foundry 1.7.
--   PluginCommander 1.62 is compatible with Filter Foundry 1.7.
+-   The Gimp 2.2 with PSPI.exe extension (to run Photoshop .8bf files)
+-   Serif PhotoPlus 6
+-   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://forums.getpaint.net/topic/20622-psfilterpdn-2019-01-04/) is compatible with Filter Foundry 1.7.
 
-Please note the following:
-
--   Trig functions use the Mac Filter Factory definition, a range of -1024..+1024 (rather than Windows FF's -512..+512). This is likely to be a user preference in the future.
--   The 68K Macintosh build requires 68020 or later CPU and FPU.
+If the plugin is built with OpenWatcom, the minimum supported Windows version is Windows 95. Otherwise, Windows XP or later is required. The latest tested Windows version is Windows 10 (x64).
 
 
 ### Donation
