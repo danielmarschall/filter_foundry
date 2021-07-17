@@ -75,6 +75,8 @@ Minor priority stuff or ideas
 Design/UI Tweaks
 ----------------
 
+* Windows load dialog: Why does it have a preview pane?
+
 * The exclamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac)
   Not sure how easy it is to do that with WIN32 API
 

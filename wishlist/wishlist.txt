@@ -35,6 +35,9 @@ IMPROVEMENTS/BUGS:
 		code from the FF manual and revised code eliminating
 		the -1 pixel offset.
 
+		=> Daniel Marschall 17 July 2021: "examples" filter deleted,
+		because FilterFoundry and FilterFactory are 100% equal now.
+
 
 
 PRIORITY NEEDS:

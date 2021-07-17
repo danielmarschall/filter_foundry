@@ -73,6 +73,11 @@ OSErr saveparams(Handle h){
 							*q++ = '\\';
 							*q++ = 'r';
 							++r;
+						}else if (*r == LF) {
+							
+							// This can only happen with Windows or Linux.
+							// Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
+							++r;
 						}else
 							*q++ = *r++;
 					*q++ = '\r';

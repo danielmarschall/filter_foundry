@@ -111,7 +111,16 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
                                 if(p < dataend){
                                         c = *p++;
                                         switch(c){
-                                        case 'r': c = CR;
+                                        case 'r':
+#if WIN_ENV
+                                            c = CR;
+                                            if (lineptr < MAXLINE)
+                                                linebuf[lineptr++] = c;
+                                            c = LF;
+#else
+                                            c = CR;
+#endif
+                                            break;
                                         case '\\': break;
                                         default:
                                                 if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));

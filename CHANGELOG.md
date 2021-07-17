@@ -9,6 +9,7 @@
 - FilterFoundry is now AppleScript aware (*)
 - Fixed various smaller things and improved the source code building process
 - Map labels are centered between two sliders, like in Filter Factory (*)
+- AFS files: Improved interoperability (read/write) with Filter Factory in regards "line break" characters
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
