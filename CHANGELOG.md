@@ -6,9 +6,11 @@
 - Bugfix: Variable `d` now works like FilterFactory/FilterFoundy1.6 again. (Bug introduced in FilterFoundry 1.7b1 due to the change of the `c2d()` function)
   NOTE: FilterFactory uses `c2d(x,y) := atan2(y,x)`, but `d := atan2(-y,-x)`. Due to compatibility reasons, we implement it the same way!
 - Bugfix: Standalone filters did not show the correct "About" dialog
-- FilterFoundry is now AppleScript aware (not tested)
+- FilterFoundry is now AppleScript aware (*)
 - Fixed various smaller things and improved the source code building process
-- Map labels are centered between two sliders, like in Filter Factory
+- Map labels are centered between two sliders, like in Filter Factory (*)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
 ## 1.7b1 [20-Sep-2019]
 - First release by Daniel Marschall

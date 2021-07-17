@@ -107,7 +107,7 @@ Regarding Macintosh
 * In ui_mac.c, there does not seem to be a limit for the expressions. So, is it possible
   to write an expression longer than 1023 bytes, which would lead to a crash?
 
-* Macintosh: Please look at the (*) marked entries in version.h and verify the bugs/fixes
+* Macintosh: Please look at the (*) marked entries in CHANGELOG.md and verify the bugs/fixes
   and/or apply the changes on Mac.
 
 * Macintosh: Is it possible to create a 64 bit version of FilterFoundry?
