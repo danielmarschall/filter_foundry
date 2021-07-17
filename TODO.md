@@ -11,6 +11,15 @@ Important/Bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* paint.net: If you click "run filter", then you get an UAC dialog. Why? Because of the activation context?!
+
+* paint.net crash:
+	1. Open "8bf filters" page
+	2. Select "Filter Foundry"
+	3. Click OK (DO NOT run the dialog via "Run plugin")
+	4. Press Ctrl+F (re-apply filter)
+	=> Is this a bug of PSFilterPdn and/or can we somehow fix it?
+
 * Format the code!
 
 * Memory leak: strdup() and my_strdup() need free() !
@@ -82,8 +91,6 @@ Design/UI Tweaks
 
 * Should there be more (visual) space for expressions, like in Filter Factory?
 
-* Standalone filter: Map labels should be centered between two sliders, like in Filter Factory
-
 * Sliders are extremely tiny!
 
 * simplealert() is only "appmodal" and has no hWnd. Due to this, the window is not blinking when
@@ -113,7 +120,7 @@ Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 ------------------------------------------------------
 
 * The lengths of the PIPL TLV structure must include everything, including string paddings,
-  with 1 zero padding guaranteed. See annotations in "GIMP Incompatibilities".
+  with 1 zero padding guaranteed. See annotations in "GIMP Incompatibilities.md".
 
 * The language/country code in VarFileInfo must be a code that exists in StringFileInfo.
   The translation strings "04900000" don't fit together "080904B0".

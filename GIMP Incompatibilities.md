@@ -1,6 +1,5 @@
-
-Incompatibilities with GIMP / PSPI		Daniel Marschall
-----------------------------------		19 Jan 2019
+Incompatibilities with GIMP / PSPI
+----------------------------------
 
 1. Filter cannot be loaded by PSPI, because of a memory error.
 
@@ -22,7 +21,6 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	are rounding the length to a multiple of 4 (actually, rounding to the next possible multiple 4,
 	so that padding is always guaranteed).
 
-
 2. Filters will only fill the bottom of the picture, not the whole canvas.
 
 	Status: FIXED (Workaround) in FilterFoundry 1.7
@@ -32,7 +30,6 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 
 	Workaround applied in FF 1.7: If the host signature is "GIMP" (PMIG), then we set
 	needall=1 to disable chunked processing.
-
 
 3. When you re-open the main window, the formulas of the previous session vanish.
 
@@ -45,14 +42,12 @@ Incompatibilities with GIMP / PSPI		Daniel Marschall
 	This mode saves the filter data into a temporary file "tmp.afs" and loads it
 	when the window is opened again.
 
-
 4. Saving does not work
 
 	Status: FIXED (Workaround) in FilterFoundry 1.7
 
 	Filters could not be saved as AFS files because PSPI can't handle zero-sized handles
 	(PINEWHANDLE), so FF 1.7 is now assigning 1 byte for these.
-
 
 5. For a 1920x1080 picture, the fitzoom in GIMP/PSPI is not correct. It is 8% on GIMP but should be 7%.
 

@@ -350,6 +350,12 @@ resource 'DITL' (ID_PARAMDLG, purgeable) {
 		{140,504+72,156,534+72}, editText { enabled, "" },
 		{166,504+72,182,534+72}, editText { enabled, "" },
 		{192,504+72,208,534+72}, editText { enabled, "" },
+
+		/* TODO: Not sure if +15 centers the map() labels correctly in between the ctl() labels */
+		{ 10+15,158+72, 26+15,228+72}, StaticText { disabled, "map(0)" },
+		{ 62+15,158+72, 78+15,228+72}, StaticText { disabled, "map(1)" },
+		{114+15,158+72,130+15,228+72}, StaticText { disabled, "map(2)" },
+		{166+15,158+72,182+15,228+72}, StaticText { disabled, "map(3)" },
 	}
 };
 

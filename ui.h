@@ -33,9 +33,10 @@
 #define FIRSTCTLLABELITEM 10  /* 10-17 */
 #define FIRSTCTLITEM 18       /* 18-25 */
 #define FIRSTCTLTEXTITEM 26   /* 26-33 */
-#define FIRSTLABELITEM 34
-#define FIRSTICONITEM 38
-#define FIRSTEXPRITEM 42
+#define FIRSTLABELITEM 34     /* 34-37 */
+#define FIRSTICONITEM 38      /* 38-41 */
+#define FIRSTEXPRITEM 42      /* 42-45 */
+#define FIRSTMAPLABELITEM 46  /* 46-49 */
 
 /* Build dialog */
 #define CATEGORYITEM 3

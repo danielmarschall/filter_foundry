@@ -1,22 +1,3 @@
-    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License  
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
 Building the Filter Foundry plugin for Photoshop
 ------------------------------------------------
 
@@ -51,7 +32,10 @@ Before attempting to build, you must edit the makefiles
 CodeWarrior project's access paths, to reflect the SDK's installed location.
 
 To build the Carbon plugin with an SDK prior to version 7.0,
-it is necessary to edit the SDK file :PhotoshopAPI:Resources:PIPL.r
+it is necessary to edit the SDK file
+
+	:PhotoshopAPI:Resources:PIPL.r
+
 as follows:
 1. find the line "case CodePowerPC:"
 2. duplicate the next 15 lines
@@ -79,10 +63,13 @@ Depending on how the source files were extracted, it may be necessary to set
 the correct Mac file types before attempting to build. In MPW, this can
 be done as follows. First set the current directory to the Filter Foundry
 source directory, then:
+
 	setfile -t TEXT Å.[chrly] Å.make Å.rc ::common:tt:Å ::common:adobeplugin:Å
+
 This can also be necessary after regenerating y.tab.c and lex.yy.c.
 These files are generated from the parser and lexical analyzer definitions,
 parser.y and lexer.l, by a UNIX Terminal (not MPW!) command such as:
+
 	make y.tab.c lex.yy.c
 
 If building with MPW, finished binaries are left in the "debug" directory;
@@ -103,29 +90,29 @@ Windows notes
 -------------
 
 BUILDING WITH VISUAL STUDIO
-	* For Windows, Visual Studio works best (the community edition is even free),
-	  and it can compile the 32-bit and 64-bit plugins for Windows.
-	* Download: https://visualstudio.microsoft.com/de/vs/community/
-	* To build in Windows with Visual Studio (IDE or command line), see the visual_studio
-	  subdirectory and notes (README.md).
-	* Most recently tested with Visual C++ 2019 and Adobe Photoshop SDK CC 2017.
+* For Windows, Visual Studio works best (the community edition is even free),
+  and it can compile the 32-bit and 64-bit plugins for Windows.
+* Download: https://visualstudio.microsoft.com/de/vs/community/
+* To build in Windows with Visual Studio (IDE or command line), see the visual_studio
+  subdirectory and notes (README.md).
+* Most recently tested with Visual C++ 2019 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH OPEN WATCOM
-	* OpenWatcom can be used, but only for 32 Bit, and it is officially not
-	  supported by Adobe.
-	* Download: https://sourceforge.net/projects/openwatcom/files/
-	* To build in Windows with the OpenWatcom IDE, see the wpj
-	  subdirectory and notes (README.md), kindly provided by Peter Heckert and Daniel Marschall.
-	* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK CC 2017.
+* OpenWatcom can be used, but only for 32 Bit, and it is officially not
+  supported by Adobe.
+* Download: https://sourceforge.net/projects/openwatcom/files/
+* To build in Windows with the OpenWatcom IDE, see the wpj
+  subdirectory and notes (README.md), kindly provided by Peter Heckert and Daniel Marschall.
+* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK CC 2017.
 
 BUILDING WITH MINGW32/64
-	* Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
-	* Download: http://mingw-w64.org/doku.php/download/mingw-builds
-	* Do NOT install mingw32 to a directory that contains white spaces (i.e. "C:\Program Files (x86)\")!
-	* To build both Win32 and Win64, you need to run setup two times:
-	  For 32 bit "i686" and for 64 bit "x86_64"
-	* Check if all paths inside the file "make_mingw32.bat" are valid, then run it.
-	  The files FilterFoundry.8bf (32 Bit) and FilterFoundry64.8bf (64 Bit) should now be generated.
-	* Most recently tested with mingw64 and Adobe Photoshop SDK CC 2017:
-	  - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
-	  - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit
+* Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
+* Download: http://mingw-w64.org/doku.php/download/mingw-builds
+* Do NOT install mingw32 to a directory that contains white spaces (i.e. "C:\Program Files (x86)\")!
+* To build both Win32 and Win64, you need to run setup two times:
+  For 32 bit "i686" and for 64 bit "x86_64"
+* Check if all paths inside the file "make_mingw32.bat" are valid, then run it.
+  The files FilterFoundry.8bf (32 Bit) and FilterFoundry64.8bf (64 Bit) should now be generated.
+* Most recently tested with mingw64 and Adobe Photoshop SDK CC 2017:
+  - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
+  - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit

@@ -256,19 +256,22 @@ void maindlginit(DIALOGREF dp){
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
 			if(gdata->parm.map_used[i/2]){
-				if(i&1)
-					HideDialogItem(dp,FIRSTCTLLABELITEM+i);
-				else{
+				if((i&1) == 0){
+					// even (0, 2, 4, 6)
 					myp2cstrcpy(s,gdata->parm.map[i/2]);
-					SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
+					SetDlgItemText(dp, FIRSTMAPLABELITEM+(i/2),s);
+					HideDialogItem(dp, FIRSTCTLLABELITEM + i);
+					HideDialogItem(dp, FIRSTCTLLABELITEM + i + 1);
 				}
 			} else if(gdata->parm.ctl_used[i]){
 				myp2cstrcpy(s,gdata->parm.ctl[i]);
 				SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
+				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}else{
 				HideDialogItem(dp,FIRSTCTLITEM+i);
 				HideDialogItem(dp,FIRSTCTLTEXTITEM+i);
-				HideDialogItem(dp,FIRSTCTLLABELITEM+i);
+				HideDialogItem(dp, FIRSTCTLLABELITEM + i);
+				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}
 		}
 	}

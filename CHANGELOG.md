@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7b2 [13-Jul-2021]
+## 1.7b2 WIP [17-Jul-2021]
 - Project was forked by Daniel Marschall and released on GitHub. For now, only the Windows version is supported.
 - Bugfix: If a plugin is called from a recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
 - Bugfix: Variable `d` now works like FilterFactory/FilterFoundy1.6 again. (Bug introduced in FilterFoundry 1.7b1 due to the change of the `c2d()` function)
@@ -8,6 +8,7 @@
 - Bugfix: Standalone filters did not show the correct "About" dialog
 - FilterFoundry is now AppleScript aware (not tested)
 - Fixed various smaller things and improved the source code building process
+- Map labels are centered between two sliders, like in Filter Factory
 
 ## 1.7b1 [20-Sep-2019]
 - First release by Daniel Marschall
