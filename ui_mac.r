@@ -308,6 +308,14 @@ resource 'dftb' (ID_PARAMDLG, purgeable) {
 		dataItem { kDialogFontUseJustMask, 0,14,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
 		dataItem { kDialogFontUseJustMask, 0,14,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
 
+		dataItem { kDialogFontUseFontMask|kDialogFontUseJustMask,
+			kControlFontSmallSystemFont,0,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
+		dataItem { kDialogFontUseFontMask|kDialogFontUseJustMask,
+			kControlFontSmallSystemFont,0,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
+		dataItem { kDialogFontUseFontMask|kDialogFontUseJustMask,
+			kControlFontSmallSystemFont,0,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
+		dataItem { kDialogFontUseFontMask|kDialogFontUseJustMask,
+			kControlFontSmallSystemFont,0,normal,1/*srcOr*/,-1/*teJustRight*/, 0,0,0, -1,-1,-1, "" },
 	} }
 };
 
