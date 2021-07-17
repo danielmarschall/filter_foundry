@@ -64,7 +64,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	/*
 	char* s = (char*)malloc(512);
-	sprintf(s, "Host signature: %d\nMaxSpace32 = %lld\nMaxSpace64 = %lld", pb->hostSig, pb->maxSpace, pb->maxSpace64);
+	sprintf(s, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
 	simplealert(s);
 	*/
 
@@ -293,8 +293,8 @@ int64_t maxspace(){
 	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
 
 	// Plugins that don't support MaxSpace64 shall set the field to zero; then we will use MaxSpace instead.
-	// Paint.net PSFilterPdn has implementation bugs in MaxSpace/MaxSpace64, see https://github.com/0xC0000054/PSFilterPdn/issues/5
-	if ((gpb->maxSpace64 > 0) && (gpb->hostSig != HOSTSIG_PAINT_NET)) {
+	// Also check "gpb->bufferProcs->numBufferProcs" to see if 64 bit API is available
+	if ((gpb->bufferProcs->numBufferProcs >= 8) && (gpb->maxSpace64 > 0)) {
 		uint64_t maxSpace64 = gpb->maxSpace64;
 
 		return maxSpace64;
@@ -316,7 +316,8 @@ Boolean maxspace_available() {
 	// GIMP PSPI sets MaxSpace to hardcoded 100 MB
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 	
-	// HOSTSIG_PAINT_NET sets MaxSpace to hardcoded 1 GB? And MaxSpace64 is unitialized
+	// HOSTSIG_PAINT_NET sets MaxSpace to hardcoded 1 GB, see https://github.com/0xC0000054/PSFilterPdn/issues/5
+	// Comment by the host author "This was done to avoid any compatibility issues with plugins handling 2 GB - 1"
 	if (gpb->hostSig == HOSTSIG_PAINT_NET) return false;
 
 	return true;
