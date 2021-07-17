@@ -62,6 +62,12 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	OSErr e = noErr;
 	char *reason;
 
+	/*
+	char* s = (char*)malloc(512);
+	sprintf(s, "Host signature: %d\nMaxSpace32 = %lld\nMaxSpace64 = %lld", pb->hostSig, pb->maxSpace, pb->maxSpace64);
+	simplealert(s);
+	*/
+
 #ifdef WIN_ENV
 	// For Windows, we use an activation context to enforce that our Manifest resource will
 	// be used. This allows us to use Visual Styles, even if the host application does not
@@ -284,38 +290,34 @@ Boolean host_preserves_parameters() {
 }
 
 int64_t maxspace(){
-	if (gpb->maxSpace64 != 0) {
-		// If this is non-zero, the host either support 64-bit OR the host ignored the rule "set reserved fields to 0".
+	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
+
+	// Plugins that don't support MaxSpace64 shall set the field to zero; then we will use MaxSpace instead.
+	// Paint.net PSFilterPdn has implementation bugs in MaxSpace/MaxSpace64, see https://github.com/0xC0000054/PSFilterPdn/issues/5
+	if ((gpb->maxSpace64 > 0) && (gpb->hostSig != HOSTSIG_PAINT_NET)) {
 		uint64_t maxSpace64 = gpb->maxSpace64;
 
-		/*
-		char x[100];
-		sprintf(x, "maxSpace64: %lld", maxSpace64);
-		simplealert(x);
-		*/
-
-		// Note: IrfanView currently does not support maxSpace64, so we don't handle HOSTSIG_IRFANVIEW
 		return maxSpace64;
 	} else {
 		// Note: If maxSpace gets converted from Int32 to unsigned int, we can reach up to 4 GB RAM. However, after this, there will be a wrap to 0 GB again.
 		unsigned int maxSpace32 = (unsigned int) gpb->maxSpace;
 		uint64_t maxSpace64 = maxSpace32;
 
-		/*
-		char x[100];
-		sprintf(x, "maxSpace32: %lld", maxSpace64);
-		simplealert(x);
-		*/
-
 		if (gpb->hostSig == HOSTSIG_IRFANVIEW) maxSpace64 *= 1024; // IrfanView is giving Kilobytes instead of Bytes
-		// TODO: Serif PhotoPlus also gives Kilobytes instead of bytes. But since it uses not a unique host signature, there is nothing we can do???
+		//if (gpb->hostSig == HOSTSIG_SERIF_PHOTOPLUS) maxSpace64 *= 1024; // TODO: Serif PhotoPlus also gives Kilobytes instead of bytes. But since it uses not a unique host signature, there is nothing we can do???
+
 		return maxSpace64;
 	}
 }
 
 Boolean maxspace_available() {
-	// GIMP sets MaxSpace to hardcoded 100 MB
+	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
+
+	// GIMP PSPI sets MaxSpace to hardcoded 100 MB
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
+	
+	// HOSTSIG_PAINT_NET sets MaxSpace to hardcoded 1 GB? And MaxSpace64 is unitialized
+	if (gpb->hostSig == HOSTSIG_PAINT_NET) return false;
 
 	return true;
 }

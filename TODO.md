@@ -12,13 +12,7 @@ Minor priority stuff or ideas
 -----------------------------
 
 * paint.net: If you click "run filter", then you get an UAC dialog. Why? Because of the activation context?!
-
-* paint.net crash:
-	1. Open "8bf filters" page
-	2. Select "Filter Foundry"
-	3. Click OK (DO NOT run the dialog via "Run plugin")
-	4. Press Ctrl+F (re-apply filter)
-	=> Is this a bug of PSFilterPdn and/or can we somehow fix it?
+	=> Cannot reproduce anymore?!
 
 * Format the code!
 

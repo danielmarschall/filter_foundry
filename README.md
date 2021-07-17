@@ -25,10 +25,10 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   Photoshop 3.0 (x86) through CC 2019 (x64)
 -   IrfanView 4.53 (32/64 bit) - Make sure you read the IrfanView documentation on how to load and run Adobe .8bf filters.
 -   JASC PSP 9, Corel's Paint Shop Pro XI - are compatible.
--   The Gimp 2.2 with PSPI.exe extension (to run Photoshop .8bf files)
+-   The Gimp 2.2 with [PSPI.exe](https://www.chip.de/downloads/PSPI-fuer-GIMP_37803068.html) extension to run Photoshop .8bf files
 -   Serif PhotoPlus 6
 -   PluginCommander 1.62 (Revision 2)
--   Paint.Net using [PSFilterPdn](https://forums.getpaint.net/topic/20622-psfilterpdn-2019-01-04/) is compatible with Filter Foundry 1.7.
+-   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
 
 If the plugin is built with OpenWatcom, the minimum supported Windows version is Windows 95. Otherwise, Windows XP or later is required. The latest tested Windows version is Windows 10 (x64).
 
