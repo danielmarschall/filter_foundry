@@ -172,17 +172,29 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 				tmp += mbstowcs(tmp, "CompanyName", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, (char*)pparm->author, 100);
+				if (strlen(pparm->author) > 0) {
+					tmp += mbstowcs(tmp, (char*)pparm->author, 100);
+				} else {
+					tmp += mbstowcs(tmp, "\b", 100); // \b = remove
+				}
 				tmp++;
 
 				tmp += mbstowcs(tmp, "LegalCopyright", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
+				if (strlen(pparm->copyright) > 0) {
+					tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
+				} else {
+					tmp += mbstowcs(tmp, "\b", 100); // \b = remove
+				}
 				tmp++;
 
 				tmp += mbstowcs(tmp, "FileDescription", 100);
 				tmp++;
-				tmp += mbstowcs(tmp, (char*)pparm->title, 100);
+				if (strlen(pparm->title) > 0) {
+					tmp += mbstowcs(tmp, (char*)pparm->title, 100);
+				} else {
+					tmp += mbstowcs(tmp, "Untitled filter", 100);
+				}
 				tmp++;
 
 				tmp += mbstowcs(tmp, "OriginalFilename", 100);

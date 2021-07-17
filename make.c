@@ -163,6 +163,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         struct hstm_data *hstm;
         int scopelen;
         unsigned long hash;
+        size_t realLength;
+        size_t roundedLength;
+        char* scope;
 
         pipl->count += 3; // 3 more keys in PiPL: name, catg, hstm
 
@@ -199,32 +202,37 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 
         hstm = (struct hstm_data*)prop->propertyData;
 
+        scope = malloc(0x300);
+        if (!scope) return -1;
+        sprintf(scope, "%s %s",
+            INPLACEP2CSTR(gdata->parm.category),
+            INPLACEP2CSTR(title));
+
         #ifdef ENABLE_APPLESCRIPT
         // If the uniqueString/scope is set, the plugin will only communicate with Photoshop.
         // Otherwise it can be accessed with AppleScript, but the AETE keys need to be unique then.
         // This is achieved with getAeteKey().
-        hstm->scope[0] = '\0';
         scopelen = 0;
+        hstm->scope[0] = '\0';
         #else
         // Construct scope string by concatenating Category and Title - hopefully unique!
         // Note: In doresources() we malloc'ed 300h additional bytes,
         // and in the build dialog, title and category are size-limited,
         // so we can write here without malloc.
-        scopelen = sprintf(hstm->scope, "%s %s",
-            INPLACEP2CSTR(gdata->parm.category),
-            INPLACEP2CSTR(title));
-        #endif 
+        scopelen = strlen(scope);
+        memcpy(&hstm->scope, scope, scopelen);
+        #endif
 
         /* make up a new event ID for this aete, based on printable base-95 hash of scope */
-        hash = djb2(hstm->scope);
+        hash = djb2(scope);
         *event_id = printablehash(hash); /* this is used by aete_generate() later... */
 
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PIHasTerminologyProperty;
         prop->propertyID = 0;
 
-        size_t realLength = offsetof(struct hstm_data, scope) + scopelen + 1/*null-term*/;
-        size_t roundedLength = roundToNext4(realLength);
+        realLength = offsetof(struct hstm_data, scope) + scopelen + 1/*null-term*/;
+        roundedLength = roundToNext4(realLength);
         prop->propertyLength = roundedLength;
         memset(prop->propertyData + realLength, 0x00, roundedLength - realLength); // fill padding with 00h bytes (cosmetics)
 
@@ -309,7 +317,7 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
         int numprops;
         void *beginptr = aeteptr;
-        
+
         // Attention!
         // - On some systems (e.g. ARM based CPUs) this will cause an unaligned memory access exception.
         //   For X86, memory access just becomes slower.
