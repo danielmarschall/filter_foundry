@@ -7,9 +7,6 @@ Important/Bugs
 
 * Publish 1.7.0.2
 
-* Filter name "Red-Green Gradient" has a weird prefix character in the Action tab???
-	=> AETE Description is a CString, not a PString ?!
-
 
 Minor priority stuff or ideas
 -----------------------------
