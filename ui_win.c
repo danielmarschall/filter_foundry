@@ -48,7 +48,12 @@ void DoAbout(AboutRecordPtr pb){
 		sprintf(text,  "%s by %s\n" /* {Title} by {Author} */
 		               "%s\n" /* {Copyright} */
 		               "\n"
-		               "This plugin was built using Filter Foundry " VERSION_STR "\n"
+		               "This plugin was built using Filter Foundry " VERSION_STR
+#ifdef _WIN64
+		               " (64 bit)\n"
+#else
+		               " (32 bit)\n"
+#endif
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "available from " PROJECT_URL,
 		               INPLACEP2CSTR(gdata->parm.title),
@@ -56,7 +61,12 @@ void DoAbout(AboutRecordPtr pb){
 		               INPLACEP2CSTR(gdata->parm.copyright));
 	} else {
 		sprintf(title, "About Filter Foundry");
-		sprintf(text,  "Filter Foundry " VERSION_STR "\n"
+		sprintf(text,  "Filter Foundry " VERSION_STR
+#ifdef _WIN64
+		               " (64 bit)\n"
+#else
+		               " (32 bit)\n"
+#endif
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "\n"
 		               "Latest version available from\n"

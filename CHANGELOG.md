@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7b2 WIP [17-Jul-2021]
+## 1.7.0.2 [18-Jul-2021]
 - Project was forked by Daniel Marschall and released on GitHub. For now, only the Windows version is supported.
 - Bugfix: If a plugin is called from a recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
 - Bugfix: Variable `d` now works like FilterFactory/FilterFoundy1.6 again. (Bug introduced in FilterFoundry 1.7b1 due to the change of the `c2d()` function)
@@ -10,6 +10,9 @@
 - Fixed various smaller things and improved the source code building process
 - Map labels are centered between two sliders, like in Filter Factory (*)
 - AFS files: Improved interoperability (read/write) with Filter Factory in regards "line break" characters
+- "About dialog" shows if the plugin is a 32 bit or 64 bit plugin
+- "Original filename" version info attribute now correctly shows "FilterFoundry64.8bf" for 64 bit build
+- Left "beta" state
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

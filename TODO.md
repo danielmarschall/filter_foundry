@@ -59,6 +59,8 @@ Minor priority stuff or ideas
 
 * Support BigDocument
 
+* The user should be able to build 32 bit AND 64 bit standalone filters!
+
 
 Design/UI Tweaks
 ----------------
@@ -106,3 +108,5 @@ Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 * 64 Bit Windows builds
 
 * XP Manifests (+ activation contexts)
+
+* Fix AETE resources, make keys unique and remove scope in order to enable AppleScript
