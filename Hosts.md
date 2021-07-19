@@ -7,9 +7,10 @@ Tested hosts
 | Serif PhotoPlus 6       | '8BIM'(!)   | Kilobytes (!)    | Not in use       | Yes                   |
 | PluginCommander 1.62    | '8BIM'(!)   | Bytes            | Not in use       | No (!)                |
 | Corel Paint Shop Pro X  | 'PSP9'      | Bytes            | Not in use       | Yes                   |
-| GIMP (using PSPI)       | 'PMIG'      | Bytes, 100MB (!) | Not in use       | No (!)                |
+| GIMP (using PSPI)       | 'PMIG'      | Bytes, 100MB     | Not in use       | No (!)                |
 | IrfanView 4.53 (32+64)  | 'UP20'      | Kilobytes (!)    | Not in use       | No (!)                |
-| Paint.Net PSFilterPdn   | 'NDP.'      | Bytes, 1 GB (!)  | Not in use       | Yes                   |
+| Paint.Net PSFilterPdn   | 'NDP.'      | Bytes, 1 GB      | Not in use       | Yes                   |
+| Adobe Premiere 5        | '8B)M'(sic) | Bytes, 2000000   | Not in use       | ???                   |
 
 Note:
 - MaxSpace32: Bytes = Good

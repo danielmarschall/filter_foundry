@@ -1,19 +1,43 @@
 
-Please download "Adobe Photoshop SDK" here:
-https://www.adobe.com/devnet/photoshop/sdk.html (*)
+Please download the Adobe Photoshop SDK here:
+https://www.adobe.com/devnet/photoshop/sdk.html
+	Note: The download of SDK 2017 at the end of the EULA page
+	won't work on some browsers due to security settings:
+	"adobe.com" uses HTTPS, while the download target "macromedia.com" uses HTTP.
+	Therefore, the download does not work.
+	Direct download of SDK 2017 here:
+	http://download.macromedia.com/pub/developer/photoshop/sdk/adobe_photoshop_sdk_cc_2017_win.zip
 
-Then extract its contents in this directory:
+
+
+Important:
+Please carefully read the SDK EULA before processing!
+The SDK contents are NOT part of this plugin source code,
+and they are not subject to the plugin's license!
+The SDK contents may not be distributed together with the plugin
+or the plugin source code, and must stay on the computer of the developer.
+
+If you do not agree to the EULA of the latest SDK,
+you could try to obtain an older version of the SDK which
+might have different license terms. This plugin should be
+compatible with older versions of the SDK too.
+
+
+Once you have obtained the SDK, extract the SDK contents in this directory:
 - connectionsdk/
 - images/
 - pluginsdk/
 - license.html
 - ReadMe.html
 
+These folders are excluded in SVN and GIT to avoid that they
+are accidentally uploaded somewhere.
 
 
-Note: The download of SDK 2017 at the end of the EULA page
-won't work on some browsers due to security settings:
-"adobe.com" uses HTTPS, while the download target "macromedia.com" uses HTTP.
-Therefore, the download does not work.
-Direct download of SDK 2017 here:
-http://download.macromedia.com/pub/developer/photoshop/sdk/adobe_photoshop_sdk_cc_2017_win.zip
+Additional notes:
+- Adobe's stand in regards to using SDK to write OpenSource plugins:
+  https://web.archive.org/web/20070203075622/http://blogs.adobe.com/notesfrommnr/2006/04/using_adobe_sdk.html
+  So it should be fine if the SDK contents are not included in the plugin's source code and not part of the license.
+- The GPL license has some problems with this:
+  https://www.gnu.org/licenses/gpl-faq.en.html#FSWithNFLibs
+- Unfortunately, the fork of ViaThinkSoft is bound to the license that has been set in the original project of Toby Thain.

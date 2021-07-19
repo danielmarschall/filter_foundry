@@ -59,8 +59,16 @@ void ENTRYPOINT(short selector,FilterRecordPtr pb,intptr_t *data,short *result);
 DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
+	static Boolean premiereWarnedOnce = false;
 	OSErr e = noErr;
 	char *reason;
+#ifdef WIN_ENV
+	// For Windows, we use an activation context to enforce that our Manifest resource will
+	// be used. This allows us to use Visual Styles, even if the host application does not
+	// support it.
+	ManifestActivationCtx manifestVars;
+	BOOL activationContextUsed;
+#endif
 
 	/*
 	char* s = (char*)malloc(512);
@@ -68,13 +76,20 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	simplealert(s);
 	*/
 
-#ifdef WIN_ENV
-	// For Windows, we use an activation context to enforce that our Manifest resource will
-	// be used. This allows us to use Visual Styles, even if the host application does not
-	// support it.
-	ManifestActivationCtx manifestVars;
-	BOOL activationContextUsed;
+	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
+		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 (yes, that's possible,
+		// and there is even a FilterFactory for Premeire!),
+		// but it crashes in evalpixel() where there is write-access to the "outp".
+		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
+		if (!premiereWarnedOnce) {
+			simplealert("This version of Filter Foundry is not compatible with Adobe Premiere!");
+		}
+		premiereWarnedOnce = true;
+		*result = filterBadParameters;
+		return;
+	}
 
+#ifdef WIN_ENV
 	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
 #endif
 

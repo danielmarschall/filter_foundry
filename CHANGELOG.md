@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.2 [18-Jul-2021]
+## 1.7.0.2 [19-Jul-2021]
 - Project was forked by Daniel Marschall and released on GitHub. For now, only the Windows version is supported.
 - Bugfix: If a plugin is called from a recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
 - Bugfix: Variable `d` now works like FilterFactory/FilterFoundy1.6 again. (Bug introduced in FilterFoundry 1.7b1 due to the change of the `c2d()` function)

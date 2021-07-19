@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 Important/Bugs
 --------------
 
-* Publish 1.7.0.2
+(Nothing here)
 
 
 Minor priority stuff or ideas
@@ -84,6 +84,12 @@ Design/UI Tweaks
 * With some canvas formats, the initial zoom level is not "fully zoomed out"
 
 * If you load an AFS file which has multi-line expressions, then the first expression (R) is scrolled down (because it has the focus)
+
+* Unsure regarding AppleScript !
+	https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf
+	1. Do we need an 'auet' resource?
+	2. Does our implementation work with AppleScript?
+	3. Must the human-language term REALLY be unique?! So only one plugin on the whole system may use the word "ctl(0)" or "red" or "size"??? Why do we have unique keys if the human language needs to be unique too?!  (see "Important" section at page 8-14)
 
 
 Regarding Macintosh

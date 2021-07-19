@@ -42,6 +42,7 @@
 #define HOSTSIG_SERIF_PHOTOPLUS '8BIM' // meh.
 #define HOSTSIG_JASC_PAINTSHOP_PRO_X 'PSP9'
 #define HOSTSIG_PAINT_NET 'NDP.'
+#define HOSTSIG_ADOBE_PREMIERE '8B)M'/*sic*/
 
 enum{
 	TAB = 011,
