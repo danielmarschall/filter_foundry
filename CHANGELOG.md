@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0.3 [Work-In-Progress]
+- Support BigDocument structure (*.psb) (*)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
+
 ## 1.7.0.2 [19-Jul-2021]
 - Project was forked by Daniel Marschall and released on GitHub. For now, only the Windows version is supported.
 - Bugfix: If a plugin is called from a recorded Action, a dialog was shown at the first start, even if dialogs were disabled.
@@ -64,7 +69,7 @@
 - GIMP (using PSPI to load 8BF plugins) and IrfanView is now compatible.
 - `c2m()` and `sqr()` are now approximately 3 times faster
 - Build of plugins with empty titles or categories will now be prevented since plugins with empty categories or titles won't be shown in the filter menu.
-- Fixed Actions (recording/playback). Several things like the AETE resource were broken. The classID had to be changed to `'Fltr '` so that the parameters are shown in the Photoshop Action tab. (*)
+- Fixed Actions (recording/playback). Several things like the AETE resource were broken. The classID had to be changed to `'Fltr'` so that the parameters are shown in the Photoshop Action tab. (*)
 - Scripting/Actions: For standalone filters, the name of the sliders are now written in the "Actions" tab. The function `fixaete()` was replaced with `aete_generate()`. (*)
 - `MaxSpace64` will now be used, if supported by the host
 

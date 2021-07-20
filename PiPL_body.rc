@@ -36,6 +36,9 @@ VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion,latestFilterVersion, /
 VENDORID, LC(m,o,d,e), NULLID, 4L, /* first 2 bytes:  */ flagSupportsGrayScale|flagSupportsIndexedColor|flagSupportsRGBColor|flagSupportsCMYKColor|flagSupportsHSLColor|flagSupportsHSBColor|flagSupportsMultichannel,
                                    /* second 2 bytes: */ flagSupportsDuotone|flagSupportsLABColor,
 
+/* We need this to enable the plugin for BigDocuments */
+VENDORID, LC(m,s,3,2), 0L, 8L, 2000000L, 2000000L,
+
 /* FilterCaseInfo - in all cases:
 	   inStraightData,
 	   outStraightData,

@@ -20,6 +20,7 @@
 
 /* This is PLATFORM INDEPENDENT user interface code - mainly dialog logic */
 
+#include "ff.h"
 #include "preview.h"
 
 #ifdef MAC_ENV
@@ -47,18 +48,30 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		// Possibility 1: Only the part of the preview rect is filled with background color,
 		// which can be occupied by image data if zoom factor becomes 100%
 		/*
-		preview_w = MIN(preview_rect.right - preview_rect.left,
-						pb->filterRect.right - pb->filterRect.left);
-		preview_h = MIN(preview_rect.bottom - preview_rect.top,
-						pb->filterRect.bottom - pb->filterRect.top);
+		if (HAS_BIG_DOC(pb)) {
+			preview_w = MIN(preview_rect.right - preview_rect.left,
+							BIGDOC_FILTER_RECT(pb).right - BIGDOC_FILTER_RECT(pb).left);
+			preview_h = MIN(preview_rect.bottom - preview_rect.top,
+							BIGDOC_FILTER_RECT(pb).bottom - BIGDOC_FILTER_RECT(pb).top);
+		} else {
+			preview_w = MIN(preview_rect.right - preview_rect.left,
+							FILTER_RECT(pb).right - FILTER_RECT(pb).left);
+			preview_h = MIN(preview_rect.bottom - preview_rect.top,
+							FILTER_RECT(pb).bottom - FILTER_RECT(pb).top);
+		}
 		*/
 		// Possibility 2: The whole preview rect is always filled with the background color,
 		// so you can easily see what is the preview area and what is not
 		preview_w = preview_rect.right - preview_rect.left;
 		preview_h = preview_rect.bottom - preview_rect.top;
 
-		zh = (pb->filterRect.right - pb->filterRect.left)/(double)preview_w;
-		zv = (pb->filterRect.bottom - pb->filterRect.top)/(double)preview_h;
+		if (HAS_BIG_DOC(pb)) {
+			zh = ((double)BIGDOC_FILTER_RECT(pb).right - (double)BIGDOC_FILTER_RECT(pb).left) / (double)preview_w;
+			zv = ((double)BIGDOC_FILTER_RECT(pb).bottom - (double)BIGDOC_FILTER_RECT(pb).top) / (double)preview_h;
+		} else {
+			zh = ((double)FILTER_RECT(pb).right - (double)FILTER_RECT(pb).left) / (double)preview_w;
+			zv = ((double)FILTER_RECT(pb).bottom - (double)FILTER_RECT(pb).top) / (double)preview_h;
+		}
 		fitzoom = zh > zv ? zh : zv;
 
 		preview_pmap.version = 1;
@@ -198,125 +211,125 @@ void* memset_bgcolor(void* ptr, size_t num) {
 	return ptr;
 }
 
-void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
+void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 	OSErr e;
 	double scaledw, scaledh;
-	int j,n,imgw,imgh;
-	Rect r,outRect;
+	int j, n, imgw, imgh;
+	Rect r, outRect;
 	Ptr outrow;
 
 	preview_complete = false;
 
-	if(preview_handle){
+	if (preview_handle) {
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
-		scaledw = zoomfactor*preview_w;
-		if(scaledw > (pb->filterRect.right - pb->filterRect.left))
-			scaledw = pb->filterRect.right - pb->filterRect.left;
-		scaledh = zoomfactor*preview_h;
-		if(scaledh > (pb->filterRect.bottom - pb->filterRect.top))
-			scaledh = pb->filterRect.bottom - pb->filterRect.top;
+		scaledw = zoomfactor * preview_w;
+		if (scaledw > ((double)FILTER_RECT(pb).right - (double)FILTER_RECT(pb).left))
+			scaledw = (double)FILTER_RECT(pb).right - (double)FILTER_RECT(pb).left;
+		scaledh = zoomfactor * preview_h;
+		if (scaledh > ((double)FILTER_RECT(pb).bottom - (double)FILTER_RECT(pb).top))
+			scaledh = (double)FILTER_RECT(pb).bottom - (double)FILTER_RECT(pb).top;
 
 		/* scale clipped preview area down again - this becomes the pixel size of preview */
-		imgw = (int)ceil(scaledw/zoomfactor);
-		if(imgw > preview_w)
+		imgw = (int)ceil(scaledw / zoomfactor);
+		if (imgw > preview_w)
 			imgw = preview_w;
-		imgh = (int)ceil(scaledh/zoomfactor);
-		if(imgh > preview_h)
+		imgh = (int)ceil(scaledh / zoomfactor);
+		if (imgh > preview_h)
 			imgh = preview_h;
 
 		/* compute source data rectangle (inRect) */
 
 		/* centre preview on filtered part of input image, adding scroll offset */
-		r.left = (int16)((pb->filterRect.left + pb->filterRect.right - scaledw)/2 + preview_scroll.h);
+		r.left = (int16)(((double)FILTER_RECT(pb).left + (double)FILTER_RECT(pb).right - scaledw) / 2 + preview_scroll.h);
 		/* make sure it does not go outside the input area */
-		if(r.left < pb->filterRect.left) {
-			preview_scroll.h += pb->filterRect.left - r.left;
-			r.left = pb->filterRect.left;
+		if (r.left < FILTER_RECT(pb).left) {
+			preview_scroll.h += FILTER_RECT(pb).left - r.left;
+			r.left = FILTER_RECT(pb).left;
 		}
-		else if(r.left+scaledw > pb->filterRect.right) {
-			preview_scroll.h += (int16)(pb->filterRect.right - (r.left+scaledw));
-			r.left = (int16)(pb->filterRect.right - scaledw);
+		else if ((double)r.left + scaledw > FILTER_RECT(pb).right) {
+			preview_scroll.h += (int16)((double)FILTER_RECT(pb).right - ((double)r.left + scaledw));
+			r.left = (int16)((double)FILTER_RECT(pb).right - scaledw);
 		}
-		r.right = (int16)(r.left + scaledw);
-		preview_pmap.maskPhaseCol = (int32)((preview_scroll.h)/zoomfactor); // phase of the checkerboard
+		r.right = (int16)((double)r.left + scaledw);
+		preview_pmap.maskPhaseCol = (int32)((preview_scroll.h) / zoomfactor); // phase of the checkerboard
 
 		/* now compute for vertical */
-		r.top = (int16)((pb->filterRect.top + pb->filterRect.bottom - scaledh)/2 + preview_scroll.v);
-		if(r.top < pb->filterRect.top) {
-			preview_scroll.v += pb->filterRect.top - r.top;
-			r.top = pb->filterRect.top;
+		r.top = (int16)(((double)FILTER_RECT(pb).top + (double)FILTER_RECT(pb).bottom - scaledh) / 2 + preview_scroll.v);
+		if (r.top < FILTER_RECT(pb).top) {
+			preview_scroll.v += FILTER_RECT(pb).top - r.top;
+			r.top = FILTER_RECT(pb).top;
 		}
-		else if(r.top+scaledh > pb->filterRect.bottom) {
-			preview_scroll.v += (int16)(pb->filterRect.bottom - (r.top+scaledh));
-			r.top = (int16)(pb->filterRect.bottom - scaledh);
+		else if ((double)r.top + scaledh > FILTER_RECT(pb).bottom) {
+			preview_scroll.v += (int16)(FILTER_RECT(pb).bottom - ((double)r.top + scaledh));
+			r.top = (int16)((double)FILTER_RECT(pb).bottom - scaledh);
 		}
-		r.bottom = (int16)(r.top + scaledh);
-		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v)/zoomfactor); // phase of the checkerboard
+		r.bottom = (int16)((double)r.top + scaledh);
+		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v) / zoomfactor); // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
-		if(needall)
-			SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
+		if (needall)
+			SETRECT(IN_RECT(pb), 0, 0, IMAGE_SIZE(pb).h, IMAGE_SIZE(pb).v);
 		else
-			pb->inRect = r;
+			IN_RECT(pb) = r;
 
-		pb->outRect = pb->inRect;
-		SETRECT(pb->maskRect,0,0,0,0);
+		OUT_RECT(pb) = IN_RECT(pb);
+		SETRECT(MASK_RECT(pb), 0, 0, 0, 0);
 		pb->inLoPlane = pb->outLoPlane = 0;
-		pb->inHiPlane = pb->outHiPlane = nplanes-1;
+		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
 
-		if( !needinput || !(e = pb->advanceState()) ){
-			Ptr outptr = PILOCKHANDLE(preview_handle,false);
-			int blankrows = (preview_h - imgh)/2,
-				blankcols = (preview_w - imgw)/2,
+		if (!needinput || !(e = pb->advanceState())) {
+			Ptr outptr = PILOCKHANDLE(preview_handle, false);
+			int blankrows = (preview_h - imgh) / 2,
+				blankcols = (preview_w - imgw) / 2,
 				pmrb = preview_pmap.rowBytes;
 
 			evalinit();
 
-			SETRECT(outRect,0,0,imgw,imgh);
+			SETRECT(outRect, 0, 0, imgw, imgh);
 
-			e = process_scaled(pb, false, &r, &outRect,
-					outptr + pmrb*blankrows + nplanes*blankcols, pmrb, zoomfactor);
-			if(blankrows){
+			e = process_scaled_olddoc(pb, false, r, outRect,
+				outptr + pmrb * blankrows + nplanes * blankcols, pmrb, zoomfactor);
+			if (blankrows) {
 				// blank rows on top of preview:
-				memset_bgcolor(outptr, pmrb*blankrows);
+				memset_bgcolor(outptr, pmrb * blankrows);
 				// blank rows below preview:
 				n = preview_h - blankrows - imgh;
-				memset_bgcolor(outptr + pmrb*(blankrows+imgh), pmrb*n);
+				memset_bgcolor(outptr + pmrb * (blankrows + imgh), pmrb * n);
 			}
-			if(blankcols){
+			if (blankcols) {
 				n = preview_w - blankcols - imgw;
-				outrow = outptr + pmrb*blankrows;
-				for(j = blankrows; j < preview_h - blankrows; ++j){
+				outrow = outptr + pmrb * blankrows;
+				for (j = blankrows; j < preview_h - blankrows; ++j) {
 					// blank columns on left side of preview (if picture is smaller than the preview area):
-					memset_bgcolor(outrow, nplanes*blankcols);
+					memset_bgcolor(outrow, nplanes * blankcols);
 					// blank columns on right side of preview (if picture is smaller than the preview area):
-					memset_bgcolor(outrow + nplanes*(blankcols+imgw), nplanes*n);
+					memset_bgcolor(outrow + nplanes * (blankcols + imgw), nplanes * n);
 					outrow += pmrb;
 				}
 			}
 
-			if(!e){
+			if (!e) {
 				preview_complete = true;
 
 #ifdef WIN_ENV
 				{
-				extern HWND preview_hwnd;
-				HDC hdc = GetDC(preview_hwnd);
+					extern HWND preview_hwnd;
+					HDC hdc = GetDC(preview_hwnd);
 
-				drawpreview(dp,hdc,outptr);
+					drawpreview(dp, hdc, outptr);
 
-				ReleaseDC(preview_hwnd,hdc);
+					ReleaseDC(preview_hwnd, hdc);
 				}
 #else
 				{
-				GrafPtr saveport;
+					GrafPtr saveport;
 
-				GetPort(&saveport);
-				SetPortDialogPort(dp);
+					GetPort(&saveport);
+					SetPortDialogPort(dp);
 
-				drawpreview(dp,NULL,outptr);
+					drawpreview(dp, NULL, outptr);
 
-				SetPort(saveport);
+					SetPort(saveport);
 				}
 #endif
 			}
@@ -324,12 +337,156 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp){
 			PIUNLOCKHANDLE(preview_handle);
 		}
 
-		if(e && !previewerr){
+		if (e && !previewerr) {
 			alertuser(_strdup("Could not build preview at chosen zoom level."),
-			        e == memFullErr && !needall ? _strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : _strdup(""));
+				e == memFullErr && !needall ? _strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : _strdup(""));
 			previewerr = true;
 		}
 
+	}
+}
+
+void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
+	OSErr e;
+	double scaledw, scaledh;
+	int j, n, imgw, imgh;
+	VRect r, outRect;
+	Ptr outrow;
+
+	preview_complete = false;
+
+	if (preview_handle) {
+		/* size of previewed area, of source image; but no larger than filtered area (selection) */
+		scaledw = zoomfactor * preview_w;
+		if (scaledw > ((double)BIGDOC_FILTER_RECT(pb).right - (double)BIGDOC_FILTER_RECT(pb).left))
+			scaledw = (double)BIGDOC_FILTER_RECT(pb).right - (double)BIGDOC_FILTER_RECT(pb).left;
+		scaledh = zoomfactor * preview_h;
+		if (scaledh > ((double)BIGDOC_FILTER_RECT(pb).bottom - (double)BIGDOC_FILTER_RECT(pb).top))
+			scaledh = (double)BIGDOC_FILTER_RECT(pb).bottom - (double)BIGDOC_FILTER_RECT(pb).top;
+
+		/* scale clipped preview area down again - this becomes the pixel size of preview */
+		imgw = (int)ceil(scaledw / zoomfactor);
+		if (imgw > preview_w)
+			imgw = preview_w;
+		imgh = (int)ceil(scaledh / zoomfactor);
+		if (imgh > preview_h)
+			imgh = preview_h;
+
+		/* compute source data rectangle (inRect) */
+
+		/* centre preview on filtered part of input image, adding scroll offset */
+		r.left = (int32)(((double)BIGDOC_FILTER_RECT(pb).left + (double)BIGDOC_FILTER_RECT(pb).right - scaledw) / 2 + preview_scroll.h);
+		/* make sure it does not go outside the input area */
+		if (r.left < BIGDOC_FILTER_RECT(pb).left) {
+			preview_scroll.h += BIGDOC_FILTER_RECT(pb).left - r.left;
+			r.left = BIGDOC_FILTER_RECT(pb).left;
+		}
+		else if ((double)r.left + scaledw > BIGDOC_FILTER_RECT(pb).right) {
+			preview_scroll.h += (int32)((double)BIGDOC_FILTER_RECT(pb).right - ((double)r.left + scaledw));
+			r.left = (int32)((double)BIGDOC_FILTER_RECT(pb).right - scaledw);
+		}
+		r.right = (int32)((double)r.left + scaledw);
+		preview_pmap.maskPhaseCol = (int32)((preview_scroll.h) / zoomfactor); // phase of the checkerboard
+
+		/* now compute for vertical */
+		r.top = (int32)(((double)BIGDOC_FILTER_RECT(pb).top + (double)BIGDOC_FILTER_RECT(pb).bottom - scaledh) / 2 + preview_scroll.v);
+		if (r.top < BIGDOC_FILTER_RECT(pb).top) {
+			preview_scroll.v += BIGDOC_FILTER_RECT(pb).top - r.top;
+			r.top = BIGDOC_FILTER_RECT(pb).top;
+		}
+		else if ((double)r.top + scaledh > BIGDOC_FILTER_RECT(pb).bottom) {
+			preview_scroll.v += (int32)(BIGDOC_FILTER_RECT(pb).bottom - ((double)r.top + scaledh));
+			r.top = (int32)((double)BIGDOC_FILTER_RECT(pb).bottom - scaledh);
+		}
+		r.bottom = (int32)((double)r.top + scaledh);
+		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v) / zoomfactor); // phase of the checkerboard
+
+		/* if formulae need random access to image - src(), rad() - we must request entire area: */
+		if (needall)
+			SETRECT(BIGDOC_IN_RECT(pb), 0, 0, BIGDOC_IMAGE_SIZE(pb).h, BIGDOC_IMAGE_SIZE(pb).v);
+		else
+			BIGDOC_IN_RECT(pb) = r;
+
+		BIGDOC_OUT_RECT(pb) = BIGDOC_IN_RECT(pb);
+		SETRECT(BIGDOC_MASK_RECT(pb), 0, 0, 0, 0);
+		pb->inLoPlane = pb->outLoPlane = 0;
+		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
+
+		if (!needinput || !(e = pb->advanceState())) {
+			Ptr outptr = PILOCKHANDLE(preview_handle, false);
+			int blankrows = (preview_h - imgh) / 2,
+				blankcols = (preview_w - imgw) / 2,
+				pmrb = preview_pmap.rowBytes;
+
+			evalinit();
+
+			SETRECT(outRect, 0, 0, imgw, imgh);
+
+			e = process_scaled_bigdoc(pb, false, r, outRect,
+				outptr + pmrb * blankrows + nplanes * blankcols, pmrb, zoomfactor);
+			if (blankrows) {
+				// blank rows on top of preview:
+				memset_bgcolor(outptr, pmrb * blankrows);
+				// blank rows below preview:
+				n = preview_h - blankrows - imgh;
+				memset_bgcolor(outptr + pmrb * (blankrows + imgh), pmrb * n);
+			}
+			if (blankcols) {
+				n = preview_w - blankcols - imgw;
+				outrow = outptr + pmrb * blankrows;
+				for (j = blankrows; j < preview_h - blankrows; ++j) {
+					// blank columns on left side of preview (if picture is smaller than the preview area):
+					memset_bgcolor(outrow, nplanes * blankcols);
+					// blank columns on right side of preview (if picture is smaller than the preview area):
+					memset_bgcolor(outrow + nplanes * (blankcols + imgw), nplanes * n);
+					outrow += pmrb;
+				}
+			}
+
+			if (!e) {
+				preview_complete = true;
+
+#ifdef WIN_ENV
+				{
+					extern HWND preview_hwnd;
+					HDC hdc = GetDC(preview_hwnd);
+
+					drawpreview(dp, hdc, outptr);
+
+					ReleaseDC(preview_hwnd, hdc);
+				}
+#else
+				{
+					GrafPtr saveport;
+
+					GetPort(&saveport);
+					SetPortDialogPort(dp);
+
+					drawpreview(dp, NULL, outptr);
+
+					SetPort(saveport);
+				}
+#endif
+			}
+
+			PIUNLOCKHANDLE(preview_handle);
+		}
+
+		if (e && !previewerr) {
+			alertuser(_strdup("Could not build preview at chosen zoom level."),
+				e == memFullErr && !needall ? _strdup("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : _strdup(""));
+			previewerr = true;
+		}
+
+	}
+}
+
+void recalc_preview(FilterRecordPtr pb, DIALOGREF dp) {
+	if (HAS_BIG_DOC(pb)) {
+		recalc_preview_bigdoc(pb, dp);
+	}
+	else {
+		recalc_preview_olddoc(pb, dp);
 	}
 }
 

@@ -61,8 +61,13 @@ Boolean setup(FilterRecordPtr pb){
 	int i;
 
 	// Attention: If you introduce new variables, please define them also in lexer.l
-	var['X'] = pb->filterRect.right - pb->filterRect.left;
-	var['Y'] = pb->filterRect.bottom - pb->filterRect.top;
+	if (HAS_BIG_DOC(pb)) {
+		var['X'] = BIGDOC_FILTER_RECT(pb).right - BIGDOC_FILTER_RECT(pb).left;
+		var['Y'] = BIGDOC_FILTER_RECT(pb).bottom - BIGDOC_FILTER_RECT(pb).top;
+	} else {
+		var['X'] = FILTER_RECT(pb).right - FILTER_RECT(pb).left;
+		var['Y'] = FILTER_RECT(pb).bottom - FILTER_RECT(pb).top;
+	}
 	var['Z'] = nplanes;
 	var['D'] = 1024;
 	var['M'] = ff_c2m(var['X'],var['Y'])/2;
@@ -160,8 +165,8 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 
 //#define PROCESS_SCALED_GAP_DEBUG 1
 
-OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
-			  Rect *filterPiece, Rect *outPiece,
+OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
+			  VRect filterPiece, VRect outPiece,
 			  void *outData, long outRowBytes, double zoom){
 	unsigned char *inrow,*outrow,*outp;
 	int j,i;
@@ -174,14 +179,31 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 	last_good_y = -1;
 	#endif
 
+	VRect filterRect;
+	VRect inRect;
+
+	if (HAS_BIG_DOC(pb)) {
+		filterRect = BIGDOC_FILTER_RECT(pb);
+		inRect = BIGDOC_IN_RECT(pb);
+	} else {
+		filterRect.bottom = FILTER_RECT(pb).bottom;
+		filterRect.left = FILTER_RECT(pb).left;
+		filterRect.right = FILTER_RECT(pb).right;
+		filterRect.top = FILTER_RECT(pb).top;
+		inRect.bottom = IN_RECT(pb).bottom;
+		inRect.left = IN_RECT(pb).left;
+		inRect.right = IN_RECT(pb).right;
+		inRect.top = IN_RECT(pb).top;
+	}
+
 	// find base pointer to selection image data
 	image_ptr = (unsigned char*)pb->inData
-				+ (long)pb->inRowBytes*(pb->filterRect.top - pb->inRect.top)
-				+ (long)nplanes*(pb->filterRect.left - pb->inRect.left);
+				+ (long)pb->inRowBytes*(filterRect.top - inRect.top)
+				+ (long)nplanes*(filterRect.left - inRect.left);
 
 	if (state_changing_funcs_used) {
 		// Fill gap between selection/filter top border and top preview zoomed border
-		for (y = 0; y < filterPiece->top - pb->filterRect.top; ++y) {
+		for (y = 0; y < (double)filterPiece.top - (double)filterRect.top; ++y) {
 			#ifdef PROCESS_SCALED_GAP_DEBUG
 			if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
 			#endif
@@ -193,7 +215,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 			last_good_x = -1;
 			#endif
 
-			for (x = 0; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+			for (x = 0; x < (double)filterRect.right - (double)filterRect.left; ++x) {
 				#ifdef PROCESS_SCALED_GAP_DEBUG
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 1a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
@@ -209,8 +231,8 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 	}
 
 	// j indexes scaled output rows
-	for( j = outPiece->top, outrow = (unsigned char*)outData, y = filterPiece->top - pb->filterRect.top ;
-		 j < outPiece->bottom ; ++j, outrow += outRowBytes, y += zoom )
+	for( j = outPiece.top, outrow = (unsigned char*)outData, y = (double)filterPiece.top - (double)filterRect.top ;
+		 j < outPiece.bottom ; ++j, outrow += outRowBytes, y += zoom )
 	{
 		#ifdef PROCESS_SCALED_GAP_DEBUG
 		if (state_changing_funcs_used && last_good_y != (int)floor(y-1)) { sprintf(s, "Non calculated Y gap, type 1: %f, last good %d, zoom %f\n", y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(y);
@@ -225,7 +247,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 
 		if (state_changing_funcs_used) {
 			// Fill gap between left selection/image border and left border of the preview-area
-			for (x = 0; x < filterPiece->left - pb->filterRect.left; ++x) {
+			for (x = 0; x < (double)filterPiece.left - (double)filterRect.left; ++x) {
 				#ifdef PROCESS_SCALED_GAP_DEBUG
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2a: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
@@ -236,8 +258,8 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		}
 
 		// i indexes scaled output columns
-		for( outp = outrow, i = outPiece->left, x = filterPiece->left - pb->filterRect.left ;
-			 i < outPiece->right ; ++i, outp += nplanes, x += zoom )
+		for( outp = outrow, i = outPiece.left, x = (double)filterPiece.left - (double)filterRect.left ;
+			 i < outPiece.right ; ++i, outp += nplanes, x += zoom )
 		{
 			#ifdef PROCESS_SCALED_GAP_DEBUG
 			if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
@@ -263,7 +285,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 		if (state_changing_funcs_used) {
 			// Fill gap between right border of preview-area and right border of selection/image border
 
-			for (x = var['x']+1; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+			for (x = (double)var['x']+1; x < (double)filterRect.right - (double)filterRect.left; ++x) {
 				#ifdef PROCESS_SCALED_GAP_DEBUG
 				if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2d: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 				#endif
@@ -278,7 +300,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 
 			// Fill gap between each Y-preview-pixel (discarded pixels due to zoom level),
 			// but not for the very last line, since we are then done drawing our preview picture
-			for (k = y+1; floor(k) < floor(y + zoom) && (j < outPiece->bottom-1); ++k) {
+			for (k = y+1; floor(k) < floor(y + zoom) && (j < outPiece.bottom-1); ++k) {
 				#ifdef PROCESS_SCALED_GAP_DEBUG
 				if (state_changing_funcs_used && last_good_y != (int)floor(k-1)) { sprintf(s, "Non calculated Y gap, type 3a: %f (y=%f), last good %d, zoom %f\n", k, y, last_good_y, zoom); simplealert(s); } last_good_y = (int)floor(k);
 				#endif
@@ -291,7 +313,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				last_good_x = -1;
 				#endif
 
-				for (x = 0; x < pb->filterRect.right - pb->filterRect.left; ++x) {
+				for (x = 0; x < (double)filterRect.right - (double)filterRect.left; ++x) {
 					#ifdef PROCESS_SCALED_GAP_DEBUG
 					if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 3b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 					#endif
@@ -312,7 +334,7 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 				if(pb->abortProc())
 					return userCanceledErr;
 				else
-					pb->progressProc((int)y - pb->filterRect.top,pb->filterRect.bottom - pb->filterRect.top);
+					pb->progressProc((int)y - filterRect.top,filterRect.bottom - filterRect.top);
 			}
 		}
 #ifdef MAC_ENV
@@ -331,4 +353,24 @@ OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
 	// preview output pixels left that could be affected by these gap evaluations.
 
 	return noErr;
+}
+
+OSErr process_scaled_olddoc(FilterRecordPtr pb, Boolean progress,
+	Rect filterPiece, Rect outPiece,
+	void* outData, long outRowBytes, double zoom) {
+
+	VRect filterPiece32;
+	VRect outPiece32;
+
+	filterPiece32.bottom = filterPiece.bottom;
+	filterPiece32.left = filterPiece.left;
+	filterPiece32.right = filterPiece.right;
+	filterPiece32.top = filterPiece.top;
+
+	outPiece32.bottom = outPiece.bottom;
+	outPiece32.left = outPiece.left;
+	outPiece32.right = outPiece.right;
+	outPiece32.top = outPiece.top;
+
+	return process_scaled_bigdoc(pb, progress, filterPiece32, outPiece32, outData, outRowBytes, zoom);
 }

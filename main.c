@@ -136,6 +136,13 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		init_trigtab();
 		break;
 	case filterSelectorStart:
+		if (pb->bigDocumentData != NULL) {
+			// The BigDocument structure is required if the document is larger than 30,000 pixels
+			// It deprecates imageSize, filterRect, inRect, outRect, maskRect, floatCoord, and wholeSize.
+			// By setting it to nonzero, we communicate to Photoshop that we support the BigDocument structure.
+			pb->bigDocumentData->PluginUsing32BitCoordinates = true;
+		}
+
 		/* initialise the parameter handle that Photoshop keeps for us */
 		if(!pb->parameters)
 			pb->parameters = PINEWHANDLE(1); // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
@@ -330,7 +337,7 @@ Boolean maxspace_available() {
 
 	// GIMP PSPI sets MaxSpace to hardcoded 100 MB
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
-	
+
 	// HOSTSIG_PAINT_NET sets MaxSpace to hardcoded 1 GB, see https://github.com/0xC0000054/PSFilterPdn/issues/5
 	// Comment by the host author "This was done to avoid any compatibility issues with plugins handling 2 GB - 1"
 	if (gpb->hostSig == HOSTSIG_PAINT_NET) return false;
@@ -371,81 +378,157 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 	pb->inLoPlane = pb->outLoPlane = 0;
 	pb->inHiPlane = pb->outHiPlane = nplanes-1;
 
-	// if any of the formulae involve random access to image pixels,
-	// ask for the entire image
-	if(needall){
-		SETRECT(pb->inRect,0,0,pb->imageSize.h,pb->imageSize.v);
-	}else{
-		// TODO: This does not work with GIMP. So, if we are using GIMP, we should
-		//       somehow always use "needall=true", and/or find out why this doesn't work
-		//       with GIMP.
+	if (HAS_BIG_DOC(pb)) {
+		// if any of the formulae involve random access to image pixels,
+		// ask for the entire image
+		if (needall) {
+			SETRECT(BIGDOC_IN_RECT(pb), 0, 0, BIGDOC_IMAGE_SIZE(pb).h, BIGDOC_IMAGE_SIZE(pb).v);
+		} else {
+			// TODO: This does not work with GIMP. So, if we are using GIMP, we should
+			//       somehow always use "needall=true", and/or find out why this doesn't work
+			//       with GIMP.
 
-		// otherwise, process the filtered area, by chunksize parts
-		pb->inRect.left = pb->filterRect.left;
-		pb->inRect.right = pb->filterRect.right;
-		pb->inRect.top = (int16)toprow;
-		pb->inRect.bottom = (int16)MIN(toprow + chunksize,pb->filterRect.bottom);
+			// otherwise, process the filtered area, by chunksize parts
+			BIGDOC_IN_RECT(pb).left = BIGDOC_FILTER_RECT(pb).left;
+			BIGDOC_IN_RECT(pb).right = BIGDOC_FILTER_RECT(pb).right;
+			BIGDOC_IN_RECT(pb).top = (int32)toprow;
+			BIGDOC_IN_RECT(pb).bottom = (int32)MIN(toprow + chunksize, BIGDOC_FILTER_RECT(pb).bottom);
 
-		if(cnvused){
-			// cnv() needs one extra pixel in each direction
-			if(pb->inRect.left > 0)
-				--pb->inRect.left;
-			if(pb->inRect.right < pb->imageSize.h)
-				++pb->inRect.right;
-			if(pb->inRect.top > 0)
-				--pb->inRect.top;
-			if(pb->inRect.bottom < pb->imageSize.v)
-				++pb->inRect.bottom;
+			if (cnvused) {
+				// cnv() needs one extra pixel in each direction
+				if (BIGDOC_IN_RECT(pb).left > 0)
+					--BIGDOC_IN_RECT(pb).left;
+				if (BIGDOC_IN_RECT(pb).right < BIGDOC_IMAGE_SIZE(pb).h)
+					++BIGDOC_IN_RECT(pb).right;
+				if (BIGDOC_IN_RECT(pb).top > 0)
+					--BIGDOC_IN_RECT(pb).top;
+				if (BIGDOC_IN_RECT(pb).bottom < BIGDOC_IMAGE_SIZE(pb).v)
+					++BIGDOC_IN_RECT(pb).bottom;
+			}
 		}
+		BIGDOC_OUT_RECT(pb) = BIGDOC_FILTER_RECT(pb);
+		/*
+		{char s[0x100];sprintf(s,"RequestNext needall=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
+			needall,
+			BIGDOC_IN_RECT(pb).left,BIGDOC_IN_RECT(pb).top,BIGDOC_IN_RECT(pb).right,BIGDOC_IN_RECT(pb).bottom,
+			BIGDOC_FILTER_RECT(pb).left,BIGDOC_FILTER_RECT(pb).top,BIGDOC_FILTER_RECT(pb).right,BIGDOC_FILTER_RECT(pb).bottom);dbg(s);}
+		*/
+	} else {
+		// if any of the formulae involve random access to image pixels,
+		// ask for the entire image
+		if (needall) {
+			SETRECT(IN_RECT(pb), 0, 0, IMAGE_SIZE(pb).h, IMAGE_SIZE(pb).v);
+		}
+		else {
+			// TODO: This does not work with GIMP. So, if we are using GIMP, we should
+			//       somehow always use "needall=true", and/or find out why this doesn't work
+			//       with GIMP.
+
+			// otherwise, process the filtered area, by chunksize parts
+			IN_RECT(pb).left = FILTER_RECT(pb).left;
+			IN_RECT(pb).right = FILTER_RECT(pb).right;
+			IN_RECT(pb).top = (int16)toprow;
+			IN_RECT(pb).bottom = (int16)MIN(toprow + chunksize, FILTER_RECT(pb).bottom);
+
+			if (cnvused) {
+				// cnv() needs one extra pixel in each direction
+				if (IN_RECT(pb).left > 0)
+					--IN_RECT(pb).left;
+				if (IN_RECT(pb).right < IMAGE_SIZE(pb).h)
+					++IN_RECT(pb).right;
+				if (IN_RECT(pb).top > 0)
+					--IN_RECT(pb).top;
+				if (IN_RECT(pb).bottom < IMAGE_SIZE(pb).v)
+					++IN_RECT(pb).bottom;
+			}
+		}
+		OUT_RECT(pb) = FILTER_RECT(pb);
+		/*
+		{char s[0x100];sprintf(s,"RequestNext needall=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
+			needall,
+			IN_RECT(pb).left,IN_RECT(pb).top,IN_RECT(pb).right,IN_RECT(pb).bottom,
+			FILTER_RECT(pb).left,FILTER_RECT(pb).top,FILTER_RECT(pb).right,FILTER_RECT(pb).bottom);dbg(s);}
+		*/
 	}
-	pb->outRect = pb->filterRect;
-/*
-{char s[0x100];sprintf(s,"RequestNext needall=%d inRect=(%d,%d,%d,%d) filterRect=(%d,%d,%d,%d)",
-	needall,
-	pb->inRect.left,pb->inRect.top,pb->inRect.right,pb->inRect.bottom,
-	pb->filterRect.left,pb->filterRect.top,pb->filterRect.right,pb->filterRect.bottom);dbg(s);}
-*/
 }
 
 void DoStart(FilterRecordPtr pb){
 //dbg("DoStart");
 	/* if src() or rad() functions are used, random access to the image data is required,
 	   so we must request the entire image in a single chunk. */
-	chunksize = needall ? (pb->filterRect.bottom - pb->filterRect.top) : CHUNK_ROWS;
-	toprow = pb->filterRect.top;
-	RequestNext(pb,toprow);
+	if (HAS_BIG_DOC(pb)) {
+		chunksize = needall ? (BIGDOC_FILTER_RECT(pb).bottom - BIGDOC_FILTER_RECT(pb).top) : CHUNK_ROWS;
+		toprow = BIGDOC_FILTER_RECT(pb).top;
+	} else {
+		chunksize = needall ? (FILTER_RECT(pb).bottom - FILTER_RECT(pb).top) : CHUNK_ROWS;
+		toprow = FILTER_RECT(pb).top;
+	}
+	RequestNext(pb, toprow);
 }
 
 OSErr DoContinue(FilterRecordPtr pb){
 	OSErr e = noErr;
-	Rect fr;
 	long outoffset;
 
-	if(needall)
-		fr = pb->filterRect;  // filter whole selection at once
-	else if(cnvused){
-		// we've requested one pixel extra all around
-		// (see RequestNext()), just for access purposes. But filter
-		// original selection only.
-		fr.left = pb->filterRect.left;
-		fr.right = pb->filterRect.right;
-		fr.top = toprow;
-		fr.bottom = MIN(toprow + chunksize,pb->filterRect.bottom);
-	}else  // filter whatever portion we've been given
-		fr = pb->inRect;
+	if (HAS_BIG_DOC(pb)) {
+		VRect fr;
+		if (needall) {
+			fr = BIGDOC_FILTER_RECT(pb);  // filter whole selection at once
+		} else if (cnvused) {
+			// we've requested one pixel extra all around
+			// (see RequestNext()), just for access purposes. But filter
+			// original selection only.
+			fr.left = BIGDOC_FILTER_RECT(pb).left;
+			fr.right = BIGDOC_FILTER_RECT(pb).right;
+			fr.top = toprow;
+			fr.bottom = MIN(toprow + chunksize, BIGDOC_FILTER_RECT(pb).bottom);
+		} else {  // filter whatever portion we've been given
+			fr = BIGDOC_IN_RECT(pb);
+		}
 
-	outoffset = (long)pb->outRowBytes*(fr.top - pb->outRect.top)
-				+ (long)nplanes*(fr.left - pb->outRect.left);
+		outoffset = (long)pb->outRowBytes * (fr.top - BIGDOC_OUT_RECT(pb).top)
+			+ (long)nplanes * (fr.left - BIGDOC_OUT_RECT(pb).left);
 
-	if(!(e = process_scaled(pb, true, &fr, &fr,
-				(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.)))
-	{
-		toprow += chunksize;
-		if(toprow < pb->filterRect.bottom)
-			RequestNext(pb,toprow);
-		else{
-			SETRECT(pb->inRect,0,0,0,0);
-			pb->outRect = pb->maskRect = pb->inRect;
+		if (!(e = process_scaled_bigdoc(pb, true, fr, fr,
+			(Ptr)pb->outData + outoffset, pb->outRowBytes, 1.)))
+		{
+			toprow += chunksize;
+			if (toprow < BIGDOC_FILTER_RECT(pb).bottom)
+				RequestNext(pb, toprow);
+			else {
+				SETRECT(BIGDOC_IN_RECT(pb), 0, 0, 0, 0);
+				BIGDOC_OUT_RECT(pb) = BIGDOC_MASK_RECT(pb) = BIGDOC_IN_RECT(pb);
+			}
+		}
+	} else {
+		Rect fr;
+		if (needall) {
+			fr = FILTER_RECT(pb);  // filter whole selection at once
+		} else if (cnvused) {
+			// we've requested one pixel extra all around
+			// (see RequestNext()), just for access purposes. But filter
+			// original selection only.
+			fr.left = FILTER_RECT(pb).left;
+			fr.right = FILTER_RECT(pb).right;
+			fr.top = toprow;
+			fr.bottom = MIN(toprow + chunksize, FILTER_RECT(pb).bottom);
+		} else {  // filter whatever portion we've been given
+			fr = IN_RECT(pb);
+		}
+
+		outoffset = (long)pb->outRowBytes*(fr.top - OUT_RECT(pb).top)
+					+ (long)nplanes*(fr.left - OUT_RECT(pb).left);
+
+		if(!(e = process_scaled_olddoc(pb, true, fr, fr,
+					(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.)))
+		{
+			toprow += chunksize;
+			if(toprow < FILTER_RECT(pb).bottom)
+				RequestNext(pb,toprow);
+			else{
+				SETRECT(IN_RECT(pb),0,0,0,0);
+				OUT_RECT(pb) = MASK_RECT(pb) = IN_RECT(pb);
+			}
 		}
 	}
 	return e;

@@ -37,9 +37,12 @@ extern int preview_w,preview_h,nplanes,needall,needinput;
 extern Point preview_scroll;
 extern double zoomfactor,fitzoom;
 
-extern OSErr process_scaled(FilterRecordPtr pb, Boolean progress,
-							Rect *filterRect, Rect *outRect,
-							void *outData, long outRowBytes, double zoom);
+extern OSErr process_scaled_olddoc(FilterRecordPtr pb, Boolean progress,
+                                   Rect filterRect, Rect outRect,
+                                   void* outData, long outRowBytes, double zoom);
+extern OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
+                                   VRect filterRect, VRect outRect,
+                                   void* outData, long outRowBytes, double zoom);
 extern Boolean alertuser(char *err,char *more);
 extern void evalinit();
 

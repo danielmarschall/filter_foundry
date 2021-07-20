@@ -132,6 +132,30 @@ Boolean host_preserves_parameters();
 // from parser.y
 struct node *parseexpr(char *s);
 
+#define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
+
+#define BIGDOC_IMAGE_SIZE(x) ((x)->bigDocumentData->imageSize32)
+#define IMAGE_SIZE(x) ((x)->imageSize)
+
+#define BIGDOC_FILTER_RECT(x) ((x)->bigDocumentData->filterRect32)
+#define FILTER_RECT(x) ((x)->filterRect)
+
+#define BIGDOC_IN_RECT(x) ((x)->bigDocumentData->inRect32)
+#define IN_RECT(x) ((x)->inRect)
+
+#define BIGDOC_OUT_RECT(x) ((x)->bigDocumentData->outRect32)
+#define OUT_RECT(x) ((x)->outRect)
+
+#define BIGDOC_MASK_RECT(x) ((x)->bigDocumentData->maskRect32)
+#define MASK_RECT(x) ((x)->maskRect)
+
+#define BIGDOC_FLOAT_COORD(x) ((x)->bigDocumentData->floatCoord32)
+#define FLOAT_COORD(x) ((x)->floatCoord)
+
+#define BIGDOC_WHOLE_SIZE(x) ((x)->bigDocumentData->wholeSize32)
+#define WHOLE_SIZE(x) ((x)->wholeSize)
+
+
 #ifdef _MSC_VER
 	// Microsoft dumbassery
 	#define strcasecmp _stricmp

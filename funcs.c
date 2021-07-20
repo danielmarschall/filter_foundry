@@ -65,16 +65,29 @@ void init_trigtab(){
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
 static value_type rawsrc(value_type x,value_type y,value_type z){
-	if(x < gpb->inRect.left)
-		x = gpb->inRect.left;
-	else if(x >= gpb->inRect.right)
-		x = gpb->inRect.right-1;
-	if(y < gpb->inRect.top)
-		y = gpb->inRect.top;
-	else if(y >= gpb->inRect.bottom)
-		y = gpb->inRect.bottom-1;
-	return ((unsigned char*)gpb->inData)[ (long)gpb->inRowBytes*(y - gpb->inRect.top)
-										  + (long)nplanes*(x - gpb->inRect.left) + z ];
+	if (HAS_BIG_DOC(gpb)) {
+		if (x < BIGDOC_IN_RECT(gpb).left)
+			x = BIGDOC_IN_RECT(gpb).left;
+		else if (x >= BIGDOC_IN_RECT(gpb).right)
+			x = BIGDOC_IN_RECT(gpb).right - 1;
+		if (y < BIGDOC_IN_RECT(gpb).top)
+			y = BIGDOC_IN_RECT(gpb).top;
+		else if (y >= BIGDOC_IN_RECT(gpb).bottom)
+			y = BIGDOC_IN_RECT(gpb).bottom - 1;
+		return ((unsigned char*)gpb->inData)[(long)gpb->inRowBytes * (y - BIGDOC_IN_RECT(gpb).top)
+			+ (long)nplanes * (x - BIGDOC_IN_RECT(gpb).left) + z];
+	} else {
+		if (x < IN_RECT(gpb).left)
+			x = IN_RECT(gpb).left;
+		else if (x >= IN_RECT(gpb).right)
+			x = IN_RECT(gpb).right - 1;
+		if (y < IN_RECT(gpb).top)
+			y = IN_RECT(gpb).top;
+		else if (y >= IN_RECT(gpb).bottom)
+			y = IN_RECT(gpb).bottom - 1;
+		return ((unsigned char*)gpb->inData)[(long)gpb->inRowBytes * (y - IN_RECT(gpb).top)
+			+ (long)nplanes * (x - IN_RECT(gpb).left) + z];
+	}
 }
 
 /* src(x,y,z) Channel z for the pixel at coordinates x,y.
@@ -315,10 +328,16 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 	return 0;
 #else
 	long total;
+	int x, y, z;
 	// shift x,y from selection-relative to image relative
-	int x = var['x'] + gpb->filterRect.left,
-		y = var['y'] + gpb->filterRect.top,
-		z = var['z'];
+	if (HAS_BIG_DOC(gpb)) {
+		x = var['x'] + BIGDOC_FILTER_RECT(gpb).left;
+		y = var['y'] + BIGDOC_FILTER_RECT(gpb).top;
+	} else {
+		x = var['x'] + FILTER_RECT(gpb).left;
+		y = var['y'] + FILTER_RECT(gpb).top;
+	}
+	z = var['z'];
 
 	if(z >= 0 && z < var['Z'])
 		total = m11*rawsrc(x-1,y-1,z) + m12*rawsrc(x,y-1,z) + m13*rawsrc(x+1,y-1,z)

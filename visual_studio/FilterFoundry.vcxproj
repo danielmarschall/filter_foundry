@@ -255,7 +255,6 @@ move lex.yy.c lex_yy.c</Command>
     <ClInclude Include="..\unistd.h" />
     <ClInclude Include="..\version.h" />
     <ClInclude Include="..\versioninfo_modify_win.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />

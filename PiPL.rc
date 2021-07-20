@@ -38,7 +38,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
-	8L, 			/* Property Count */
+	9L, 			/* Property Count */
 
 	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0", /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
@@ -52,7 +52,7 @@ BEGIN
 
 	/*"Telegraphics FilterFoundry\0\0\0\0"*/
 	/* Unique scope string, C format, long padded. If set, the plugin will only communicate with the host (Photoshop), not with AppleScript. */
-	/* Since 1.7b2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
+	/* Since 1.7.0.2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
 	"\0\0"
 
 
@@ -65,7 +65,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001, 		/* Reserved (for Photoshop) */
 	0L, 			/* kCurrentPiPLVersion */
-	5L, 			/* Property Count */
+	6L, 			/* Property Count */
 
 #include "PiPL_body.rc"
 

@@ -57,8 +57,6 @@ Minor priority stuff or ideas
 
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
 
-* Support BigDocument
-
 * The user should be able to build 32 bit AND 64 bit standalone filters!
 
 
@@ -103,6 +101,8 @@ Regarding Macintosh
 
 * Some *.r files include "PiMI.r". Is this part of an old SDK or is a file missing?
 
+* Support BigDocument (Add "ms32" PiPL, set pb->bigDocumentData->PluginUsing32BitCoordinates and use pb->bigDocumentData->*)
+
 
 Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 ------------------------------------------------------
@@ -116,3 +116,5 @@ Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 * XP Manifests (+ activation contexts)
 
 * Fix AETE resources, make keys unique and remove scope in order to enable AppleScript
+
+* Support BigDocument (Add "ms32" PiPL, set pb->bigDocumentData->PluginUsing32BitCoordinates and use pb->bigDocumentData->*)
