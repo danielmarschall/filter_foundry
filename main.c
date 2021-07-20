@@ -136,7 +136,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		init_trigtab();
 		break;
 	case filterSelectorStart:
-		if (pb->bigDocumentData != NULL) {
+		if (HAS_BIG_DOC(pb)) {
 			// The BigDocument structure is required if the document is larger than 30,000 pixels
 			// It deprecates imageSize, filterRect, inRect, outRect, maskRect, floatCoord, and wholeSize.
 			// By setting it to nonzero, we communicate to Photoshop that we support the BigDocument structure.
