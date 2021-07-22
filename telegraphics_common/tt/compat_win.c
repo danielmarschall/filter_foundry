@@ -31,6 +31,26 @@ Boolean isWin32NT(void){
 
 // ---------------------------------
 
+typedef ULONGLONG(__stdcall* f_GetTickCount64)();
+ULONGLONG _GetTickCount64() {
+	HMODULE hLib;
+	f_GetTickCount64 fGetTickCount64;
+	ULONGLONG res;
+
+	hLib = LoadLibraryA("KERNEL32.DLL");
+	if (!hLib) return 0;
+	fGetTickCount64 = (f_GetTickCount64)(void*)GetProcAddress(hLib, "GetTickCount64");
+	if (fGetTickCount64 != 0) {
+		res = fGetTickCount64();
+		FreeLibrary(hLib);
+	} else {
+		#pragma warning(suppress : 28159)
+		res = (ULONGLONG)GetTickCount();
+	}
+
+	return res;
+}
+
 typedef HANDLE(__stdcall *f_BeginUpdateResourceA)(
   LPCSTR pFileName,
   BOOL   bDeleteExistingResources

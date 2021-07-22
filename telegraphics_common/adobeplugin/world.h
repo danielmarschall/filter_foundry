@@ -89,7 +89,7 @@
 
 	#include "compat_win.h"
 
-	#define TICKCOUNT GetTickCount
+	#define TICKCOUNT _GetTickCount64
 	#define TICKS_SEC 1000
 
 	#define EnterCodeResource()

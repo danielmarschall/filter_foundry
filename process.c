@@ -170,7 +170,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 			  void *outData, long outRowBytes, double zoom){
 	unsigned char *inrow,*outrow,*outp;
 	int j,i;
-	long t,ticks = TICKCOUNT();
+	int64_t t, ticks = TICKCOUNT();
 	double x,y,k;
 
 	#ifdef PROCESS_SCALED_GAP_DEBUG
