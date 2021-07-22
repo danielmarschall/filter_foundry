@@ -27,8 +27,8 @@ Note: Changelog has been moved into the file CHANGELOG.md
 #define plugInName "FilterFoundry"
 
 // Please also adjust the version in manifest.xml
-#define VERSION_STR "1.7.0.2"
-#define VERSION_NUM 1,7,0,2
+#define VERSION_STR "1.7.0.3"
+#define VERSION_NUM 1,7,0,3
 
 #define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 

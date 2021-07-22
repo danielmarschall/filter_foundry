@@ -28,6 +28,7 @@
 #include "y.tab.h"
 #include "scripting.h"
 #include <math.h>
+#include "PIBufferSuite.h"
 
 struct node *tree[4];
 char *err[4];
@@ -70,6 +71,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	BOOL activationContextUsed;
 #endif
 
+	EnterCodeResource();
+
 	/*
 	char* s = (char*)malloc(512);
 	sprintf(s, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
@@ -89,26 +92,50 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		return;
 	}
 
-#ifdef WIN_ENV
-	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
-#endif
-
 	if(selector != filterSelectorAbout && !*data){
-		BufferID tempId;
-		if( (*result = PS_BUFFER_ALLOC(sizeof(globals_t), &tempId)) ) {
-#ifdef WIN_ENV
-			if (activationContextUsed) DeactivateManifest(&manifestVars);
-#endif
-			return;
+		PSBufferSuite1* pSBufferSuite32 = NULL;
+
+		// Register "gdata" that contains the PARM information and other things which need to be persistant
+		// TODO: memory leak? where is the stuff freed?
+		if ((pb->sSPBasic == 0) ||
+		   (pb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32)) ||
+		   (pSBufferSuite32 == NULL))
+		{
+			// Old deprecated buffer suite
+			BufferID tempId;
+			if ((*result = pb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) return;
+			*data = (intptr_t)pb->bufferProcs->lockProc(tempId, true);
+			gdata = (globals_t*)*data;
 		}
-		*data = (intptr_t)PS_BUFFER_LOCK(tempId, true);
-		gdata = (globals_t*)*data;
+		else
+		{
+			// New buffer suite (but only 32-bit version 1, because version 2 has problems with old Photoshop versions)
+			// Windows Photoshop 7 and CS 2 accepts kPSBufferSuiteVersion2, but doesn't correctly implement it:
+			// The symbols "New" and "GetSpace64" point to memory memory addresses outside the Photoshop.exe address range.
+			// (Other Photoshop versions were not tested.)
+			// 64-bit support for Windows was established in Photoshop CS 4,
+			// and PSBufferSuite2 was first documented in SDK CS 6.
+			// So, kPSBufferSuiteVersion2 probably was partically implemented as hidden "Work in progress" version
+			// before it was publicly documented.
+			// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
+			//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
+			unsigned32 siz = sizeof(globals_t);
+			Ptr data = pSBufferSuite32->New(&siz, siz);
+			if ((data == NULL) || (siz == 0)) {
+				*result = errPlugInHostInsufficient; // TODO: what is the correct error code for "out of memory"?
+				return;
+			}
+			gdata = (globals_t*)data;
+			pb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
+		}
 		gdata->standalone = gdata->parmloaded = false;
 	} else {
 		gdata = (globals_t*)*data;
 	}
 
-	EnterCodeResource();
+#ifdef WIN_ENV
+	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
+#endif
 
 	gpb = pb;
 

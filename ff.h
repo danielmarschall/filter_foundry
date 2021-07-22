@@ -86,11 +86,6 @@ extern char *errstr;
 #define DBG(x) {}
 //#define DEBUG
 
-#define PS_BUFFER_ALLOC  (pb->bufferProcs->allocateProc)
-#define PS_BUFFER_LOCK   (pb->bufferProcs->lockProc)
-#define PS_BUFFER_UNLOCK (pb->bufferProcs->unlockProc)
-#define PS_BUFFER_FREE   (pb->bufferProcs->freeProc)
-
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
