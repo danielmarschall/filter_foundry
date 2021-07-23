@@ -202,7 +202,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 
         hstm = (struct hstm_data*)prop->propertyData;
 
-        scope = malloc(0x300);
+        scope = (char*)malloc(0x300);
         if (!scope) return -1;
         sprintf(scope, "%s %s",
             INPLACEP2CSTR(gdata->parm.category),

@@ -63,24 +63,6 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	char* soleFilename;
 	long event_id;
 
-	if (!isWin32NT()) {
-		HMODULE hLib;
-
-		hLib = LoadLibraryA("UNICOWS.DLL");
-		if (!hLib) {
-			char* sysdir;
-
-			sysdir = (char*)malloc(MAX_PATH);
-			GetSystemDirectoryA(sysdir, MAX_PATH);
-			alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"),sysdir);
-			free(sysdir);
-
-			return false;
-		} else {
-			FreeLibrary(hLib);
-		}
-	}
-
 //	if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))
 //		dbglasterror("EnumResourceLanguages");
 
@@ -233,6 +215,25 @@ OSErr make_standalone(StandardFileReply *sfr){
 	Boolean res;
 	char dstname[0x100],srcname[MAX_PATH+1];
 
+	if (!isWin32NT()) {
+		HMODULE hLib;
+
+		hLib = LoadLibraryA("UNICOWS.DLL");
+		if (!hLib) {
+			char* sysdir;
+
+			sysdir = (char*)malloc(MAX_PATH);
+			GetSystemDirectoryA(sysdir, MAX_PATH);
+			alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"), sysdir);
+			free(sysdir);
+
+			return false;
+		}
+		else {
+			FreeLibrary(hLib);
+		}
+	}
+	
 	//FSpDelete(&sfr->sfFile);
 	myp2cstrcpy(dstname,sfr->sfFile.name);
 	res = GetModuleFileName(hDllInstance,srcname,MAX_PATH)

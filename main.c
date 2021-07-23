@@ -85,7 +85,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// but it crashes in evalpixel() where there is write-access to the "outp".
 		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
 		if (!premiereWarnedOnce) {
-			simplealert("This version of Filter Foundry is not compatible with Adobe Premiere!");
+			simplealert(_strdup("This version of Filter Foundry is not compatible with Adobe Premiere!"));
 		}
 		premiereWarnedOnce = true;
 		*result = filterBadParameters;
