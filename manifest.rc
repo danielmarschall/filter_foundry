@@ -27,3 +27,4 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 1 RT_MANIFEST "manifest32.xml"
 #endif
 
+50  RCDATA "manifestTpl.xml"

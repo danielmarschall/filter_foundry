@@ -177,7 +177,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PINameProperty;
         prop->propertyID = 0;
-        prop->propertyLength = (SPInt32)roundToNext4(title[0] + 1);
+        prop->propertyLength = (SPInt32)roundToNext4((size_t)title[0] + 1);
         memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, title);
 
@@ -191,7 +191,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->propertyKey = PICategoryProperty;
         prop->propertyID = 0;
 
-        prop->propertyLength = (SPInt32)roundToNext4(gdata->parm.category[0] + 1);
+        prop->propertyLength = (SPInt32)roundToNext4((size_t)gdata->parm.category[0] + 1);
         memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
 

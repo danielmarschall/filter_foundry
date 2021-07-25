@@ -49,8 +49,6 @@ Minor priority stuff or ideas
 
 * Add Unicode support? (Does PiPL support Unicode at all?)
 
-* Build filter: Individualize Manifest resource (Attention: htmlentities)
-
 * Picture with 78x63 in grayscale mode: In preview on the left side there is a black bar
 
 * With the change in 1.7 in re "*preview evaluates whole picture if state changing functions rst,put,rnd are used*": Is there anything we can do to make it more performant when the user changes sliders? Especially with large pictures, the process becomes a bit laggy!
