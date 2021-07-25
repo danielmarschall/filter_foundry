@@ -188,7 +188,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
                 // check DOS EXE magic number
                 count = 2;
                 if(FSRead(refnum,&count,magic) == noErr /*&& magic[0]=='M' && magic[1]=='Z'*/){
-                        if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 256L<<10){ // sanity check file size < 256K
+                        if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 2048L<<10){ // sanity check file size < 2MiB (note that "Debug" builds can have approx 700 KiB while "Release" builds have approx 300 KiB)
                                 if( (h = readfileintohandle(refnum)) ){
                                         long *q = (long*)PILOCKHANDLE(h,false);
 
@@ -198,7 +198,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
                                         {
 
 #ifdef MAC_ENV
-                                                // Case #1: Mac is reading Windows (Win16/32) plugin
+                                                // Case #1: Mac is reading Windows (Win16/32/64) plugin
                                                 if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
                                                      (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
                                                      (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
@@ -210,7 +210,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
                                                                 slider[i] = EndianS32_LtoN(slider[i]);
                                                 }
 #else
-                                                // Case #2: Windows is reading a Windows plugin (if Resource API failed, i.e. Win64 tries to open NE file)
+                                                // Case #2: Windows is reading a Windows plugin (if Resource API failed, e.g. Win64 tries to open NE file, Win32 tries to open 64bit file)
                                                 if( ((q[0] == PARM_SIZE) ||
                                                      (q[0] == PARM_SIZE_PREMIERE) ||
                                                      (q[0] == PARM_SIG_MAC)) && q[1] == 1

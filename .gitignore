@@ -16,7 +16,7 @@ photoshop_sdk/license.html
 photoshop_sdk/ReadMe.html
 
 visual_studio/Win32/
-visual_studio/Win64/
+visual_studio/x64/
 visual_studio/.vs
 visual_studio/*.obj
 visual_studio/*.res

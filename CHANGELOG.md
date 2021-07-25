@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0.4 [Work-In-Progress]
+- Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
+
+
 ## 1.7.0.3 [23-Jul-2021]
 - Support BigDocument structure (.psb) (*)
 

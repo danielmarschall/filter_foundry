@@ -143,7 +143,7 @@ unsigned long printablehash(unsigned long hash) {
 #endif
 }
 
-long roundToNext4(long x) {
+size_t roundToNext4(size_t x) {
         int pad = 4 - (x % 4);
         if (pad == 0) pad = 4;
         return x + pad;
@@ -177,7 +177,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->vendorID = kPhotoshopSignature;
         prop->propertyKey = PINameProperty;
         prop->propertyID = 0;
-        prop->propertyLength = roundToNext4(title[0] + 1);
+        prop->propertyLength = (SPInt32)roundToNext4(title[0] + 1);
         memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, title);
 
@@ -191,7 +191,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
         prop->propertyKey = PICategoryProperty;
         prop->propertyID = 0;
 
-        prop->propertyLength = roundToNext4(gdata->parm.category[0] + 1);
+        prop->propertyLength = (SPInt32)roundToNext4(gdata->parm.category[0] + 1);
         memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
         PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
 
@@ -233,7 +233,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 
         realLength = offsetof(struct hstm_data, scope) + scopelen + 1/*null-term*/;
         roundedLength = roundToNext4(realLength);
-        prop->propertyLength = roundedLength;
+        prop->propertyLength = (SPInt32)roundedLength;
         memset(prop->propertyData + realLength, 0x00, roundedLength - realLength); // fill padding with 00h bytes (cosmetics)
 
         hstm->version = 0;
