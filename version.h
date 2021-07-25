@@ -26,7 +26,7 @@ Note: Changelog has been moved into the file CHANGELOG.md
 
 #define plugInName "FilterFoundry"
 
-// Please also adjust the version in manifest.xml
+// Please also adjust the version in manifest*.xml
 #define VERSION_STR "1.7.0.4"
 #define VERSION_NUM 1,7,0,4
 
