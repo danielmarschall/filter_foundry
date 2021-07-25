@@ -41,7 +41,8 @@ enum{
 Boolean readparams(Handle h,Boolean alerts,char **reason){
         Boolean res = false;
         char linebuf[MAXLINE+1],curexpr[MAXEXPR+1],*p,*dataend,*q;
-        int c,linecnt,lineptr,exprcnt;
+        char c;
+        int linecnt, lineptr, exprcnt;
 
         if(!h){
                 *reason = _strdup("readparams: Null parameter handle.");
@@ -135,6 +136,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 
         PIUNLOCKHANDLE(h);
 
+        if (res) *reason = NULL; // no error
         return res;
 }
 

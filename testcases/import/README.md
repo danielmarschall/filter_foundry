@@ -24,6 +24,9 @@ This directory contains various standalone plugins to test if the current Filter
 | FilterFoundry => FilterFoundry            | Ext.   | Sig.     | Testcase file(s)         | Import          |
 | ------------------------------------------| -------| ---------| -------------------------| -----------------
 | Import FilterFoundry 1.6 for Windows x86  | .8bf   | 0x1C86   | foundry16.8bf            | Works           |
+| Import Obfuscated 1.6 for Windows x86     | .8bf   | n/a      | ???                      | ???             |
 | Import FilterFoundry 1.7 for Windows x86  | .8bf   | 0x2086   | foundry17_32.8bf         | Works           |
 | Import FilterFoundry 1.7 for Windows x64  | .8bf   | 0x2086   | foundry17_64.8bf         | Works           |
+| Import Obfuscated 1.7 for Windows x86     | .8bf   | n/a      | ???                      | ???             |
+| Import Obfuscated 1.7 for Windows x64     | .8bf   | n/a      | ???                      | ???             |
 | Import FilterFoundry 1.6 for Mac          | ???    | ???      | ???                      | n/a             |
