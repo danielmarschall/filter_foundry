@@ -3,7 +3,8 @@
 ## 1.7.0.4 [Work-In-Progress]
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
 - Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
-- "Manifest" resource gets individualized in standalone plugins
+- Internal change: "Manifest" resource gets individualized in standalone plugins
+- Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfusc data stays at 'DATA'/RCDATA)
 
 
 ## 1.7.0.3 [23-Jul-2021]

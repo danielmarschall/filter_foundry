@@ -5,7 +5,9 @@ Wishlist/ToDo-List
 Important/Bugs
 --------------
 
-(Nothing here yet)
+* Import testcase: Obfuscated *.8bf files
+
+* !!! If you call a standalone filter two times, then the main dialog opens !!!
 
 
 Minor priority stuff or ideas

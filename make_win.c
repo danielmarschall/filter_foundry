@@ -92,9 +92,9 @@ int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm) {
         name[iname++] = '\0';
 
 #ifdef _WIN64
-        return sprintf(newmanifest, manifestp, name, "amd64", VERSION_STR, description);
+        return sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
 #else
-        return sprintf(newmanifest, manifestp, name, "x86", VERSION_STR, description);
+        return sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
 #endif
 }
 
@@ -118,13 +118,13 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
         if( (hupdate = _BeginUpdateResource(dstname,false)) ){
                 DBG("BeginUpdateResource OK");
-                if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),RT_RCDATA))
+                if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"TPLT"))
                         && (datah = LoadResource(srcmod,datarsrc))
                         && (datap = (Ptr)LockResource(datah))
                         && (aetersrc = FindResource(srcmod, MAKEINTRESOURCE(16000), "AETE"))
                         && (aeteh = LoadResource(srcmod, aetersrc))
                         && (aetep = (Ptr)LockResource(aeteh))
-                        && (manifestsrc = FindResource(srcmod, MAKEINTRESOURCE(50), RT_RCDATA))
+                        && (manifestsrc = FindResource(srcmod, MAKEINTRESOURCE(50), "TPLT"))
                         && (manifesth = LoadResource(srcmod, manifestsrc))
                         && (manifestp = (Ptr)LockResource(manifesth)) )
                 {
@@ -165,6 +165,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
                                 for (i = 0; i < 8; ++i)
                                         myp2cstr(pparm->ctl[i]);
 
+                                manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm);
+
                                 if(gdata->obfusc){
                                         parm_type = RT_RCDATA;
                                         parm_id = OBFUSCDATA_ID;
@@ -173,8 +175,6 @@ Boolean doresources(HMODULE srcmod,char *dstname){
                                         parm_type = "PARM";
                                         parm_id = PARM_ID;
                                 }
-
-                                manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm);
 
                                 /* Attention: The resource we have found using FindResource() might have a different
                                    language than the resource we are saving (Neutral), so we might end up having
