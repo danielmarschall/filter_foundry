@@ -23,8 +23,7 @@
 #include <math.h>
 
 // The following ugly workaround is obviated by Carbon StdCLib headers;
-// see: http://developer.apple.com/tools/mpw-tools/relnotes/carbonstdclib.html
-// (via http://developer.apple.com/tools/mpw-tools/updates.html )
+// see: https://web.archive.org/web/20041031134219/http://developer.apple.com/tools/mpw-tools/relnotes/carbonstdclib.html
 
 //#ifdef TARGET_API_MAC_CARBON
 //	/* can't use StdCLib ctype.h, it refers to symbols which aren't in OS X stdclib */

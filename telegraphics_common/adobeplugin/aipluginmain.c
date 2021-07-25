@@ -93,7 +93,7 @@ SPErr acq_suite(SPMessageData *m, char *name, long version, ppsuite suite)
 		sprintf(s, "Could not load the plugin.\n\n"
 				   "This plugin was built for Illustrator %s.\n\n"
 				   "Please obtain the correct version for your installation "
-				   "from http://www.telegraphics.com.au/sw/\n"
+				   "from https://www.telegraphics.com.au/sw/\n"
 				   "or contact support@telegraphics.com.au if you cannot resolve the problem.\n\n"
 				   "Details: AcquireSuite failed \"%s\" (%ld): %c%c%c%c",
 				ai_vers, name, version, (int)(e>>24), (int)(e>>16), (int)(e>>8), (int)e);

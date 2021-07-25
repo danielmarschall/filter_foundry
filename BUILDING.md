@@ -20,7 +20,7 @@ with a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency"
 from PiPL_common.r.)
 
 The dependency "telegraphics_common" is available here
-http://www.telegraphics.com.au/svn/common/
+https://www.telegraphics.com.au/svn/common/
 Revision 84 (dated 9 October 2019) is included in this repository
 to simplify the build process.
 
@@ -54,7 +54,7 @@ a "universal" plugin if you have the CS3 "Beta" SDK (use target "fat").
 
 Note that building Mach-O plugins requires Apple's Developer Tools
 to be installed (from the DVD that came with your Mac, or downloaded from
-http://developer.apple.com/ if you have an ADC login).
+https://developer.apple.com/ if you have an ADC login).
 
 The Mac build requires Apple's MoreFiles library, which can be obtained via
 https://developer.apple.com/library/archive/samplecode/MoreFiles/

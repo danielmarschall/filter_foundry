@@ -1,7 +1,7 @@
 # Changelog
 
-## 1.7.0.3 [Work-In-Progress]
-- Support BigDocument structure (*.psb) (*)
+## 1.7.0.3 [23-Jul-2021]
+- Support BigDocument structure (.psb) (*)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

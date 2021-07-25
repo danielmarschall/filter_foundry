@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 Important/Bugs
 --------------
 
-(Nothing here)
+* 32 Bit Windows cannot read PARM from 64 Bit standalone plugin
 
 
 Minor priority stuff or ideas

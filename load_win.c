@@ -26,9 +26,8 @@
 
 static UINT16 parm_id;
 
-// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/resources/introductiontoresources/resourcereference/resourcefunctions/findresource.asp
 static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
-							   LPTSTR lpszName,LONG_PTR lParam)
+                               LPTSTR lpszName,LONG_PTR lParam)
 {
 	if(IS_INTRESOURCE(lpszName))
 		parm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
@@ -75,7 +74,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
 	if (!readok) {
-		// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/loadlibraryex.asp
 		char name[MAX_PATH+1];
 		if (hm = LoadLibraryEx(myp2cstrcpy(name,sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm,reason,0)) {

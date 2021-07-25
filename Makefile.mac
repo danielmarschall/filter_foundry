@@ -96,7 +96,7 @@ dll : $(PLUGIN_W32)
 
 osx fat : $(BUNDLE) $(PLUGIN_PARTS)
 
-# See: http://developer.apple.com/documentation/Porting/Conceptual/PortingUnix/compiling/chapter_4_section_3.html#//apple_ref/doc/uid/TP40002850-BAJCFEBA
+# See: https://web.archive.org/web/20101224050959/http://developer.apple.com/library/mac/#documentation/Porting/Conceptual/PortingUnix/intro/intro.html
 fat : CFLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
 fat : LDFLAGS += -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
 fat : REZFLAGS += -arch ppc -arch i386

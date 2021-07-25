@@ -1,5 +1,5 @@
 /* this hack (to fool MPW linker) is due to
-   http://www.mactech.com/articles/develop/issue_15/117-131_Q_As.html */
+   http://preserve.mactech.com/articles/develop/issue_15/117-131_Q_As.html */
 
 #include <stdio.h>
 #include <mactypes.h>

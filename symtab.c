@@ -26,7 +26,7 @@
 unsigned long djb2(const char *str);
 
 /* following constant (need not) be prime. for a list of prime numbers,
-   see http://www.utm.edu/research/primes/lists/small/1000.txt */
+   see https://primes.utm.edu/lists/small/1000.txt */
 #define TABLE_SIZE 128 // if you're anticipating many symbols, increase this value!
 #define HASH(s) (djb2(s) % TABLE_SIZE)
 
