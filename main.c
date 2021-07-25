@@ -97,18 +97,15 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 		// Register "gdata" that contains the PARM information and other things which need to be persistant
 		// TODO: memory leak? where is the stuff freed?
-		/*
 		if ((pb->sSPBasic == 0) ||
 		   (pb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32)) ||
 		   (pSBufferSuite32 == NULL))
-		*/
-		if (true) // TODO: we cannot use the new buffer suite, because we require the behavior of the deprecated buffer suite that it will always give use the same address of memory, which we use for gdata!
 		{
 			// Old deprecated buffer suite
 			BufferID tempId;
 			if ((*result = pb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) return;
 			*data = (intptr_t)pb->bufferProcs->lockProc(tempId, true);
-			gdata = (globals_t*)*data;
+			gdata = (globals_t*)*data; // preserve for the next invocation!
 		}
 		else
 		{
@@ -123,12 +120,12 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
 			//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
 			unsigned32 siz = sizeof(globals_t);
-			Ptr data2 = pSBufferSuite32->New(&siz, siz);
-			if ((data2 == NULL) || (siz == 0)) {
+			*data = pSBufferSuite32->New(&siz, siz);
+			if ((*data == NULL) || (siz == 0)) {
 				*result = errPlugInHostInsufficient; // TODO: what is the correct error code for "out of memory"?
 				return;
 			}
-			gdata = (globals_t*)data2;
+			gdata = (globals_t*)*data;
 			pb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
 		}
 		gdata->standalone = gdata->parmloaded = false;

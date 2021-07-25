@@ -7,12 +7,10 @@ Important/Bugs
 
 * Import testcase: Obfuscated *.8bf files
 
-* Is it OK that we assume that bufferprocs->allocate will always give us the same address (GDATA)?! shouldn't gdata be in pb->parameters?
+* Test if IrfanView+GIMP work correctly with standalone filters!
 
-* Irfanview+GIMP (They don't preserve the host parameters) are probably not compatible with standalone filters:
-
-	- Currently we save the AFS file to TEMP, but do we also need to store the GDATA somewhere (in pb->parameters?)? Otherwise a standalone plugin will forget that it is standalone?!
-
+	- We know that they don't preserve pb->parameters , but will they preserve *data correctly? If so, then we could use *data instead of pb->parameters? (put AFS into the globals_t)
+	- Currently we save the AFS file (pb->parameters) to TEMP, but do we also need to store the GDATA somewhere (in pb->parameters?)? Otherwise a standalone plugin will forget that it is standalone!
 	- The temp file is always called FilterFoundry.afs . For the main plugin and ALL standalone plugins? That's not good!
 
 
