@@ -69,9 +69,6 @@
     <ClInclude Include="..\telegraphics_common\tt\calc_std_state.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\carbonstuff.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\choosefile.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -90,9 +87,6 @@
     <ClInclude Include="..\telegraphics_common\tt\dlg.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\dvi_driver.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\file_compat.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -103,12 +97,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\misc.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\misc-mac.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\my_timer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\PAP.h">

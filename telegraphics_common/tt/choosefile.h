@@ -76,7 +76,7 @@ and the asterisk (*) wildcard character. Do not include spaces in the pattern st
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
    				NavReplyRecord *reply,StandardFileReply *sfr,
-   				char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
+   				const char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
    				#ifdef _WIN32
    				,HWND hwndOwner
    				#endif /* _WIN32 */

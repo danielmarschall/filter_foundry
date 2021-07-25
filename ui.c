@@ -343,9 +343,9 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case OPENITEM:
 		if(!gdata->standalone && choosefiletypes(
 					#ifdef MAC_ENV
-					(StringPtr)_strdup("\pChoose filter settings"),
+					(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string"
 					#else
-					(StringPtr)_strdup("Choose filter settings"),
+					(StringPtr)_strdup("\026Choose filter settings"),
 					#endif
 					&sfr,&reply,types,2,
 					"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0All files (*.*)\0*.*\0\0"
@@ -363,13 +363,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case SAVEITEM:
 		if(!gdata->standalone && putfile(
 										#ifdef MAC_ENV
-										(StringPtr)_strdup("\pSave filter settings"),
+										(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string"
 										#else
-										(StringPtr)_strdup("Save filter settings"),
+										(StringPtr)_strdup("\024Save filter settings"),
 										#endif
-										(StringPtr)"",
+										(StringPtr)_strdup("\0"),
 										TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-										_strdup("afs"),"Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
+										"afs","Settings file (.afs, .txt)\0*.afs;*.txt\0\0",1
 										#ifdef _WIN32
 										,gdata->hWndMainDlg
 										#endif /* _WIN32 */
@@ -387,17 +387,17 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
 #ifdef MACMACHO
-			PLstrcat(fname,(StringPtr)"\p.plugin");
+			PLstrcat(fname,(StringPtr)"\p.plugin"); // "\p" means "Pascal string"
 #endif
 			if( putfile(
 						#ifdef MAC_ENV
-						(StringPtr)_strdup("\pMake standalone filter"),
+						(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"
 						#else
-						(StringPtr)_strdup("Make standalone filter"),
+						(StringPtr)_strdup("\026Make standalone filter"),
 						#endif
 						fname,
 						PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-						_strdup("8bf"),"Filter plugin file (.8bf)\0*.8bf\0\0",1
+						"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1
 						#ifdef _WIN32
 						,gdata->hWndMainDlg
 						#endif /* _WIN32 */

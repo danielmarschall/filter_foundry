@@ -70,7 +70,7 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
 				NavReplyRecord *reply,StandardFileReply *sfr,
-				char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
+				const char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
 				HWND hwndOwner){
 	OPENFILENAME ofn;
 	char file[MAX_PATH];
