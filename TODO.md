@@ -7,11 +7,10 @@ Important/Bugs
 
 * Import testcase: Obfuscated *.8bf files
 
-* Test if IrfanView+GIMP work correctly with standalone filters!
+* rfanView+GIMP don't correctly with standalone filters! (see section 6 of "GIMP Incompatibilities.md")
 
-	- We know that they don't preserve pb->parameters , but will they preserve *data correctly? If so, then we could use *data instead of pb->parameters? (put AFS into the globals_t)
-	- Currently we save the AFS file (pb->parameters) to TEMP, but do we also need to store the GDATA somewhere (in pb->parameters?)? Otherwise a standalone plugin will forget that it is standalone!
-	- The temp file is always called FilterFoundry.afs . For the main plugin and ALL standalone plugins? That's not good!
+	- Like pb->parameters, *data(gdata) is not preserved. Therefore, the standalone filter doesn't know that it is a standalone filter
+	- The temp file is always called FilterFoundry.afs: or the main plugin and ALL standalone plugins! That's not good!
 
 
 Minor priority stuff or ideas
