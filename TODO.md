@@ -5,9 +5,7 @@ Wishlist/ToDo-List
 Important/Bugs
 --------------
 
-* Import testcase: Obfuscated *.8bf files
-
-* GIMP/Irfanview: Temp AFS hash is 0 for obfuscated plugins, because there is no parm?
+* Import testcase: Obfuscated and protected *.8bf files
 
 * Test if GIMP/Irfanview work correctly (standalone filters etc.)
 

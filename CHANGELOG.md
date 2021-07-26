@@ -2,11 +2,12 @@
 
 ## 1.7.0.4 [Work-In-Progress]
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
-- Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
+- Bugfix: Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
 - Internal change: "Manifest" resource gets individualized in standalone plugins
 - Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfusc data stays at 'DATA'/RCDATA)
 - Bugfix: If you called a standalone filter two times, then the main dialog opened (bug introduced in 1.7.0.3)
 - Ifanview/GIMP can now also work with standalone filters
+- If the user tries to open a protected 8BF file, the error message will now state that it can't be opened because the filter is protected
 
 
 ## 1.7.0.3 [23-Jul-2021]

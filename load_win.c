@@ -79,11 +79,10 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			if (readPARMresource(hm,reason,READ_OBFUSC)) {
 				if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");
+					return false; // Stop! We know the issue now.
 				} else {
 					readok = gdata->parmloaded = true;
 				}
-			} else {
-				*reason = _strdup("It is not a standalone filter made by Filter Factory/Filter Foundry.");
 			}
 			FreeLibrary(hm);
 		}
@@ -91,16 +90,20 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or NE executable on Win64)
 	if (!readok) {
-		if( (readok = read8bfplugin(sfr, reason)) ){
-			gdata->parmloaded = true;
-		} else {
-			*reason = _strdup("PARM resource was not found in this plugin file, or this is not a standalone plugin.");
+		if (read8bfplugin(sfr, reason)) {
+			if (gdata->parm.iProtected) {
+				*reason = _strdup("The filter is protected.");
+				return false; // Stop! We know the issue now.
+			}
+			else {
+				readok = gdata->parmloaded = true;
+			}
 		}
 	}
 
 	// Check if we had success
 	if (!readok) {
-		*reason = _strdup("PARM resource was not found in this plugin file, or this is not a standalone plugin.");
+		*reason = _strdup("It is not a text parameter (AFS) file, nor a standalone Mac/PC filter made by Filter Factory/Filter Foundry.");
 	}
 
 	return readok;
