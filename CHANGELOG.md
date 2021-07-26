@@ -6,6 +6,7 @@
 - Internal change: "Manifest" resource gets individualized in standalone plugins
 - Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfusc data stays at 'DATA'/RCDATA)
 - Bugfix: If you called a standalone filter two times, then the main dialog opened (bug introduced in 1.7.0.3)
+- Ifanview/GIMP can now also work with standalone filters
 
 
 ## 1.7.0.3 [23-Jul-2021]

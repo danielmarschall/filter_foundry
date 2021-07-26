@@ -38,8 +38,8 @@ Incompatibilities with GIMP / PSPI
 	The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI doesn't do.
 	Also, all global variables are unloaded, so the plugin cannot preserve any data.
 
-	Workaround in FF 1.7: If the host GIMP is detected, the new flag persistent_savestate will be set.
-	This mode saves the filter data into a temporary file "tmp.afs" and loads it
+	Workaround in FF 1.7: If the host GIMP is detected, the new function "host_preserves_parameters" returns "true".
+	This mode saves the filter data into a temporary AFS file and loads it
 	when the window is opened again.
 
 	Exactly the same problem applies to the IfanView 8BF host.
@@ -62,16 +62,18 @@ Incompatibilities with GIMP / PSPI
 
 	Workaround in FF 1.7: If GIMP/PSPI is detected, the adjustment of the zoom level is disabled.
 
-6. Standalone filters don't work
+6. Standalone filters don't work correctly
 
-	Status: Currently no solution!!
+	Status: FIXED (Workaround) in FilterFoundry 1.7
 
 	PSPI does not preserve the data of the EntryPoint argument "intptr_t *data".
 	Therefore, the global data (gdata) object cannot preserved,
 	and the standalone plugin doesn't "know" that it is a standalone plugin.
+	Exactly the same problem applies to the IfanView 8BF host.
+	=> The handling in checkandinitparams() has been changed to address this issue.
 
 	Furthermore, the preserved "pb->parameters" are in a TEMP file which has
 	the same name for each FilterFoundry plugin. Therefore, the "pb->parameters"
 	are shared between main plugin and all standalone plugins.
-
-	Exactly the same problem applies to the IfanView 8BF host.
+	=> In FilterFoundry 1.7.0.4, the file name will contain a hash of the plugin
+	   or 0 for the main plugin.

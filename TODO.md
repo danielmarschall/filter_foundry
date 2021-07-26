@@ -7,11 +7,6 @@ Important/Bugs
 
 * Import testcase: Obfuscated *.8bf files
 
-* rfanView+GIMP don't correctly with standalone filters! (see section 6 of "GIMP Incompatibilities.md")
-
-	- Like pb->parameters, *data(gdata) is not preserved. Therefore, the standalone filter doesn't know that it is a standalone filter
-	- The temp file is always called FilterFoundry.afs: or the main plugin and ALL standalone plugins! That's not good!
-
 
 Minor priority stuff or ideas
 -----------------------------
@@ -24,7 +19,7 @@ Minor priority stuff or ideas
 
 * Why can't we edit *.rc files in Visual Studio?
 
-* persistent_savestate (enabled with GIMP/PSPI) should somehow delete the temporary AFS file at each restart of GIMP. Otherwise, the user would always see the previous session when they re-open GIMP.
+* host_preserves_parameters (enabled with GIMP/PSPI) should somehow delete the temporary AFS file at each restart of GIMP. Otherwise, the user would always see the previous session when they re-open GIMP.
 
 * Create and evaluate more testcases, and either fix differences between FilterFactory and FilterFoundry, or document them in "Filter Factory Compatibility.md"
 
