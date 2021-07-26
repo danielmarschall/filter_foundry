@@ -76,7 +76,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	if (!readok) {
 		char name[MAX_PATH+1];
 		if (hm = LoadLibraryEx(myp2cstrcpy(name,sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
-			if (readPARMresource(hm,reason,0)) {
+			if (readPARMresource(hm,reason,READ_OBFUSC)) {
 				if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");
 				} else {

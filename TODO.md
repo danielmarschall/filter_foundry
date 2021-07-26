@@ -7,6 +7,10 @@ Important/Bugs
 
 * Import testcase: Obfuscated *.8bf files
 
+* GIMP/Irfanview: Temp AFS hash is 0 for obfuscated plugins, because there is no parm?
+
+* Test if GIMP/Irfanview work correctly (standalone filters etc.)
+
 
 Minor priority stuff or ideas
 -----------------------------
