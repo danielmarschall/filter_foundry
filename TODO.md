@@ -5,9 +5,7 @@ Wishlist/ToDo-List
 Important/Bugs
 --------------
 
-* Import testcase: Obfuscated and protected *.8bf files
-
-* Test if GIMP/Irfanview work correctly (standalone filters etc.)
+(Nothing here at the moment)
 
 
 Minor priority stuff or ideas
