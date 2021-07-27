@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.4 [Work-In-Progress]
+## 1.7.0.4 [27-Jul-2021]
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
 - Bugfix: Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
 - Internal change: "Manifest" resource gets individualized in standalone plugins
