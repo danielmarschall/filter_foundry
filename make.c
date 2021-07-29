@@ -444,45 +444,43 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	return (unsigned char*)aeteptr - (unsigned char*)beginptr; // length of stuff written
 }
 
-void _xorshift(unsigned char** p, uint32_t* x32, size_t num) {
-	size_t i;
-	unsigned char* x = *p;
-	for (i = 0; i < num; i++) {
-		// https://de.wikipedia.org/wiki/Xorshift
-		*x32 ^= *x32 << 13;
-		*x32 ^= *x32 >> 17;
-		*x32 ^= *x32 << 5;
-		*x++ ^= *x32;
-	}
-	*p = x;
+// Using rand() is more secure, because it differs from compiler to compiler, so
+// it is harder to read a protected 8BF plugin.
+// Note that rand() in combination with srand() is deterministic, so it is safe
+// to use it: https://stackoverflow.com/questions/55438293/does-rand-function-in-c-follows-non-determinstc-algorithm
+int randInRange(int min, int max) {
+	// https://stackoverflow.com/questions/15621764/generate-a-random-byte-stream
+	double scale = 1.0 / (RAND_MAX + 1);
+	double range = (double)max - (double)min + 1;
+	return min + (int)(rand() * scale * range);
 }
 
 void obfusc(unsigned char* pparm, size_t size, size_t seed_position) {
 	unsigned char* p;
-	uint32_t x32;
+	size_t i;
 	unsigned int seed;
 
 	seed = (unsigned int)time(0);
+	srand(seed);
 
 	p = pparm;
-	x32 = (uint32_t)seed;
-	_xorshift(&p, &x32, seed_position);
+	for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0,255);
 	*((unsigned int*)p) = seed; // seed is placed at this position. data will lost! (in deobfusc, it will be set to 0x00000000)
 	p += 4;
-	_xorshift(&p, &x32, size - seed_position - 4);
+	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
 }
 
 void deobfusc(unsigned char* pparm, size_t size, size_t seed_position) {
 	unsigned char* p;
-	uint32_t x32;
+	size_t i;
 	unsigned int seed;
 
 	seed = *((unsigned int*)(pparm + seed_position));
+	srand(seed);
 
 	p = pparm;
-	x32 = (uint32_t)seed;
-	_xorshift(&p, &x32, seed_position);
+	for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0, 255);
 	*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
 	p += 4;
-	_xorshift(&p, &x32, size - seed_position - 4);
+	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
 }

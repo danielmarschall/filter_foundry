@@ -33,11 +33,16 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
 		HLock(h);
 		deobfusc((unsigned char*)*h,GetHandleSize(h),OBFUSC_SEED_POS);
+		gdata->obfusc = true;
 	}
 	if(h){
 		HLock(h);
 		res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
 		ReleaseResource(h);
+		gdata->obfusc = false;
+	}
+	if (!res) {
+		gdata->obfusc = false;
 	}
 	return res;
 }
@@ -61,11 +66,15 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
-		if( (readok = readfile(sfr,reason)) )
+		if( (readok = readfile(sfr,reason)) ) {
 			gdata->parmloaded = false;
+			gdata->obfusc = false;
 			// then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
-		else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
-			if(gdata->parm.iProtected){
+		}else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
+			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+				*reason = "Incompatible obfuscation.";
+				return false; // Stop! We know the issue now.
+			}else if(gdata->parm.iProtected){
 				*reason = "The filter is protected.";
 				return false;
 			}else

@@ -219,37 +219,39 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
 				if (!host_preserves_parameters()) {
-					/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
-					   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
-					   Also, all global variables are unloaded, so the plugin cannot preserve any data.
-					   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
-					   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
-					   when the window is opened again. */
-					// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
-					char outfilename[255];
-					char* tempdir;
-					int hash;
-					StandardFileReply sfr;
-					sfr.sfGood = true;
-					sfr.sfReplacing = true;
-					sfr.sfType = PS_FILTER_FILETYPE;
+					if (!gdata->obfusc) { // If the filter is obfuscated, we may not save the formula to the .afs (TODO: just save the ctl/map, but not the r/g/b/a-formulas!)
+						/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
+						   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
+						   Also, all global variables are unloaded, so the plugin cannot preserve any data.
+						   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
+						   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
+						   when the window is opened again. */
+						// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
+						char outfilename[255];
+						char* tempdir;
+						int hash;
+						StandardFileReply sfr;
+						sfr.sfGood = true;
+						sfr.sfReplacing = true;
+						sfr.sfType = PS_FILTER_FILETYPE;
 
-					tempdir = getenv("TMP");
-					#ifdef WIN_ENV
-					if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-					#else
-					if (strlen(tempdir) > 0) strcat(tempdir, "/");
-					#endif
+						tempdir = getenv("TMP");
+						#ifdef WIN_ENV
+						if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+						#else
+						if (strlen(tempdir) > 0) strcat(tempdir, "/");
+						#endif
 
-					hash = (gdata->standalone) ? get_parm_hash(gdata->parm) : 0;
-					sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+						hash = (gdata->standalone) ? get_parm_hash(gdata->parm) : 0;
+						sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
 
-					myc2pstrcpy(sfr.sfFile.name, outfilename);
-					#ifdef WIN_ENV
-					sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
-					#endif
-					sfr.sfScript = 0; // FIXME: is that ok?
-					savefile(&sfr);
+						myc2pstrcpy(sfr.sfFile.name, outfilename);
+						#ifdef WIN_ENV
+						sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
+						#endif
+						sfr.sfScript = 0; // FIXME: is that ok?
+						savefile(&sfr);
+					}
 				}
 
 				/* update stored parameters from new user settings */
@@ -308,25 +310,27 @@ int checkandinitparams(Handle params){
 		// But loadfile() will reset gdata->standalone ...
 		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason, READ_OBFUSC);
 
-		tempdir = getenv("TMP");
-		#ifdef WIN_ENV
-		if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-		#else
-		if (strlen(tempdir) > 0) strcat(tempdir, "/");
-		#endif
+		if (!gdata->obfusc) { // If the filter is obfuscated, we may not save the formula to the .afs (TODO: just save the ctl/map, but not the r/g/b/a-formulas!)
+			tempdir = getenv("TMP");
+			#ifdef WIN_ENV
+			if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+			#else
+			if (strlen(tempdir) > 0) strcat(tempdir, "/");
+			#endif
 
-		hash = (isStandalone) ? get_parm_hash(gdata->parm) : 0;
-		sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+			hash = (isStandalone) ? get_parm_hash(gdata->parm) : 0;
+			sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
 
-		myc2pstrcpy(sfr.sfFile.name, outfilename);
-		#ifdef WIN_ENV
-		sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
-		#endif
-		sfr.sfScript = 0; // FIXME: is that ok?
+			myc2pstrcpy(sfr.sfFile.name, outfilename);
+			#ifdef WIN_ENV
+			sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
+			#endif
+			sfr.sfScript = 0; // FIXME: is that ok?
 
-		if (loadfile(&sfr, &reason)) {
-			gdata->standalone = gdata->parmloaded = isStandalone;
-			return true;
+			if (loadfile(&sfr, &reason)) {
+				gdata->standalone = gdata->parmloaded = isStandalone;
+				return true;
+			}
 		}
 	}
 

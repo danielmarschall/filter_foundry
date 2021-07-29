@@ -45,8 +45,10 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){
-		if( (h = LoadResource(hm,resinfo)) && (pparm = (Ptr)LockResource(h)) )
-			res = readPARM(pparm,&gdata->parm,reason,1 /*Windows format resource*/);
+		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
+			res = readPARM(pparm, &gdata->parm, reason, 1 /*Windows format resource*/);
+			gdata->obfusc = false;
+		}
 	}else if( readobfusc && (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
 		if( (h = LoadResource(hm,resinfo)) && (pparm = (Ptr)LockResource(h)) ){
 			// Fix by DM, 18 Dec 2018:
@@ -57,8 +59,12 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 			memcpy(copy, pparm, resSize);
 			deobfusc((unsigned char*)copy, resSize,OBFUSC_SEED_POS);
 			res = readPARM(copy,&gdata->parm,reason,1);
+			gdata->obfusc = true;
 			free(copy);
 		}
+	}
+	if (!res) {
+		gdata->obfusc = false;
 	}
 	return res;
 }
@@ -69,6 +75,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	// First, try to read the file as AFS/PFF/TXT file
 	if( (readok = readfile(sfr,reason)) ){
+		gdata->obfusc = false;
 		gdata->parmloaded = false;
 	}
 
@@ -77,7 +84,10 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		char name[MAX_PATH+1];
 		if (hm = LoadLibraryEx(myp2cstrcpy(name,sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm,reason,READ_OBFUSC)) {
-				if (gdata->parm.iProtected) {
+				if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+					*reason = _strdup("Incompatible obfuscation.");
+					return false; // Stop! We know the issue now.
+				} else if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");
 					return false; // Stop! We know the issue now.
 				} else {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.0.5 [Work-In-Progress]
+- Changed obfuscation code (now more secure)
+- The feature "Obfuscate" and "Protected" are now merged together.
+	Reason: Obfuscate without protect makes no sense (since everybody can read/load it using FilterFoundry) and
+	protect without obfuscate makes no sense (because you can read the formula using a resource editor and even remove the protect flag with a hex editor)
+
+
 ## 1.7.0.4 [27-Jul-2021]
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
 - Bugfix: Windows Open/Save dialogs: At the title, the first character was missing. Fixed.

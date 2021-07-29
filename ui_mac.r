@@ -500,11 +500,8 @@ resource 'DITL' (ID_BUILDDLG, purgeable) {
 		{332, 303, 350, 389},
 		CheckBox { disabled,"ctl(7)" },
 
-		{372, 21, 388, 101},
-		CheckBox { enabled,"Protect" },
-
-		{372, 111, 388, 211},
-		CheckBox { enabled,"Obfuscate" },
+		{372, 21, 388, 211},
+		CheckBox { enabled,"Protect and obfuscate" },
 
 		{9, 7, 25, 83},
 		StaticText { disabled,"Category:" },

@@ -242,6 +242,8 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 		FSClose(refnum);
 	}else
 		*reason = _strdup("Could not open file.");
+
+	if (res) gdata->obfusc = false;
 	return res;
 }
 
