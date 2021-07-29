@@ -111,8 +111,13 @@ void evalpixel(unsigned char *outp,unsigned char *inp);
 unsigned long printablehash(unsigned long hash);
 size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
-void obfusc(unsigned char* pparm, size_t size);
-void deobfusc(unsigned char* pparm, size_t size);
+
+// Position 48..52 is "unknown2" of Photoshop FilterFactory PARM_T or "unknown1" of Premiere FilterFactory
+// We can assume that it is always 0x00000000, so we place the seed here
+#define OBFUSC_SEED_POS 48
+
+void obfusc(unsigned char* pparm, size_t size, size_t seed_position);
+void deobfusc(unsigned char* pparm, size_t size, size_t seed_position);
 
 Boolean loadfile(StandardFileReply *sfr,char **reason);
 Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc);

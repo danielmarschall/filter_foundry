@@ -55,7 +55,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 			char* copy = (char*)malloc(resSize);
 			if (!copy) return false;
 			memcpy(copy, pparm, resSize);
-			deobfusc((unsigned char*)copy, resSize);
+			deobfusc((unsigned char*)copy, resSize,OBFUSC_SEED_POS);
 			res = readPARM(copy,&gdata->parm,reason,1);
 			free(copy);
 		}

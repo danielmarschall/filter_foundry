@@ -32,7 +32,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	  && readobfusc
 	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
 		HLock(h);
-		deobfusc((unsigned char*)*h,GetHandleSize(h));
+		deobfusc((unsigned char*)*h,GetHandleSize(h),OBFUSC_SEED_POS);
 	}
 	if(h){
 		HLock(h);

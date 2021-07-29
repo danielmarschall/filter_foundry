@@ -61,7 +61,7 @@ typedef struct {   //structure of FF PARM resource
 	long val[8];     //initial values of controls
 	long popDialog;  //1 if need to pop a parameter dialog
 	long unknown1;
-	long unknown2;
+	long unknown2; // Byte 48..52 must be 0 to make obfuscation of FF>=7.0.5 work
 	long unknown3;
 	long map_used[4];   //true if map(n) is used
 	long ctl_used[8];   //true if ctl(n) is used
@@ -83,7 +83,7 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	long singleExpression; //1 if "single expression" is checked (member only available in Premiere)
 	long val[8];    //initial values of controls
 	long popDialog; //1 if need to pop a parameter dialog
-	long unknown1;
+	long unknown1; // Byte 48..52 must be 0 to make obfuscation of FF>=7.0.5 work
 	long unknown2;
 	long unknown3;
 	long map_used[4];   //true if map(n) is used

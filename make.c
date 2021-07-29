@@ -21,6 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <assert.h>
+#include <time.h>
 
 #include "ff.h"
 #include "symtab.h"
@@ -443,21 +444,45 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	return (unsigned char*)aeteptr - (unsigned char*)beginptr; // length of stuff written
 }
 
-void obfusc(unsigned char *pparm, size_t size) {
+void _xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 	size_t i;
-	unsigned char *p;
-	uint32_t x32;
-
-	x32 = 0x95D4A68F; // Hardcoded seed
-	for (i = size, p = pparm; i--;) {
+	unsigned char* x = *p;
+	for (i = 0; i < num; i++) {
 		// https://de.wikipedia.org/wiki/Xorshift
-		x32 ^= x32 << 13;
-		x32 ^= x32 >> 17;
-		x32 ^= x32 << 5;
-		*p++ ^= x32;
+		*x32 ^= *x32 << 13;
+		*x32 ^= *x32 >> 17;
+		*x32 ^= *x32 << 5;
+		*x++ ^= *x32;
 	}
+	*p = x;
 }
 
-void deobfusc(unsigned char* pparm, size_t size) {
-    obfusc(pparm, size);
+void obfusc(unsigned char* pparm, size_t size, size_t seed_position) {
+	unsigned char* p;
+	uint32_t x32;
+	unsigned int seed;
+
+	seed = (unsigned int)time(0);
+
+	p = pparm;
+	x32 = (uint32_t)seed;
+	_xorshift(&p, &x32, seed_position);
+	*((unsigned int*)p) = seed; // seed is placed at this position. data will lost! (in deobfusc, it will be set to 0x00000000)
+	p += 4;
+	_xorshift(&p, &x32, size - seed_position - 4);
+}
+
+void deobfusc(unsigned char* pparm, size_t size, size_t seed_position) {
+	unsigned char* p;
+	uint32_t x32;
+	unsigned int seed;
+
+	seed = *((unsigned int*)(pparm + seed_position));
+
+	p = pparm;
+	x32 = (uint32_t)seed;
+	_xorshift(&p, &x32, seed_position);
+	*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
+	p += 4;
+	_xorshift(&p, &x32, size - seed_position - 4);
 }
