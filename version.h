@@ -22,11 +22,16 @@
 
 Note: Changelog has been moved into the file CHANGELOG.md
 
+For a NEW VERSION, please change:
+- version.h (3 times)
+- Manifest32.xml and Manifest64.xml
+- README.md
+- CHANGELOG.md
+
 */
 
 #define plugInName "FilterFoundry"
 
-// Please also adjust the version in manifest*.xml
 #define VERSION_STR "1.7.0.5"
 #define VERSION_NUM 1,7,0,5
 
