@@ -5,7 +5,7 @@
 - The feature "Obfuscate" and "Protected" are now merged together.
 	Reason: Obfuscate without protect makes no sense (since everybody can read/load it using FilterFoundry) and
 	protect without obfuscate makes no sense (because you can read the formula using a resource editor and even remove the protect flag with a hex editor)
-
+- Standalone plugins: Version info wasn't written correctly when plugin was obfuscated. Fixed.
 
 ## 1.7.0.4 [27-Jul-2021]
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
@@ -15,7 +15,6 @@
 - Bugfix: If you called a standalone filter two times, then the main dialog opened (bug introduced in 1.7.0.3)
 - Ifanview/GIMP can now also work with standalone filters
 - If the user tries to open a protected 8BF file, the error message will now state that it can't be opened because the filter is protected
-
 
 ## 1.7.0.3 [23-Jul-2021]
 - Support BigDocument structure (.psb) (*)

@@ -217,7 +217,6 @@ move lex.yy.c lex_yy.c</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\c.h" />
-    <ClInclude Include="..\cwprefix.h" />
     <ClInclude Include="..\ff.h" />
     <ClInclude Include="..\funcs.h" />
     <ClInclude Include="..\manifest.h" />
@@ -227,22 +226,16 @@ move lex.yy.c lex_yy.c</Command>
     <ClInclude Include="..\preview.h" />
     <ClInclude Include="..\scripting.h" />
     <ClInclude Include="..\symtab.h" />
-    <ClInclude Include="..\telegraphics_common\tt\ae.h" />
     <ClInclude Include="..\telegraphics_common\tt\bufio.h" />
-    <ClInclude Include="..\telegraphics_common\tt\calc_std_state.h" />
     <ClInclude Include="..\telegraphics_common\tt\choosefile.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_string.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_win.h" />
-    <ClInclude Include="..\telegraphics_common\tt\curveto.h" />
     <ClInclude Include="..\telegraphics_common\tt\dbg.h" />
     <ClInclude Include="..\telegraphics_common\tt\dlg.h" />
     <ClInclude Include="..\telegraphics_common\tt\file_compat.h" />
     <ClInclude Include="..\telegraphics_common\tt\file_io.h" />
     <ClInclude Include="..\telegraphics_common\tt\menu.h" />
     <ClInclude Include="..\telegraphics_common\tt\misc.h" />
-    <ClInclude Include="..\telegraphics_common\tt\PAP.h" />
-    <ClInclude Include="..\telegraphics_common\tt\qd.h" />
-    <ClInclude Include="..\telegraphics_common\tt\scroll.h" />
     <ClInclude Include="..\telegraphics_common\tt\sprintf_tiny.h" />
     <ClInclude Include="..\telegraphics_common\tt\str.h" />
     <ClInclude Include="..\telegraphics_common\tt\ui_compat.h" />

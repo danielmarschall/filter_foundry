@@ -98,6 +98,79 @@ int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm) {
 #endif
 }
 
+void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
+	char* soleFilename;
+	LPWSTR changeRequestStr, tmp;
+
+	if (soleFilename = strrchr(dstname, '\\')) {
+		++soleFilename;
+	}
+	else {
+		soleFilename = dstname;
+	}
+
+	// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
+	// You can CHANGE values for any given name
+	// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
+	// You cannot (yet) ADD entries.
+	changeRequestStr = (LPWSTR)malloc(6 * 2 * 100 + 1);
+
+	tmp = changeRequestStr;
+
+	tmp += mbstowcs(tmp, "Comments", 100);
+	tmp++;
+	tmp += mbstowcs(tmp, "Built using Filter Foundry " VERSION_STR, 100);
+	tmp++;
+
+	tmp += mbstowcs(tmp, "CompanyName", 100);
+	tmp++;
+	if (strlen((char*)pparm->author) > 0) {
+		tmp += mbstowcs(tmp, (char*)pparm->author, 100);
+	}
+	else {
+		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
+	}
+	tmp++;
+
+	tmp += mbstowcs(tmp, "LegalCopyright", 100);
+	tmp++;
+	if (strlen((char*)pparm->copyright) > 0) {
+		tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
+	}
+	else {
+		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
+	}
+	tmp++;
+
+	tmp += mbstowcs(tmp, "FileDescription", 100);
+	tmp++;
+	if (strlen((char*)pparm->title) > 0) {
+		tmp += mbstowcs(tmp, (char*)pparm->title, 100);
+	}
+	else {
+		tmp += mbstowcs(tmp, "Untitled filter", 100);
+	}
+	tmp++;
+
+	tmp += mbstowcs(tmp, "OriginalFilename", 100);
+	tmp++;
+	tmp += mbstowcs(tmp, soleFilename, 100);
+	tmp++;
+
+	tmp += mbstowcs(tmp, "License", 100);
+	tmp++;
+	tmp += mbstowcs(tmp, "\b", 100); // \b = remove, since filter is standalone and might have its own license
+	tmp++;
+
+	tmp += mbstowcs(tmp, "", 1);
+
+	if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
+		alertuser(_strdup("UpdateVersionInfoWithHandle failed"), _strdup(""));
+	}
+
+	free(changeRequestStr);
+}
+
 Boolean doresources(HMODULE srcmod,char *dstname){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
@@ -109,8 +182,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
-	LPWSTR changeRequestStr, tmp;
-	char* soleFilename;
+	
 	long event_id;
 
 //      if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))
@@ -142,6 +214,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 			 && (newaete = (Ptr)malloc(4096))
 			 && (pparm = (PARM_T*)malloc(sizeof(PARM_T))) )
 			{
+				// ====== Generate AETE and PIPL
+
 				/* add user-specified title and category to new PiPL */
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
@@ -153,6 +227,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
 				aetesize = aete_generate(newaete, pparm, event_id);
+
+				// ====== Change Pascal strings to C-Strings
 
 				/* convert to C strings for Windows PARM resource */
 				// Don't do it before aete_generate, because they need Pascal strings
@@ -167,6 +243,12 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 
 				manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm);
 
+				// ====== Change version attributes
+
+				changeVersionInfo(dstname, pparm, hupdate);
+
+				// ====== Obfuscate pparm!
+
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;
 					parm_id = OBFUSCDATA_ID;
@@ -175,6 +257,8 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 					parm_type = "PARM";
 					parm_id = PARM_ID;
 				}
+
+				// ====== Save AETE, PIPL, Manifest and PARM/RCDATA
 
 				/* Attention: The resource we have found using FindResource() might have a different
 				   language than the resource we are saving (Neutral), so we might end up having
@@ -189,70 +273,6 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				} else {
 					dbglasterror(_strdup("UpdateResource"));
 				}
-
-				if (soleFilename = strrchr(dstname, '\\')) {
-				    ++soleFilename;
-				} else {
-				    soleFilename = dstname;
-				}
-
-				// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
-				// You can CHANGE values for any given name
-				// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
-				// You cannot (yet) ADD entries.
-				changeRequestStr = (LPWSTR)malloc(6*2*100+1);
-
-				tmp = changeRequestStr ;
-
-				tmp += mbstowcs(tmp, "Comments", 100);
-				tmp++;
-				tmp += mbstowcs(tmp, "Built using Filter Foundry " VERSION_STR, 100);
-				tmp++;
-
-				tmp += mbstowcs(tmp, "CompanyName", 100);
-				tmp++;
-				if (strlen((char*)pparm->author) > 0) {
-					tmp += mbstowcs(tmp, (char*)pparm->author, 100);
-				} else {
-					tmp += mbstowcs(tmp, "\b", 100); // \b = remove
-				}
-				tmp++;
-
-				tmp += mbstowcs(tmp, "LegalCopyright", 100);
-				tmp++;
-				if (strlen((char*)pparm->copyright) > 0) {
-					tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
-				} else {
-					tmp += mbstowcs(tmp, "\b", 100); // \b = remove
-				}
-				tmp++;
-
-				tmp += mbstowcs(tmp, "FileDescription", 100);
-				tmp++;
-				if (strlen((char*)pparm->title) > 0) {
-					tmp += mbstowcs(tmp, (char*)pparm->title, 100);
-				} else {
-					tmp += mbstowcs(tmp, "Untitled filter", 100);
-				}
-				tmp++;
-
-				tmp += mbstowcs(tmp, "OriginalFilename", 100);
-				tmp++;
-				tmp += mbstowcs(tmp, soleFilename, 100);
-				tmp++;
-
-				tmp += mbstowcs(tmp, "License", 100);
-				tmp++;
-				tmp += mbstowcs(tmp, "\b", 100); // \b = remove, since filter is standalone and might have its own license
-				tmp++;
-
-				tmp += mbstowcs(tmp, "", 1);
-
-				if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
-					alertuser(_strdup("UpdateVersionInfoWithHandle failed"),_strdup(""));
-				}
-
-				free(changeRequestStr);
 			}
 
 		}else dbglasterror(_strdup("Find-, Load- or LockResource"));

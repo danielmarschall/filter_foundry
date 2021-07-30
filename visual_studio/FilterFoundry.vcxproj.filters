@@ -18,12 +18,6 @@
     <ClInclude Include="..\c.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\cwprefix.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ff.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\funcs.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -60,13 +54,7 @@
     <ClInclude Include="..\versioninfo_modify_win.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\ae.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\bufio.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\calc_std_state.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\choosefile.h">
@@ -76,9 +64,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\compat_win.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\curveto.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\dbg.h">
@@ -99,15 +84,6 @@
     <ClInclude Include="..\telegraphics_common\tt\misc.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\PAP.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\qd.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\telegraphics_common\tt\scroll.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\sprintf_tiny.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -118,6 +94,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\telegraphics_common\tt\wind.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ff.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
