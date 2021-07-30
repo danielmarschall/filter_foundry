@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.5 [Work-In-Progress]
+## 1.7.0.5 [30-Jul-2021]
 - Changed obfuscation code (now more secure)
 - The feature "Obfuscate" and "Protected" are now merged together.
 	Reason: Obfuscate without protect makes no sense (since everybody can read/load it using FilterFoundry) and

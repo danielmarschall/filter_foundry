@@ -27,8 +27,8 @@ Note: Changelog has been moved into the file CHANGELOG.md
 #define plugInName "FilterFoundry"
 
 // Please also adjust the version in manifest*.xml
-#define VERSION_STR "1.7.0.4"
-#define VERSION_NUM 1,7,0,4
+#define VERSION_STR "1.7.0.5"
+#define VERSION_NUM 1,7,0,5
 
 #define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 
@@ -37,7 +37,7 @@ Note: Changelog has been moved into the file CHANGELOG.md
 #define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM	1,7,0,4
+#define VI_VERS_NUM	1,7,0,5
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Download the latest version here: " PROJECT_URL "\0"	/* null terminated Comments field */
 #define VI_COMPANY_NAME	"ViaThinkSoft, Telegraphics Pty Ltd\0"
