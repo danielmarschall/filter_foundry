@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.6 [Work-In-Progress]
+## 1.7.0.6 [01-Aug-2021]
 - .pff files (Premiere Filter Factory) are now correctly loaded
 - Obfuscated standalone filters can now recall the previous settings on GIMP/Irfanview (was disabled in 1.7.0.5, because the temporaray .afs file leaked the obfuscated code).
 

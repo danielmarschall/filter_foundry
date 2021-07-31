@@ -11,7 +11,7 @@ Important/Bugs
 Minor priority stuff or ideas
 -----------------------------
 
-* Win10/PS2019: It happened to me that the messagebox "Filter created successfully" opened BEHIND Photoshop, so you had to press Alt+Tab to close the window! We must make sure that it is modal!
+* Win10+PS2019: It happened to me that the messagebox "Filter created successfully" opened BEHIND Photoshop, so you had to press Alt+Tab to close the window! We must make sure that it is modal!
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
