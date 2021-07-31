@@ -34,6 +34,9 @@
 // For debugging, we can simulate it here
 //#define DEBUG_SIMULATE_GIMP
 
+// Used to find out which host signatures and memory settings a plugin host has
+//#define SHOW_HOST_DEBUG
+
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
@@ -92,11 +95,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	EnterCodeResource();
 
-	/*
+	#ifdef SHOW_HOST_DEBUG
 	char* s = (char*)malloc(512);
 	sprintf(s, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
 	simplealert(s);
-	*/
+	#endif
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
 		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 (yes, that's possible,
@@ -219,43 +222,65 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
 			if( maindialog(pb) ){
 				if (!host_preserves_parameters()) {
-					if (!gdata->obfusc) { // If the filter is obfuscated, we may not save the formula to the .afs (TODO: just save the ctl/map, but not the r/g/b/a-formulas!)
-						/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
-						   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
-						   Also, all global variables are unloaded, so the plugin cannot preserve any data.
-						   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
-						   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
-						   when the window is opened again. */
-						// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
-						char outfilename[255];
-						char* tempdir;
-						int hash;
-						StandardFileReply sfr;
-						sfr.sfGood = true;
-						sfr.sfReplacing = true;
-						sfr.sfType = PS_FILTER_FILETYPE;
+					/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
+					   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
+					   Also, all global variables are unloaded, so the plugin cannot preserve any data.
+					   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
+					   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
+					   when the window is opened again. */
+					// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
+					char outfilename[255];
+					char* tempdir;
+					int hash;
+					StandardFileReply sfr;
+					char* bakexpr[4];
 
-						tempdir = getenv("TMP");
-						#ifdef WIN_ENV
-						if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-						#else
-						if (strlen(tempdir) > 0) strcat(tempdir, "/");
-						#endif
+					sfr.sfGood = true;
+					sfr.sfReplacing = true;
+					sfr.sfType = PS_FILTER_FILETYPE;
 
-						hash = (gdata->standalone) ? get_parm_hash(gdata->parm) : 0;
-						sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+					tempdir = getenv("TMP");
+					#ifdef WIN_ENV
+					if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+					#else
+					if (strlen(tempdir) > 0) strcat(tempdir, "/");
+					#endif
 
-						myc2pstrcpy(sfr.sfFile.name, outfilename);
-						#ifdef WIN_ENV
-						sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
-						#endif
-						sfr.sfScript = 0; // FIXME: is that ok?
-						savefile(&sfr);
+					hash = (gdata->standalone) ? get_parm_hash(gdata->parm) : 0;
+					sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+
+					myc2pstrcpy(sfr.sfFile.name, outfilename);
+					#ifdef WIN_ENV
+					sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs") + 1);
+					#endif
+					sfr.sfScript = 0; // FIXME: is that ok?
+
+					// We only want the parameters (ctl,map) in the temporary .afs file
+					// It is important to remove the expressions, otherwise they would be
+					// revealed in the temporary files.
+					if (gdata->standalone) {
+						bakexpr[0] = expr[0];
+						bakexpr[1] = expr[1];
+						bakexpr[2] = expr[2];
+						bakexpr[3] = expr[3];
+						expr[0] = _strdup("r");
+						expr[1] = _strdup("g");
+						expr[2] = _strdup("b");
+						expr[3] = _strdup("a");
 					}
-				}
 
-				/* update stored parameters from new user settings */
-				saveparams(pb->parameters);
+					savefile(&sfr);
+
+					if (gdata->standalone) {
+						free(expr[0]); expr[0] = bakexpr[0];
+						free(expr[1]); expr[1] = bakexpr[1];
+						free(expr[2]); expr[2] = bakexpr[2];
+						free(expr[3]); expr[3] = bakexpr[3];
+					}
+				} else {
+					/* update stored parameters from new user settings */
+					saveparams(pb->parameters);
+				}
 			}else
 				e = userCanceledErr;
 		}
@@ -301,6 +326,8 @@ int checkandinitparams(Handle params){
 		int hash;
 		Boolean isStandalone;
 		StandardFileReply sfr;
+		char* bakexpr[4];
+
 		sfr.sfGood = true;
 		sfr.sfReplacing = true;
 		sfr.sfType = PS_FILTER_FILETYPE;
@@ -310,27 +337,41 @@ int checkandinitparams(Handle params){
 		// But loadfile() will reset gdata->standalone ...
 		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason, READ_OBFUSC);
 
-		if (!gdata->obfusc) { // If the filter is obfuscated, we may not save the formula to the .afs (TODO: just save the ctl/map, but not the r/g/b/a-formulas!)
-			tempdir = getenv("TMP");
-			#ifdef WIN_ENV
-			if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-			#else
-			if (strlen(tempdir) > 0) strcat(tempdir, "/");
-			#endif
+		tempdir = getenv("TMP");
+		#ifdef WIN_ENV
+		if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+		#else
+		if (strlen(tempdir) > 0) strcat(tempdir, "/");
+		#endif
 
-			hash = (isStandalone) ? get_parm_hash(gdata->parm) : 0;
-			sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+		hash = (isStandalone) ? get_parm_hash(gdata->parm) : 0;
+		sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
 
-			myc2pstrcpy(sfr.sfFile.name, outfilename);
-			#ifdef WIN_ENV
-			sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs"));
-			#endif
-			sfr.sfScript = 0; // FIXME: is that ok?
+		myc2pstrcpy(sfr.sfFile.name, outfilename);
+		#ifdef WIN_ENV
+		sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs") + 1);
+		#endif
+		sfr.sfScript = 0; // FIXME: is that ok?
 
-			if (loadfile(&sfr, &reason)) {
-				gdata->standalone = gdata->parmloaded = isStandalone;
-				return true;
+		// We only want the parameters (ctl,map) in the temporary .afs file
+		if (isStandalone) {
+			bakexpr[0] = my_strdup(expr[0]);
+			bakexpr[1] = my_strdup(expr[1]);
+			bakexpr[2] = my_strdup(expr[2]);
+			bakexpr[3] = my_strdup(expr[3]);
+		}
+
+		if (loadfile(&sfr, &reason)) {
+			gdata->standalone = gdata->parmloaded = isStandalone;
+
+			if (isStandalone) {
+				free(expr[0]); expr[0] = bakexpr[0];
+				free(expr[1]); expr[1] = bakexpr[1];
+				free(expr[2]); expr[2] = bakexpr[2];
+				free(expr[3]); expr[3] = bakexpr[3];
 			}
+
+			return true;
 		}
 	}
 
@@ -390,12 +431,6 @@ Boolean host_preserves_parameters() {
 
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 	if (gpb->hostSig == HOSTSIG_IRFANVIEW) return false;
-
-	/*
-	char x[100];
-	sprintf(x, "Host Signature: %u", gpb->hostSig);
-	simplealert(x);
-	*/
 
 	// We just assume the other hosts preserve the parameters
 	return true;
@@ -543,9 +578,8 @@ void RequestNext(FilterRecordPtr pb,long toprow){
 }
 
 void DoStart(FilterRecordPtr pb){
-//dbg("DoStart");
-			/* if src() or rad() functions are used, random access to the image data is required,
-			   so we must request the entire image in a single chunk. */
+	/* Global variable "needall": if src() or rad() functions are used, random access to the image data is required,
+	   so we must request the entire image in a single chunk, otherwise we will use chunksize "CHUNK_ROWS". */
 	if (HAS_BIG_DOC(pb)) {
 		chunksize = needall ? (BIGDOC_FILTER_RECT(pb).bottom - BIGDOC_FILTER_RECT(pb).top) : CHUNK_ROWS;
 		toprow = BIGDOC_FILTER_RECT(pb).top;
