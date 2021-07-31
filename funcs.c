@@ -19,7 +19,7 @@
 */
 
 #ifdef MAC_ENV
-	#include <fp.h>
+#include <fp.h>
 #endif
 
 #include <math.h>
@@ -28,6 +28,7 @@
 #ifndef PARSERTEST
 #include "ff.h"
 #endif
+
 #include "funcs.h"
 #include "y.tab.h"
 
@@ -93,9 +94,9 @@ static value_type rawsrc(value_type x,value_type y,value_type z){
 /* src(x,y,z) Channel z for the pixel at coordinates x,y.
  * Coordinates are relative to filtered area (selection). */
 value_type ff_src(value_type x,value_type y,value_type z){
-#ifdef PARSERTEST
+	#ifdef PARSERTEST
 	return 0;
-#else
+	#else
 	if(x < 0)
 		x = 0;
 	else if(x >= var['X'])
@@ -106,7 +107,7 @@ value_type ff_src(value_type x,value_type y,value_type z){
 		y = var['Y']-1;
 	return z >= 0 && z < var['Z'] ?
 		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
-#endif
+	#endif
 }
 
 /* rad(d,m,z) Channel z in the source image, which is m units away,
@@ -324,9 +325,9 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m31,value_type m32,value_type m33,
 				  value_type d)
 {
-#ifdef PARSERTEST
+	#ifdef PARSERTEST
 	return 0;
-#else
+	#else
 	long total;
 	int x, y, z;
 	// shift x,y from selection-relative to image relative
@@ -347,7 +348,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 		total = 0;
 
 	return d ? total/d : 0;
-#endif
+	#endif
 }
 
 /* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).

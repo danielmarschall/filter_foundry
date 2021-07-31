@@ -33,7 +33,7 @@
 // prototype for a function included in Carbon's stdlib and declared in /usr/include/string.h
 // but missing from MPW Universal header string.h
 #ifndef _STRING_H_
-	char    *strnstr(const char *, const char *, size_t);
+	char *strnstr(const char *, const char *, size_t);
 #endif
 
 static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
@@ -44,7 +44,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	Str255 title;
 	long event_id;
 
-#ifdef MACMACHO
+	#ifdef MACMACHO
 	FSRef inref,outref;
 	// work with resources in data fork
 	if( !(e = FSpMakeFSRef(srcplug,&inref))
@@ -52,7 +52,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	 && ((e = FSpMakeFSRef(rsrccopy,&outref))
 		 || (e = FSOpenResourceFile(&outref,0/*forkNameLength*/,NULL/*forkName*/,fsWrPerm,&dstrn))) )
 		CloseResFile(srcrn);
-#else
+	#else
 	// ordinary resource fork files
 	srcrn = FSpOpenResFile(srcplug,fsRdPerm);
 	if(srcrn != -1){
@@ -62,7 +62,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			CloseResFile(srcrn);
 		}
 	}else e = ResError();
-#endif
+	#endif
 
 	if(!e){
 		/* create a new PiPL resource for the standalone plugin,
@@ -280,11 +280,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 	char reason[0x100] = {0};
 
 	if(!(e = GetFileLocation(CurResFile(),&plugvol,&plugdir,plugname))){
-#ifdef MACMACHO
+		#ifdef MACMACHO
 		e = make_bundle(sfr,plugvol,plugdir,plugname,reason);
-#else
+		#else
 		e = make_singlefile(sfr,plugvol,plugdir,plugname);
-#endif
+		#endif
 	}
 
 	if(e && e != userCanceledErr) {

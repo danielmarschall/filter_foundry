@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -38,7 +38,7 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 	Boolean f;
 	short *p,*q,*r,*l1,*l2,*t,list1[100],list2[100],last_top,cur_top;
 	RgnHandle temp_rgn;
-	
+
 	CopyRgn(rgn,temp_rgn = NewRgn());
 	f = true;
 	l1 = list1;
@@ -62,7 +62,7 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 					rct.right = q[1];
 					(*func)(&rct);
 				}
-				
+
 				q = l1;
 				r = l2;
 				for(;;)
@@ -74,7 +74,7 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 						*r = FLAG;
 						break;
 					}else q++;
-			
+
 				t = l1;
 				l1 = l2;
 				l2 = t;
@@ -124,7 +124,7 @@ Boolean only_greys(CTabHandle ct){ ColorSpec *cs; long i;
 	return true;
 }
 
-Boolean has_colour_QD(void){ 
+Boolean has_colour_QD(void){
 //	SysEnvRec w;
 //	return !SysEnvirons(curSysEnvVers,&w) && w.hasColorQD; // works without Gestalt
 	return gestalt_attr(gestaltQuickdrawFeatures,gestaltHasColor);

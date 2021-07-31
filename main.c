@@ -1,5 +1,5 @@
 /*
-	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
 	Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
@@ -85,13 +85,14 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	static Boolean premiereWarnedOnce = false;
 	OSErr e = noErr;
 	char *reason;
-#ifdef WIN_ENV
+
+	#ifdef WIN_ENV
 	// For Windows, we use an activation context to enforce that our Manifest resource will
 	// be used. This allows us to use Visual Styles, even if the host application does not
 	// support it.
 	ManifestActivationCtx manifestVars;
 	BOOL activationContextUsed;
-#endif
+	#endif
 
 	EnterCodeResource();
 

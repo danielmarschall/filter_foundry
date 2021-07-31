@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -65,7 +65,7 @@ Point centred(short id){ DialogTHndl t; Rect s;
 
 /* dialog utilities */
 
-Handle item_handle(DialogPtr d,short i){ 
+Handle item_handle(DialogPtr d,short i){
 	short kind;
 	Handle item;
 	Rect box;
@@ -74,15 +74,15 @@ Handle item_handle(DialogPtr d,short i){
 	return item;
 }
 
-void get_item_rect(DialogPtr d,short i,Rect*r){ 
+void get_item_rect(DialogPtr d,short i,Rect*r){
 	short kind;
 	Handle item;
 
 	GetDialogItem(d,i,&kind,&item,r);
 }
 
-void inval_item(DialogPtr d,short i){ 
-	Rect r; 
+void inval_item(DialogPtr d,short i){
+	Rect r;
 	//GrafPtr gp;
 	get_item_rect(d,i,&r);
 	//GetPort(&gp); 	SetPort(d);
@@ -185,7 +185,7 @@ USER_ITEM(grey_item){
 	RgnHandle rgn;
 	DeviceLoopDrawingUPP proc = NewDeviceLoopDrawingUPP(grey_item_dldp);
 	GrafPtr gp;
-	
+
 	GetPort(&gp);
 	SetPort((GrafPtr)GetWindowPort(GetDialogWindow(theDialog)));
 
@@ -193,7 +193,7 @@ USER_ITEM(grey_item){
 	RectRgn(rgn = NewRgn(),&r);
 	DeviceLoop(rgn, proc, (long)&r, 0);
 	DisposeRgn(rgn);
-	
+
 	SetPort(gp);
 
 	DisposeDeviceLoopDrawingUPP(proc);
@@ -209,7 +209,7 @@ USER_ITEM(label_frame_item){ Rect r; RgnHandle rgn,rgn2;
 	// draws a single-pixel frame around the item,
 	// leaving out the rectangle of the previous item
 	// (which is usually the label for the frame)
-	
+
 	GetClip(rgn = NewRgn());
 
 	get_item_rect(theDialog,itemNo-1,&r);
@@ -263,43 +263,43 @@ similar code for any command-key combination (like in MenuKey):
 
 Boolean WasCancel(EventRecord *theEvent)
 {
-    short keyCode;
-    long state = 0L, test;
-    unsigned long keys;
-    
-    if(!(theEvent->modifiers & cmdKey))
-        return(false);
-    keyCode = (theEvent->modifiers & 0xFE00) |
-              ((theEvent->message & keyCodeMask) >> 8);
-    keys = KeyTranslate((Ptr)GetScriptManagerVariable(smKCHRCache),
-                        keyCode, &state);
-    return(((Byte)keys == '.') || ((Byte)(keys >>= 16) == '.'));
+	short keyCode;
+	long state = 0L, test;
+	unsigned long keys;
+
+	if(!(theEvent->modifiers & cmdKey))
+		return(false);
+	keyCode = (theEvent->modifiers & 0xFE00) |
+	          ((theEvent->message & keyCodeMask) >> 8);
+	keys = KeyTranslate((Ptr)GetScriptManagerVariable(smKCHRCache),
+	                    keyCode, &state);
+	return(((Byte)keys == '.') || ((Byte)(keys >>= 16) == '.'));
 }
 
 Boolean WasCancelSystem6or7(EventRecord *theEvent)
 {
-    short keyCode, rsrcID, scriptID;
-    Ptr kchrPtr;
-    Handle kchrRsrc = nil;
-    long state = 0L;
-    unsigned long keys;
-    
-    if(!(theEvent->modifiers & cmdKey))
-        return(false);
-    keyCode = (theEvent->modifiers & 0xFE00) |
-              ((theEvent->message & keyCodeMask) >> 8);
-    if((kchrPtr = (Ptr)GetScriptManagerVariable(smKCHRCache)) == nil) {
-        scriptID = GetScriptManagerVariable(smKeyScript);
-        rsrcID = GetScriptVariable(scriptID, smScriptKeys);
-        kchrRsrc = GetResource('KCHR', rsrcID);
-        if(kchrRsrc != nil)
-            kchrPtr = *kchrRsrc;
-    }
-    if(kchrPtr != nil)
-        keys = KeyTranslate(kchrPtr, keyCode, &state);
-    if(kchrRsrc != nil)
-        ReleaseResource(kchrRsrc);
-    return(((Byte)keys == '.') || ((Byte)(keys >>= 16) == '.'));
+	short keyCode, rsrcID, scriptID;
+	Ptr kchrPtr;
+	Handle kchrRsrc = nil;
+	long state = 0L;
+	unsigned long keys;
+
+	if(!(theEvent->modifiers & cmdKey))
+		return(false);
+	keyCode = (theEvent->modifiers & 0xFE00) |
+	          ((theEvent->message & keyCodeMask) >> 8);
+	if((kchrPtr = (Ptr)GetScriptManagerVariable(smKCHRCache)) == nil) {
+		scriptID = GetScriptManagerVariable(smKeyScript);
+		rsrcID = GetScriptVariable(scriptID, smScriptKeys);
+		kchrRsrc = GetResource('KCHR', rsrcID);
+		if(kchrRsrc != nil)
+			kchrPtr = *kchrRsrc;
+	}
+	if(kchrPtr != nil)
+		keys = KeyTranslate(kchrPtr, keyCode, &state);
+	if(kchrRsrc != nil)
+		ReleaseResource(kchrRsrc);
+	return(((Byte)keys == '.') || ((Byte)(keys >>= 16) == '.'));
 }
 // Pete Resnick    (...so what is a mojo, and why would one be rising?)
 #endif
@@ -357,7 +357,7 @@ FILTER(filter_buttons){ int i=0,j; char c; Str255 s; WindowPtr w; Boolean f = fa
 /*	It would be nice to highlight the button until the user releases the key,
 	but if the key was released before the event mask is set to include key-up events,
 	the event won't be posted, and the button stays highlighted until a key is next released.
-	
+
 	The easy solution is to enable key-up events when the application starts up;
 	however, I'm not sure that the extra code to do this
 		*(short*)SysEvtMask |= keyUpMask

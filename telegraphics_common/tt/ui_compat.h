@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library for Adobe(R) plugins
+    This file is part of a common library for Adobe(R) plugins
     Copyright (C) 2002-2010 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -38,7 +38,7 @@
 		PixMapHandle pm;
 	} *BITMAPREF;
 	typedef Rect UIRECT;
-	
+
 	#define LOCKBITMAP(pb) LockPixels(pb->pm)
 	#define UNLOCKBITMAP(pb) UnlockPixels(pb->pm)
 	#define ROWBYTES(pb) GetPixRowBytes(pb->pm)
@@ -95,7 +95,7 @@
 
 	#define INVALWINDOWRECT(dp,rp) InvalWindowRect(GetDialogWindow(dp),rp)
 	#define SYSBEEP SysBeep
-		
+
 	#define ERASERECT EraseRect
 
 	#if TARGET_CPU_68K
@@ -133,7 +133,7 @@
 	void menuaddcstr(CTLREF m,char *s);
 
 	enum{IDOK = ok,IDCANCEL = cancel};
-	
+
 #else
 	#include <windows.h>
 	#include <windowsx.h>
@@ -156,9 +156,9 @@
 	#define BASEADDR(pb) (pb)->pbits
 
 	#define ENABLEDLGITEM(d,i) EnableWindow(GetDlgItem(d,i),TRUE)
-	#define DISABLEDLGITEM(d,i) EnableWindow(GetDlgItem(d,i),FALSE) 
+	#define DISABLEDLGITEM(d,i) EnableWindow(GetDlgItem(d,i),FALSE)
 	#define ENABLECONTROL(c) EnableWindow(c,TRUE)
-	#define DISABLECONTROL(c) EnableWindow(c,FALSE) 
+	#define DISABLECONTROL(c) EnableWindow(c,FALSE)
 	#define SETDLGITEMINT SetDlgItemInt
 	#define GETDLGITEMINT GetDlgItemInt
 	#define SELECTDLGITEMTEXT(d,i,start,end) \
@@ -168,10 +168,10 @@
 	#define ISDLGBUTTONCHECKED IsDlgButtonChecked
 	#define CHECKDLGBUTTON CheckDlgButton
 	#define SETBUTTONVALUE(c,v) SendMessage(c,BM_SETCHECK,v,0)
-//	#define HideDialogItem SendDlgItemMessage(d,i,SW_HIDE,0,0) //ShowWindow(GetDlgItem(d,i),SW_HIDE) 
+//	#define HideDialogItem SendDlgItemMessage(d,i,SW_HIDE,0,0) //ShowWindow(GetDlgItem(d,i),SW_HIDE)
 //	#define ShowDialogItem SendDlgItemMessage(d,i,SW_SHOW,0,0)
-	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE) 
-	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW) 
+	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
+	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
 	#define GETSLIDERVALUE(d,i) (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
 	#define SETSLIDERVALUE(d,i,v) SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)

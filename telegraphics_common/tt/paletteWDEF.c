@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2009 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ WDEF(main){
 #define w theWindow
 	enum{INDENT=3,TITLEBAR=10};
 	Rect fr,wr,*rp,ga;
-	
+
 	rp = &w->port.portBits.bounds;
 	wr = w->port.portRect;
 	OffsetRect(&wr,-rp->left,-rp->top);

@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library for Adobe(R) Photoshop(R) plugins
+    This file is part of a common library for Adobe(R) Photoshop(R) plugins
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -39,13 +39,13 @@ typedef struct StandardFileReply {
 #ifdef WIN_ENV
 	WORD nFileExtension ;
 	/* http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/CommonDialogBoxLibrary/CommonDialogBoxReference/CommonDialogBoxStructures/OPENFILENAME.asp
-		Specifies the zero-based offset, in TCHAR s, from the beginning of the path to the file name extension
-		in the string pointed to by lpstrFile . For the ANSI version, this is the number of bytes;
-		for the Unicode version, this is the number of characters. For example, if lpstrFile points to
-		the following string, "c:\dir1\dir2\file.ext", this member contains the value 18.
-		If the user did not type an extension and lpstrDefExt is NULL, this member specifies an offset
-		to the terminating NULL character. If the user typed "." as the last character in the file name,
-		this member specifies zero.  */
+	   Specifies the zero-based offset, in TCHAR s, from the beginning of the path to the file name extension
+	   in the string pointed to by lpstrFile . For the ANSI version, this is the number of bytes;
+	   for the Unicode version, this is the number of characters. For example, if lpstrFile points to
+	   the following string, "c:\dir1\dir2\file.ext", this member contains the value 18.
+	   If the user did not type an extension and lpstrDefExt is NULL, this member specifies an offset
+	   to the terminating NULL character. If the user typed "." as the last character in the file name,
+	   this member specifies zero.  */
 #endif
 } StandardFileReply;
 

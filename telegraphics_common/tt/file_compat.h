@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-2010 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include "compat_string.h"
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){
+                        OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){
 	return choosefile(prompt,sfr,reply,types[0],lpstrFilter,hwndOwner);
 }
 
@@ -56,22 +56,21 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 		myc2pstrcpy(sfr->sfFile.name,file);
 		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
-	}
-#ifdef DEBUG
-	else{
+	}else{
+		#ifdef DEBUG
 		char s[0x10];
 		sprintf(s,"GetOpenFileName(): error %d",CommDlgExtendedError());
 		dbg(s);
+		#endif
 	}
-#endif
 
 	return sfr->sfGood = false;
 }
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
-				NavReplyRecord *reply,StandardFileReply *sfr,
-				const char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
-				HWND hwndOwner){
+                NavReplyRecord *reply,StandardFileReply *sfr,
+                const char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
+                HWND hwndOwner){
 	OPENFILENAME ofn;
 	char file[MAX_PATH];
 	char title[0x100];
@@ -91,14 +90,13 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 	if(GetSaveFileName(&ofn)){
 		myc2pstrcpy(sfr->sfFile.name,file);
 		return sfr->sfGood = true;
-	}
-#ifdef DEBUG
-	else{
+	}else{
+		#ifdef DEBUG
 		char s[0x10];
 		sprintf(s,"GetSaveFileName(): error %d",CommDlgExtendedError());
 		dbg(s);
+		#endif
 	}
-#endif
 
 	return sfr->sfGood = false;
 }

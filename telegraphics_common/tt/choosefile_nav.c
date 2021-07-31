@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -152,12 +152,12 @@ pascal Boolean myFilterProc(AEDesc *theItem, void *info, void *callBackUD, NavFi
 		return e || theItem->descriptorType != typeFSS || theInfo->isFolder
 			|| matchextfilter(fss.name,(struct exts_types*)callBackUD)
 			|| matchtypelist(theInfo,(struct exts_types*)callBackUD);
-  }
-  return true;
+	}
+	return true;
 }
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,const char *lpstrFilter)
+                        OSType types[],int ntypes,const char *lpstrFilter)
 {
 	//NavTypeListHandle tl = (NavTypeListHandle)NewHandle(sizeof(NavTypeList) + ntypes*sizeof(OSType));
 	OSErr e;
@@ -187,7 +187,7 @@ Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *
 			sfr->sfScript = reply->keyScript;
 			sfr->sfGood = true;
 		}
-//        NavDisposeReply(&reply); // caller must dispose
+		// NavDisposeReply(&reply); // caller must dispose
 	}
 
 	DisposeNavObjectFilterUPP(filter_upp);
@@ -195,7 +195,7 @@ Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *
 }
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,
-				   NavReplyRecord *reply,OSType type,const char *lpstrFilter)
+                   NavReplyRecord *reply,OSType type,const char *lpstrFilter)
 {
 	return choosefiletypes(prompt,sfr,reply,&type,1,lpstrFilter);
 }
@@ -217,14 +217,14 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 	dopts.dialogOptionFlags |= kNavNoTypePopup;
 	dopts.dialogOptionFlags &= ~kNavAllowStationery;
 	PLstrcpy(dopts.savedFileName,fname);          /* default name for text box in NavPutFile (or null string for default) */
-/* in two minds whether to append default extension or not, on Mac; skip for now.
+	/* in two minds whether to append default extension or not, on Mac; skip for now.
 	if(lpstrDefExt && fname[0]){
 		dopts.savedFileName[++*dopts.savedFileName] = '.';
 		memcpy(dopts.savedFileName+1+*dopts.savedFileName,lpstrDefExt,strlen(lpstrDefExt));
 		*dopts.savedFileName += strlen(lpstrDefExt);
 	}
-*/
-	PLstrcpy(dopts.message,prompt);                /* custom message prompt (or null string for default) */
+	*/
+	PLstrcpy(dopts.message,prompt); /* custom message prompt (or null string for default) */
 
 	if( !(e = NavPutFile(NULL,reply,&dopts,NULL,fileType,fileCreator,NULL)) && reply->validRecord ){
 		if( !(e = AEGetNthPtr(&(reply->selection), 1, typeFSS,

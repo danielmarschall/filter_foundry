@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -52,12 +52,12 @@ ULONGLONG _GetTickCount64() {
 }
 
 typedef HANDLE(__stdcall *f_BeginUpdateResourceA)(
-  LPCSTR pFileName,
-  BOOL   bDeleteExistingResources
+	LPCSTR pFileName,
+	BOOL   bDeleteExistingResources
 );
 HANDLE _BeginUpdateResource/*A*/(
-  LPCSTR pFileName,
-  BOOL   bDeleteExistingResources
+	LPCSTR pFileName,
+	BOOL   bDeleteExistingResources
 ) {
 	HMODULE hLib;
 	f_BeginUpdateResourceA fBeginUpdateResourceA;
@@ -75,13 +75,13 @@ HANDLE _BeginUpdateResource/*A*/(
 // ---------------------------------
 
 typedef BOOL(__stdcall *f_EndUpdateResourceA)(
-  HANDLE hUpdate,
-  BOOL   fDiscard
+	HANDLE hUpdate,
+	BOOL   fDiscard
 );
 
 BOOL _EndUpdateResource/*A*/(
-  HANDLE hUpdate,
-  BOOL   fDiscard
+	HANDLE hUpdate,
+	BOOL   fDiscard
 ) {
 	HMODULE hLib;
 	f_EndUpdateResourceA fEndUpdateResourceA;
@@ -99,20 +99,20 @@ BOOL _EndUpdateResource/*A*/(
 // ---------------------------------
 
 typedef BOOL(__stdcall *f_UpdateResourceA)(
-  HANDLE hUpdate,
-  LPCSTR lpType,
-  LPCSTR lpName,
-  WORD   wLanguage,
-  LPVOID lpData,
-  DWORD  cb
+	HANDLE hUpdate,
+	LPCSTR lpType,
+	LPCSTR lpName,
+	WORD   wLanguage,
+	LPVOID lpData,
+	DWORD  cb
 );
 BOOL _UpdateResource/*A*/(
-  HANDLE hUpdate,
-  LPCSTR lpType,
-  LPCSTR lpName,
-  WORD   wLanguage,
-  LPVOID lpData,
-  DWORD  cb
+	HANDLE hUpdate,
+	LPCSTR lpType,
+	LPCSTR lpName,
+	WORD   wLanguage,
+	LPVOID lpData,
+	DWORD  cb
 ) {
 	HMODULE hLib;
 	f_UpdateResourceA fUpdateResourceA;

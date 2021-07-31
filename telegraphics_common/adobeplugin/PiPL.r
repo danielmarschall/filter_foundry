@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library for Adobe(R) plugins
+    This file is part of a common library for Adobe(R) plugins
     Copyright (C) 2002-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,26 @@
 #if 0
 //// from SPPiPL.h
 
-#define PIAdobeVendorID				'ADBE'
-#define PIKindProperty				'kind'		/* 4-byte value, eg. PIAdobeVendorID */
-#define PISPVersionProperty			'ivrs'		/* long */
+#define PIAdobeVendorID                 'ADBE'
+#define PIKindProperty                  'kind'  /* 4-byte value, eg. PIAdobeVendorID */
+#define PISPVersionProperty             'ivrs'  /* long */
 
-#define PIExportsProperty			'expt'
-#define PI68KCodeProperty			'm68k'
-#define PIPowerPCCodeProperty		'pwpc'
-#define PIPowerPCCodeResProperty	'ppcR'
-#define PIWin32X86CodeProperty  	'wx86'
-#define PIWin16X86CodeProperty  	'fx86'
+#define PIExportsProperty               'expt'
+#define PI68KCodeProperty               'm68k'
+#define PIPowerPCCodeProperty           'pwpc'
+#define PIPowerPCCodeResProperty        'ppcR'
+#define PIWin32X86CodeProperty          'wx86'
+#define PIWin16X86CodeProperty          'fx86'
 
-#define PIDestinationHeapProperty 	'heap'		/* Mac PPC only.  If non-existent, loads in */
-#define PILoadInAppHeap				(1L<<0)		/*  host default heap. If 0, loads in sys heap. */
+#define PIDestinationHeapProperty       'heap'   /* Mac PPC only.  If non-existent, loads in */
+#define PILoadInAppHeap                 (1L<<0)  /*  host default heap. If 0, loads in sys heap. */
 
-#define PIPluginNameProperty		'pinm'
+#define PIPluginNameProperty            'pinm'
 
-#define PIConditionalMessages		'AcpM'		/* and other flags */
-#define	PIAcceptsPropertyMessage	(1L<<0)
-#define	PISkipShutDownMessage		(1L<<1)
-#define PIAcceptsPurgeCachesMessage	(1L<<2)
+#define PIConditionalMessages           'AcpM'   /* and other flags */
+#define	PIAcceptsPropertyMessage        (1L<<0)
+#define	PISkipShutDownMessage           (1L<<1)
+#define PIAcceptsPurgeCachesMessage     (1L<<2)
 
 #define kCurrentPiPLVersion 0
 

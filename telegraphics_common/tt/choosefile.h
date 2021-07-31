@@ -21,19 +21,18 @@
 #define CHOOSEFILE_H
 
 #ifdef macintosh
-
-  #ifdef __GNUC__ // FIXME: this isn't the right define
-    typedef struct StandardFileReply {
-      Boolean             sfGood;
-      Boolean             sfReplacing;
-      OSType          sfType;
-      FSSpec              sfFile;
-      ScriptCode        sfScript;
-    } StandardFileReply;
-  #else
-  	#include <standardfile.h>
-  	#include <filetypesandcreators.h>
-  #endif
+	#ifdef __GNUC__ // FIXME: this isn't the right define
+		typedef struct StandardFileReply {
+			Boolean         sfGood;
+			Boolean         sfReplacing;
+			OSType          sfType;
+			FSSpec          sfFile;
+			ScriptCode      sfScript;
+		} StandardFileReply;
+	#else
+		#include <standardfile.h>
+		#include <filetypesandcreators.h>
+	#endif
 	#include <Navigation.h> // this header is not in CW Pro 1
 #else
 	#include "compat_win.h"
@@ -41,26 +40,26 @@
 
 #ifndef __NAVIGATION__
 	typedef struct NavReplyRecord {
-	  ScriptCode          keyScript;
+		ScriptCode keyScript;
 	} NavReplyRecord;
 #endif
 
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
-							 OSType tlist[], StringPtr extlist[],Boolean *premult);
+                             OSType tlist[], StringPtr extlist[],Boolean *premult);
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,const char *lpstrFilter
-		   				#ifdef _WIN32
-		   				,HWND hwndOwner
-		   				#endif /* _WIN32 */
-						);
+                        OSType types[],int ntypes,const char *lpstrFilter
+                        #ifdef _WIN32
+                        ,HWND hwndOwner
+                        #endif /* _WIN32 */
+);
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,
-				   NavReplyRecord *reply,OSType type,const char *lpstrFilter
-	   				#ifdef _WIN32
-	   				,HWND hwndOwner
-	   				#endif /* _WIN32 */
-				   );
+                   NavReplyRecord *reply,OSType type,const char *lpstrFilter
+                   #ifdef _WIN32
+                   ,HWND hwndOwner
+                   #endif /* _WIN32 */
+);
 
 /* http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/CommonDialogBoxLibrary/CommonDialogBoxReference/CommonDialogBoxStructures/OPENFILENAME.asp
 lpstrFilter
@@ -75,28 +74,34 @@ and the asterisk (*) wildcard character. Do not include spaces in the pattern st
 */
 
 Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
-   				NavReplyRecord *reply,StandardFileReply *sfr,
-   				const char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
-   				#ifdef _WIN32
-   				,HWND hwndOwner
-   				#endif /* _WIN32 */
-   				);
+                NavReplyRecord *reply,StandardFileReply *sfr,
+                const char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
+                #ifdef _WIN32
+                ,HWND hwndOwner
+                #endif /* _WIN32 */
+);
+
 OSErr completesave(NavReplyRecord *reply);
 
 Boolean choosefile_sf(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-					  OSType type,const char *lpstrFilter);
+                      OSType type,const char *lpstrFilter);
+
 Boolean putfile_sf(StringPtr prompt,StringPtr fname,
-				   OSType fileType,OSType fileCreator,
-				   NavReplyRecord *reply,StandardFileReply *sfr);
+                   OSType fileType,OSType fileCreator,
+                   NavReplyRecord *reply,StandardFileReply *sfr);
+
 OSErr completesave_sf(NavReplyRecord *reply);
 
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
-							 OSType tlist[], StringPtr extlist[],Boolean *premult);
+                             OSType tlist[], StringPtr extlist[],Boolean *premult);
+
 Boolean choosefile_nav(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-					   OSType type,const char *lpstrFilter);
+                       OSType type,const char *lpstrFilter);
+
 Boolean putfile_nav(StringPtr prompt,StringPtr fname,
-					OSType fileType,OSType fileCreator,
-					NavReplyRecord *reply,StandardFileReply *sfr);
+                    OSType fileType,OSType fileCreator,
+                    NavReplyRecord *reply,StandardFileReply *sfr);
+
 OSErr completesave_nav(NavReplyRecord *reply);
 
 #endif

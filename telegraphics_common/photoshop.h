@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2009 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ typedef struct{
 		long Rows,Columns;
 		short Depth,Mode;
 	}part1;
-	
+
 	long Mode_Data_length;
 	// mode data
 
@@ -182,7 +182,7 @@ enum{
 		#define CALL_PI_GETSIZE(x, h) CallUniversalProc(x,PI_GETSIZE_PROCINFO, h)
 		#define CALL_PI_LOCK(x, h,mh) CallUniversalProc(x,PI_LOCK_PROCINFO, h,mh)
 	#endif
-	
+
 #else
 	// not macintosh
 	#define CALL_ABORTPROC(x) (*(TestAbortProc)x)()

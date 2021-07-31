@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -61,14 +61,14 @@ void adjust_popup(DialogPtr d,short i,MenuHandle m,short mItem,short max,unsigne
 	unsigned char *t;
 	GrafPtr gp;
 	Rect r;
-	
+
 	GetPort(&gp);
 	SetPort((GrafPtr)GetWindowPort(GetDialogWindow(d)));
 	max -= 12/*info.ascent*/ + 11 + 16;
 
 	GetMenuItemText(m,mItem,s);
-	
-#if ! TARGET_API_MAC_CARBON
+
+	#if ! TARGET_API_MAC_CARBON
 	{
 	SysEnvRec w;
 
@@ -79,9 +79,9 @@ void adjust_popup(DialogPtr d,short i,MenuHandle m,short mItem,short max,unsigne
 	else
 		TruncString(max,s,smTruncEnd);
 	}
-#else
+	#else
 	TruncString(max,s,smTruncEnd);
-#endif
+	#endif
 
 	GetDialogItem(d,i,&kind,&item,&box);
 	InvalWindowRect(GetDialogWindow(d),&box);

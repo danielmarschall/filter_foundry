@@ -386,9 +386,9 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 		if( !gdata->standalone && builddialog(gpb) ){
 			PLstrcpy(fname,gdata->parm.title);
-#ifdef MACMACHO
+			#ifdef MACMACHO
 			PLstrcat(fname,(StringPtr)"\p.plugin"); // "\p" means "Pascal string"
-#endif
+			#endif
 			if( putfile(
 						#ifdef MAC_ENV
 						(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"

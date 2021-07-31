@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -60,7 +60,7 @@ void fix_scrollers(ControlHandle hb,ControlHandle vb,short oldh,short oldv){
 		// does not need to -- this means it can behave the same whether called from here,
 		// or for an update event)
 		// it also means draw_window must respect any clip region already set
-		GetClip(clip = NewRgn()); 
+		GetClip(clip = NewRgn());
 		SetClip(rgn);
 		draw_window(w,rgn);
 		SetClip(clip);
@@ -92,10 +92,10 @@ void adjust_scrollers(WindowPtr w,short ch,short cv,ControlHandle hs,ControlHand
 	SetControlMaximum(hs,max(ch - vh,0));
 	SetControlMaximum(vs,max(cv - vv,0));
 	fix_scrollers(hs,vs,oh,ov);
-#if TARGET_CARBON
+	#if TARGET_CARBON
 	SetControlViewSize(hs,vh);
 	SetControlViewSize(vs,vv);
-#endif
+	#endif
 
 //	ShowControl(hs); ShowControl(vs);
 }
@@ -165,7 +165,7 @@ void scroll_pagev(ControlHandle hs,ControlHandle vs,short part){
 }
 
 void do_scroll(EventRecord *e,short part,ControlHandle c,ControlHandle hs,ControlHandle vs){
-		ControlActionUPP ca_upp = NewControlActionUPP(myaction);
+               ControlActionUPP ca_upp = NewControlActionUPP(myaction);
 
 	hbar = hs;
 	vbar = vs;

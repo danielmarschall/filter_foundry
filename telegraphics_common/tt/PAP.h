@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2009 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 #include <types.h>
 
 typedef struct{
-    long    systemStuff;
-    Str255  statusStr;
+	long    systemStuff;
+	Str255  statusStr;
 } PAPStatusRec;
 
 enum{
@@ -37,7 +37,7 @@ Project	:	GUSI				-	Grand Unified Socket Interface
 File		:	GUSIPAP.cp		-	Printer Access Protocol Sockets
 Author	:	Matthias Neeracher
 
-	Based on code from 
+	Based on code from
 		Sak Wathanasin <sw@nan.co.uk>
 		David A. Holzgang, _Programming the LaserWriter_, Addison-Wesley 1991
 		Apple's Q&A stack

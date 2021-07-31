@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -25,14 +25,14 @@
 #include "qd.h"
 
 pascal void dominant_device_dldp(short depth, short deviceFlags,
-								 GDHandle targetDevice, long userData);
+                                 GDHandle targetDevice, long userData);
 
 Rect main_device_rect(void){
 	Rect r;
 	BitMap bm;
-// screenBits.bounds may be correct for both colour and B&W QuickDraw systems
-// another possibility: portRect of window manager's port
-//	r = has_colour_QD() /* && GetMainDevice() */ ? (*GetMainDevice())->gdRect : SAFE_QD(screenBits).bounds;
+	// screenBits.bounds may be correct for both colour and B&W QuickDraw systems
+	// another possibility: portRect of window manager's port
+	//	r = has_colour_QD() /* && GetMainDevice() */ ? (*GetMainDevice())->gdRect : SAFE_QD(screenBits).bounds;
 	GetQDGlobalsScreenBits(&bm);
 	r = bm.bounds; //SAFE_QD(screenBits).bounds;
 	r.top += GetMBarHeight();
@@ -62,7 +62,7 @@ void global_wind_rect(WindowPtr w,Rect*r){ GrafPtr gp;
 
 void get_struc_bbox(WindowPtr w,Rect*r){ enum{K=0x4000};
 	RgnHandle rgn = NewRgn();
-	
+
 	if(MacIsWindowVisible(w)){ //((WindowPeek)w)->visible)
 		GetWindowRegion(w,kWindowStructureRgn,rgn);
 		GetRegionBounds(rgn,r); //*r = (*((WindowPeek)w)->strucRgn)->rgnBBox;
@@ -115,7 +115,7 @@ typedef struct {
 } dominant_device_data;
 
 pascal void dominant_device_dldp(short depth, short deviceFlags,
-								 GDHandle targetDevice, long userData){
+                                 GDHandle targetDevice, long userData){
 	long g=0,a;
 	Rect r;
 
@@ -148,7 +148,7 @@ GDHandle dominant_device_old(WindowPtr w){
 	long g=0,a;
 	GDHandle d,dev = GetMainDevice(); // default, in case it doesn't intersect any
 	Rect wr,r;
-	
+
 	global_wind_rect(w,&wr);
 	for(d=GetDeviceList();d;d=GetNextDevice(d))
 		if(TestDeviceAttribute(d,screenDevice) && TestDeviceAttribute(d,screenActive)){
@@ -180,7 +180,7 @@ Rect largest_device_rect(void){
 	GDHandle d,dev;
 	Rect dr,*r;
 
-	if(has_colour_QD()){		
+	if(has_colour_QD()){
 		for(d=GetDeviceList(),dev=0,g=0;d;d=GetNextDevice(d))
 			if(TestDeviceAttribute(d,screenDevice) && TestDeviceAttribute(d,screenActive)){
 				r = &(*d)->gdRect;
@@ -198,7 +198,7 @@ Rect largest_device_rect(void){
 			GetQDGlobalsScreenBits(&bm);
 			dr = bm.bounds; //SAFE_QD(screenBits).bounds; // there are no devices
 		}
-	}else 
+	}else
 		GetRegionBounds(GetGrayRgn(),&dr);
 	return dr;
 }
@@ -211,17 +211,17 @@ void grow_rect(WindowPtr w,Rect*r){
 	r->top = r->bottom - (SCROLL_BAR_WIDTH-1);
 }
 
-void inval_grow(WindowPtr w){ 
+void inval_grow(WindowPtr w){
 	Rect r;
 	GrafPtr gp;
 
 	grow_rect(w,&r);
-#if TARGET_CARBON
+	#if TARGET_CARBON
 	InvalWindowRect(w,&r);
-#else
+	#else
 	GetPort(&gp);
 	SetPort((GrafPtr)GetWindowPort(w)); // should we preserve the current port??
 	InvalRect(&r);
 	SetPort(gp);
-#endif
+	#endif
 }

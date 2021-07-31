@@ -113,15 +113,15 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 					c = *p++;
 					switch(c){
 					case 'r':
-#if WIN_ENV
-					    c = CR;
-					    if (lineptr < MAXLINE)
+						#if WIN_ENV
+						c = CR;
+						if (lineptr < MAXLINE)
 						linebuf[lineptr++] = c;
-					    c = LF;
-#else
-					    c = CR;
-#endif
-					    break;
+						c = LF;
+						#else
+						c = CR;
+						#endif
+						break;
 					case '\\': break;
 					default:
 						if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));
@@ -199,7 +199,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
 					{
 
-#ifdef MAC_ENV
+						#ifdef MAC_ENV
 						// Case #1: Mac is reading Windows (Win16/32/64) plugin
 						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
@@ -211,7 +211,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 							for(i = 0; i < 8; ++i)
 								slider[i] = EndianS32_LtoN(slider[i]);
 						}
-#else
+						#else
 						// Case #2: Windows is reading a Windows plugin (if Resource API failed, e.g. Win64 tries to open NE file, Win32 tries to open 64bit file)
 						if( ((q[0] == PARM_SIZE) ||
 						     (q[0] == PARM_SIZE_PREMIERE) ||
@@ -231,7 +231,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 							for(i = 0; i < 8; ++i)
 								slider[i] = EndianS32_LtoN(slider[i]);
 						}
-#endif
+						#endif
 
 						if (res) break;
 					}
@@ -297,14 +297,18 @@ Handle readfileintohandle(FILEREF r){
 }
 
 Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
-#ifdef WIN_ENV
+	#ifdef WIN_ENV
+
 	char name[MAX_PATH+1];
 	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name,sfr->sfFile.name) + sfr->nFileExtension - 1,extension);
-#else
+
+	#else
+
 	char name[1025]; // https://stackoverflow.com/questions/1295135/longest-pathname-string-in-mac-os-x-hfs
 	char* s = myp2cstrcpy(name,sfr->sfFile.name);
 	return strcmp(s + strlen(s) - strlen(extension), extension) == 0;
-#endif
+
+	#endif
 }
 
 Boolean readfile(StandardFileReply *sfr,char **reason){

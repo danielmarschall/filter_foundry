@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library for Adobe(R) plugins
+    This file is part of a common library for Adobe(R) plugins
     Copyright (C) 2002-2010 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -170,6 +170,7 @@ pascal Boolean standardfilter(DialogRef dialog, EventRecord *event, short *item)
 
 	return(result);
 }
+
 #if !TARGET_CARBON
 OSStatus my_InvalWindowRect(WindowRef window,const Rect *bounds){
 	GrafPtr port;

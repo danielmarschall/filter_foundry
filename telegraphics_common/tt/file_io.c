@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-2011 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -69,10 +69,10 @@ OSErr read1(FILEREF f,unsigned char *v){
 }
 
 /*
-	readdoubleL() - read a LittleEndian (e.g. Intel) 8-byte double floating point value from a file. 
+	readdoubleL() - read a LittleEndian (e.g. Intel) 8-byte double floating point value from a file.
 
 	This will only work correctly if the compiler's "double" type is IEEE 8-byte format!
-	In particular, in Metrowerks 68K C this means setting the "8-byte doubles" option 
+	In particular, in Metrowerks 68K C this means setting the "8-byte doubles" option
 	and linking with the appropriate library (e.g. "MathLib68K (4i_8d).A4.Lib")
 */
 

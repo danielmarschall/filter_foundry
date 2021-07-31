@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -64,7 +64,7 @@ char *int_str(char *dst,long x,int base){
 	p = udigits(p,x,base);
 	*p = 0; // add terminating null
 	return p;
-}	
+}
 
 // format unsigned integer into n decimal places, zero padded
 // return pointer to trailing NUL (after last digit)
@@ -88,7 +88,7 @@ char *float_str(char *dst,double x,int places){
 	// format integer part
 	q = int_str(q,(long)x /*truncated towards zero*/,INT_BASE);
 	*q++ = '.';
-	
+
 	// format fractional part
 	return int_strpad(q,(x-(long)x)*int_exp(INT_BASE,places)+.5,places,INT_BASE);
 }
@@ -99,7 +99,7 @@ char *float_str(char *dst,double x,int places){
 
 int vsprintf_tiny(char *s,char *fmt,va_list v){
 	char *p,*q;
-	
+
 	for(p=fmt,q=s;*p;)
 		if(*p == '%'){
 			int lflag = 0;
@@ -132,7 +132,7 @@ int vsprintf_tiny(char *s,char *fmt,va_list v){
 int sprintf_tiny(char *s,char *fmt,...){
 	va_list v;
 	int n;
-	
+
 	va_start(v,fmt);
 	n = vsprintf_tiny(s,fmt,v);
 	va_end(v);

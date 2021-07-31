@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -127,9 +127,9 @@ Boolean GZCritical(void){ // see IM vol. 1, memory manager chapter
 #if 0 //def __MWERKS__ // TrapAvailable is defined in MPW's fcntl.h (but not CW)
 	#define NumToolboxTraps() \
 		(NGetTrapAddress(_InitGraf,ToolTrap) == NGetTrapAddress(0xaa6e,ToolTrap) ? 0x200 : 0x400)
-	
+
 	#define GetTrapType(theTrap) (theTrap & 0x800 ? ToolTrap : OSTrap)
-	
+
 	Boolean TrapAvailable(short theTrap){
 		TrapType tType = GetTrapType(theTrap);
 		return (tType != ToolTrap || (theTrap &= 0x7ff) < NumToolboxTraps())

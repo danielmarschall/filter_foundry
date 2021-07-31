@@ -130,7 +130,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 	i = 0;
 	p = (unsigned char*)ptr;
 	for (i=0; i<(int)num; ++i) {
-#ifdef WIN_ENV
+		#ifdef WIN_ENV
 		DWORD color;
 
 		color = GetSysColor(COLOR_APPWORKSPACE);
@@ -202,11 +202,11 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			*/
 
 		}
-#else
+		#else
 		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)
 		// FIXME: Should we do something fancy here, too?
 		p[i] = 0xFF;
-#endif
+		#endif
 	}
 	return ptr;
 }
@@ -311,7 +311,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 			if (!e) {
 				preview_complete = true;
 
-#ifdef WIN_ENV
+				#ifdef WIN_ENV
 				{
 					extern HWND preview_hwnd;
 					HDC hdc = GetDC(preview_hwnd);
@@ -320,7 +320,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 					ReleaseDC(preview_hwnd, hdc);
 				}
-#else
+				#else
 				{
 					GrafPtr saveport;
 
@@ -331,7 +331,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 					SetPort(saveport);
 				}
-#endif
+				#endif
 			}
 
 			PIUNLOCKHANDLE(preview_handle);
@@ -446,7 +446,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 			if (!e) {
 				preview_complete = true;
 
-#ifdef WIN_ENV
+				#ifdef WIN_ENV
 				{
 					extern HWND preview_hwnd;
 					HDC hdc = GetDC(preview_hwnd);
@@ -455,7 +455,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 					ReleaseDC(preview_hwnd, hdc);
 				}
-#else
+				#else
 				{
 					GrafPtr saveport;
 
@@ -466,7 +466,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 					SetPort(saveport);
 				}
-#endif
+				#endif
 			}
 
 			PIUNLOCKHANDLE(preview_handle);

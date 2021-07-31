@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2009 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ Handle get_detach_lock(ResType t,short id){ Handle h;
 OSErr PAPLoad(Handle *printer_name,Handle *PAP_code){
 	Handle name,code;
 	OSErr e;
-	
+
 	PrOpen(); // open current printer driver
 	if(!(e = PrError()))
 		if(name = get_detach_lock('PAPA',-8192))

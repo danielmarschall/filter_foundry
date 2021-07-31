@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-2012 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -70,24 +70,22 @@ void NumToString(long n, unsigned char *dst){
 
 #include <memory.h>
 
-pascal StringPtr  PLstrcpy(StringPtr str1, StringPtr str2)
- {
-   BlockMove(str2, str1, str2[0] + 1);
-   return(str1);
- }
+pascal StringPtr  PLstrcpy(StringPtr str1, StringPtr str2) {
+	BlockMove(str2, str1, str2[0] + 1);
+	return(str1);
+}
 
-pascal StringPtr PLstrcat(StringPtr str1, StringPtr str2)
- {
-  long copyLen;
+pascal StringPtr PLstrcat(StringPtr str1, StringPtr str2) {
+	long copyLen;
 
-   if (str1[0] + 1 + str2[0]>255)
-     copyLen = 255 - str1[0];
-   else
-    copyLen = str2[0];
+	if (str1[0] + 1 + str2[0]>255)
+		copyLen = 255 - str1[0];
+	else
+		copyLen = str2[0];
 
-   BlockMove(&str2[1], str1 + 1 + str1[0], copyLen);
-   str1[0] += copyLen;
+	BlockMove(&str2[1], str1 + 1 + str1[0], copyLen);
+	str1[0] += copyLen;
 
-   return(str1);
- }
- */
+	return(str1);
+}
+*/

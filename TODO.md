@@ -15,8 +15,6 @@ Minor priority stuff or ideas
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
-* Format the code!
-
 * Memory leak: `strdup()` and `my_strdup()` need `free()` !
 
 * Why can't we edit *.rc files in Visual Studio?

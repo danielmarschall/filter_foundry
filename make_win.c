@@ -91,11 +91,11 @@ int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm) {
 	}
 	name[iname++] = '\0';
 
-#ifdef _WIN64
+	#ifdef _WIN64
 	return sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
-#else
+	#else
 	return sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
-#endif
+	#endif
 }
 
 void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
@@ -182,7 +182,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
-	
+
 	long event_id;
 
 //      if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))

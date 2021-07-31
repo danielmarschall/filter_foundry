@@ -48,10 +48,10 @@ struct node *newnode(int k){
 	int i;
 
 	if( (p = (struct node*)malloc(sizeof(struct node))) ){
-#ifdef DEBUG
-//		fprintf(stderr,"NEW(%#x)\n",p);
+		#ifdef DEBUG
+		//fprintf(stderr,"NEW(%#x)\n",p);
 		++allocs;
-#endif
+		#endif
 		p->kind = k;
 		for( i = 0 ; i < MAXCHILDREN ; ++i )
 			p->child[i] = 0;
@@ -68,10 +68,10 @@ void freenodes(struct node *p){
 	if(p){
 		freenodes(p->next);
 		free(p);
-#ifdef DEBUG
-//		fprintf(stderr,"FREE(%#x)\n",p);
+		#ifdef DEBUG
+		//fprintf(stderr,"FREE(%#x)\n",p);
 		--allocs;
-#endif
+		#endif
 	}
 }
 void freeallnodes(){
@@ -92,21 +92,21 @@ void dumptree(struct node *root,int level){
 				putchar('\t');
 			switch(root->kind){
 			case TOK_NUM:
-#ifdef FP_VALUE
+				#ifdef FP_VALUE
 				printf("constant: %g\n",root->v.value);
-#else
+				#else
 				printf("constant: %ld\n",root->v.value);
-#endif
+				#endif
 				break;
 			case TOK_SPECIALVAR:
 				printf("special variable: %c\n",root->v.specialvar);
 				break;
 			case TOK_VAR:
-#ifdef FP_VALUE
+				#ifdef FP_VALUE
 				printf("variable: %s (%g)\n",root->v.sym->name,*root->v.sym->pvar);
-#else
+				#else
 				printf("variable: %s (%ld)\n",root->v.sym->name,*root->v.sym->pvar);
-#endif
+				#endif
 				break;
 			case TOK_FN1:
 			case TOK_FN2:
@@ -135,34 +135,34 @@ value_type eval(struct node *root){
 		case TOK_VAR: return *root->v.sym->pvar;
 		case TOK_FN1: return root->v.sym->fn(eval(root->child[0]));
 		case TOK_FN2: return root->v.sym->fn(
-								eval(root->child[0]),
-								eval(root->child[1]) );
+		                                     eval(root->child[0]),
+		                                     eval(root->child[1]) );
 		case TOK_FN3: return root->v.sym->fn(
-								eval(root->child[0]),
-								eval(root->child[1]),
-								eval(root->child[2]) );
+		                                     eval(root->child[0]),
+		                                     eval(root->child[1]),
+		                                     eval(root->child[2]) );
 		case TOK_FN4: return root->v.sym->fn(
-								eval(root->child[0]),
-								eval(root->child[1]),
-								eval(root->child[2]),
-								eval(root->child[3]) );
+		                                     eval(root->child[0]),
+		                                     eval(root->child[1]),
+		                                     eval(root->child[2]),
+		                                     eval(root->child[3]) );
 		case TOK_FN5: return root->v.sym->fn(
-								eval(root->child[0]),
-								eval(root->child[1]),
-								eval(root->child[2]),
-								eval(root->child[3]),
-								eval(root->child[4]) );
+		                                     eval(root->child[0]),
+		                                     eval(root->child[1]),
+		                                     eval(root->child[2]),
+		                                     eval(root->child[3]),
+		                                     eval(root->child[4]) );
 		case TOK_FN10: return root->v.sym->fn(
-								eval(root->child[0]),
-								eval(root->child[1]),
-								eval(root->child[2]),
-								eval(root->child[3]),
-								eval(root->child[4]),
-								eval(root->child[5]),
-								eval(root->child[6]),
-								eval(root->child[7]),
-								eval(root->child[8]),
-								eval(root->child[9]) );
+		                                     eval(root->child[0]),
+		                                     eval(root->child[1]),
+		                                     eval(root->child[2]),
+		                                     eval(root->child[3]),
+		                                     eval(root->child[4]),
+		                                     eval(root->child[5]),
+		                                     eval(root->child[6]),
+		                                     eval(root->child[7]),
+		                                     eval(root->child[8]),
+		                                     eval(root->child[9]) );
 
 		case '+': return eval(root->child[0]) + eval(root->child[1]);
 		case '-': return eval(root->child[0]) - eval(root->child[1]);
@@ -198,7 +198,7 @@ value_type eval(struct node *root){
 	return 0.;
 	#else
 	return 0;
-#endif
+	#endif
 }
 
 /* free the memory for a tree's nodes */

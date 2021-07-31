@@ -45,7 +45,8 @@ Find a printable 4-character key, remembering (see Photoshop API guide):
 Note: It is questionable if "a!!!" or "A!!!" are also reseved by Apple. We don't risk it.
 */
 unsigned long printablehash(unsigned long hash) {
-#ifdef PRINTABLE_HASH_FF16
+	#ifdef PRINTABLE_HASH_FF16
+
 	// FilterFoundry version 1.6 hashing by Toby Thain
 	// Only accepts upper case at the last character
 	// 0       = 'a  A'
@@ -54,7 +55,9 @@ unsigned long printablehash(unsigned long hash) {
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	return  (key << 8) | ('A' + (hash % 26));           // last upper case
-#else
+
+	#else
+
 	// FilterFoundry version 1.7 hashing by Daniel Marschall
 	// Accepts upper case at character 2, 3 or 4
 	// Spaces are only set the right as padding to make a code shorter
@@ -141,7 +144,8 @@ unsigned long printablehash(unsigned long hash) {
 		key |= ' ';
 	}
 	return key;
-#endif
+
+	#endif
 }
 
 size_t roundToNext4(size_t x) {
@@ -280,6 +284,7 @@ void _aete_write_c2pstr(void** aeteptr, char* str) {
 	*aeteptr = (void*)((unsigned char*)tmp + strlen(str));
 }
 #define AETE_WRITE_C2PSTR(s) _aete_write_c2pstr(&aeteptr, (s));
+
 void _aete_write_p2pstr(void** aeteptr, char* str) {
     char* tmp;
 
@@ -341,9 +346,10 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	// - The 'aete' resource for Mac OS has word alignments after strings (but not if the next element is also a string)
 	//   see https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf page 8-9
 
-#ifdef WIN_ENV
+	#ifdef WIN_ENV
 	AETE_WRITE_WORD(0x0001); /* Reserved (for Photoshop) */
-#endif
+	#endif
+
 	AETE_WRITE_BYTE(0x01); /* aete version */
 	AETE_WRITE_BYTE(0x00); /* aete version */
 	AETE_WRITE_WORD(english); /* language specifiers */

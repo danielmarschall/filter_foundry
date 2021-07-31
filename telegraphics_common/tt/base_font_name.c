@@ -1,9 +1,9 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 1990-2006 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -26,11 +26,11 @@ void base_font_name(char *s,Handle FOND){
 	unsigned char *p,*q,**nt,**n,hs;
 	int i;
 	FamRec *f;
-	
+
 	hs = HGetState(FOND);
 	HLock(FOND);
 	f = (FamRec*)*FOND;
-	
+
 	if(f->ffStylOff){
 		st = (StyleTable*)((char*)f + f->ffStylOff);
 		p = (unsigned char*)st->indexes + 48;
@@ -54,7 +54,7 @@ void base_font_name(char *s,Handle FOND){
 		free(nt);
 	}
 	*s = 0;
-	
+
 	HSetState(FOND,hs);
 }
 

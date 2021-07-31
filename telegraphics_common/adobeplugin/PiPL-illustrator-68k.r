@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library for Adobe(R) plugins
+    This file is part of a common library for Adobe(R) plugins
     Copyright (C) 2002-9 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify

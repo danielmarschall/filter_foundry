@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 #include "choosefile.h"
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-						OSType types[],int ntypes,const char *lpstrFilter){
+                        OSType types[],int ntypes,const char *lpstrFilter){
 	StandardGetFile(NULL,ntypes,types,sfr);
 	return sfr->sfGood;
 }
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-				   OSType type,const char *lpstrFilter){
+                   OSType type,const char *lpstrFilter){
 	SFTypeList typeList;
 	typeList[0] = type;
 	return choosefiletypes(prompt,sfr,reply,typeList,1,lpstrFilter);
 }
 
 Boolean putfile(StringPtr prompt,StringPtr fname,
-				OSType fileType,OSType fileCreator,
-   				NavReplyRecord *reply,StandardFileReply *sfr,
-   				char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex){
+                OSType fileType,OSType fileCreator,
+                NavReplyRecord *reply,StandardFileReply *sfr,
+                char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex){
 	StandardPutFile(prompt,fname,sfr);
 	return sfr->sfGood;
 }

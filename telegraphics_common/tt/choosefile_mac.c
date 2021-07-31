@@ -1,5 +1,5 @@
 /*
-	This file is part of a common library
+    This file is part of a common library
     Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
     This program is free software; you can redistribute it and/or modify
@@ -29,16 +29,16 @@
 #endif
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-				   OSType type,const char *lpstrFilter){
-   	return (HAS_NAVSERVICES ? choosefile_nav : choosefile_sf)
-   		(prompt,sfr,reply,type,lpstrFilter);
+                   OSType type,const char *lpstrFilter){
+	return (HAS_NAVSERVICES ? choosefile_nav : choosefile_sf)
+	       (prompt,sfr,reply,type,lpstrFilter);
 }
 Boolean putfile(StringPtr prompt,StringPtr fname,
-				OSType fileType,OSType fileCreator,
-   				NavReplyRecord *reply,StandardFileReply *sfr,
-   				char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex){
-   	return (HAS_NAVSERVICES ? putfile_nav : putfile_sf)
-   		(prompt,fname,fileType,fileCreator,reply,sfr,lpstrDefExt);
+                OSType fileType,OSType fileCreator,
+                NavReplyRecord *reply,StandardFileReply *sfr,
+                char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex){
+	return (HAS_NAVSERVICES ? putfile_nav : putfile_sf)
+	       (prompt,fname,fileType,fileCreator,reply,sfr,lpstrDefExt);
 }
 
 OSErr completesave(NavReplyRecord *navreply){

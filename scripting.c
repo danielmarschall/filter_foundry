@@ -1,5 +1,5 @@
 /*
-	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
 	Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
