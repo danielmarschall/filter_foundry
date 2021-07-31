@@ -5,7 +5,8 @@
 - Obfuscated standalone filters can now recall the previous settings on GIMP/Irfanview (was disabled in 1.7.0.5, because the temporaray .afs file leaked the obfuscated code).
 
 ## 1.7.0.5 [30-Jul-2021]
-- Changed obfuscation code (now more secure)
+- Changed obfuscation code ("Version 3", now more secure). It is compiler-dependent, therefore the resource cannot be exchanged between plugins
+- When an obfuscated filter is loaded, it will be checked if the obfuscation worked / is compatible
 - The feature "Obfuscate" and "Protected" are now merged together.
 	Reason: Obfuscate without protect makes no sense (since everybody can read/load it using FilterFoundry) and
 	protect without obfuscate makes no sense (because you can read the formula using a resource editor and even remove the protect flag with a hex editor)
@@ -15,7 +16,7 @@
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
 - Bugfix: Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
 - Internal change: "Manifest" resource gets individualized in standalone plugins
-- Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfusc data stays at 'DATA'/RCDATA)
+- Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfuscated data stays at 'DATA'/RCDATA)
 - Bugfix: If you called a standalone filter two times, then the main dialog opened (bug introduced in 1.7.0.3)
 - Ifanview/GIMP can now also work with standalone filters
 - If the user tries to open a protected 8BF file, the error message will now state that it can't be opened because the filter is protected
@@ -45,6 +46,7 @@
 - First release by Daniel Marschall
 - Fixed crash at filter startup when the computer had too much RAM.
 - Fixed crash where built obfuscated filters could not be opened.
+- Changed format of obfuscated filters ("Version 2"). It is now compiler-independant.
 - Added function `rst(i)` which is an undocumented function in Filter Factory for setting a random seed.
 - Size PARM_SIZE in PARM resource corrected.
 - Added Visual Studio project file, and extended NMake script to support flex and bison compilation.
@@ -114,7 +116,7 @@
 - Swap +/- zoom controls to match Photoshop builtins
 
 ## 1.4b8,9,10
-- Simple parameter obfuscation in standalone plugins (wishlist #7)
+- Simple parameter obfuscation ("Version 1") in standalone plugins (wishlist #7)
 
 ## 1.4b6 [16-Feb-2007]
 - Lowercase default file extensions (wishlist #1)

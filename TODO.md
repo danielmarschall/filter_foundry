@@ -57,7 +57,7 @@ Minor priority stuff or ideas
 
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
 
-* The user should be able to build 32 bit AND 64 bit standalone filters!
+* The user should be able to build 32 bit AND 64 bit standalone filters! Attention: Obfuscate "V1" and "V3" are compiler-dependent; therefore you cannot simply exchange the RCDATA:16001 between plugins!
 
 
 Design/UI Tweaks

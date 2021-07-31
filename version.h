@@ -24,7 +24,7 @@ Note: Changelog has been moved into the file CHANGELOG.md
 
 For a NEW VERSION, please change:
 - version.h (3 times)
-- Manifest32.xml and Manifest64.xml
+- manifest32.xml and manifest64.xml
 - README.md
 - CHANGELOG.md
 
