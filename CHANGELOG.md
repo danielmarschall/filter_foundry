@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.6 [Work-In-Progress]
+- .pff files (Premiere Filter Factory) are now correctly loaded
+
 ## 1.7.0.5 [30-Jul-2021]
 - Changed obfuscation code (now more secure)
 - The feature "Obfuscate" and "Protected" are now merged together.

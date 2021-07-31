@@ -299,7 +299,7 @@ Handle readfileintohandle(FILEREF r){
 Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
 #ifdef WIN_ENV
 	char name[MAX_PATH+1];
-	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name,sfr->sfFile.name) + sfr->nFileExtension,extension);
+	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name,sfr->sfFile.name) + sfr->nFileExtension - 1,extension);
 #else
 	char name[1025]; // https://stackoverflow.com/questions/1295135/longest-pathname-string-in-mac-os-x-hfs
 	char* s = myp2cstrcpy(name,sfr->sfFile.name);
@@ -319,11 +319,11 @@ Boolean readfile(StandardFileReply *sfr,char **reason){
 
 				if (fileHasExtension(sfr, ".pff")) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
+					// We just swap the pointers!
 					char* tmp;
-					tmp = my_strdup(expr[0]);
-					memcpy((void*)expr[0], (void*)expr[2], sizeof(expr[0]));
-					memcpy((void*)expr[2], (void*)tmp, sizeof(expr[2]));
-					free(tmp);
+					tmp = expr[0];
+					expr[0] = expr[2];
+					expr[2] = tmp;
 				}
 			}
 

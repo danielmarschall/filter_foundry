@@ -27,15 +27,16 @@
 
 #include "PITypes.h"
 
-typedef int16                          ScriptCode;
+typedef int16 ScriptCode;
 
 typedef struct StandardFileReply {
-	Boolean							sfGood;
-	Boolean							sfReplacing;
-	OSType					sfType;
-	FSSpec							sfFile;
-	ScriptCode				sfScript;
+	Boolean     sfGood;
+	Boolean     sfReplacing;
+	OSType      sfType;
+	FSSpec      sfFile;
+	ScriptCode  sfScript;
 
+#ifdef WIN_ENV
 	WORD nFileExtension ;
 	/* http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/CommonDialogBoxLibrary/CommonDialogBoxReference/CommonDialogBoxStructures/OPENFILENAME.asp
 		Specifies the zero-based offset, in TCHAR s, from the beginning of the path to the file name extension
@@ -45,6 +46,7 @@ typedef struct StandardFileReply {
 		If the user did not type an extension and lpstrDefExt is NULL, this member specifies an offset
 		to the terminating NULL character. If the user typed "." as the last character in the file name,
 		this member specifies zero.  */
+#endif
 } StandardFileReply;
 
 typedef unsigned char *StringPtr,**StringHandle;
@@ -67,22 +69,22 @@ Boolean isWin32NT(void);
 ULONGLONG _GetTickCount64();
 
 HANDLE _BeginUpdateResource/*A*/(
-  LPCSTR pFileName,
-  BOOL   bDeleteExistingResources
+	LPCSTR pFileName,
+	BOOL   bDeleteExistingResources
 );
 
 BOOL _EndUpdateResource/*A*/(
-  HANDLE hUpdate,
-  BOOL   fDiscard
+	HANDLE hUpdate,
+	BOOL   fDiscard
 );
 
 BOOL _UpdateResource/*A*/(
-  HANDLE hUpdate,
-  LPCSTR lpType,
-  LPCSTR lpName,
-  WORD   wLanguage,
-  LPVOID lpData,
-  DWORD  cb
+	HANDLE hUpdate,
+	LPCSTR lpType,
+	LPCSTR lpName,
+	WORD   wLanguage,
+	LPVOID lpData,
+	DWORD  cb
 );
 
 #endif
