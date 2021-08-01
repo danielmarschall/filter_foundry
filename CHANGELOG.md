@@ -2,6 +2,7 @@
 
 ## 1.7.0.7 [Work-In-Progress]
 - Obfuscated "V1" and obfuscated "V2" filters can now be loaded again (as long as they aren't protected)
+- Security improvement: Filters which have been built using obfuscation "V3" will now always be treated as protected plugin, even if the obfuscated code has been manipulated.
 
 ## 1.7.0.6 [01-Aug-2021]
 - .pff files (Premiere Filter Factory) are now correctly loaded

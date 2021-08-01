@@ -58,6 +58,7 @@ enum{
 	SIG_SIMPLETEXT = 'ttxt',
 	PS_FILTER_FILETYPE = '8BFM',
 
+	// Obfuscated data will be read, but it will not be read if it is additionally protected
 	READ_OBFUSC = 1
 };
 
@@ -86,12 +87,14 @@ extern char *errstr;
 #define DBG(x) {}
 //#define DEBUG
 
+// from main.c
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
 void DoFinish (FilterRecordPtr epb);
 void RequestNext (FilterRecordPtr epb,long);
 
+// from read.c
 Boolean readparams(Handle h,Boolean alerts,char **reason);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
 Boolean read8bfplugin(StandardFileReply *sfr,char **reason);
@@ -99,30 +102,28 @@ Handle readfileintohandle(FILEREF r);
 Boolean readfile(StandardFileReply *sfr,char **reason);
 Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr,int fromwin);
 
+// from save.c
 OSErr saveparams(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
 Boolean savefile(StandardFileReply *sfr);
 
+// from make_*.c
 OSErr make_standalone(StandardFileReply *sfr);
 
+// from process.c
 Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
+// from make.c
 unsigned long printablehash(unsigned long hash);
 size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
+void obfusc(PARM_T* pparm);
+void deobfusc(PARM_T* pparm);
 
-// Position 48..52 is "unknown2" of Photoshop FilterFactory PARM_T or "unknown1" of Premiere FilterFactory
-// We can assume that it is always 0x00000000, so we place the seed here
-#define OBFUSC_SEED_POS 48
-
-void obfusc(unsigned char* pparm, size_t size, size_t seed_position);
-void deobfusc(unsigned char* pparm, size_t size, size_t seed_position);
-
+// from loadfile_*.c
 Boolean loadfile(StandardFileReply *sfr,char **reason);
 Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc);
-
-void dbglasterror(char*);
 
 // from main.c
 int64_t maxspace();
@@ -132,6 +133,7 @@ Boolean host_preserves_parameters();
 // from parser.y
 struct node *parseexpr(char *s);
 
+// Useful macros
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 
 #define BIGDOC_IMAGE_SIZE(x) ((x)->bigDocumentData->imageSize32)

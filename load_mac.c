@@ -32,8 +32,15 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	  && readobfusc
 	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
 		HLock(h);
-		deobfusc((unsigned char*)*h,GetHandleSize(h),OBFUSC_SEED_POS);
-		gdata->obfusc = true;
+		if(GetHandleSize(h) == sizeof(PARM_T)) {
+			deobfusc((PARM_T*)*h);
+			gdata->obfusc = true;
+		} else {
+			// Obfuscated PARM has wrong size. Should not happen
+			gdata->obfusc = false;
+			ReleaseResource(h);
+			return false;
+		}
 	}
 	if(h){
 		HLock(h);

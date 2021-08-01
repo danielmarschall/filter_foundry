@@ -55,6 +55,7 @@ type 'PARM' {
 // readPARM() converts C to Pascal strings, and doresources() converts them back to C strings for saving.
 
 // Photoshop's Filter Factory has PARM:16
+// Filter Foundry has PARM:16000
 typedef struct {   //structure of FF PARM resource
 	long cbSize;     //size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7)
 	long standalone; //0=original FF, 1=standalone filter
@@ -83,7 +84,7 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	long singleExpression; //1 if "single expression" is checked (member only available in Premiere)
 	long val[8];    //initial values of controls
 	long popDialog; //1 if need to pop a parameter dialog
-	long unknown1; // Byte 48..52 must be 0 to make obfuscation of FF>=7.0.5 work
+	long unknown1;
 	long unknown2;
 	long unknown3;
 	long map_used[4];   //true if map(n) is used

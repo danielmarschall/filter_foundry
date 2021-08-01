@@ -106,7 +106,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
 							if(gdata->obfusc){
 								HLock(h);
-								obfusc((unsigned char*)*h,sizeof(PARM_T),OBFUSC_SEED_POS);
+								obfusc((PARM_T*)*h);
 								HUnlock(h);
 								parm_type = 'DATA';
 								parm_id = OBFUSCDATA_ID;

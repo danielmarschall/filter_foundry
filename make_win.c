@@ -252,7 +252,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;
 					parm_id = OBFUSCDATA_ID;
-					obfusc((unsigned char*)pparm,sizeof(PARM_T),OBFUSC_SEED_POS);
+					obfusc(pparm);
 				}else{
 					parm_type = "PARM";
 					parm_id = PARM_ID;

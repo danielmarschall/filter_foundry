@@ -54,13 +54,19 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm,resinfo);
-			char* copy = (char*)malloc(resSize);
-			if (!copy) return false;
-			memcpy(copy, pparm, resSize);
-			deobfusc((unsigned char*)copy, resSize,OBFUSC_SEED_POS);
-			res = readPARM(copy,&gdata->parm,reason,1);
-			gdata->obfusc = true;
-			free(copy);
+			if (resSize == sizeof(PARM_T)) {
+				PARM_T* copy = (PARM_T*)malloc(resSize);
+				if (!copy) return false;
+				memcpy(copy, pparm, resSize);
+				deobfusc(copy);
+				res = readPARM((Ptr)copy,&gdata->parm,reason,1);
+				gdata->obfusc = true;
+				free(copy);
+			} else {
+				// Obfuscationed PARM has wrong size. Should not happen!
+				gdata->obfusc = false;
+				return false;
+			}
 		}
 	}
 	if (!res) {
