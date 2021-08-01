@@ -461,12 +461,27 @@ int randInRange(int min, int max) {
 	return min + (int)(rand() * scale * range);
 }
 
+int rand_msvcc(unsigned int* seed) {
+	*seed = *seed * 214013L + 2531011L;
+	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
+}
+
+int rand_openwatcom(unsigned int* seed) {
+	*seed = *seed * 1103515245L + 12345L;
+	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
+}
+
 void obfusc(unsigned char* pparm, size_t size, size_t seed_position) {
 	unsigned char* p;
 	size_t i;
 	unsigned int seed;
 
-	seed = (unsigned int)time(0);
+	// Version 3 obfuscation
+	// Filter Foundry >= 1.7.0.5
+
+	do {
+		seed = (unsigned int)time(0);
+	} while ((seed == 0x90E364A3/*V1*/) || (seed == 0xE2CFCA34/*V2*/));
 	srand(seed);
 
 	p = pparm;
@@ -482,11 +497,36 @@ void deobfusc(unsigned char* pparm, size_t size, size_t seed_position) {
 	unsigned int seed;
 
 	seed = *((unsigned int*)(pparm + seed_position));
-	srand(seed);
 
-	p = pparm;
-	for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0, 255);
-	*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
-	p += 4;
-	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
+	if (seed == 0x90E364A3) { // A3 64 E3 90
+		// Version 1 obfuscation, filter built with VC++ (official release by Toby Thain)
+		// Filter Foundry FF >= 1.4b8,9,10
+		seed = 0xdc43df3c;
+		for (i = size, p = pparm; i--;) {
+			*p++ ^= rand_msvcc(&seed);
+		}
+	}
+	else if (seed == 0xE2CFCA34) { // 34 CA CF E2
+		// Version 2 obfuscation, compiler independent
+		// Filter Foundry >= 1.7b1
+		unsigned int x32 = 0x95d4a68f;
+		for (i = size, p = pparm; i--;) {
+			x32 ^= x32 << 13;
+			x32 ^= x32 >> 17;
+			x32 ^= x32 << 5;
+			*p++ ^= x32;
+		}
+	}
+	else {
+		// Version 3 obfuscation
+		// Filter Foundry >= 1.7.0.5
+		// NO loading of other implementation supported, but that doesn't matter since Obfuscation+Protection is combined in FF >= 1.7.0.5
+		// Note: 32-Bit FF is built using OpenWatcom (to support Win95), while 64-Bit FF is built using Microsoft Visual C++
+		srand(seed);
+		p = pparm;
+		for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0, 255);
+		*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
+		p += 4;
+		for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
+	}
 }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.7 [Work-In-Progress]
+- Obfuscated "V1" and obfuscated "V2" filters can now be loaded again (as long as they aren't protected)
+
 ## 1.7.0.6 [01-Aug-2021]
 - .pff files (Premiere Filter Factory) are now correctly loaded
 - Obfuscated standalone filters can now recall the previous settings on GIMP/Irfanview (was disabled in 1.7.0.5, because the temporaray .afs file leaked the obfuscated code).
