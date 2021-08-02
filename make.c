@@ -333,7 +333,6 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 }
 
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
-	// TODO: Can't we use the PI SDK to create an AETE?
 	int numprops;
 	void *beginptr = aeteptr;
 
@@ -450,17 +449,6 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	return (unsigned char*)aeteptr - (unsigned char*)beginptr; // length of stuff written
 }
 
-// Using rand() is more secure, because it differs from compiler to compiler, so
-// it is harder to read a protected 8BF plugin.
-// Note that rand() in combination with srand() is deterministic, so it is safe
-// to use it: https://stackoverflow.com/questions/55438293/does-rand-function-in-c-follows-non-determinstc-algorithm
-int randInRange(int min, int max) {
-	// https://stackoverflow.com/questions/15621764/generate-a-random-byte-stream
-	double scale = 1.0 / (RAND_MAX + 1);
-	double range = (double)max - (double)min + 1;
-	return min + (int)(rand() * scale * range);
-}
-
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
@@ -490,10 +478,10 @@ void obfusc(PARM_T* pparm) {
 	srand(seed);
 
 	p = (unsigned char*)pparm;
-	for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0,255);
+	for (i = 0; i < seed_position; i++) *p++ ^= rand();
 	*((unsigned int*)p) = seed; // seed is placed at this position. data will lost! (in deobfusc, it will be set to 0x00000000)
 	p += 4;
-	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
+	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= rand();
 }
 
 void deobfusc(PARM_T* pparm) {
@@ -502,7 +490,7 @@ void deobfusc(PARM_T* pparm) {
 	unsigned int seed;
 	size_t size, seed_position;
 
-	seed_position = offsetof(PARM_T, unknown2); // offsetof(PARM_T_PREMIERE, unknown1)
+	seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
 	size = sizeof(PARM_T);
 
 	seed = pparm->unknown2;
@@ -512,7 +500,7 @@ void deobfusc(PARM_T* pparm) {
 		// Filter Foundry FF >= 1.4b8,9,10
 		seed = 0xdc43df3c;
 		for (i = size, p = (unsigned char*)pparm; i--;) {
-			*p++ ^= rand_msvcc(&seed) & 0xFF;
+			*p++ ^= rand_msvcc(&seed);
 		}
 	}
 	else if (seed == 0xE2CFCA34) { // 34 CA CF E2
@@ -530,13 +518,17 @@ void deobfusc(PARM_T* pparm) {
 		// Version 3 obfuscation
 		// Filter Foundry >= 1.7.0.5
 		// NO loading of other implementation supported, but that doesn't matter since Obfuscation+Protection is combined in FF >= 1.7.0.5
+		// Using rand() is more secure, because it differs from compiler to compiler, so
+		// it is harder to read a protected 8BF plugin.
+		// Note that rand() in combination with srand() is deterministic, so it is safe
+		// to use it: https://stackoverflow.com/questions/55438293/does-rand-function-in-c-follows-non-determinstc-algorithm
 		// Note: 32-Bit FF is built using OpenWatcom (to support Win95), while 64-Bit FF is built using Microsoft Visual C++
 		srand(seed);
 		p = (unsigned char*)pparm;
-		for (i = 0; i < seed_position; i++) *p++ ^= randInRange(0, 255);
+		for (i = 0; i < seed_position; i++) *p++ ^= rand();
 		*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
 		p += 4;
-		for (i = 0; i < size - seed_position - 4; i++) *p++ ^= randInRange(0, 255);
+		for (i = 0; i < size - seed_position - 4; i++) *p++ ^= rand();
 
 		// Filter Foundry >= 1.7.0.5 builds combines obfuscation and protection
 		// when a standalone filter is built. Theoretically, you can un-protect a

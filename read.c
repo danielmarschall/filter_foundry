@@ -26,9 +26,9 @@
 #include <Endian.h>
 #else
 int EndianS32_LtoN(int num) {
-	return ((num>>24)&0xff) + // move byte 3 to byte 0
-	       ((num<<8)&0xff0000) + // move byte 1 to byte 2
-	       ((num>>8)&0xff00) + // move byte 2 to byte 1
+	return ((num>>24)&0xff) +      // move byte 3 to byte 0
+	       ((num<<8)&0xff0000) +   // move byte 1 to byte 2
+	       ((num>>8)&0xff00) +     // move byte 2 to byte 1
 	       ((num<<24)&0xff000000); // byte 0 to byte 3
 }
 #endif
@@ -146,24 +146,24 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 	photoshop->cbSize = sizeof(PARM_T);
 	photoshop->standalone = premiere->standalone;
 	for (i=0;i<8;++i)
-	  photoshop->val[i] = premiere->val[i];
+		photoshop->val[i] = premiere->val[i];
 	photoshop->popDialog = premiere->popDialog;
 	photoshop->unknown1 = premiere->unknown1;
 	photoshop->unknown2 = premiere->unknown2;
 	photoshop->unknown3 = premiere->unknown3;
 	for (i=0;i<4;++i)
-	  photoshop->map_used[i] = premiere->map_used[i];
+		photoshop->map_used[i] = premiere->map_used[i];
 	for (i=0;i<8;++i)
-	  photoshop->ctl_used[i] = premiere->ctl_used[i];
+		photoshop->ctl_used[i] = premiere->ctl_used[i];
 	sprintf((char*)photoshop->category, "Filter Factory"); // Premiere plugins do not have a category attribute
 	photoshop->iProtected = 0; // Premiere plugins do not have a protect flag
 	memcpy((void*)photoshop->title, (void*)premiere->title, sizeof(photoshop->title));
 	memcpy((void*)photoshop->copyright, (void*)premiere->copyright, sizeof(photoshop->copyright));
 	memcpy((void*)photoshop->author, (void*)premiere->author, sizeof(photoshop->author));
 	for (i=0;i<4;++i)
-	  memcpy((void*)photoshop->map[i], (void*)premiere->map[i], sizeof(photoshop->map[i]));
+		memcpy((void*)photoshop->map[i], (void*)premiere->map[i], sizeof(photoshop->map[i]));
 	for (i=0;i<8;++i)
-	  memcpy((void*)photoshop->ctl[i], (void*)premiere->ctl[i], sizeof(photoshop->ctl[i]));
+		memcpy((void*)photoshop->ctl[i], (void*)premiere->ctl[i], sizeof(photoshop->ctl[i]));
 
 	if (premiere->singleExpression) {
 		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));

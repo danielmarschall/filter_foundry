@@ -259,11 +259,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					// We only want the parameters (ctl,map) in the temporary .afs file
 					// It is important to remove the expressions, otherwise they would be
 					// revealed in the temporary files.
+					bakexpr[0] = expr[0]; // moved out of the if-definition to make the compiler happy
+					bakexpr[1] = expr[1];
+					bakexpr[2] = expr[2];
+					bakexpr[3] = expr[3];
 					if (gdata->standalone) {
-						bakexpr[0] = expr[0];
-						bakexpr[1] = expr[1];
-						bakexpr[2] = expr[2];
-						bakexpr[3] = expr[3];
 						expr[0] = _strdup("r");
 						expr[1] = _strdup("g");
 						expr[2] = _strdup("b");
