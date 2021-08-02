@@ -11,8 +11,6 @@ Important/Bugs
 Minor priority stuff or ideas
 -----------------------------
 
-* Win10+PS2019: It happened to me that the messagebox "Filter created successfully" opened BEHIND Photoshop, so you had to press Alt+Tab to close the window! We must make sure that it is modal!
-
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
 * Memory leak: `strdup()` and `my_strdup()` need `free()` !
@@ -72,8 +70,6 @@ Design/UI Tweaks
 * Should there be more (visual) space for expressions, like in Filter Factory?
 
 * Sliders are extremely tiny!
-
-* simplealert() is only "appmodal" and has no hWnd. Due to this, the window is not blinking when the user tries to click on a parent window. (Is this a Windows bug?)
 
 * "+" and "-" buttons with hand pointer cursor?
 

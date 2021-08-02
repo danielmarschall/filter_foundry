@@ -81,23 +81,27 @@ void DoAbout(AboutRecordPtr pb){
 }
 
 Boolean simplealert(char *s){
+	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
 		title = INPLACEP2CSTR(gdata->parm.title);
 	} else {
 		title = _strdup("Filter Foundry");
 	}
-	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
+	hwnd = gdata ? gdata->hWndMainDlg : NULL;
+	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
 Boolean showmessage(char *s){
+	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
 		title = INPLACEP2CSTR(gdata->parm.title);
 	} else {
 		title = _strdup("Filter Foundry");
 	}
-	return MessageBox(NULL,s,title,MB_TASKMODAL|MB_ICONINFORMATION|MB_OK) == IDOK;
+	hwnd = gdata ? gdata->hWndMainDlg : NULL;
+	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONINFORMATION|MB_OK) == IDOK;
 }
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
@@ -198,8 +202,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 //	case WM_LBUTTONDOWN: break;
 	case WM_MOUSEMOVE:
 		if(panning && GetCursorPos(&newpos)){
-			newscroll.h = (int16)(origscroll.h - zoomfactor*(newpos.x - origpos.x));
-			newscroll.v = (int16)(origscroll.v - zoomfactor*(newpos.y - origpos.y));
+			newscroll.h = (int16)(origscroll.h - zoomfactor*((double)newpos.x - (double)origpos.x));
+			newscroll.v = (int16)(origscroll.v - zoomfactor*((double)newpos.y - (double)origpos.y));
 			if( newscroll.h != preview_scroll.h || newscroll.v != preview_scroll.v ){
 				preview_scroll = newscroll;
 				recalc_preview(gpb,hDlg);
