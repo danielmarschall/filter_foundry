@@ -116,7 +116,7 @@ Boolean readparams(Handle h,Boolean alerts,char **reason){
 						#if WIN_ENV
 						c = CR;
 						if (lineptr < MAXLINE)
-						linebuf[lineptr++] = c;
+							linebuf[lineptr++] = c;
 						c = LF;
 						#else
 						c = CR;

@@ -126,3 +126,20 @@ BOOL _UpdateResource/*A*/(
 
 	return res;
 }
+
+typedef void(__stdcall* f_GetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);
+void _GetNativeSystemInfo(LPSYSTEM_INFO lpSystemInfo) {
+	HMODULE hLib;
+	f_GetNativeSystemInfo fGetNativeSystemInfo;
+
+	hLib = LoadLibraryA("KERNEL32.DLL");
+	if (!hLib) return;
+	fGetNativeSystemInfo = (f_GetNativeSystemInfo)(void*)GetProcAddress(hLib, "GetNativeSystemInfo");
+	if (fGetNativeSystemInfo != 0) {
+		fGetNativeSystemInfo(lpSystemInfo);
+		FreeLibrary(hLib);
+	}
+	else {
+		GetSystemInfo(lpSystemInfo);
+	}
+}

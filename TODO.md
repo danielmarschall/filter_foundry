@@ -2,10 +2,10 @@
 Wishlist/ToDo-List
 ==================
 
-Important/Bugs
---------------
+Known bugs
+----------
 
-(Nothing here at the moment)
+* 32/64 bit cross creation is not possible if obfuscation is compiler dependent! We need to make something different!
 
 
 Minor priority stuff or ideas
@@ -52,8 +52,6 @@ Minor priority stuff or ideas
 * With the change in 1.7 in re "*preview evaluates whole picture if state changing functions rst,put,rnd are used*": Is there anything we can do to make it more performant when the user changes sliders? Especially with large pictures, the process becomes a bit laggy!
 
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
-
-* The user should be able to build 32 bit AND 64 bit standalone filters! Attention: Obfuscate "V1" and "V3" are compiler-dependent; therefore you cannot simply exchange the RCDATA:16001 between plugins!
 
 
 Design/UI Tweaks

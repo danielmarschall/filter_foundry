@@ -87,4 +87,8 @@ BOOL _UpdateResource/*A*/(
 	DWORD  cb
 );
 
+void _GetNativeSystemInfo(
+	LPSYSTEM_INFO lpSystemInfo
+);
+
 #endif

@@ -27,7 +27,7 @@
 
 extern HINSTANCE hDllInstance;
 
-Boolean doresources(HMODULE srcmod,char *dstname);
+Boolean doresources(HMODULE srcmod,char *dstname, int bits);
 
 void dbglasterror(char *func){
 	char s[0x100];
@@ -48,7 +48,7 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 }
 */
 
-int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm) {
+int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm, int bits) {
 	char name[1024];
 	char description[1024];
 	size_t i;
@@ -91,11 +91,12 @@ int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm) {
 	}
 	name[iname++] = '\0';
 
-	#ifdef _WIN64
-	return sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
-	#else
-	return sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
-	#endif
+	if (bits == 64) {
+		return sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
+	}
+	else {
+		return sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
+	}
 }
 
 void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
@@ -171,7 +172,7 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 	free(changeRequestStr);
 }
 
-Boolean doresources(HMODULE srcmod,char *dstname){
+Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
 	Ptr newpipl = NULL, newaete = NULL;
@@ -241,7 +242,7 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				for (i = 0; i < 8; ++i)
 					myp2cstr(pparm->ctl[i]);
 
-				manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm);
+				manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm, bits);
 
 				// ====== Change version attributes
 
@@ -264,7 +265,11 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 				   language than the resource we are saving (Neutral), so we might end up having
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
-				if( _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
+
+				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(50), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) 
+					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)
+					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0)
+					&& _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
 					&& _UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
@@ -288,8 +293,88 @@ Boolean doresources(HMODULE srcmod,char *dstname){
 	return !discard;
 }
 
-OSErr make_standalone(StandardFileReply *sfr){
+BOOL remove_64_filename_prefix(char* dstname) {
+	// foobar.8bf => foobar.8bf
+	// foobar64.8bf => foobar.8bf
+	int i;
+	for (i = strlen(dstname); i > 2; i--) {
+		if (dstname[i] == '.') {
+			if ((dstname[i - 2] == '6') && (dstname[i - 1] == '4')) {
+				int tmp = strlen(dstname);
+				memcpy(&dstname[i - 2], &dstname[i], strlen(dstname) - i + 1);
+				dstname[tmp - 2] = 0;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+BOOL add_64_filename_prefix(char* dstname) {
+	// foobar.8bf => foobar64.8bf
+	int i;
+	for (i = strlen(dstname); i > 2; i--) {
+		if (dstname[i] == '.') {
+			int tmp = strlen(dstname);
+			memcpy(&dstname[i + 2], &dstname[i], strlen(dstname) - i + 1);
+			dstname[i] = '6';
+			dstname[i + 1] = '4';
+			dstname[tmp + 2] = 0;
+			return true;
+		}
+	}
+	return false;
+}
+
+BOOL FileExists(LPCTSTR szPath) {
+	DWORD dwAttrib = GetFileAttributes(szPath);
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+BOOL Is32BitOperatingSystem() {
+#ifdef _WIN64
+	return false;
+#else
+	SYSTEM_INFO info;
+	_GetNativeSystemInfo(&info);
+	return info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL;
+#endif
+}
+
+OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 	Boolean res;
+	
+	//DeleteFile(dstname);
+	if (CopyFile(srcname, dstname, false)) {
+		HMODULE hSrcmod;
+		hSrcmod = LoadLibraryEx(srcname, NULL, LOAD_LIBRARY_AS_DATAFILE);
+		if (hSrcmod) {
+			res = doresources(hSrcmod, dstname, bits);
+			if (!res) {
+				DeleteFile(dstname);
+			}
+			FreeLibrary(hSrcmod);
+		}
+		else {
+			res = false;
+		}
+	}
+	else {
+		res = false;
+	}
+
+	if (!res) {
+		char err[MAX_PATH + 200];
+		sprintf(err, "Could not create %d bit standalone plugin.", bits);
+		alertuser(_strdup(&err[0]), _strdup(""));
+	}
+
+	return res ? noErr : ioErr;
+}
+
+OSErr make_standalone(StandardFileReply *sfr){
+	OSErr tmpErr, outErr;
 	char dstname[0x100],srcname[MAX_PATH+1];
 
 	if (!isWin32NT()) {
@@ -311,17 +396,84 @@ OSErr make_standalone(StandardFileReply *sfr){
 		}
 	}
 
-	//FSpDelete(&sfr->sfFile);
-	myp2cstrcpy(dstname,sfr->sfFile.name);
-	res = GetModuleFileName(hDllInstance,srcname,MAX_PATH)
-		  && CopyFile(srcname,dstname,false)
-		  && doresources(hDllInstance,dstname);
+	outErr = noErr;
 
-	if(!res) {
-		alertuser(_strdup("Could not create standalone plugin."),_strdup(""));
-	} else {
-		showmessage(_strdup("Filter was sucessfully created"));
+#ifdef _WIN64
+
+	//64 bit DLL makes 64 bit:
+	// Source file = module filename
+	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
+	// Destfile = no64_or_32(chosenname) + 64
+	myp2cstrcpy(dstname, sfr->sfFile.name);
+	remove_64_filename_prefix(dstname);
+	add_64_filename_prefix(dstname);
+	tmpErr = do_make_standalone(&srcname[0], &dstname[0], 64);
+	if (tmpErr != noErr)
+		outErr = tmpErr;
+	else
+		showmessage(_strdup("64 bit standalone filter was successfully created"));
+
+	//64 bit DLL makes 32 bit:
+	// Source file = no32(modulefilename)
+	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
+	if (!remove_64_filename_prefix(srcname)) {
+		char err[MAX_PATH + 200];
+		sprintf(err, "Cannot create the %d bit version of this filter, because the 32-bit variant of this plugin could not be found", 32);
+		alertuser(_strdup(&err[0]), _strdup(""));
 	}
+	else if (!FileExists(srcname)) {
+		char err[MAX_PATH + 200];
+		sprintf(err, "%s was not found. Therefore, the %d bit version of the standalone filter could not be created!", srcname, 32);
+		alertuser(_strdup(&err[0]), _strdup(""));
+	}
+	else {
+		// Destfile = no64_or_32(chosenname)
+		myp2cstrcpy(dstname, sfr->sfFile.name);
+		remove_64_filename_prefix(dstname);
+		tmpErr = do_make_standalone(&srcname[0], &dstname[0], 32);
+		if (tmpErr != noErr)
+			outErr = tmpErr;
+		else
+			showmessage(_strdup("32 bit standalone filter was successfully created"));
+}
 
-	return res ? ioErr : noErr;
+#else
+	
+	//32 bit DLL makes 32 bit:
+	// Source file = module filename
+	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
+	// Destfile = no64_or_32(chosenname)
+	myp2cstrcpy(dstname, sfr->sfFile.name);
+	remove_64_filename_prefix(dstname);
+	tmpErr = do_make_standalone(&srcname[0], &dstname[0], 32);
+	if (tmpErr != noErr)
+		outErr = tmpErr;
+	else
+		showmessage(_strdup("32 bit standalone filter was successfully created"));
+
+	if (!Is32BitOperatingSystem()) {
+		//32 bit DLL makes 64 bit:
+		// Source file = module filename + 64
+		GetModuleFileName(hDllInstance, srcname, MAX_PATH);
+		add_64_filename_prefix(srcname);
+		if (!FileExists(srcname)) {
+			char err[MAX_PATH + 200];
+			sprintf(err, "%s was not found. Therefore, the %d bit version of the standalone filter could not be created!", srcname, 64);
+			alertuser(_strdup(&err[0]), _strdup(""));
+		}
+		else {
+			// Destfile = no64_or_32(chosenname) + 64
+			myp2cstrcpy(dstname, sfr->sfFile.name);
+			remove_64_filename_prefix(dstname);
+			add_64_filename_prefix(dstname);
+			tmpErr = do_make_standalone(&srcname[0], &dstname[0], 64);
+			if (tmpErr != noErr)
+				outErr = tmpErr;
+			else
+				showmessage(_strdup("64 bit standalone filter was successfully created"));
+		}
+	}
+#endif
+
+	return outErr;
 }

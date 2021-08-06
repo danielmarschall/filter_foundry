@@ -460,6 +460,8 @@ int rand_openwatcom(unsigned int* seed) {
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
 }
 
+// TODO: obfusc() must be compiler independent again, otherwise the 32/64 cross-create won't work!
+
 void obfusc(PARM_T* pparm) {
 	unsigned char* p;
 	size_t i;
