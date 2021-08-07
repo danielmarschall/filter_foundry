@@ -52,7 +52,7 @@ int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm, int bits
 	char name[1024];
 	char description[1024];
 	size_t i;
-	int iname = 0;
+	size_t iname = 0;
 	int idescription = 0;
 
 	// Description
@@ -172,6 +172,31 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 	free(changeRequestStr);
 }
 
+int binary_replace_file(const char* filename, unsigned int search, unsigned int replace) {
+	unsigned int srecord = 0;
+	int found = 0;
+
+	FILE* fptr = fopen(filename, "rb+");
+	if (fptr == NULL) return -1;
+
+	while ((fread(&srecord, sizeof(srecord), 1, fptr) == 1))
+	{
+		if (srecord == search) {
+			srecord = replace;
+			fseek(fptr, -1*(long)sizeof(srecord), SEEK_CUR);
+			fwrite(&srecord, (int)sizeof(srecord), 1, fptr);
+			fseek(fptr, 0, SEEK_CUR); // important!
+			found++;
+		}
+		else {
+			fseek(fptr, -1*(long)(sizeof(srecord) - 1), SEEK_CUR);
+		}
+	}
+	fclose(fptr);
+
+	return found;
+}
+
 Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
@@ -183,11 +208,8 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
-
+	unsigned int obfuscseed = 0;
 	long event_id;
-
-//      if(!EnumResourceLanguages(srcmod,"PiPL",MAKEINTRESOURCE(16000),enumfunc,0))
-//	      dbglasterror("EnumResourceLanguages");
 
 	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
@@ -229,6 +251,12 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
 				aetesize = aete_generate(newaete, pparm, event_id);
 
+				if (gdata->obfusc) {
+					// Avoid that the same filter can generate with two seeds,
+					// otherwise the comparison would be much easier
+					obfuscseed = (unsigned int)get_parm_hash(pparm);
+				}
+
 				// ====== Change Pascal strings to C-Strings
 
 				/* convert to C strings for Windows PARM resource */
@@ -253,7 +281,9 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				if(gdata->obfusc){
 					parm_type = RT_RCDATA;
 					parm_id = OBFUSCDATA_ID;
-					obfusc(pparm);
+
+					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
+					obfusc(pparm, obfuscseed);
 				}else{
 					parm_type = "PARM";
 					parm_id = PARM_ID;
@@ -282,8 +312,17 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
 
+		// Here, the file will be saved
 		if(!_EndUpdateResource(hupdate,discard))
 			dbglasterror(_strdup("EndUpdateResource"));
+
+		if (gdata->obfusc) {
+			// We modify the binary code to replace the deobfuscate-seed from OBFUSC_V4_DEFAULT_SEED to obfuscseed
+			if (binary_replace_file(dstname, OBFUSC_V4_DEFAULT_SEED, obfuscseed) <= 0) {
+				dbg("binary_replace_file failed");
+				discard = true;
+			}
+		}
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
@@ -296,11 +335,11 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 BOOL remove_64_filename_prefix(char* dstname) {
 	// foobar.8bf => foobar.8bf
 	// foobar64.8bf => foobar.8bf
-	int i;
+	size_t i;
 	for (i = strlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {
 			if ((dstname[i - 2] == '6') && (dstname[i - 1] == '4')) {
-				int tmp = strlen(dstname);
+				size_t tmp = strlen(dstname);
 				memcpy(&dstname[i - 2], &dstname[i], strlen(dstname) - i + 1);
 				dstname[tmp - 2] = 0;
 				return true;
@@ -312,10 +351,10 @@ BOOL remove_64_filename_prefix(char* dstname) {
 
 BOOL add_64_filename_prefix(char* dstname) {
 	// foobar.8bf => foobar64.8bf
-	int i;
+	size_t i;
 	for (i = strlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {
-			int tmp = strlen(dstname);
+			size_t tmp = strlen(dstname);
 			memcpy(&dstname[i + 2], &dstname[i], strlen(dstname) - i + 1);
 			dstname[i] = '6';
 			dstname[i + 1] = '4';

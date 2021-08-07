@@ -14,8 +14,23 @@ Normal standalone filters:
 
 Defined in **ff.h**, implemented in **make.c**:
 
-    void obfusc(PARM_T* pparm);
+    void obfusc(PARM_T* pparm, unsigned int seed);
     void deobfusc(PARM_T* pparm);
+
+### Obfuscation "Version 4"
+
+Introduced in **Filter Foundry 1.7.0.7** [08-Aug-2021]
+
+It is not compiler-dependant, but different between every standalone filter.
+
+The binary code of the 8BF file will be manipulated during building
+in order to store the seed into the `deobfusc()` function.
+This allows that 32 bit and 64 bit filters are "cross built".
+
+Algorithm: XOR shift like in version 2, but the seed is individual for
+each individual built standalone filter.
+
+The value "4" will be stored at position 0x30 (this field is not used in the `PARM` resource).
 
 ### Obfuscation "Version 3"
 

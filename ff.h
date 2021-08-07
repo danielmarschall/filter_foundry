@@ -88,6 +88,7 @@ extern char *errstr;
 //#define DEBUG
 
 // from main.c
+unsigned long get_parm_hash(PARM_T *parm);
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
@@ -115,10 +116,11 @@ Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
 // from make.c
+#define OBFUSC_V4_DEFAULT_SEED 0x52830517
 unsigned long printablehash(unsigned long hash);
 size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
-void obfusc(PARM_T* pparm);
+void obfusc(PARM_T* pparm, unsigned int seed);
 void deobfusc(PARM_T* pparm);
 
 // from loadfile_*.c
@@ -165,3 +167,4 @@ struct node *parseexpr(char *s);
 #endif /* _MSC_VER */
 
 #endif /* INCLUDED_FF_H */
+

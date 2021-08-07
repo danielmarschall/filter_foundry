@@ -91,7 +91,13 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if (hm = LoadLibraryEx(myp2cstrcpy(name,sfr->sfFile.name),NULL,LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm,reason,READ_OBFUSC)) {
 				if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
-					*reason = _strdup("Incompatible obfuscation.");
+					if (gdata->parm.unknown2 == 4) {
+						// Obfuscation V4 is protected, because FF>=1.7.0.5 combines protection and obfuscation
+						*reason = _strdup("The filter is protected.");
+					}
+					else {
+						*reason = _strdup("Incompatible obfuscation.");
+					}
 					return false; // Stop! We know the issue now.
 				} else if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");

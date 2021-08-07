@@ -6,7 +6,7 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory. For informa
 Initially written by [Toby Thain](https://www.telegraphics.com.au/sw/) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) / [ViaThinkSoft](https://www.viathinksoft.de/) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
-### Windows version 1.7.0.6
+### Windows version 1.7.0.7
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf, [Download here](https://www.viathinksoft.de/download/248/FilterFoundry.8bf)) and a 64-Bit Windows plugin (FilterFoundry64.8bf, [Download here](https://www.viathinksoft.de/download/249/FilterFoundry64.8bf)).
 

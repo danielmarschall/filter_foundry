@@ -460,30 +460,34 @@ int rand_openwatcom(unsigned int* seed) {
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
 }
 
-// TODO: obfusc() must be compiler independent again, otherwise the 32/64 cross-create won't work!
-
-void obfusc(PARM_T* pparm) {
-	unsigned char* p;
+void _xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 	size_t i;
-	unsigned int seed;
+	unsigned char* x = *p;
+	for (i = 0; i < num; i++) {
+		// https://de.wikipedia.org/wiki/Xorshift
+		*x32 ^= *x32 << 13;
+		*x32 ^= *x32 >> 17;
+		*x32 ^= *x32 << 5;
+		*x++ ^= *x32;
+	}
+	*p = x;
+}
+
+void obfusc(PARM_T* pparm, unsigned int seed) {
+	unsigned char* p;
 	size_t size, seed_position;
 
 	seed_position = offsetof(PARM_T, unknown2);
 	size = sizeof(PARM_T);
 
-	// Version 3 obfuscation
-	// Filter Foundry >= 1.7.0.5
-
-	do {
-		seed = (unsigned int)time(0);
-	} while ((seed == 0x90E364A3/*V1*/) || (seed == 0xE2CFCA34/*V2*/));
-	srand(seed);
+	// Version 4 obfuscation
+	// Filter Foundry >= 1.7.0.7
 
 	p = (unsigned char*)pparm;
-	for (i = 0; i < seed_position; i++) *p++ ^= rand();
-	*((unsigned int*)p) = seed; // seed is placed at this position. data will lost! (in deobfusc, it will be set to 0x00000000)
+	_xorshift(&p, &seed, seed_position);
+	*((unsigned int*)p) = 4; // Obfusc V4 info
 	p += 4;
-	for (i = 0; i < size - seed_position - 4; i++) *p++ ^= rand();
+	_xorshift(&p, &seed, size - seed_position - 4);
 }
 
 void deobfusc(PARM_T* pparm) {
@@ -515,6 +519,26 @@ void deobfusc(PARM_T* pparm) {
 			x32 ^= x32 << 5;
 			*p++ ^= x32;
 		}
+	}
+	else if (seed == 4) {
+		// Version 4 obfuscation
+		// Filter Foundry >= 1.7.0.7
+		// Not compiler dependent, but individual for each build
+		// It is important that this code works for both x86 and x64 indepdently from the used compiler,
+		// otherwise, the cross-make x86/x64 won't work!
+		seed = OBFUSC_V4_DEFAULT_SEED; // this value will be manipulated during the building of each individual filter (see make_win.c)
+		p = (unsigned char*)pparm;
+		_xorshift(&p, &seed, seed_position);
+		p += 4; // obfusc info == 4
+		_xorshift(&p, &seed, size - seed_position - 4);
+
+		// Filter Foundry >= 1.7.0.5 builds combines obfuscation and protection
+		// when a standalone filter is built. Theoretically, you can un-protect a
+		// plugin, even if it is obfuscated, just by bit-flipping the LSB of byte 0x164.
+		// Therefore, we enforce that the plugin is protected!
+		// Note: We don't need to check PARM_T_PREMIERE, because only PARM_T
+		//       can be obfuscated by FilterFoundry.
+		pparm->iProtected = 1;
 	}
 	else {
 		// Version 3 obfuscation

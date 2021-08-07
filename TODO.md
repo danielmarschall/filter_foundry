@@ -5,11 +5,13 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-* 32/64 bit cross creation is not possible if obfuscation is compiler dependent! We need to make something different!
+(Nothing here yet)
 
 
 Minor priority stuff or ideas
 -----------------------------
+
+* When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 

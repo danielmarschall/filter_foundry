@@ -1,10 +1,11 @@
 # Changelog
 
-## 1.7.0.7 [Work-In-Progress]
-- Obfuscated "V1" and obfuscated "V2" filters can now be loaded again (as long as they aren't protected)
-- Security improvement: Filters which have been built using obfuscation "V3" will now always be treated as protected plugin, even if the obfuscated code has been manipulated.
-- Windows message box dialogs are now properly "modal" (they have the correct parent window handle), and therefore, they blink when you click at the parent window.
+## 1.7.0.7 [08-Aug-2021]
 - Standalone filters are now created in 32 and 64 bit. To make this work, you need to install FilterFoundry.8bf and FilterFoundry64.8bf in your plug-in directory.
+- Security improvement: Filters which have been built using obfuscation "V3" or "V4" will now always be treated as protected plugin, even if the obfuscated code has been manipulated.
+- Introduced obfuscation "V4" (more secure)
+- Obfuscated "V1" and obfuscated "V2" filters can now be loaded again (as long as they aren't protected)
+- Windows message box dialogs are now properly "modal" (they have the correct parent window handle), and therefore, they blink when you click at the parent window.
 - The TPLT (template data) and build dialog resources are now deleted from standalone filters to save space.
 
 ## 1.7.0.6 [01-Aug-2021]

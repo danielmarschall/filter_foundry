@@ -64,17 +64,17 @@ int checkandinitparams(Handle params);
 DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector,FilterRecordPtr pb,intptr_t *data,short *result);
 
-unsigned long get_parm_hash(PARM_T parm) {
+unsigned long get_parm_hash(PARM_T *parm) {
 	unsigned long hash;
 	int i;
 
-	hash = djb2((char*)parm.category);
-	hash += djb2((char*)parm.title);
-	hash += djb2((char*)parm.copyright);
-	hash += djb2((char*)parm.author);
-	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm.map[i]);
-	for (i = 0; i < 8; i++) hash += hash += djb2((char*)parm.ctl[i]);
-	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm.formula[i]);
+	hash = djb2((char*)parm->category);
+	hash += djb2((char*)parm->title);
+	hash += djb2((char*)parm->copyright);
+	hash += djb2((char*)parm->author);
+	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm->map[i]);
+	for (i = 0; i < 8; i++) hash += hash += djb2((char*)parm->ctl[i]);
+	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm->formula[i]);
 
 	return hash;
 }
@@ -247,7 +247,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					if (strlen(tempdir) > 0) strcat(tempdir, "/");
 					#endif
 
-					hash = (gdata->standalone) ? get_parm_hash(gdata->parm) : 0;
+					hash = (gdata->standalone) ? get_parm_hash(&gdata->parm) : 0;
 					sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
 
 					myc2pstrcpy(sfr.sfFile.name, outfilename);
@@ -345,7 +345,7 @@ int checkandinitparams(Handle params){
 		if (strlen(tempdir) > 0) strcat(tempdir, "/");
 		#endif
 
-		hash = (isStandalone) ? get_parm_hash(gdata->parm) : 0;
+		hash = (isStandalone) ? get_parm_hash(&gdata->parm) : 0;
 		sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
 
 		myc2pstrcpy(sfr.sfFile.name, outfilename);
