@@ -20,6 +20,8 @@
 
 #include "ff.h"
 
+#include <time.h>
+
 #include "file_compat.h"
 #include "compat_string.h"
 #include "versioninfo_modify_win.h"
@@ -172,6 +174,22 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 	free(changeRequestStr);
 }
 
+Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
+	FILE* fptr = fopen(filename, "rb+");
+	if (fptr == NULL) return false;
+
+	fseek(fptr, 0x3C, SEEK_SET);
+	size_t peoffset;
+	fread(&peoffset, sizeof(peoffset), 1, fptr);
+
+	fseek(fptr, peoffset + 8, SEEK_SET);
+	fwrite(&timestamp, sizeof(time_t), 1, fptr);
+
+	fclose(fptr);
+
+	return true;
+}
+
 int binary_replace_file(const char* filename, unsigned int search, unsigned int replace) {
 	unsigned int srecord = 0;
 	int found = 0;
@@ -318,11 +336,16 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 		if (gdata->obfusc) {
 			// We modify the binary code to replace the deobfuscate-seed from <cObfuscV4Seed> to <obfuscseed>
-			if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) <= 0) {
+			if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) != 1) {
+				// The seed must only be exactly 1 time inside the 8BF file,
+				// since "const volatile" makes sure that the compiler won't place
+				// it at several locations in the code.
 				dbg("binary_replace_file failed");
 				discard = true;
 			}
 		}
+
+		update_pe_timestamp(dstname, time(0));
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
@@ -332,7 +355,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	return !discard;
 }
 
-BOOL remove_64_filename_prefix(char* dstname) {
+Boolean remove_64_filename_prefix(char* dstname) {
 	// foobar.8bf => foobar.8bf
 	// foobar64.8bf => foobar.8bf
 	size_t i;
@@ -349,7 +372,7 @@ BOOL remove_64_filename_prefix(char* dstname) {
 	return false;
 }
 
-BOOL add_64_filename_prefix(char* dstname) {
+Boolean add_64_filename_prefix(char* dstname) {
 	// foobar.8bf => foobar64.8bf
 	size_t i;
 	for (i = strlen(dstname); i > 2; i--) {

@@ -7,6 +7,7 @@
 - Obfuscated "V1" and obfuscated "V2" filters can now be loaded again (as long as they aren't protected)
 - Windows message box dialogs are now properly "modal" (they have the correct parent window handle), and therefore, they blink when you click at the parent window.
 - The TPLT (template data) and build dialog resources are now deleted from standalone filters to save space. (*)
+- "PE header build timestamp" is now set for built standalone filters
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
