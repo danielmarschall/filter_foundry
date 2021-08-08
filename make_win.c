@@ -175,14 +175,16 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 }
 
 Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
-	FILE* fptr = fopen(filename, "rb+");
+	size_t peoffset;
+	FILE* fptr;
+	
+	fptr = fopen(filename, "rb+");
 	if (fptr == NULL) return false;
 
 	fseek(fptr, 0x3C, SEEK_SET);
-	size_t peoffset;
 	fread(&peoffset, sizeof(peoffset), 1, fptr);
 
-	fseek(fptr, peoffset + 8, SEEK_SET);
+	fseek(fptr, (long)peoffset + 8, SEEK_SET);
 	fwrite(&timestamp, sizeof(time_t), 1, fptr);
 
 	fclose(fptr);
