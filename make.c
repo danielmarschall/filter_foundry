@@ -35,6 +35,8 @@
 //#define PRINTABLE_HASH_FF16
 #define ENABLE_APPLESCRIPT
 
+const volatile uint32_t cObfuscV4Seed = 0x52830517; // this value will be manipulated during the building of each individual filter (see make_win.c)
+
 /*
 Find a printable 4-character key, remembering (see Photoshop API guide):
 - All IDs starting with an uppercase letter are reserved by Adobe.
@@ -520,17 +522,17 @@ void deobfusc(PARM_T* pparm) {
 			*p++ ^= x32;
 		}
 	}
-	else if (seed == 4) {
+	else if (seed == 4) { // 04 00 00 00
 		// Version 4 obfuscation
 		// Filter Foundry >= 1.7.0.7
 		// Not compiler dependent, but individual for each build
 		// It is important that this code works for both x86 and x64 indepdently from the used compiler,
 		// otherwise, the cross-make x86/x64 won't work!
-		seed = OBFUSC_V4_DEFAULT_SEED; // this value will be manipulated during the building of each individual filter (see make_win.c)
+		uint32_t v4seed = cObfuscV4Seed; // this value will be manipulated during the building of each individual filter (see make_win.c)
 		p = (unsigned char*)pparm;
-		_xorshift(&p, &seed, seed_position);
+		_xorshift(&p, &v4seed, seed_position);
 		p += 4; // obfusc info == 4
-		_xorshift(&p, &seed, size - seed_position - 4);
+		_xorshift(&p, &v4seed, size - seed_position - 4);
 
 		// Filter Foundry >= 1.7.0.5 builds combines obfuscation and protection
 		// when a standalone filter is built. Theoretically, you can un-protect a

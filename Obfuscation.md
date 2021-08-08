@@ -23,9 +23,15 @@ Introduced in **Filter Foundry 1.7.0.7** [08-Aug-2021]
 
 It is not compiler-dependant, but different between every standalone filter.
 
+Windows version:
 The binary code of the 8BF file will be manipulated during building
 in order to store the seed into the `deobfusc()` function.
+The placeholder value is OBFUSC_V4_DEFAULT_SEED 0x52830517
 This allows that 32 bit and 64 bit filters are "cross built".
+
+(Theoretical) Macintosh version:
+Obfuscation and deobfuscation has the seed 0x52830517, since the
+manipulation of the binary code is not implemented.
 
 Algorithm: XOR shift like in version 2, but the seed is individual for
 each individual built standalone filter.

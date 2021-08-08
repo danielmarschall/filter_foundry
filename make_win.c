@@ -317,8 +317,8 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 			dbglasterror(_strdup("EndUpdateResource"));
 
 		if (gdata->obfusc) {
-			// We modify the binary code to replace the deobfuscate-seed from OBFUSC_V4_DEFAULT_SEED to obfuscseed
-			if (binary_replace_file(dstname, OBFUSC_V4_DEFAULT_SEED, obfuscseed) <= 0) {
+			// We modify the binary code to replace the deobfuscate-seed from <cObfuscV4Seed> to <obfuscseed>
+			if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) <= 0) {
 				dbg("binary_replace_file failed");
 				discard = true;
 			}
@@ -474,7 +474,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 			outErr = tmpErr;
 		else
 			showmessage(_strdup("32 bit standalone filter was successfully created"));
-}
+	}
 
 #else
 	
