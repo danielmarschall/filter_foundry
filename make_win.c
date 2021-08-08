@@ -394,16 +394,6 @@ BOOL FileExists(LPCTSTR szPath) {
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-BOOL Is32BitOperatingSystem() {
-#ifdef _WIN64
-	return false;
-#else
-	SYSTEM_INFO info;
-	_GetNativeSystemInfo(&info);
-	return info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL;
-#endif
-}
-
 OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 	Boolean res;
 	
@@ -445,6 +435,8 @@ OSErr make_standalone(StandardFileReply *sfr){
 		hLib = LoadLibraryA("UNICOWS.DLL");
 		if (!hLib) {
 			char* sysdir;
+
+			// Unicows.dll is required to implement the BeginUpdateResource functionalities in Win9x
 
 			sysdir = (char*)malloc(MAX_PATH);
 			GetSystemDirectoryA(sysdir, MAX_PATH);
@@ -513,7 +505,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	else
 		showmessage(_strdup("32 bit standalone filter was successfully created"));
 
-	if (!Is32BitOperatingSystem()) {
+	if (isWin32NT()) {
 		//32 bit DLL makes 64 bit:
 		// Source file = module filename + 64
 		GetModuleFileName(hDllInstance, srcname, MAX_PATH);
@@ -534,6 +526,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 			else
 				showmessage(_strdup("64 bit standalone filter was successfully created"));
 		}
+	}
+	else {
+		// Unicows.dll cannot edit resources of 64 bit DLLs.
+		// The normal Kernel function BeginUpdateResource can edit 64 bit DLLs, even in NT4.0 SP6
+		simplealert(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
 	}
 #endif
 
