@@ -217,6 +217,127 @@ int binary_replace_file(const char* filename, unsigned int search, unsigned int 
 	return found;
 }
 
+//DOS .EXE header
+struct image_dos_header
+{
+	uint16_t e_magic;                     // Magic number
+	uint16_t e_cblp;                      // Bytes on last page of file
+	uint16_t e_cp;                        // Pages in file
+	uint16_t e_crlc;                      // Relocations
+	uint16_t e_cparhdr;                   // Size of header in paragraphs
+	uint16_t e_minalloc;                  // Minimum extra paragraphs needed
+	uint16_t e_maxalloc;                  // Maximum extra paragraphs needed
+	uint16_t e_ss;                        // Initial (relative) SS value
+	uint16_t e_sp;                        // Initial SP value
+	uint16_t e_csum;                      // Checksum
+	uint16_t e_ip;                        // Initial IP value
+	uint16_t e_cs;                        // Initial (relative) CS value
+	uint16_t e_lfarlc;                    // File address of relocation table
+	uint16_t e_ovno;                      // Overlay number
+	uint16_t e_res[4];                    // Reserved words
+	uint16_t e_oemid;                     // OEM identifier (for e_oeminfo)
+	uint16_t e_oeminfo;                   // OEM information; e_oemid specific
+	uint16_t e_res2[10];                  // Reserved words
+	int32_t  e_lfanew;                    // File address of new exe header
+};
+
+struct image_file_header
+{
+	uint16_t Machine;
+	uint16_t NumberOfSections;
+	uint32_t TimeDateStamp;
+	uint32_t PointerToSymbolTable;
+	uint32_t NumberOfSymbols;
+	uint16_t SizeOfOptionalHeader;
+	uint16_t Characteristics;
+};
+
+uint32_t calculate_checksum(const char* filename) {
+	//Calculate checksum of image
+	// Taken from "PE Bliss" Cross-Platform Portable Executable C++ Library
+	// https://github.com/mrexodia/portable-executable-library/blob/master/pe_lib/pe_checksum.cpp
+	// Converted from C++ to C by Daniel Marschall
+
+	FILE* fptr;
+	unsigned long long checksum = 0;
+	struct image_dos_header header;
+	size_t filesize;
+	unsigned long long top;
+	unsigned long pe_checksum_pos;
+	static const unsigned long checksum_pos_in_optional_headers = 64;
+	size_t i;
+
+	fptr = fopen(filename, "rb");
+	if (fptr == NULL) return 0x00000000;
+
+	//Read DOS header
+	fseek(fptr, 0, SEEK_SET);
+	fread(&header, sizeof(struct image_dos_header), 1, fptr);
+
+	//Calculate PE checksum
+	fseek(fptr, 0, SEEK_SET);
+	top = 0xFFFFFFFF;
+	top++;
+
+	//"CheckSum" field position in optional PE headers - it's always 64 for PE and PE+
+	//Calculate real PE headers "CheckSum" field position
+	//Sum is safe here
+	pe_checksum_pos = header.e_lfanew + sizeof(struct image_file_header) + sizeof(uint32_t) + checksum_pos_in_optional_headers;
+
+	//Calculate checksum for each byte of file
+	fseek(fptr, 0L, SEEK_END);
+	filesize = ftell(fptr);
+	fseek(fptr, 0L, SEEK_SET);
+	for (i = 0; i < filesize; i += 4)
+	{
+		unsigned long dw = 0;
+
+		//Read DWORD from file
+		fread(&dw, sizeof(dw), 1, fptr);
+		//Skip "CheckSum" DWORD
+		if (i == pe_checksum_pos)
+			continue;
+
+		//Calculate checksum
+		checksum = (checksum & 0xffffffff) + dw + (checksum >> 32);
+		if (checksum > top)
+			checksum = (checksum & 0xffffffff) + (checksum >> 32);
+	}
+
+	//Finish checksum
+	checksum = (checksum & 0xffff) + (checksum >> 16);
+	checksum = (checksum)+(checksum >> 16);
+	checksum = checksum & 0xffff;
+
+	checksum += (unsigned long)(filesize);
+
+	fclose(fptr);
+
+	//Return checksum
+	return (uint32_t)checksum;
+}
+
+Boolean repair_pe_checksum(const char* filename) {
+	size_t peoffset;
+	FILE* fptr;
+
+	uint32_t checksum = calculate_checksum(filename);
+	//if (checksum == 0x00000000) return false;
+
+	fptr = fopen(filename, "rb+");
+	if (fptr == NULL) return false;
+
+	fseek(fptr, 0x3C, SEEK_SET);
+	fread(&peoffset, sizeof(peoffset), 1, fptr);
+
+	fseek(fptr, (long)peoffset + 88, SEEK_SET);
+	fwrite(&checksum, sizeof(uint32_t), 1, fptr);
+
+	fclose(fptr);
+
+	return true;
+}
+
 Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
@@ -348,6 +469,8 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 		}
 
 		update_pe_timestamp(dstname, time(0));
+
+		repair_pe_checksum(dstname);
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);

@@ -32,7 +32,7 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
 
-If the plugin is built with OpenWatcom, the minimum supported Windows version is Windows 95. Otherwise, Windows XP or later is required. The latest tested Windows version is Windows 10 (x64).
+If the plugin is built with OpenWatcom, the minimum supported Windows version is Windows 95/NT4. Otherwise, Windows XP or later is required. The latest tested Windows version is Windows 10 (x64).
 
 
 ### Donation
