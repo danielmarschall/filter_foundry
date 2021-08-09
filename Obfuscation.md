@@ -14,7 +14,12 @@ Normal standalone filters:
 
 Defined in **ff.h**, implemented in **make.c**:
 
+    // Only implements V4. Gets a random seed from the calling function.
     void obfusc(PARM_T* pparm, unsigned int seed);
+
+    // In V1+V2: Seed is hardcoded
+    // In V3: Seed is in PARM
+    // In V4: Seed is in the program code and will me modified with a binary search+replace
     void deobfusc(PARM_T* pparm);
 
 ### Obfuscation "Version 4"
@@ -25,18 +30,18 @@ It is not compiler-dependant, but different between every standalone filter.
 
 Windows version:
 The binary code of the 8BF file will be manipulated during building
-in order to store the seed into the `deobfusc()` function.
-The placeholder value is OBFUSC_V4_DEFAULT_SEED 0x52830517
-This allows that 32 bit and 64 bit filters are "cross built".
+to store the seed into the `deobfusc()` function.
+The placeholder value is `OBFUSC_V4_DEFAULT_SEED 0x52830517`
+This allows that 32-bit and 64-bit filters are "cross built".
 
 (Theoretical) Macintosh version:
 Obfuscation and deobfuscation has the seed 0x52830517, since the
 manipulation of the binary code is not implemented.
 
-Algorithm: XOR shift like in version 2, but the seed is individual for
+Algorithm: XOR-Shift like in version 2, but the seed is individual for
 each individual built standalone filter.
 
-The value "4" will be stored at position 0x30 (this field is not used in the `PARM` resource).
+The DWORD value "0x00000004" will be stored at position 0x30 (this field is not used in the `PARM` resource).
 
 ### Obfuscation "Version 3"
 

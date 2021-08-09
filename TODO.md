@@ -11,6 +11,8 @@ Known bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* Why doesn't the OpenWatcom files have a PE checksum?
+
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
