@@ -94,6 +94,30 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	BOOL activationContextUsed;
 	#endif
 
+	#ifdef WIN_ENV
+	// The first 64KB of address space is always invalid
+	if ((intptr_t)result <= 0xffff) {
+		// When the 8BF file is analyzed with VirusTotal.com, it will invoke each
+		// exported function by calling
+		//    C:\Windows\System32\rundll32.exe rundll32.exe FilterFoundry.8bf,PluginMain
+		// But RunDLL32 requires following signature:
+		//    void CALLBACK EntryPoint(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow);
+		// Obviously, this will cause an Exception. (It crashes at *result=e because result is 0xA)
+		// Here is the problem: The crash will be handled by WerFault.exe inside the
+		// VirusTotal virtual machine. WerFault connects to various servers (9 DNS resolutions!) and does
+		// a lot of weird things, but VirusTotal thinks that our plugin does all that stuff,
+		// and so they mark our plugin as "malware"!
+		// This is a problem with VirusTotal! It shall not assume that WerFault.exe actions are our actions!
+		// Even processes like "MicrosoftEdgeUpdate.exe" and "SpeechRuntime.exe" are reported to be our
+		// actions, although they have nothing to do with us!
+		// See https://www.virustotal.com/gui/file/1f1012c567208186be455b81afc1ee407ae6476c197d633c70cc70929113223a/behavior
+		// 
+		// TODO: Not 100% sure if the calling convention is correct...
+		//       are we corrupting the stack? At least WER isn't triggered...
+		return;
+	}
+	#endif
+
 	EnterCodeResource();
 
 	#ifdef SHOW_HOST_DEBUG
