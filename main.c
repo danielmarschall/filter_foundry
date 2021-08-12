@@ -85,6 +85,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	static Boolean premiereWarnedOnce = false;
 	OSErr e = noErr;
 	char *reason;
+	
+	#ifdef SHOW_HOST_DEBUG
+	char* tmp;
+	#endif
 
 	#ifdef WIN_ENV
 	// For Windows, we use an activation context to enforce that our Manifest resource will
@@ -93,6 +97,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	ManifestActivationCtx manifestVars;
 	BOOL activationContextUsed;
 	#endif
+
+	// ---------------------------------------------------------------------
+
+	EnterCodeResource();
 
 	#ifdef WIN_ENV
 	// The first 64KB of address space is always invalid
@@ -117,13 +125,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		return;
 	}
 	#endif
-
-	EnterCodeResource();
-
+	
 	#ifdef SHOW_HOST_DEBUG
-	char* s = (char*)malloc(512);
-	sprintf(s, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
-	simplealert(s);
+	tmp = (char*)malloc(512);
+	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
+	simplealert(tmp);
 	#endif
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
