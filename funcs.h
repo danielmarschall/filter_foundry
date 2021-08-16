@@ -47,7 +47,8 @@ extern double costab[],tantab[];
 #define FFANGLE(v) ((v)*M_PI/512.)
 #define TO_FFANGLE(v) ((v)*512./M_PI)
 
-#define INITRANDSEED() srand(691204)
+#define INITRANDSEED() factory_initialize_rnd_variables()
+//#define INITRANDSEED() srand(691204)
 
 value_type ff_src(value_type x,value_type y,value_type z);
 value_type ff_rad(value_type d,value_type m,value_type z);

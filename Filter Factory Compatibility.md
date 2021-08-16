@@ -57,16 +57,16 @@ Filter Foundry's implementation of rst(i) (an undocumented function that sets th
 and rnd(a,b) (generate a random number between a and b, inclusively)
 differs from the implementation of Filter Factory in many ways.
 
-1. In Filter Foundry, the random seed is automatically initialized with seed 691204.
-   In Filter Factory, the random seed is automatically initialized with seed 0.   
+0. Beginning with Filter Foundry 1.7.0.8, the same compiler-independant algorithm like
+   in Filter Factory is used.
 
-2. In Filter Foundry, the argument i of the function rst(i) is limited to the
-   type "unsigned int" (argument of the function srand() in the C StdLib),
-   so the allowed range is 0..4294967295.
+1. In Filter Factory, the random seed is automatically initialized with seed 0.   
+   Filter Foundry 1.7.0.8 does the same.
 
-   In Filter Factory, the argument i must be between 0 and 32767, inclusively.
+2. In Filter Factory, the argument i must be between 0 and 32767, inclusively.
    If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
    to extract the low 15 bits.
+   Filter Foundry 1.7.0.8 does the same.
 
 3. In Filter Foundry, the function rnd(a,b) retrieves a random number in realtime; therefore, if the
    seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.

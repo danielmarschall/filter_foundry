@@ -173,9 +173,83 @@ value_type ff_dif(value_type a,value_type b){
 	return abs(a-b);
 }
 
+uint16_t gFactoryRndIndexCounter = 0;
+uint32_t gFactoryRndLookup[56];
+uint32_t gFactoryRndSeed = 0;
+uint32_t gFactoryRndSeedSave = 0;
+
+unsigned int factory_rnd(unsigned int a, unsigned int b) {
+	// Algorithm of Filter Factory
+
+	unsigned int rndCounterA, rndCounterB, range, result;
+
+	rndCounterA = gFactoryRndIndexCounter % 55 + 1;
+	rndCounterB = (gFactoryRndIndexCounter + 31) % 55 + 1;
+	gFactoryRndIndexCounter = rndCounterA;
+
+	result = gFactoryRndLookup[rndCounterA] - gFactoryRndLookup[rndCounterB];
+	gFactoryRndLookup[rndCounterA] = result;
+
+	// Scale result to interval [a..b]
+	range = b - a;
+	if (range < 0) return 0;
+	range++;
+	return a + (result % range);
+}
+
+void factory_fill_rnd_lookup(unsigned int seed) {
+	// Algorithm of Filter Factory
+
+	unsigned int iVar2;
+	unsigned int iVar3;
+	unsigned int iVar5;
+	unsigned int iVar6;
+
+	// 161803398 = 1.61803398 * 10^8 ~ phi * 10^8
+	iVar5 = 161803398 - (seed & 0x7fff);
+	gFactoryRndLookup[55] = iVar5;
+
+	iVar6 = 1;
+	for (iVar2 = 21; iVar2 <= 1134; iVar2 += 21) {
+		iVar3 = iVar6;
+		gFactoryRndLookup[iVar2 % 55] = iVar3;
+		iVar6 = iVar5 - iVar3;
+		iVar5 = iVar3;
+	}
+
+	for (iVar2 = 0; iVar2 < 4; iVar2++) {
+		unsigned int cnt = 1;
+		do {
+			gFactoryRndLookup[cnt++] = gFactoryRndLookup[cnt] - gFactoryRndLookup[((cnt + 30) % 55) + 1];
+		} while (cnt <= 55);
+	}
+
+	gFactoryRndSeedSave = seed;
+
+	return;
+}
+
+unsigned int factory_rst(int seed) {
+	// Algorithm of Filter Factory
+	gFactoryRndSeed = seed;
+	return 0;
+}
+
+void factory_initialize_rnd_variables() {
+	// Algorithm of Filter Factory
+	// However, we use it differently in Filter Foundry:
+	// Every call of rst() will renew the lookup table,
+	// while in Filter Factory, there are strange things going
+	// on, like only setting the state in pixel [0,0,0] and
+	// only before rnd() is called, etc.
+	gFactoryRndIndexCounter = 0;
+	factory_fill_rnd_lookup(0);
+}
+
 /* rnd(a,b) Random number between a and b, inclusive */
 value_type ff_rnd(value_type a,value_type b){
-	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
+	return factory_rnd(a,b);
+//	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
 //	return ((unsigned)rand() % (ff_dif(a,b)+1)) + ff_min(a,b);
 }
 
@@ -354,7 +428,8 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 /* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
    Added by DM, 18 Dec 2018 */
 value_type ff_rst(value_type seed){
-	srand(seed);
+	factory_rst(seed);
+//	srand(seed);
 	return 0;
 }
 

@@ -135,6 +135,9 @@ Boolean host_preserves_parameters();
 // from parser.y
 struct node *parseexpr(char *s);
 
+// from funcs.c
+void factory_initialize_rnd_variables();
+
 // Useful macros
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 
