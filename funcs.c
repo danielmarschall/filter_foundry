@@ -175,13 +175,23 @@ value_type ff_dif(value_type a,value_type b){
 
 uint16_t gFactoryRndIndexCounter = 0;
 uint32_t gFactoryRndLookup[56];
+uint32_t gFactoryRndSeed;
+uint32_t gFactoryRndSeedSave;
 
-int32_t factory_rnd(int32_t a, int32_t b) {
-	// Algorithm of Filter Factory
+void factory_fill_rnd_lookup(uint32_t seed);
 
+uint32_t factory_rnd(uint32_t a, uint32_t b) {
 	uint16_t rndCounterA, rndCounterB;
 	uint32_t result;
 	int32_t range;
+
+	if (gFactoryRndSeed != gFactoryRndSeedSave) {
+		// (Intentional) behavior of Filter Foundry
+		factory_fill_rnd_lookup(gFactoryRndSeed);
+		gFactoryRndIndexCounter = 0;
+	}
+
+	// Algorithm of Filter Factory
 
 	rndCounterA = gFactoryRndIndexCounter % 55 + 1;
 	rndCounterB = (gFactoryRndIndexCounter + 31) % 55 + 1;
@@ -193,14 +203,14 @@ int32_t factory_rnd(int32_t a, int32_t b) {
 	// Scale result to interval [a..b]
 	range = b - a;
 	if (range < 0) return 0;
-	return a + (result % (range+1));
+	return a + (result % (range + 1));
 }
 
-void factory_fill_rnd_lookup(int32_t seed) {
+void factory_fill_rnd_lookup(uint32_t seed) {
 	// Algorithm of Filter Factory
 
-	unsigned int i, j;
-	unsigned int v1, v2, v3;
+	uint32_t i, j;
+	uint32_t v1, v2, v3;
 
 	// 161803398 = 1.61803398 * 10^8 ~= phi * 10^8
 	v2 = 161803398 - (seed & 0x7fff);
@@ -220,26 +230,26 @@ void factory_fill_rnd_lookup(int32_t seed) {
 		}
 	}
 
+	gFactoryRndSeedSave = seed;
+
 	return;
 }
 
-int32_t factory_rst(int32_t seed) {
+int32_t factory_rst(uint32_t seed) {
 	// We implement rst(i) differently in Filter Foundry:
 	// Every call of rst() will renew the lookup table,
 	// while in Filter Factory, there are strange things going
 	// on, like only setting the state in pixel [0,0,0] and
 	// only before rnd() is called, etc.
 
-	gFactoryRndIndexCounter = 0;
-	factory_fill_rnd_lookup(seed);
+	gFactoryRndSeed = seed;
 
 	return 0;
 }
 
 void factory_initialize_rnd_variables() {
-	const int32_t DEFAULT_SEED = 0;
-	gFactoryRndIndexCounter = 0;
-	factory_fill_rnd_lookup(DEFAULT_SEED);
+	gFactoryRndSeed = 0; // default seed
+	gFactoryRndSeedSave = gFactoryRndSeed + 1; // force rnd() to call factory_fill_rnd_lookup()
 }
 
 /* rnd(a,b) Random number between a and b, inclusive */

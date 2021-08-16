@@ -6,10 +6,10 @@ Current work (WIP)
 ------------------
 
 * Try to make rst(i) behave more like Filter Factory?
-* Renew Filter Factory Compatibility.md (rnd change in 1.7.0.8)
+	=> Check rst*_1708 testcases
+* Renew Filter Factory Compatibility.md documentation (rnd change in 1.7.0.8)
 * Renew rnd(a,b) testcases because of change in 1.7.0.8
-* If you have a canvas with previously created random data, the preview shows something. If you enter rnd(0,255) which creates exactly the same data, the preview will change!
-
+	
 
 Known bugs
 ----------

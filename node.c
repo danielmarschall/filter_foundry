@@ -228,7 +228,7 @@ void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */, i
 //		else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map))
 //			*mapused = 1;
 		else if ((p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_put) ||
-		         (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_rnd) ||
+		         (p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_rnd) ||
 		         (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_rst))
 			*state_changing_funcs_used = 1;
 		for( i = 0 ; i < MAXCHILDREN ; ++i )

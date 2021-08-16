@@ -75,7 +75,7 @@ Boolean setup(FilterRecordPtr pb){
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;
-	needall = cnvused = 0;
+	needall = cnvused = state_changing_funcs_used = 0;
 	for(i = 0; i < nplanes; ++i){
 //char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
 		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
@@ -96,6 +96,10 @@ Boolean setup(FilterRecordPtr pb){
 	 * needall=1 to disable chunked processing.
 	 */
 	if (pb->hostSig == HOSTSIG_GIMP) needall = true;
+
+	// If we want accurate rnd(a,b) results (i.e. FilterFoundry and FilterFactory output
+	// exactly the same picture), we must not use chunked processing.
+	if (state_changing_funcs_used) needall = true;
 
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */
