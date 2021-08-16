@@ -120,7 +120,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SetChecksum>true</SetChecksum>
+      <SetChecksum>false</SetChecksum>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -146,7 +146,7 @@ move lex.yy.c lex_yy.c</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SetChecksum>true</SetChecksum>
+      <SetChecksum>false</SetChecksum>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

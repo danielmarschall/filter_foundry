@@ -175,13 +175,13 @@ value_type ff_dif(value_type a,value_type b){
 
 uint16_t gFactoryRndIndexCounter = 0;
 uint32_t gFactoryRndLookup[56];
-uint32_t gFactoryRndSeed = 0;
-uint32_t gFactoryRndSeedSave = 0;
 
-unsigned int factory_rnd(unsigned int a, unsigned int b) {
+int32_t factory_rnd(int32_t a, int32_t b) {
 	// Algorithm of Filter Factory
 
-	unsigned int rndCounterA, rndCounterB, range, result;
+	uint16_t rndCounterA, rndCounterB;
+	uint32_t result;
+	int32_t range;
 
 	rndCounterA = gFactoryRndIndexCounter % 55 + 1;
 	rndCounterB = (gFactoryRndIndexCounter + 31) % 55 + 1;
@@ -193,57 +193,53 @@ unsigned int factory_rnd(unsigned int a, unsigned int b) {
 	// Scale result to interval [a..b]
 	range = b - a;
 	if (range < 0) return 0;
-	range++;
-	return a + (result % range);
+	return a + (result % (range+1));
 }
 
-void factory_fill_rnd_lookup(unsigned int seed) {
+void factory_fill_rnd_lookup(int32_t seed) {
 	// Algorithm of Filter Factory
 
-	unsigned int iVar2;
-	unsigned int iVar3;
-	unsigned int iVar5;
-	unsigned int iVar6;
+	unsigned int i, j;
+	unsigned int v1, v2, v3;
 
-	// 161803398 = 1.61803398 * 10^8 ~ phi * 10^8
-	iVar5 = 161803398 - (seed & 0x7fff);
-	gFactoryRndLookup[55] = iVar5;
+	// 161803398 = 1.61803398 * 10^8 ~= phi * 10^8
+	v2 = 161803398 - (seed & 0x7fff);
+	gFactoryRndLookup[55] = v2;
 
-	iVar6 = 1;
-	for (iVar2 = 21; iVar2 <= 1134; iVar2 += 21) {
-		iVar3 = iVar6;
-		gFactoryRndLookup[iVar2 % 55] = iVar3;
-		iVar6 = iVar5 - iVar3;
-		iVar5 = iVar3;
+	v3 = 1;
+	for (i=1; i<55; ++i) {
+		v1 = v3;
+		gFactoryRndLookup[(i * 21) % 55] = v1;
+		v3 = v2 - v1;
+		v2 = v1;
 	}
 
-	for (iVar2 = 0; iVar2 < 4; iVar2++) {
-		unsigned int cnt = 1;
-		do {
-			gFactoryRndLookup[cnt++] = gFactoryRndLookup[cnt] - gFactoryRndLookup[((cnt + 30) % 55) + 1];
-		} while (cnt <= 55);
+	for (i=0; i<4; ++i) {
+		for (j=1; j<=55;) {
+			gFactoryRndLookup[j++] = gFactoryRndLookup[j] - gFactoryRndLookup[((j + 30) % 55) + 1];
+		}
 	}
-
-	gFactoryRndSeedSave = seed;
 
 	return;
 }
 
-unsigned int factory_rst(int seed) {
-	// Algorithm of Filter Factory
-	gFactoryRndSeed = seed;
-	return 0;
-}
-
-void factory_initialize_rnd_variables() {
-	// Algorithm of Filter Factory
-	// However, we use it differently in Filter Foundry:
+int32_t factory_rst(int32_t seed) {
+	// We implement rst(i) differently in Filter Foundry:
 	// Every call of rst() will renew the lookup table,
 	// while in Filter Factory, there are strange things going
 	// on, like only setting the state in pixel [0,0,0] and
 	// only before rnd() is called, etc.
+
 	gFactoryRndIndexCounter = 0;
-	factory_fill_rnd_lookup(0);
+	factory_fill_rnd_lookup(seed);
+
+	return 0;
+}
+
+void factory_initialize_rnd_variables() {
+	const int32_t DEFAULT_SEED = 0;
+	gFactoryRndIndexCounter = 0;
+	factory_fill_rnd_lookup(DEFAULT_SEED);
 }
 
 /* rnd(a,b) Random number between a and b, inclusive */
