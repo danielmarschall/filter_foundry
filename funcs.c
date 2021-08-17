@@ -173,7 +173,8 @@ value_type ff_dif(value_type a,value_type b){
 	return abs(a-b);
 }
 
-uint16_t gFactoryRndIndexCounter = 0;
+uint16_t gFactoryRndIndexCounter1 = 0;
+uint16_t gFactoryRndIndexCounter2 = 31;
 uint32_t gFactoryRndLookup[56];
 uint32_t gFactoryRndSeed;
 uint32_t gFactoryRndSeedSave;
@@ -181,52 +182,85 @@ uint32_t gFactoryRndSeedSave;
 void factory_fill_rnd_lookup(uint32_t seed);
 
 uint32_t factory_rnd(uint32_t a, uint32_t b) {
-	uint16_t rndCounterA, rndCounterB;
-	uint32_t result;
-	int32_t range;
+	uint32_t mj; // Note: This must be "uint32_t". With "long" (as described by Knuth), it won't match FilterFactory's algorithm
+	int range;
 
 	if (gFactoryRndSeed != gFactoryRndSeedSave) {
 		// (Intentional) behavior of Filter Foundry
 		factory_fill_rnd_lookup(gFactoryRndSeed);
-		gFactoryRndIndexCounter = 0;
+		gFactoryRndIndexCounter1 = 0;
+		gFactoryRndIndexCounter2 = 31;
 	}
 
 	// Algorithm of Filter Factory
+	// Filter Factory uses Donald E.Knuth's subtractive
+	// random number generator algorithm ("ran3"), which has been published
+	// in Page 283 of "The Art of Computer Programming, volume 2: Seminumerical Algorithms",
+	// Addison-Wesley, Reading, MA, second edition, 1981.
+	// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf (PDF Page 307)
 
-	rndCounterA = gFactoryRndIndexCounter % 55 + 1;
-	rndCounterB = (gFactoryRndIndexCounter + 31) % 55 + 1;
-	gFactoryRndIndexCounter = rndCounterA;
+	if (++gFactoryRndIndexCounter1 == 56) gFactoryRndIndexCounter1 = 1;
+	if (++gFactoryRndIndexCounter2 == 56) gFactoryRndIndexCounter2 = 1;
 
-	result = gFactoryRndLookup[rndCounterA] - gFactoryRndLookup[rndCounterB];
-	gFactoryRndLookup[rndCounterA] = result;
+	mj = gFactoryRndLookup[gFactoryRndIndexCounter1] -
+	     gFactoryRndLookup[gFactoryRndIndexCounter2];
+	gFactoryRndLookup[gFactoryRndIndexCounter1] = mj;
 
-	// Scale result to interval [a..b]
+	// This is Filter Factory specific:
+	// Squeeze result into interval [a..b]
+	if (a == 0) {
+		// This part is optional; it is intended to increase the
+		// performance by avoiding modulo/divide if possible.
+		switch (b) {
+		case 255:
+			return mj & 0xFF;
+		case 127:
+			return mj & 0x7F;
+		case 63:
+			return mj & 0x3F;
+		case 31:
+			return mj & 0x1F;
+		case 15:
+			return mj & 0xF;
+		case 7:
+			return mj & 0x7;
+		case 3:
+			return mj & 0x3;
+		case 1:
+			return mj & 0x1;
+		}
+	}
 	range = b - a;
 	if (range < 0) return 0;
-	return a + (result % (range + 1));
+	return a + (mj % (range + 1));
 }
 
 void factory_fill_rnd_lookup(uint32_t seed) {
 	// Algorithm of Filter Factory
+	// Filter Factory uses Donald E.Knuth's subtractive
+	// random number generator algorithm ("ran3"), which has been published
+	// in Page 283 of "The Art of Computer Programming, volume 2: Seminumerical Algorithms",
+	// Addison-Wesley, Reading, MA, second edition, 1981.
+	// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf (PDF Page 307)
 
-	uint32_t i, j;
-	uint32_t v1, v2, v3;
+	long mj, mk;
+	int i, ii, k;
 
 	// 161803398 = 1.61803398 * 10^8 ~= phi * 10^8
-	v2 = 161803398 - (seed & 0x7fff);
-	gFactoryRndLookup[55] = v2;
+	mj = 161803398 - (seed & 0x7fff);
+	gFactoryRndLookup[55] = mj;
 
-	v3 = 1;
-	for (i=1; i<55; ++i) {
-		v1 = v3;
-		gFactoryRndLookup[(i * 21) % 55] = v1;
-		v3 = v2 - v1;
-		v2 = v1;
+	mk = 1;
+	for (i=1; i<=54; ++i) {
+		ii = (21 * i) % 55;
+		gFactoryRndLookup[ii] = mk;
+		mk = mj - mk;
+		mj = gFactoryRndLookup[ii];
 	}
 
-	for (i=0; i<4; ++i) {
-		for (j=1; j<=55;) {
-			gFactoryRndLookup[j++] = gFactoryRndLookup[j] - gFactoryRndLookup[((j + 30) % 55) + 1];
+	for (k=1; k<=4; ++k) {
+		for (i=1; i<=55; ++i) {
+			gFactoryRndLookup[i] -= gFactoryRndLookup[1+(i + 30) % 55];
 		}
 	}
 

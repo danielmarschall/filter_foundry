@@ -50,77 +50,61 @@ In Filter Factory, an empty (transparent) canvas of a new file is initialized as
 Filter Foundry initializes it as `r=g=b=255`
 
 
-rnd(a,b) and rst(i) (Testcases rst_*.afs)
+rnd(a,b) (Testcases rnd_*)
+--------
+
+Filter Factory uses Donald E. Knuth's subtractive random number generator algorithm,
+which has been published in "The Art of Computer Programming, volume 2: Seminumerical Algorithms".
+Addison-Wesley, Reading, MA, second edition, 1981.
+
+Beginning with Filter Foundry 1.7.0.8, the same PRNG was implemented,
+so that the output of rnd(a,b) is exactly the same now.
+
+
+rnd(a,b) and rst(i) (Testcases rnd*.afs and rst_*.afs)
 -------------------
 
-Filter Foundry's implementation of rst(i) (an undocumented function that sets the seed for the PRG)
-and rnd(a,b) (generate a random number between a and b, inclusively)
-differs from the implementation of Filter Factory in many ways.
+Filter Factory contains an undocumented function that sets the seed for the random number generator.
 
-0. Beginning with Filter Foundry 1.7.0.8, the same compiler-independant algorithm like
-   in Filter Factory is used.
+Filter Factory and FilterFoundry beginning with 1.7.0.8 accept a seed between 0 and 32767, inclusively.
+If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
+to extract the low 15 bits.
 
-1. In Filter Factory, the random seed is automatically initialized with seed 0.   
-   Filter Foundry 1.7.0.8 does the same.
+There are many differences in the implementation between FilterFactory and FilterFoundry in regards rst(i):
 
-2. In Filter Factory, the argument i must be between 0 and 32767, inclusively.
-   If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
-   to extract the low 15 bits.
-   Filter Foundry 1.7.0.8 does the same.
+**Filter Factory:**
 
-3. In Filter Foundry, the function rnd(a,b) retrieves a random number in realtime; therefore, if the
-   seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.
-   For example, following filter would generate an one-colored picture without any randomness:
+If rst(i) is called in Filter Factory, an internal Seed-Variable is set.
+It does NOT influence any calls of rnd(a,b), because a lookup-table needs to be built first.
+The building of the lookup-table is probably done before the processing of the first pixel (x,y,z=0).
+It is suspected that the call of rst(i) will take effect on the next calculation.
+Due to a bug (or feature?), the random state is not reset to its initial state (0) before the
+filter is applied. The preview image processing will modify the random state, and once the filter
+is actually applied (pressing "OK"), the random state that was set in the preview picture, will be used.
+This could be considered as a bug, but it is probably required, otherwise the call of rst(i)
+(inside the preview calculation) won't affect the rnd(a,b) in the real run.
+However, in a standalone filter without dialog/preview, there is no preview that could set
+the internal seed, so the rnd(a,b) functions will always work using the default seed 0,
+and only the subsequent calls will use the rst(i) of the previous call.
+
+**Filter Foundry:**
+
+In Filter Foundry, the function rnd(a,b) retrieves a random number in "realtime"; therefore, if the
+seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.
+
+For example, following filter would generate an one-colored picture without any randomness:
         R: rst(123), rnd(0,255)
         G: rnd(0,255)
         B: rnd(0,255)
 
-   If you want to generate a random pixel image with a non-default seed, you need to make sure
-   that rst(i) is called only once at the beginning (channel 0, coordinate 0|0):
+If you want to generate a random pixel image with a non-default seed, you need to make sure
+that rst(i) is called only once at the beginning (channel 0, coordinate 0|0):
         R: (x==0 && y==0) ? rst(123) : 0, rnd(0,255)
         G: rnd(0,255)
         B: rnd(0,255)
 
-   In Filter Factory, the rnd(a,b) function is more complex.
-   As soon as the function rnd(a,b) is used once, rst(i) will not have any effect.
-   So, if you want to use rst(i), you must make sure to call it before using rnd(a,b).
-   Following filter will generate a random pixel picture:
-        R: rst(123), rnd(0,255)
-        G: rnd(0,255)
-        B: rnd(0,255)
-   Following filter would generate a different random pixel picture:
-        R: rst(456), rnd(0,255)
-        G: rnd(0,255)
-        B: rnd(0,255)
-   Following filter would generate the same random pixel picture:
-        R: rst(456), rnd(0,255)+rst(123)  // note that rst() always returns 0, so the '+' operator is OK
-        G: rnd(0,255)
-        B: rnd(0,255)+rst(456)  // the last rst(456) call is to mitigate a bug; see below.
-
-4. In Filter Factory, due to a bug, the random state is not reset to its initial state (0) before the filter is applied:
-   The preview image processing will modify the random state, and once the filter is actually applied (pressing "OK"),
-   the random state that was set in the preview picture, will be used.
-   Example:
-        R: rnd(0,255), rst(123)   // note that the rst(123) is ignored because rnd() was already called.
-        G: rnd(0,255)
-        B: rnd(0,255)
-   This filter will produce a random pixel picture with the initial default random seed 0,
-   but only for the first calculation (i.e. in the preview picture processing, or in a standalone filter without dialog).
-   Any further calculation will result in a random pixel picture with random seed 123,
-   since the random seed 123 will be taken from the previous run.
-
-   Furthermore, the random state can't be changed again, not even at the beginning of the red channel before any rnd() call.
-   Example:
-        R: rst(333), rnd(0,255)
-        G: rnd(0,255)
-        B: rnd(0,255)+rst(555)
-   This filter will produce a picture with random seed 333 on the first calculation,
-   and at every further calculation, a random picture with seed 555.
-   Another example:
-        R: rst(ctl(0)), rnd(0,255)
-        G: rnd(0,255)
-        B: rnd(0,255)+rst(555)
-   In this filter, the slider value is ignored and the resulting picture will always be the same.
+In Filter Foundry, rst(i) can be called by branches and variables/sliders can
+be used as arguments of rst(i).
 
 
 Evaluation of conditional branches

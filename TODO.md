@@ -5,10 +5,8 @@ Wishlist/ToDo-List
 Current work (WIP)
 ------------------
 
-* Try to make rst(i) behave more like Filter Factory?
+* Try to make rst(i) behave more like Filter Factory? Or make something different?
 	=> Check rst*_1708 testcases
-* Renew Filter Factory Compatibility.md documentation (rnd change in 1.7.0.8)
-* Renew rnd(a,b) testcases because of change in 1.7.0.8
 	
 
 Known bugs
