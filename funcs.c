@@ -173,69 +173,15 @@ value_type ff_dif(value_type a,value_type b){
 	return abs(a-b);
 }
 
-uint16_t gFactoryRndIndexCounter1 = 0;
-uint16_t gFactoryRndIndexCounter2 = 31;
-uint32_t gFactoryRndLookup[56];
-uint32_t gFactoryRndSeed;
-uint32_t gFactoryRndSeedSave;
+struct factoryRngState {
+	uint16_t gFactoryRndIndexCounter1;
+	uint16_t gFactoryRndIndexCounter2;
+	uint32_t gFactoryRndLookup[56];
+	uint32_t gFactoryRndSeed;
+	uint32_t gFactoryRndSeedSave;
+} gRngState;
 
-void factory_fill_rnd_lookup(uint32_t seed);
-
-uint32_t factory_rnd(uint32_t a, uint32_t b) {
-	uint32_t mj; // Note: This must be "uint32_t". With "long" (as described by Knuth), it won't match FilterFactory's algorithm
-	int range;
-
-	if (gFactoryRndSeed != gFactoryRndSeedSave) {
-		// (Intentional) behavior of Filter Foundry
-		factory_fill_rnd_lookup(gFactoryRndSeed);
-		gFactoryRndIndexCounter1 = 0;
-		gFactoryRndIndexCounter2 = 31;
-	}
-
-	// Algorithm of Filter Factory
-	// Filter Factory uses Donald E.Knuth's subtractive
-	// random number generator algorithm ("ran3"), which has been published
-	// in Page 283 of "The Art of Computer Programming, volume 2: Seminumerical Algorithms",
-	// Addison-Wesley, Reading, MA, second edition, 1981.
-	// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf (PDF Page 307)
-
-	if (++gFactoryRndIndexCounter1 == 56) gFactoryRndIndexCounter1 = 1;
-	if (++gFactoryRndIndexCounter2 == 56) gFactoryRndIndexCounter2 = 1;
-
-	mj = gFactoryRndLookup[gFactoryRndIndexCounter1] -
-	     gFactoryRndLookup[gFactoryRndIndexCounter2];
-	gFactoryRndLookup[gFactoryRndIndexCounter1] = mj;
-
-	// This is Filter Factory specific:
-	// Squeeze result into interval [a..b]
-	if (a == 0) {
-		// This part is optional; it is intended to increase the
-		// performance by avoiding modulo/divide if possible.
-		switch (b) {
-		case 255:
-			return mj & 0xFF;
-		case 127:
-			return mj & 0x7F;
-		case 63:
-			return mj & 0x3F;
-		case 31:
-			return mj & 0x1F;
-		case 15:
-			return mj & 0xF;
-		case 7:
-			return mj & 0x7;
-		case 3:
-			return mj & 0x3;
-		case 1:
-			return mj & 0x1;
-		}
-	}
-	range = b - a;
-	if (range < 0) return 0;
-	return a + (mj % (range + 1));
-}
-
-void factory_fill_rnd_lookup(uint32_t seed) {
+void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 	// Algorithm of Filter Factory
 	// Filter Factory uses Donald E.Knuth's subtractive
 	// random number generator algorithm ("ran3"), which has been published
@@ -248,47 +194,114 @@ void factory_fill_rnd_lookup(uint32_t seed) {
 
 	// 161803398 = 1.61803398 * 10^8 ~= phi * 10^8
 	mj = 161803398 - (seed & 0x7fff);
-	gFactoryRndLookup[55] = mj;
+	state->gFactoryRndLookup[55] = mj;
 
 	mk = 1;
+	ii = 0;
 	for (i=1; i<=54; ++i) {
-		ii = (21 * i) % 55;
-		gFactoryRndLookup[ii] = mk;
+		if ((ii += 21) >= 55) ii -= 55; // ii = (21*i)%55;
+		state->gFactoryRndLookup[ii] = mk;
 		mk = mj - mk;
-		mj = gFactoryRndLookup[ii];
+		mj = state->gFactoryRndLookup[ii];
 	}
 
 	for (k=1; k<=4; ++k) {
+		ii = 30;
 		for (i=1; i<=55; ++i) {
-			gFactoryRndLookup[i] -= gFactoryRndLookup[1+(i + 30) % 55];
+			if ((ii += 1) >= 55) ii -= 55;
+			state->gFactoryRndLookup[i] -= state->gFactoryRndLookup[1 + ii]; // 1 + (i+30)%55
 		}
 	}
 
-	gFactoryRndSeedSave = seed;
+	state->gFactoryRndSeedSave = seed;
 
 	return;
 }
 
-int32_t factory_rst(uint32_t seed) {
-	// We implement rst(i) differently in Filter Foundry:
-	// Every call of rst() will renew the lookup table,
-	// while in Filter Factory, there are strange things going
-	// on, like only setting the state in pixel [0,0,0] and
-	// only before rnd() is called, etc.
+uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
+	uint32_t mj; // Note: This must be "uint32_t". With "long" (as described by Knuth), it won't match FilterFactory's algorithm
+	int range;
 
-	gFactoryRndSeed = seed;
+	if (state->gFactoryRndSeed != state->gFactoryRndSeedSave) {
+		// (Intentional) behavior of Filter Foundry
+		factory_fill_rnd_lookup(state->gFactoryRndSeed, &gRngState);
+		state->gFactoryRndIndexCounter1 = 0;
+		state->gFactoryRndIndexCounter2 = 31;
+	}
+
+	// Algorithm of Filter Factory
+	// Filter Factory uses Donald E.Knuth's subtractive
+	// random number generator algorithm ("ran3"), which has been published
+	// in Page 283 of "The Art of Computer Programming, volume 2: Seminumerical Algorithms",
+	// Addison-Wesley, Reading, MA, second edition, 1981.
+	// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf (PDF Page 307)
+
+	if (++state->gFactoryRndIndexCounter1 == 56) state->gFactoryRndIndexCounter1 = 1;
+	if (++state->gFactoryRndIndexCounter2 == 56) state->gFactoryRndIndexCounter2 = 1;
+
+	mj = state->gFactoryRndLookup[state->gFactoryRndIndexCounter1] -
+	     state->gFactoryRndLookup[state->gFactoryRndIndexCounter2];
+	state->gFactoryRndLookup[state->gFactoryRndIndexCounter1] = mj;
+
+	// This is Filter Factory specific:
+	// Reduce result into interval [a..b] by applying (a + (mj % (b - a + 1))
+	// Try to avoid modulo in order to increase performance
+	range = b - a;
+	if (range < 0) return 0;
+	switch (range) {
+		case 255:
+			return a + (mj & 0xFF);
+		case 127:
+			return a + (mj & 0x7F);
+		case 63:
+			return a + (mj & 0x3F);
+		case 31:
+			return a + (mj & 0x1F);
+		case 15:
+			return a + (mj & 0xF);
+		case 7:
+			return a + (mj & 0x7);
+		case 3:
+			return a + (mj & 0x3);
+		case 1:
+			return a + (mj & 0x1);
+		case 0:
+			return a;
+		default:
+			return a + (mj % (range + 1));
+	}
+}
+
+int32_t factory_rst(uint32_t seed, struct factoryRngState* state) {
+	// We implement rst(i) completely differently in Filter Foundry:
+	// Every call of rst() will renew the lookup table.
+	// In Filter Factory, there are strange/buggy things going
+	// on: rst(i) only sets a seed and the lookup table is renewed
+	// at the NEXT invocation of the filter. Furthermore, in FilterFactory,
+	// the state is not reset between invocations, therefore, the preview image
+	// will influence the PRNG state of the final image...
+	// More information at "Filter Factory Compatibility.md"
+
+	state->gFactoryRndSeed = seed;
+
+	// Force renewal of the PRNG state in the next rnd(a,b) call.
+	// This allows us to use:
+	//    (x==0?rst(1):0), rnd(0,255)
+	// But it is slower and this won't work anymore:
+	//    rst(0), rnd(0,255)
+	state->gFactoryRndSeedSave = seed+1;
 
 	return 0;
 }
 
 void factory_initialize_rnd_variables() {
-	gFactoryRndSeed = 0; // default seed
-	gFactoryRndSeedSave = gFactoryRndSeed + 1; // force rnd() to call factory_fill_rnd_lookup()
+	gRngState.gFactoryRndSeed = 0; // default seed
+	gRngState.gFactoryRndSeedSave = gRngState.gFactoryRndSeed + 1; // force rnd() to call factory_fill_rnd_lookup()
 }
 
 /* rnd(a,b) Random number between a and b, inclusive */
 value_type ff_rnd(value_type a,value_type b){
-	return factory_rnd(a,b);
+	return factory_rnd(a,b,&gRngState);
 //	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
 //	return ((unsigned)rand() % (ff_dif(a,b)+1)) + ff_min(a,b);
 }
@@ -468,7 +481,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 /* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
    Added by DM, 18 Dec 2018 */
 value_type ff_rst(value_type seed){
-	factory_rst(seed);
+	factory_rst(seed,&gRngState);
 //	srand(seed);
 	return 0;
 }

@@ -2,13 +2,6 @@
 Wishlist/ToDo-List
 ==================
 
-Current work (WIP)
-------------------
-
-* Try to make rst(i) behave more like Filter Factory? Or make something different?
-	=> Check rst*_1708 testcases
-	
-
 Known bugs
 ----------
 
