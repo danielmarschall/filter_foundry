@@ -174,12 +174,12 @@ value_type ff_dif(value_type a,value_type b){
 }
 
 struct factoryRngState {
-	uint16_t gFactoryRndIndexCounter1;
-	uint16_t gFactoryRndIndexCounter2;
-	uint32_t gFactoryRndLookup[56];
-	uint32_t gFactoryRndSeed;
-	uint32_t gFactoryRndSeedSave;
-} gRngState;
+	uint16_t index1;
+	uint16_t index2;
+	uint32_t seedTable[56];
+	uint32_t seed;
+	uint32_t seedSave;
+} gFactoryRngState;
 
 void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 	// Algorithm of Filter Factory
@@ -194,26 +194,26 @@ void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 
 	// 161803398 = 1.61803398 * 10^8 ~= phi * 10^8
 	mj = 161803398 - (seed & 0x7fff);
-	state->gFactoryRndLookup[55] = mj;
+	state->seedTable[55] = mj;
 
 	mk = 1;
 	ii = 0;
 	for (i=1; i<=54; ++i) {
 		if ((ii += 21) >= 55) ii -= 55; // ii = (21*i)%55;
-		state->gFactoryRndLookup[ii] = mk;
+		state->seedTable[ii] = mk;
 		mk = mj - mk;
-		mj = state->gFactoryRndLookup[ii];
+		mj = state->seedTable[ii];
 	}
 
 	for (k=1; k<=4; ++k) {
 		ii = 30;
 		for (i=1; i<=55; ++i) {
 			if ((ii += 1) >= 55) ii -= 55;
-			state->gFactoryRndLookup[i] -= state->gFactoryRndLookup[1 + ii]; // 1 + (i+30)%55
+			state->seedTable[i] -= state->seedTable[1 + ii]; // 1 + (i+30)%55
 		}
 	}
 
-	state->gFactoryRndSeedSave = seed;
+	state->seedSave = seed;
 
 	return;
 }
@@ -222,11 +222,11 @@ uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
 	uint32_t mj; // Note: This must be "uint32_t". With "long" (as described by Knuth), it won't match FilterFactory's algorithm
 	int range;
 
-	if (state->gFactoryRndSeed != state->gFactoryRndSeedSave) {
+	if (state->seed != state->seedSave) {
 		// (Intentional) behavior of Filter Foundry
-		factory_fill_rnd_lookup(state->gFactoryRndSeed, &gRngState);
-		state->gFactoryRndIndexCounter1 = 0;
-		state->gFactoryRndIndexCounter2 = 31;
+		factory_fill_rnd_lookup(state->seed, &gFactoryRngState);
+		state->index1 = 0;
+		state->index2 = 31;
 	}
 
 	// Algorithm of Filter Factory
@@ -236,12 +236,12 @@ uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
 	// Addison-Wesley, Reading, MA, second edition, 1981.
 	// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf (PDF Page 307)
 
-	if (++state->gFactoryRndIndexCounter1 == 56) state->gFactoryRndIndexCounter1 = 1;
-	if (++state->gFactoryRndIndexCounter2 == 56) state->gFactoryRndIndexCounter2 = 1;
+	if (++state->index1 == 56) state->index1 = 1;
+	if (++state->index2 == 56) state->index2 = 1;
 
-	mj = state->gFactoryRndLookup[state->gFactoryRndIndexCounter1] -
-	     state->gFactoryRndLookup[state->gFactoryRndIndexCounter2];
-	state->gFactoryRndLookup[state->gFactoryRndIndexCounter1] = mj;
+	mj = state->seedTable[state->index1] -
+	     state->seedTable[state->index2];
+	state->seedTable[state->index1] = mj;
 
 	// This is Filter Factory specific:
 	// Reduce result into interval [a..b] by applying (a + (mj % (b - a + 1))
@@ -282,26 +282,26 @@ int32_t factory_rst(uint32_t seed, struct factoryRngState* state) {
 	// will influence the PRNG state of the final image...
 	// More information at "Filter Factory Compatibility.md"
 
-	state->gFactoryRndSeed = seed;
+	state->seed = seed;
 
 	// Force renewal of the PRNG state in the next rnd(a,b) call.
 	// This allows us to use:
 	//    (x==0?rst(1):0), rnd(0,255)
 	// But it is slower and this won't work anymore:
 	//    rst(0), rnd(0,255)
-	state->gFactoryRndSeedSave = seed+1;
+	state->seedSave = seed+1;
 
 	return 0;
 }
 
 void factory_initialize_rnd_variables() {
-	gRngState.gFactoryRndSeed = 0; // default seed
-	gRngState.gFactoryRndSeedSave = gRngState.gFactoryRndSeed + 1; // force rnd() to call factory_fill_rnd_lookup()
+	gFactoryRngState.seed = 0; // default seed
+	gFactoryRngState.seedSave = gFactoryRngState.seed + 1; // force rnd() to call factory_fill_rnd_lookup()
 }
 
 /* rnd(a,b) Random number between a and b, inclusive */
 value_type ff_rnd(value_type a,value_type b){
-	return factory_rnd(a,b,&gRngState);
+	return factory_rnd(a,b,&gFactoryRngState);
 //	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
 //	return ((unsigned)rand() % (ff_dif(a,b)+1)) + ff_min(a,b);
 }
@@ -386,7 +386,7 @@ value_type ff_cos(value_type x){
    -1024 and 1024, inclusive (Mac OS), the output is actually NOT bounded! */
 value_type ff_tan(value_type x){
 	// Following filter shows that the Filter Factory manual differs from the implementation.
-	// 	   R = cos(x) > 1024 || cos(x) < -1024 || cos(-x) > 1024 || cos(-x) < -1024 ? 255 : 0
+	//     R = cos(x) > 1024 || cos(x) < -1024 || cos(-x) > 1024 || cos(-x) < -1024 ? 255 : 0
 	//     G = tan(x) > 1024 || tan(x) < -1024 || tan(-x) > 1024 || tan(-x) < -1024 ? 255 : 0
 	//     B = sin(x) > 1024 || sin(x) < -1024 || sin(-x) > 1024 || sin(-x) < -1024 ? 255 : 0
 	// It outputs green stripes, showing that the output of tan() is not bounded.
@@ -448,9 +448,9 @@ value_type ff_put(value_type v,value_type i){
 
 /* Convolve. Applies a convolution matrix and divides with d. */
 value_type ff_cnv(value_type m11,value_type m12,value_type m13,
-				  value_type m21,value_type m22,value_type m23,
-				  value_type m31,value_type m32,value_type m33,
-				  value_type d)
+                  value_type m21,value_type m22,value_type m23,
+                  value_type m31,value_type m32,value_type m33,
+                  value_type d)
 {
 	#ifdef PARSERTEST
 	return 0;
@@ -481,7 +481,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 /* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
    Added by DM, 18 Dec 2018 */
 value_type ff_rst(value_type seed){
-	factory_rst(seed,&gRngState);
+	factory_rst(seed,&gFactoryRngState);
 //	srand(seed);
 	return 0;
 }
