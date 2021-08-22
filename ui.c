@@ -353,11 +353,23 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */
 		)){
+			bak_obfusc = gdata->obfusc;
+			bak_standalone = gdata->standalone;
+			bak_parmloaded = gdata->parmloaded;
+			memcpy(&bak_parm, &gdata->parm, sizeof(PARM_T));
+
 			if(loadfile(&sfr,&reason)){
 				updatedialog(dp);
 				maindlgupdate(dp);
-			}else
-				alertuser(_strdup("Cannot load settings."),reason);
+			}
+			else {
+				alertuser(_strdup("Cannot load settings."), reason);
+
+				gdata->obfusc = bak_obfusc;
+				gdata->standalone = bak_standalone;
+				gdata->parmloaded = bak_parmloaded;
+				memcpy(&gdata->parm, &bak_parm, sizeof(PARM_T));
+			}
 		}
 		break;
 	case SAVEITEM:

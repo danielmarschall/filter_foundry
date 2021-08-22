@@ -12,19 +12,27 @@ Normal standalone filters:
 
 ## Implementation
 
-Defined in **ff.h**, implemented in **make.c**:
+Defined in **ff.h**, implemented in **obfusc.c**:
 
-    // Only implements V4. Gets a random seed from the calling function.
-    void obfusc(PARM_T* pparm, unsigned int seed);
+    // Only implements V5. Returns a seed that needs to be stored in the executable code.
+    unsigned int obfusc(PARM_T* pparm);
 
     // In V1+V2: Seed is hardcoded
-    // In V3: Seed is in PARM
-    // In V4: Seed is in the program code and will me modified with a binary search+replace
+    // In V3: Seed is in PARM (field "unknown2")
+    // In V4+V5: Seed is in the program code and will me modified with a binary search+replace
     void deobfusc(PARM_T* pparm);
+
+### Obfuscation "Version 5"
+
+Introduced in **Filter Foundry 1.7.0.8**
+
+Obfuscation version 5 is the same as version 4, but there is a constraint
+that the seed must be equal to the hash of the deobfuscated PARM.
+This is done to check the integrity of the deobfuscation.
 
 ### Obfuscation "Version 4"
 
-Introduced in **Filter Foundry 1.7.0.7** [08-Aug-2021]
+Introduced in **Filter Foundry 1.7.0.7**
 
 It is not compiler-dependant, but different between every standalone filter.
 
@@ -45,7 +53,7 @@ The DWORD value "0x00000004" will be stored at position 0x30 (this field is not 
 
 ### Obfuscation "Version 3"
 
-Introduced in **Filter Foundry 1.7.0.5** [30-Jul-2021]
+Introduced in **Filter Foundry 1.7.0.5**
 
 It is compiler-dependant, therefore the resource cannot be exchanged between plugins!
 
@@ -68,7 +76,7 @@ Algorithm: XOR with a modified `rand()`-stream with seed that is stored at posit
 
 ### Obfuscation "Version 2"
 
-Introduced in **Filter Foundry 1.7b1** [20-Sep-2019]
+Introduced in **Filter Foundry 1.7b1**
 
 It is compiler-independant!
 

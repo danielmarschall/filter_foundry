@@ -3,6 +3,7 @@
 ## 1.7.0.8 [Work-In-Progress]
 - rnd(a,b) function now uses the same (compiler independant) algorithm like Filter Factory. rst(i) still behaves differently, though.
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
+- Introduced obfuscation version 5 (it is like version 4, but contains an integrity check); also fixed some smaller issues with obfuscation loading.
 
 ## 1.7.0.7 [08-Aug-2021]
 - Standalone filters are now created in 32 and 64 bit. To make this work, you need to install FilterFoundry.8bf and FilterFoundry64.8bf in your plug-in directory. (*)

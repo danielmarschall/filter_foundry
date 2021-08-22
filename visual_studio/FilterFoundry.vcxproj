@@ -250,6 +250,7 @@ move lex.yy.c lex_yy.c</Command>
     <ClInclude Include="..\versioninfo_modify_win.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\obfusc.c" />
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />
     <ClCompile Include="..\telegraphics_common\tt\choosefile_win.c" />
     <ClCompile Include="..\telegraphics_common\tt\compat_string.c" />

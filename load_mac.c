@@ -79,16 +79,12 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			// then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
 		}else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
 			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
-				if (gdata->parm.unknown2 == 4) {
-					// Obfuscation V4 is protected, because FF>=1.7.0.5 combines protection and obfuscation
-					*reason = "The filter is protected.";
-				}
-				else {
-					*reason = "Incompatible obfuscation.";
-				}
+				*reason = "Incompatible obfuscation.";
+				//gdata->parmloaded = false;
 				return false; // Stop! We know the issue now.
 			}else if(gdata->parm.iProtected){
 				*reason = "The filter is protected.";
+				//gdata->parmloaded = false;
 				return false;
 			}else
 				gdata->parmloaded = true;

@@ -52,7 +52,7 @@ vpath %.c telegraphics_common\tt telegraphics_common\adobeplugin
 
 # list of source files
 SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
-	ui.c ui_build.c preview.c read.c save.c make.c \
+	ui.c ui_build.c preview.c read.c save.c make.c obfusc.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_W32 = dbg_win.c manifest.c ui_win.c make_win.c versioninfo_modify_win.c load_win.c ui_compat_win.c \
 	choosefile_win.c ui_build_win.c compat_string.c compat_win.c \
@@ -93,6 +93,7 @@ obj_w32\lex.yy.o : node.h symtab.h y.tab.h
 obj_w32\load_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj_w32\make.o : ff.h funcs.h symtab.h ui.h PARM.h
+obj_w32\obfusc.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\make_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\versioninfo_modify_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h

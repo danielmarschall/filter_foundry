@@ -182,6 +182,9 @@
     <ClCompile Include="..\versioninfo_modify_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\obfusc.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\win_res.rc">

@@ -392,12 +392,6 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
 				aetesize = aete_generate(newaete, pparm, event_id);
 
-				if (gdata->obfusc) {
-					// Avoid that the same filter can generate with two seeds,
-					// otherwise the comparison would be much easier
-					obfuscseed = (unsigned int)get_parm_hash(pparm);
-				}
-
 				// ====== Change Pascal strings to C-Strings
 
 				/* convert to C strings for Windows PARM resource */
@@ -419,12 +413,12 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 				// ====== Obfuscate pparm!
 
-				if(gdata->obfusc){
+				if (gdata->obfusc) {
 					parm_type = RT_RCDATA;
 					parm_id = OBFUSCDATA_ID;
 
 					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
-					obfusc(pparm, obfuscseed);
+					obfuscseed = obfusc(pparm);
 				}else{
 					parm_type = "PARM";
 					parm_id = PARM_ID;
@@ -521,7 +515,8 @@ BOOL FileExists(LPCTSTR szPath) {
 
 OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 	Boolean res;
-	
+	char err[MAX_PATH + 200];
+
 	//DeleteFile(dstname);
 	if (CopyFile(srcname, dstname, false)) {
 		HMODULE hSrcmod;
@@ -530,20 +525,26 @@ OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 			res = doresources(hSrcmod, dstname, bits);
 			if (!res) {
 				DeleteFile(dstname);
+				sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
+				alertuser(_strdup(&err[0]), _strdup(""));
 			}
 			FreeLibrary(hSrcmod);
 		}
 		else {
+			DWORD dwErr = GetLastError();
 			res = false;
+			DeleteFile(dstname);
+			// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
+			sprintf(err, "Could not create %d bit standalone plugin (LoadLibraryEx failed, Win32 error %d).", bits, dwErr);
+			alertuser(_strdup(&err[0]), _strdup(""));
 		}
 	}
 	else {
+		DWORD dwErr = GetLastError();
 		res = false;
-	}
-
-	if (!res) {
-		char err[MAX_PATH + 200];
-		sprintf(err, "Could not create %d bit standalone plugin.", bits);
+		//DeleteFile(dstname);
+		// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
+		sprintf(err, "Could not create %d bit standalone plugin (CopyFile failed, Win32 error %d).", bits, dwErr);
 		alertuser(_strdup(&err[0]), _strdup(""));
 	}
 

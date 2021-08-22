@@ -52,7 +52,7 @@ vpath %.c telegraphics_common/tt telegraphics_common/adobeplugin ../MoreFiles/So
 
 # list of source files
 SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
-	ui.c ui_build.c preview.c read.c save.c make.c \
+	ui.c ui_build.c preview.c read.c save.c make.c obfusc.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
 	choosefile_nav.c preview_mac.c \
@@ -171,6 +171,7 @@ obj_w32/lex.yy.o : node.h symtab.h y.tab.h
 obj_w32/load_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj_w32/make.o : ff.h funcs.h symtab.h ui.h PARM.h
+obj_w32/obfusc.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/make_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/versioninfo_modify_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32/node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h
@@ -192,6 +193,7 @@ obj/lex.yy.o : node.h symtab.h y.tab.h
 obj/load_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj/make.o : ff.h funcs.h symtab.h ui.h PARM.h
+obj/obfusc.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/make_mac.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj/node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h
 obj/y.tab.o : node.h symtab.h y.tab.h
