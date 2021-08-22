@@ -38,7 +38,7 @@ int rand_openwatcom(unsigned int* seed) {
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
 }
 
-void _xorshift(unsigned char** p, uint32_t* x32, size_t num) {
+void xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 	size_t i;
 	unsigned char* x = *p;
 	for (i = 0; i < num; i++) {
@@ -51,7 +51,7 @@ void _xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 	*p = x;
 }
 
-int obfuscationVersion(PARM_T* pparm) {
+int obfuscation_version(PARM_T* pparm) {
 	unsigned int obfusc_info = pparm->unknown2;
 
 	if (obfusc_info == 0x00000000) { // 00 00 00 00
@@ -72,10 +72,10 @@ int obfuscationVersion(PARM_T* pparm) {
 		// Version 2 obfuscation (Filter Foundry 1.7b1)
 		return 2;
 	}
-	else if (obfusc_info <= 0xFF) { // xx 00 00 00
+	else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
 		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
-		// Future: Version 6, 7, 8, ...
+		// Future: Version 6, 7, 8, ... 255
 		return obfusc_info;
 	}
 	else {
@@ -86,8 +86,8 @@ int obfuscationVersion(PARM_T* pparm) {
 }
 
 unsigned int obfusc(PARM_T* pparm) {
-	// Version 5 obfuscation
-	// Introduced in Filter Foundry 1.7.0.8
+	// Windows:   Version 5 obfuscation (Introduced in Filter Foundry 1.7.0.8)
+	// Macintosh: Version 4 obfuscation (Introduced in Filter Foundry 1.7.0.7)
 
 	unsigned char* p;
 	size_t size, seed_position;
@@ -95,23 +95,25 @@ unsigned int obfusc(PARM_T* pparm) {
 	unsigned int obfusc_version;
 	
 #ifdef MAC_ENV
-	// placing the seed in the executable code is not implemented in Mac!
-	seed = OBFUSC_V4_DEFAULT_SEED;
-	obfusc_version = 4; // does not feature a integrity check
+	// For Mac, we use obfuscation version 4, because the placing the seed into the produced executable code is not implemented in Mac!
+	// (It needs to be implemented in make_mac.c)
+	initial_seed = OBFUSC_V4_DEFAULT_SEED;
+	obfusc_version = 4;
 #else
-	seed = (unsigned int)get_parm_hash(pparm); // Attention: deobfusc() will verify that it matches!
-	obfusc_version = 5; // does not feature a integrity check
+	// In obfuscation version 5, the seed is also the checksum. It will be verified at deobfusc()!
+	initial_seed = (unsigned int)get_parm_hash(pparm);
+	obfusc_version = 5;
 #endif
 
 	seed_position = offsetof(PARM_T, unknown2);
 	size = sizeof(PARM_T);
-	initial_seed = seed;
+	seed = initial_seed;
 
 	p = (unsigned char*)pparm;
-	_xorshift(&p, &seed, seed_position);
+	xorshift(&p, &seed, seed_position);
 	*((unsigned int*)p) = obfusc_version;
 	p += 4;
-	_xorshift(&p, &seed, size - seed_position - 4);
+	xorshift(&p, &seed, size - seed_position - 4);
 
 	return initial_seed;
 }
@@ -120,7 +122,7 @@ void deobfusc(PARM_T* pparm) {
 	unsigned int obfusc_version;
 	size_t size = sizeof(PARM_T);
 
-	obfusc_version = obfuscationVersion(pparm);
+	obfusc_version = obfuscation_version(pparm);
 
 	switch (obfusc_version) {
 		case 0:
@@ -202,14 +204,15 @@ void deobfusc(PARM_T* pparm) {
 			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
 
 			p = (unsigned char*)pparm;
-			_xorshift(&p, &seed, seed_position);
+			xorshift(&p, &seed, seed_position);
 			p += 4; // obfusc info == 4
-			_xorshift(&p, &seed, size - seed_position - 4);
+			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
 				if ((unsigned int)get_parm_hash(pparm) != seed) {
 					// Integrity check failed!
-					pparm->cbSize = 0xFFFFFFFF; // invalidate!
+					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything, forcing error "incompatible obfuscation"
+					return;
 				}
 			}
 
@@ -217,7 +220,8 @@ void deobfusc(PARM_T* pparm) {
 		}
 		default: {
 			// Obfuscation version unexpected!
-			pparm->cbSize = 0xFFFFFFFF; // invalidate!
+			memset(pparm, 0, sizeof(PARM_T)); // invalidate everything, forcing error "incompatible obfuscation"
+			return;
 		}
 	}
 
@@ -229,8 +233,8 @@ void deobfusc(PARM_T* pparm) {
 		pparm->iProtected = 1;
 
 		// Furthermore, if obfuscation 3+ failed (since the seed is individual for each 8BF file),
-		// we still want that load_win.c is able to detect pparm->iProtected instead
-		// of throwing the error "Incompatible obfuscation"
+		// we still want that load_*.c is able to detect pparm->iProtected instead
+		// of throwing the error "Incompatible obfuscation".
 		pparm->cbSize = PARM_SIZE;
 	}
 }
