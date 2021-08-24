@@ -17,8 +17,7 @@ from the "OPER" resource.
 If required, the compiler-definitions "use_filterfactory_implementation_*"
 can be set or unset to select the implementation.
 
-In Filter Foundry 1.7.0.8, following functions have been updated to the
-Filter Factory replica:
+In Filter Foundry 1.7.0.8, following functions have been updated to the Filter Factory replica:
 - rnd
 - cos
 - sin
@@ -29,8 +28,6 @@ Filter Factory replica:
 - c2d
 - c2m
 - sqr
-
-TODO:
 - d
 - m
 - M
@@ -42,6 +39,9 @@ sqr(x)
 Filter Factory:
 
 	sqr(x)=x for x < 0
+	
+	Can be tested with following expression:
+	sqr(-20)+21 == 1
 
 Filter Foundry (prior to 1.7.0.8):
 

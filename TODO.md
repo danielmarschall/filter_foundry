@@ -5,7 +5,17 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-(Nothing here yet)
+* When Photoshop is opened on a seconary screen, the filter window is centered on the wrong screen.
+  Do it like Filter Factory. Note that Filter Factory also can handle when Photoshop is between
+  two monitors, opening on the center of the screen where most of the Photoshop window is displayed.
+
+
+TODO
+----
+
+* Add pow() or "**" operator? pow() is used in Filter Factory 3.1.0
+
+* Write an updated manual based on the Filter Factory documentation
 
 
 Minor priority stuff or ideas
@@ -34,8 +44,6 @@ Minor priority stuff or ideas
 * I have found following in the source code... Do we need to do something here?
 
         strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
-
-* Add pow() or "**" operator?
 
 * Search for "TODO", "FIXME" and "Codereview" in the code
 

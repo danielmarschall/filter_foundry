@@ -18,26 +18,27 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Strict compatibility to Filter Factory
-// Tested OK!
-#define use_filterfactory_implementation_rad
-//#define use_filterfactory_implementation_i
-//#define use_filterfactory_implementation_u
-//#define use_filterfactory_implementation_v
-#define use_filterfactory_implementation_rnd
-#define use_filterfactory_implementation_c2d
-#define use_filterfactory_implementation_c2m
-#define use_filterfactory_implementation_r2x
-#define use_filterfactory_implementation_r2y
-#define use_filterfactory_implementation_cos
-#define use_filterfactory_implementation_sin
-#define use_filterfactory_implementation_tan
-#define use_filterfactory_implementation_sqr
-
-// Not yet implemented!
-//#define use_filterfactory_implementation_d
-//#define use_filterfactory_implementation_m
-//#define use_filterfactory_implementation_M
+// Strict compatibility to Filter Factory by using an alternative
+// implementation which is a 100% replica of the Filter Factory 3.0.4
+// for Windows.
+#ifdef WIN_ENV
+	#define use_filterfactory_implementation_rad
+	//#define use_filterfactory_implementation_i
+	//#define use_filterfactory_implementation_u
+	//#define use_filterfactory_implementation_v
+	#define use_filterfactory_implementation_rnd
+	#define use_filterfactory_implementation_c2d
+	#define use_filterfactory_implementation_c2m
+	#define use_filterfactory_implementation_r2x
+	#define use_filterfactory_implementation_r2y
+	#define use_filterfactory_implementation_cos
+	#define use_filterfactory_implementation_sin
+	#define use_filterfactory_implementation_tan
+	#define use_filterfactory_implementation_sqr
+	#define use_filterfactory_implementation_d
+	#define use_filterfactory_implementation_m
+	#define use_filterfactory_implementation_M
+#endif
 
 #ifdef MAC_ENV
 #include <fp.h>
@@ -340,6 +341,54 @@ value_type ff_src(value_type x,value_type y,value_type z){
 		y = var['Y']-1;
 	return z >= 0 && z < var['Z'] ?
 		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
+   from an arbitrary center */
+
+value_type factory_r2x(value_type d, value_type m) {
+	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2x.html
+	int eax = m;
+	int ebx = d;
+	ebx &= 1023;
+	ebx = FACTORY_COS_LOOKUP[ebx];
+	return (((int64_t)eax * (int64_t)ebx) + 8191) >> 14;
+}
+
+value_type foundry_r2x(value_type d, value_type m) {
+	return (value_type)RINT(m * costab[abs(d) % COSTABSIZE]);
+}
+
+value_type ff_r2x(value_type d, value_type m) {
+	#ifdef use_filterfactory_implementation_r2x
+	return factory_r2x(d, m);
+	#else
+	return foundry_r2x(d, m);
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* r2y(d,m) y displacement of the pixel m units away, at an angle of d,
+   from an arbitrary center */
+
+value_type factory_r2y(value_type d, value_type m) {
+	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2y.html
+	return factory_r2x(d - 256, m);
+}
+
+value_type foundry_r2y(value_type d, value_type m) {
+	return (value_type)RINT(m * costab[abs(d - 256) % COSTABSIZE]);
+}
+
+value_type ff_r2y(value_type d, value_type m) {
+	#ifdef use_filterfactory_implementation_r2y
+	return factory_r2y(d, m);
+	#else
+	return foundry_r2y(d, m);
 	#endif
 }
 
@@ -716,11 +765,13 @@ static uint32_t isqrt(uint32_t x) {
 value_type factory_sqr(value_type x) {
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_sqr.html
 
-	int ebx = x;
+	int eax, ebx, ecx;
+
+	ebx = x;
 	if (ebx > 1) {
-		int ecx = ebx;
+		ecx = ebx;
 		ebx = ebx >> 1;
-		int eax = 2;
+		eax = 2;
 		while (ebx > eax) {
 			eax = ecx;
 			eax /= ebx;
@@ -842,223 +893,50 @@ value_type ff_tan(value_type x) {
 
 // -------------------------------------------------------------------------------------------
 
-/* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
-   from an arbitrary center */
-
-value_type factory_r2x(value_type d, value_type m) {
-	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2x.html
-	int eax = m;
-	int ebx = d;
-	ebx &= 1023;
-	ebx = FACTORY_COS_LOOKUP[ebx];
-	return (((int64_t)eax * (int64_t)ebx) + 8191) >> 14;
-}
-
-value_type foundry_r2x(value_type d, value_type m) {
-	return (value_type)RINT(m * costab[abs(d) % COSTABSIZE]);
-}
-
-value_type ff_r2x(value_type d,value_type m){
-	#ifdef use_filterfactory_implementation_r2x
-	return factory_r2x(d,m);
-	#else
-	return foundry_r2x(d, m);
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-/* r2y(d,m) y displacement of the pixel m units away, at an angle of d,
-   from an arbitrary center */
-
-value_type factory_r2y(value_type d, value_type m) {
-	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2y.html
-	return factory_r2x(d - 256, m);
-}
-
-value_type foundry_r2y(value_type d, value_type m) {
-	return (value_type)RINT(m * costab[abs(d - 256) % COSTABSIZE]);
-}
-
-value_type ff_r2y(value_type d,value_type m){
-	#ifdef use_filterfactory_implementation_r2y
-	return factory_r2y(d, m);
-	#else
-	return foundry_r2y(d, m);
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type ff_D() {
-	return 1024;
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_d() {
-	return 0; // TODO!
-}
-
-value_type foundry_c2d_negated(int x, int y) {
-	return (value_type)RINT(TO_FFANGLE(atan2(-y, -x)));
-}
-
-value_type foundry_d() {
-	// NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
-	// Due to compatibility reasons, we implement it the same way!
-	// Sign of y difference is negated, as we are dealing with top-down coordinates angle is "observed"
-	int x = var['X'] / 2 - var['x'];
-	int y = var['Y'] / 2 - var['y'];
-	return ff_c2d_negated(x, y);
-}
-
-value_type ff_d() {
-	#ifdef use_filterfactory_implementation_d
-	return factory_d();
-	#else
-	return foundry_d();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_M() {
-	return 0; // TODO!
-}
-
-value_type foundry_M() {
-	return foundry_c2m(var['X'], var['Y']) / 2;
-}
-
-value_type ff_M() {
-	#ifdef use_filterfactory_implementation_M
-	return factory_M();
-	#else
-	return foundry_M();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_m() {
-	return 0; // TODO!
-}
-
-value_type foundry_m() {
-	return foundry_c2m(var['X'] / 2 - var['x'], var['Y'] / 2 - var['y']);
-}
-
-value_type ff_m() {
-	#ifdef use_filterfactory_implementation_m
-	return factory_m();
-	#else
-	return foundry_m();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_i() {
-	return ((76L * var['r']) + (150L * var['g']) + (29L * var['b'])) / 256; // range: [0..254]
-}
-
-value_type foundry_i() {
-	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
-	return ((299L * var['r']) + (587L * var['g']) + (114L * var['b'])) / 1000;    // range: [0..255]
-}
-
-value_type ff_i() {
-	#ifdef use_filterfactory_implementation_i
-	return factory_i();
-	#else
-	return foundry_i();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_u() {
-	return ((-19L * var['r']) + (-37L * var['g']) + (56L * var['b'])) / 256; // range: [-55..55]
-}
-
-value_type foundry_u() {
-	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
-	return ((-147407L * var['r']) + (-289391L * var['g']) + (436798L * var['b'])) / 2000000; // range: [-55..55]
-}
-
-value_type ff_u() {
-	#ifdef use_filterfactory_implementation_u
-	return factory_u();
-	#else
-	return foundry_u();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
-value_type factory_v() {
-	return ((78L * var['r']) + (-65L * var['g']) + (-13L * var['b'])) / 256; // range: [-77..77]
-}
-
-value_type foundry_v() {
-	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
-	return ((614777L * var['r']) + (-514799L * var['g']) + (-99978L * var['b'])) / 2000000; // range: [-78..78]
-}
-
-value_type ff_v() {
-	#ifdef use_filterfactory_implementation_v
-	return factory_v();
-	#else
-	return foundry_v();
-	#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
 /* c2d(x,y) Angle displacement of the pixel at coordinates x,y */
 
 value_type factory_c2d(value_type x, value_type y) {
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_c2d.html
-	int32_t aaa, bbb, ccc;
-	aaa = y;
-	bbb = x;
-	ccc = 0;
-	if (aaa < 0) {
-		aaa = -aaa;
-		ccc |= 0b0100;
+	int32_t eax, ebx, ecx;
+	eax = y;
+	ebx = x;
+	ecx = 0;
+	if (eax < 0) {
+		eax = -eax;
+		ecx |= 4/*0b0100*/;
 	}
-	if (bbb < 0) {
-		bbb = -bbb;
-		ccc |= 0x0011;
+	if (ebx < 0) {
+		ebx = -ebx;
+		ecx |= 3/*0b0011*/;
 	}
-	if (aaa > bbb) {
-		ccc ^= 0b0001;
-		int xxx = aaa;
-		aaa = bbb;
-		bbb = xxx;
+	if (eax > ebx) {
+		int tmp;
+		ecx ^= 1/*0b0001*/;
+		tmp = eax;
+		eax = ebx;
+		ebx = tmp;
 	}
-	if (aaa > 0) {
-		aaa = aaa << 10;
-		aaa /= bbb;
-		if (aaa != 0) {
-			aaa = (aaa & 0xFFFF0000) | (FACTORY_C2D_LOOKUP[aaa - 1] & 0xFFFF);
-			aaa = aaa << 9;
-			bbb = 205888; // 205888/65536 == pi
-			aaa /= bbb;
+	if (eax > 0) {
+		eax = eax << 10;
+		eax /= ebx;
+		if (eax != 0) {
+			eax = (eax & 0xFFFF0000) | (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
+			eax = eax << 9;
+			ebx = 205888; // 205888/65536 == pi
+			eax /= ebx;
 		}
 	}
-	if ((ccc & 0b0001) != 0) {
-		aaa = -aaa;
-		aaa += 256;
+	if ((ecx & 1/*0b0001*/) != 0) {
+		eax = -eax;
+		eax += 256;
 	}
-	if ((ccc & 0b0010) != 0) {
-		aaa += 256;
+	if ((ecx & 2/*0b0010*/) != 0) {
+		eax += 256;
 	}
-	if ((ccc & 0b0100) != 0) {
-		aaa = -aaa;
+	if ((ecx & 4/*0b0100*/) != 0) {
+		eax = -eax;
 	}
-	return aaa;
+	return eax;
 }
 
 value_type foundry_c2d(value_type x, value_type y) {
@@ -1083,25 +961,25 @@ value_type ff_c2d(value_type x, value_type y) {
 
 value_type factory_c2m(value_type x, value_type y) {
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_c2m.html
-	int32_t aaa, bbb;
-	bbb = y < 0 ? -y : y;
-	aaa = x < 0 ? -x : x;
-	if (aaa == bbb) {
-		aaa = 27146; // 27146/65536 == sqrt(1)-1
+	int32_t eax, ebx;
+	ebx = y < 0 ? -y : y;
+	eax = x < 0 ? -x : x;
+	if (eax == ebx) {
+		eax = 27146; // 27146/65536 == sqrt(1)-1
 	}
 	else {
-		if (aaa > bbb) {
-			int xxx = aaa;
-			aaa = bbb;
-			bbb = xxx;
+		if (eax > ebx) {
+			int tmp = eax;
+			eax = ebx;
+			ebx = tmp;
 		}
-		aaa = aaa << 10;
-		aaa /= bbb;
-		aaa = FACTORY_C2M_LOOKUP[aaa];
+		eax = eax << 10;
+		eax /= ebx;
+		eax = FACTORY_C2M_LOOKUP[eax];
 	}
-	aaa = ((int64_t)aaa * (int64_t)bbb) >> 16;
-	aaa += bbb;
-	return aaa;
+	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
+	eax += ebx;
+	return eax;
 }
 
 value_type foundry_c2m(value_type x, value_type y) {
@@ -1113,6 +991,237 @@ value_type ff_c2m(value_type x, value_type y) {
 	return factory_c2m(x, y);
 	#else
 	return foundry_c2m(x, y);
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* Range of angles within the image, where D is always 1024 */
+
+value_type ff_D() {
+	return 1024;
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* Direction(angle) of the current pixel from the center of the image,
+   where d is an integer between 0 and 1024 inclusive */
+
+value_type factory_d() {
+	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_d_lowercase.html
+
+	int eax, ebx, ecx;
+	const xmin = 0, ymin = 0;
+
+	eax = -(var['Y'] - ymin) / 2;
+	ebx = -(var['X'] - xmin) / 2;
+	ecx = 0;
+	eax += var['y'];
+	if (eax < 0) {
+		eax = -eax;
+		ecx |= 4/*0b0100*/;
+	}
+	ebx += var['x'];
+	if (ebx < 0) {
+		ebx = -ebx;
+		ecx |= 3/*0b0011*/;
+	}
+	if (eax > ebx) {
+		int tmp;
+		ecx ^= 1/*0b0001*/;
+		tmp = eax;
+		eax = ebx;
+		ebx = tmp;
+	}
+	if (eax > 0) {
+		eax = eax << 10;
+		eax /= ebx;
+		if (eax != 0) { // C2D_LOOKUP[-1] will never be called. Good!
+			eax = (eax & 0xFFFF0000) + (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
+			eax = eax << 9;
+			ebx = 205888; // 205888/65536 == pi
+			eax /= ebx;
+		}
+	}
+	if ((ecx & 1/*0b0001*/) != 0) {
+		eax = -eax;
+		eax += 256;
+	}
+	if ((ecx & 2/*0b0010*/) != 0) {
+		eax += 256;
+	}
+	if ((ecx & 4/*0b0100*/) != 0) {
+		eax = -eax;
+	}
+	return eax;
+}
+
+value_type foundry_c2d_negated(int x, int y) {
+	return (value_type)RINT(TO_FFANGLE(atan2(-y, -x)));
+}
+
+value_type foundry_d() {
+	// NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
+	// Due to compatibility reasons, we implement it the same way!
+	// Sign of y difference is negated, as we are dealing with top-down coordinates angle is "observed"
+	int x = var['X'] / 2 - var['x'];
+	int y = var['Y'] / 2 - var['y'];
+	return foundry_c2d_negated(x, y);
+}
+
+value_type ff_d() {
+	#ifdef use_filterfactory_implementation_d
+	return factory_d();
+	#else
+	return foundry_d();
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* Range of magnitudes with the image, where M is one half the diagonal size of the image */
+
+value_type factory_M() {
+	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_m_uppercase.html
+
+	int eax, ebx;
+	const int xmin = 0, ymin = 0;
+
+	eax = (var['X'] - xmin) >> 1;
+	ebx = (var['Y'] - ymin) >> 1;
+	if (eax == ebx) {
+		eax = 27146; // 27146/65536 == sqrt(1)-1
+	}
+	else {
+		if (eax > ebx) {
+			int tmp = eax;
+			eax = ebx;
+			ebx = tmp;
+		}
+		eax = eax << 10;
+		eax /= ebx;
+		eax = FACTORY_C2M_LOOKUP[eax];
+	}
+	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
+	eax += ebx;
+	return eax;
+}
+
+value_type foundry_M() {
+	return foundry_c2m(var['X'], var['Y']) / 2;
+}
+
+value_type ff_M() {
+	#ifdef use_filterfactory_implementation_M
+	return factory_M();
+	#else
+	return foundry_M();
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* Distance (magnitude) from the center of the image to the current pixel */
+
+value_type factory_m() {
+	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_m_lowercase.html
+
+	int eax, ebx;
+	const int xmin = 0, ymin = 0;
+
+	eax = ((xmin - var['X']) >> 1) + var['x'];
+	ebx = ((ymin - var['Y']) >> 1) + var['y'];
+	eax = eax < 0 ? -eax : eax;
+	ebx = ebx < 0 ? -ebx : ebx;
+
+	if (eax == ebx) {
+		eax = 27146; // 27146/65536 == sqrt(1)-1
+	}
+	else {
+		if (eax > ebx) {
+			int tmp = eax;
+			eax = ebx;
+			ebx = tmp;
+		}
+		eax = FACTORY_C2M_LOOKUP[1024 * eax / ebx];
+	}
+	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
+	eax += ebx;
+	return eax;
+}
+
+value_type foundry_m() {
+	return foundry_c2m(var['X'] / 2 - var['x'], var['Y'] / 2 - var['y']);
+}
+
+value_type ff_m() {
+	#ifdef use_filterfactory_implementation_m
+	return factory_m();
+	#else
+	return foundry_m();
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* "Y" value of the YUV color-space */
+
+value_type factory_i() {
+	return ((76L * var['r']) + (150L * var['g']) + (29L * var['b'])) / 256; // range: [0..254]
+}
+
+value_type foundry_i() {
+	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
+	return ((299L * var['r']) + (587L * var['g']) + (114L * var['b'])) / 1000;    // range: [0..255]
+}
+
+value_type ff_i() {
+	#ifdef use_filterfactory_implementation_i
+	return factory_i();
+	#else
+	return foundry_i();
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* "U" value of the YUV color-space */
+
+value_type factory_u() {
+	return ((-19L * var['r']) + (-37L * var['g']) + (56L * var['b'])) / 256; // range: [-55..55]
+}
+
+value_type foundry_u() {
+	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
+	return ((-147407L * var['r']) + (-289391L * var['g']) + (436798L * var['b'])) / 2000000; // range: [-55..55]
+}
+
+value_type ff_u() {
+	#ifdef use_filterfactory_implementation_u
+	return factory_u();
+	#else
+	return foundry_u();
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* "V" value of the YUV color-space */
+
+value_type factory_v() {
+	return ((78L * var['r']) + (-65L * var['g']) + (-13L * var['b'])) / 256; // range: [-77..77]
+}
+
+value_type foundry_v() {
+	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
+	return ((614777L * var['r']) + (-514799L * var['g']) + (-99978L * var['b'])) / 2000000; // range: [-78..78]
+}
+
+value_type ff_v() {
+	#ifdef use_filterfactory_implementation_v
+	return factory_v();
+	#else
+	return foundry_v();
 	#endif
 }
 
