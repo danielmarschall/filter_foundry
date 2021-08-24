@@ -25,9 +25,6 @@
 #include "funcs.h"
 #include "y.tab.h"
 
-// Strict compatibility to Filter Factory
-//#define YUV_FILTER_FACTORY
-
 extern value_type var[];
 extern int nplanes,varused[],cnvused;
 extern struct node *tree[];
@@ -69,8 +66,8 @@ Boolean setup(FilterRecordPtr pb){
 		var['Y'] = FILTER_RECT(pb).bottom - FILTER_RECT(pb).top;
 	}
 	var['Z'] = nplanes;
-	var['D'] = 1024;
-	var['M'] = ff_c2m(var['X'],var['Y'])/2;
+	var['D'] = ff_D();
+	var['M'] = ff_M();
 
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
@@ -114,30 +111,21 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		var['b'] = nplanes > 2 ? inp[2] : 0;
 		var['a'] = nplanes > 3 ? inp[3] : 0;
 
-		#ifdef YUV_FILTER_FACTORY
-		if(varused['i']) var['i'] = (( 76L*var['r'])+(150L*var['g'])+( 29L*var['b']))/256; // range: [0..254]
-		if(varused['u']) var['u'] = ((-19L*var['r'])+(-37L*var['g'])+( 56L*var['b']))/256; // range: [-55..55]
-		if(varused['v']) var['v'] = (( 78L*var['r'])+(-65L*var['g'])+(-13L*var['b']))/256; // range: [-77..77]
-		#else
-		// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
-
 		// For Y, the definition is Y := 0.299R + 0.587G + 0.114B
-		if(varused['i']) var['i'] = ((    299L*var['r'])+(    587L*var['g'])+(    114L*var['b']))/1000;    // range: [0..255]
+		if(varused['i']) var['i'] = ff_i();
 
 		// For U, the definition is U := (B-Y) * 0.493; the range would be [-111..111]
 		// Filter Factory divided it by 2, resulting in a range of [-55..55].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['u']) var['u'] = ((-147407L*var['r'])+(-289391L*var['g'])+( 436798L*var['b']))/2000000; // range: [-55..55]
+		if(varused['u']) var['u'] = ff_u();
 
 		// For V, the definition is V := (R-Y) * 0.877; the range would be [-156..156]
 		// Filter Factory divided it by 2, resulting in a range of [-78..78].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['v']) var['v'] = (( 614777L*var['r'])+(-514799L*var['g'])+(- 99978L*var['b']))/2000000; // range: [-78..78]
-		#endif
-
+		if(varused['v']) var['v'] = ff_v();
 	}
-	if(varused['d']) var['d'] = ff_c2d_negated(var['X']/2 - var['x'], var['Y']/2 - var['y']);
-	if(varused['m']) var['m'] = ff_c2m(var['X']/2 - var['x'], var['Y']/2 - var['y']);
+	if(varused['d']) var['d'] = ff_d();
+	if(varused['m']) var['m'] = ff_m();
 
 	for(k = 0; k < nplanes; ++k){
 		if(needinput)

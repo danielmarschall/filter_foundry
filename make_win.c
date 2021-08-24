@@ -535,7 +535,7 @@ OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 			res = false;
 			DeleteFile(dstname);
 			// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
-			sprintf(err, "Could not create %d bit standalone plugin (LoadLibraryEx failed, Win32 error %d).", bits, dwErr);
+			sprintf(err, "Could not create %d bit standalone plugin (LoadLibraryEx failed, Win32 error %lu).", bits, dwErr);
 			alertuser(_strdup(&err[0]), _strdup(""));
 		}
 	}
@@ -544,7 +544,7 @@ OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 		res = false;
 		//DeleteFile(dstname);
 		// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
-		sprintf(err, "Could not create %d bit standalone plugin (CopyFile failed, Win32 error %d).", bits, dwErr);
+		sprintf(err, "Could not create %d bit standalone plugin (CopyFile failed, Win32 error %lu).", bits, dwErr);
 		alertuser(_strdup(&err[0]), _strdup(""));
 	}
 

@@ -47,9 +47,10 @@ extern double costab[],tantab[];
 #define FFANGLE(v) ((v)*M_PI/512.)
 #define TO_FFANGLE(v) ((v)*512./M_PI)
 
-#define INITRANDSEED() factory_initialize_rnd_variables()
-//#define INITRANDSEED() srand(691204)
+#define INITRANDSEED() initialize_rnd_variables()
+void initialize_rnd_variables();
 
+// Functions
 value_type ff_src(value_type x,value_type y,value_type z);
 value_type ff_rad(value_type d,value_type m,value_type z);
 value_type ff_ctl(value_type i);
@@ -71,8 +72,7 @@ value_type ff_cos(value_type x);
 value_type ff_tan(value_type x);
 value_type ff_r2x(value_type d,value_type m);
 value_type ff_r2y(value_type d,value_type m);
-value_type ff_c2d(value_type d, value_type m);
-value_type ff_c2d_negated(value_type d, value_type m); // not a function!
+value_type ff_c2d(value_type d,value_type m);
 value_type ff_c2m(value_type d,value_type m);
 value_type ff_get(value_type i);
 value_type ff_put(value_type v,value_type i);
@@ -81,3 +81,12 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type m31,value_type m32,value_type m33,
 				  value_type d );
 value_type ff_rst(value_type seed);
+
+// Variables
+value_type ff_i();
+value_type ff_u();
+value_type ff_v();
+value_type ff_D();
+value_type ff_d();
+value_type ff_M();
+value_type ff_m();

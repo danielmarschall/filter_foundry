@@ -11,6 +11,8 @@ Known bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
+
 * Why doesn't the OpenWatcom files have a PE checksum?
 
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?

@@ -1,14 +1,51 @@
 
+
 Implementation detail differences
 =================================
 
 FilterFoundry tries to be as compatible with Filter Factory as possible.
-However, results are usually not 100% equal because functions like
-cos, sin, sqr, etc., have different accuracy due to the underlying
-implementation.
+However, there are some differences which are explained in this documentation.
 
-Furthermore, there are the following known differences between
-Filter Foundry and Filter Factory:
+Various implementations
+-----------------------
+
+In the source-code file funcs.c, some functions are implemented twice:
+One instance is the default implementation (older Filter Foundry versions used),
+and one instance is a 100% replica of the Filter Factory code, obtained
+from the "OPER" resource.
+(More information at https://misc.daniel-marschall.de/projects/filter_factory/res_oper.html )
+If required, the compiler-definitions "use_filterfactory_implementation_*"
+can be set or unset to select the implementation.
+
+In Filter Foundry 1.7.0.8, following functions have been updated to the
+Filter Factory replica:
+- rnd
+- cos
+- sin
+- tan
+- r2x
+- r2y
+- rad
+- c2d
+- c2m
+- sqr
+
+TODO:
+- d
+- m
+- M
+
+
+sqr(x)
+------
+
+Filter Factory:
+
+	sqr(x)=x for x < 0
+
+Filter Foundry (prior to 1.7.0.8):
+
+	sqr(x)=0 for x < 0
 
 i, u, v (Testcase iuv.afs)
 -------
@@ -50,7 +87,7 @@ In Filter Factory, an empty (transparent) canvas of a new file is initialized as
 Filter Foundry initializes it as `r=g=b=255`
 
 
-rnd(a,b) (Testcases rnd_*)
+rnd(a,b) (Testcases rnd*)
 --------
 
 Filter Factory uses Donald E. Knuth's subtractive random number generator algorithm,
@@ -61,8 +98,8 @@ Beginning with Filter Foundry 1.7.0.8, the same PRNG was implemented,
 so that the output of rnd(a,b) is exactly the same now.
 
 
-rnd(a,b) and rst(i) (Testcases rnd*.afs and rst_*.afs)
--------------------
+rst(i) (Testcases rnd*.afs and rst_*.afs)
+------
 
 Filter Factory contains an undocumented function that sets the seed for the random number generator.
 
@@ -99,7 +136,7 @@ For example, following filter would generate an one-colored picture without any 
 
 If you want to generate a random pixel image with a non-default seed, you need to make sure
 that rst(i) is called only once at the beginning (channel 0, coordinate 0|0):
-        R: (x==0 && y==0) ? rst(123) : 0, rnd(0,255)
+        R: (x== 0 && y ==0) ? rst(123) : 0, rnd(0,255)
         G: rnd(0,255)
         B: rnd(0,255)
 
