@@ -5,9 +5,7 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-* When Photoshop is opened on a seconary screen, the filter window is centered on the wrong screen.
-  Do it like Filter Factory. Note that Filter Factory also can handle when Photoshop is between
-  two monitors, opening on the center of the screen where most of the Photoshop window is displayed.
+(None known)
 
 
 TODO

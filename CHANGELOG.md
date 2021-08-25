@@ -14,6 +14,10 @@
 	* c2d(x,y)
 	* c2m(x,y)
 	* sqr(x)
+	* d
+	* m
+	* M
+- The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens.
 
 ## 1.7.0.7 [08-Aug-2021]
 - Standalone filters are now created in 32 and 64 bit. To make this work, you need to install FilterFoundry.8bf and FilterFoundry64.8bf in your plug-in directory. (*)

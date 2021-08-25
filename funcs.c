@@ -1011,7 +1011,7 @@ value_type factory_d() {
 	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_d_lowercase.html
 
 	int eax, ebx, ecx;
-	const xmin = 0, ymin = 0;
+	const int xmin = 0, ymin = 0;
 
 	eax = -(var['Y'] - ymin) / 2;
 	ebx = -(var['X'] - xmin) / 2;
