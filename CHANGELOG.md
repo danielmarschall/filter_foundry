@@ -17,7 +17,9 @@
 	* d
 	* m
 	* M
-- The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens.
+- The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens. (*)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
 ## 1.7.0.7 [08-Aug-2021]
 - Standalone filters are now created in 32 and 64 bit. To make this work, you need to install FilterFoundry.8bf and FilterFoundry64.8bf in your plug-in directory. (*)

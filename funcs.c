@@ -730,33 +730,6 @@ value_type ff_rnd(value_type a,value_type b){
 
 // -------------------------------------------------------------------------------------------
 
-void factory_initialize_rnd_variables() {
-#ifdef PARSERTEST
-	return 0;
-#else
-	gFactoryRngState.seed = 0; // default seed
-	gFactoryRngState.seedSave = gFactoryRngState.seed + 1; // force rnd() to call factory_fill_rnd_lookup()
-#endif
-}
-
-void foundry_initialize_rnd_variables() {
-#ifdef PARSERTEST
-	return 0;
-#else
-	foundry_rst(691204);
-#endif
-}
-
-void initialize_rnd_variables() {
-#ifdef use_filterfactory_implementation_rnd
-	factory_initialize_rnd_variables();
-#else
-	foundry_initialize_rnd_variables();
-#endif
-}
-
-// -------------------------------------------------------------------------------------------
-
 /* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
    Added by DM, 18 Dec 2018 */
 
@@ -802,6 +775,33 @@ value_type ff_rst(value_type seed) {
 	return factory_rst(seed, &gFactoryRngState);
 #else
 	return foundry_rst(seed);
+#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+void factory_initialize_rnd_variables() {
+#ifdef PARSERTEST
+	return 0;
+#else
+	gFactoryRngState.seed = 0; // default seed
+	gFactoryRngState.seedSave = gFactoryRngState.seed + 1; // force rnd() to call factory_fill_rnd_lookup()
+#endif
+}
+
+void foundry_initialize_rnd_variables() {
+#ifdef PARSERTEST
+	return 0;
+#else
+	foundry_rst(691204);
+#endif
+}
+
+void initialize_rnd_variables() {
+#ifdef use_filterfactory_implementation_rnd
+	factory_initialize_rnd_variables();
+#else
+	foundry_initialize_rnd_variables();
 #endif
 }
 

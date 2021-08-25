@@ -133,38 +133,49 @@ _HMONITOR _MonitorFromRect(LPCRECT lprc, DWORD dwFlags) {
 #define _MONITOR_DEFAULTTONEAREST    0x00000002
 
 void _doMonitorAdjustments(LPRECT rcPlugin) {
-	RECT rcMonitor;
-	_MONITORINFO monInfo;
+	RECT rcMonitorWork;
+	_MONITORINFO grMonitorInfo;
 	_HMONITOR hMonitor;
-	int leftAdjust, topAdjust;
 	
 	hMonitor = _MonitorFromRect(rcPlugin, _MONITOR_DEFAULTTONEAREST);
 	if (hMonitor == NULL) return;
 
-	memset(&monInfo, 0, sizeof(monInfo));
-	monInfo.cbSize = sizeof(monInfo);
-	if (!_GetMonitorInfoA(hMonitor, &monInfo)) return;
-	rcMonitor = monInfo.rcMonitor;
+	memset(&grMonitorInfo, 0, sizeof(grMonitorInfo));
+	grMonitorInfo.cbSize = sizeof(grMonitorInfo);
+	if (!_GetMonitorInfoA(hMonitor, &grMonitorInfo)) return;
+	rcMonitorWork = grMonitorInfo.rcWork;
 
-	leftAdjust = 0;
-	topAdjust = 0;
-	if (rcPlugin->left < rcMonitor.left) {
-		leftAdjust += (rcMonitor.left - rcPlugin->left);
+	// Don't let the window exit the left/right borders of the monitor
+	if ((rcPlugin->left < rcMonitorWork.left) && (rcPlugin->right > rcMonitorWork.right)) {
+		rcPlugin->left = rcMonitorWork.left;;
+		rcPlugin->right = rcMonitorWork.right;
 	}
-	if (rcPlugin->right > rcMonitor.right) {
-		leftAdjust -= (rcPlugin->right - rcMonitor.right);
+	else if (rcPlugin->left < rcMonitorWork.left) {
+		int nLeftAdjust = (rcMonitorWork.left - rcPlugin->left);
+		rcPlugin->left += nLeftAdjust;
+		rcPlugin->right += nLeftAdjust;
 	}
-	if (rcPlugin->top < rcMonitor.top) {
-		topAdjust += (rcMonitor.top - rcPlugin->top);
-	}
-	if (rcPlugin->bottom > rcMonitor.bottom) {
-		topAdjust -= (rcPlugin->bottom - rcMonitor.bottom);
+	else if (rcPlugin->right > rcMonitorWork.right) {
+		int nRightAdjust = (rcPlugin->right - rcMonitorWork.right);
+		rcPlugin->left -= nRightAdjust;
+		rcPlugin->right -= nRightAdjust;
 	}
 
-	rcPlugin->left += leftAdjust;
-	rcPlugin->right += leftAdjust;
-	rcPlugin->top += topAdjust;
-	rcPlugin->bottom += topAdjust;
+	// Don't let the window exit the top/bottom borders of the monitor
+	if ((rcPlugin->top < rcMonitorWork.top) && (rcPlugin->bottom > rcMonitorWork.bottom)) {
+		rcPlugin->top = rcMonitorWork.top;
+		rcPlugin->bottom = rcMonitorWork.bottom;
+	}
+	else if (rcPlugin->top < rcMonitorWork.top) {
+		int nTopAdjust = (rcMonitorWork.top - rcPlugin->top);
+		rcPlugin->top += nTopAdjust;
+		rcPlugin->bottom += nTopAdjust;
+	}
+	else if (rcPlugin->bottom > rcMonitorWork.bottom) {
+		int nBottomAdjust = (rcPlugin->bottom - rcMonitorWork.bottom);
+		rcPlugin->top -= nBottomAdjust;
+		rcPlugin->bottom -= nBottomAdjust;
+	}
 }
 
 /*
@@ -181,10 +192,18 @@ void centre_window(HWND hwnd) {
 	if (!GetWindowRect(hParent, &rcParent)) return;
 	if (!GetWindowRect(hwnd, &rcWindowOriginal)) return;
 
-	rcPlugin.left = (rcParent.right + rcParent.left + rcWindowOriginal.left - rcWindowOriginal.right) / 2;
-	rcPlugin.top = (rcParent.bottom + rcParent.top + rcWindowOriginal.top - rcWindowOriginal.bottom) / 3;
-	rcPlugin.right = rcPlugin.left + rcWindowOriginal.right - rcWindowOriginal.left;
-	rcPlugin.bottom = rcPlugin.top + rcWindowOriginal.bottom - rcWindowOriginal.top;
+	rcPlugin.left =
+		rcParent.left
+		+ (rcParent.right - rcParent.left) / 2
+		- (rcWindowOriginal.right - rcWindowOriginal.left) / 2;
+	rcPlugin.top =
+		rcParent.top
+		+ (rcParent.bottom - rcParent.top) / 2
+		- (rcWindowOriginal.bottom - rcWindowOriginal.top) / 2;
+	rcPlugin.right =
+		rcPlugin.left + rcWindowOriginal.right - rcWindowOriginal.left;
+	rcPlugin.bottom =
+		rcPlugin.top + rcWindowOriginal.bottom - rcWindowOriginal.top;
 
 	// Avoid that the window is spread between two screens
 	_doMonitorAdjustments(&rcPlugin);
@@ -192,8 +211,8 @@ void centre_window(HWND hwnd) {
 	MoveWindow(hwnd,
 		rcPlugin.left,
 		rcPlugin.top,
-		rcPlugin.right - rcPlugin.left,
-		rcPlugin.bottom - rcPlugin.top,
+		/*width=*/rcPlugin.right - rcPlugin.left,
+		/*height=*/rcPlugin.bottom - rcPlugin.top,
 		TRUE);
 }
 
