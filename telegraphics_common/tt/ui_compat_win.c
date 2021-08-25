@@ -205,7 +205,7 @@ void centre_window(HWND hwnd) {
 	rcPlugin.bottom =
 		rcPlugin.top + rcWindowOriginal.bottom - rcWindowOriginal.top;
 
-	// Avoid that the window is spread between two screens
+	// Avoid that the window is spread across two screens
 	_doMonitorAdjustments(&rcPlugin);
 
 	MoveWindow(hwnd,

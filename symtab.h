@@ -29,7 +29,8 @@
 #ifdef FP_VALUE
 typedef double value_type;
 #else
-typedef long value_type;
+// According to the FilterFactory manual, all operations are on signed 32-bit integers
+typedef int value_type;
 #endif
 typedef value_type (*pfunc_type)(value_type,...);
 
