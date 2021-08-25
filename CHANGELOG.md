@@ -18,6 +18,7 @@
 	* m
 	* M
 - The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens. (*)
+- Added new function `pow(b,e)` which are already part of the inofficial Filter Factory 3.1.0 patch by Daniel Marschall.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

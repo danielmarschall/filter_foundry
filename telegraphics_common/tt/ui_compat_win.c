@@ -134,48 +134,47 @@ _HMONITOR _MonitorFromRect(LPCRECT lprc, DWORD dwFlags) {
 
 void _doMonitorAdjustments(LPRECT rcPlugin) {
 	RECT rcMonitorWork;
-	_MONITORINFO grMonitorInfo;
 	_HMONITOR hMonitor;
-	
+	_MONITORINFO grMonitorInfo = { sizeof(grMonitorInfo) };
+	int nXAdjust = 0, nYAdjust = 0, nPluginWidth, nPluginHeight, nMonitorWorkWidth, nMonitorWorkHeight;
+
 	hMonitor = _MonitorFromRect(rcPlugin, _MONITOR_DEFAULTTONEAREST);
 	if (hMonitor == NULL) return;
 
-	memset(&grMonitorInfo, 0, sizeof(grMonitorInfo));
-	grMonitorInfo.cbSize = sizeof(grMonitorInfo);
 	if (!_GetMonitorInfoA(hMonitor, &grMonitorInfo)) return;
 	rcMonitorWork = grMonitorInfo.rcWork;
 
 	// Don't let the window exit the left/right borders of the monitor
-	if ((rcPlugin->left < rcMonitorWork.left) && (rcPlugin->right > rcMonitorWork.right)) {
-		rcPlugin->left = rcMonitorWork.left;;
+	nPluginWidth = rcPlugin->right - rcPlugin->left;
+	nMonitorWorkWidth = rcMonitorWork.right - rcMonitorWork.left;
+	if (nPluginWidth > nMonitorWorkWidth) {
+		// Window larger than screen width. Decrease the width!
+		rcPlugin->left = rcMonitorWork.left;
 		rcPlugin->right = rcMonitorWork.right;
 	}
 	else if (rcPlugin->left < rcMonitorWork.left) {
-		int nLeftAdjust = (rcMonitorWork.left - rcPlugin->left);
-		rcPlugin->left += nLeftAdjust;
-		rcPlugin->right += nLeftAdjust;
+		nXAdjust = rcMonitorWork.left - rcPlugin->left;
 	}
 	else if (rcPlugin->right > rcMonitorWork.right) {
-		int nRightAdjust = (rcPlugin->right - rcMonitorWork.right);
-		rcPlugin->left -= nRightAdjust;
-		rcPlugin->right -= nRightAdjust;
+		nXAdjust = rcMonitorWork.right  - rcPlugin->right;
 	}
 
 	// Don't let the window exit the top/bottom borders of the monitor
-	if ((rcPlugin->top < rcMonitorWork.top) && (rcPlugin->bottom > rcMonitorWork.bottom)) {
+	nPluginHeight = rcPlugin->bottom - rcPlugin->top;
+	nMonitorWorkHeight = rcMonitorWork.bottom - rcMonitorWork.top;
+	if (nPluginHeight > nMonitorWorkHeight) {
+		// Window larger than screen height. Decrease the height!
 		rcPlugin->top = rcMonitorWork.top;
 		rcPlugin->bottom = rcMonitorWork.bottom;
 	}
 	else if (rcPlugin->top < rcMonitorWork.top) {
-		int nTopAdjust = (rcMonitorWork.top - rcPlugin->top);
-		rcPlugin->top += nTopAdjust;
-		rcPlugin->bottom += nTopAdjust;
+		nYAdjust = rcMonitorWork.top - rcPlugin->top;
 	}
 	else if (rcPlugin->bottom > rcMonitorWork.bottom) {
-		int nBottomAdjust = (rcPlugin->bottom - rcMonitorWork.bottom);
-		rcPlugin->top -= nBottomAdjust;
-		rcPlugin->bottom -= nBottomAdjust;
+		nYAdjust = rcMonitorWork.bottom - rcPlugin->bottom;
 	}
+
+	OffsetRect(rcPlugin, nXAdjust, nYAdjust);
 }
 
 /*

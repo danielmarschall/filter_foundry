@@ -820,12 +820,24 @@ value_type ff_mix(value_type a,value_type b,value_type n,value_type d){
 
 /* scl(a,il,ih,ol,oh) Scale a from input range (il to ih)
                       to output range (ol to oh) */
-value_type ff_scl(value_type a,value_type il,value_type ih,
-                  value_type ol,value_type oh){
+value_type ff_scl(value_type a, value_type il, value_type ih,
+	value_type ol, value_type oh) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return ih==il ? 0 : ol + ((long)(oh-ol)*(a-il))/(ih-il);
+	return ih == il ? 0 : ol + ((long)(oh - ol) * (a - il)) / (ih - il);
+#endif
+}
+
+// -------------------------------------------------------------------------------------------
+
+/* pow(b,e) Calculates the base to the exponent power, that is, b^e. */
+
+value_type ff_pow(value_type b, value_type e) {
+#ifdef PARSERTEST
+	return 0;
+#else
+	return (value_type)round(pow((double)b, (double)e));
 #endif
 }
 
@@ -1551,6 +1563,7 @@ struct sym_rec predefs[]={
 	{0,TOK_FN2,"put", (pfunc_type)ff_put, 0},
 	{0,TOK_FN10,"cnv",(pfunc_type)ff_cnv, 0},
 	{0,TOK_FN1,"rst", (pfunc_type)ff_rst, 0}, // undocumented FilterFactory function
+	{0,TOK_FN2,"pow", (pfunc_type)ff_pow, 0}, // new function, also added in inofficial Filter Factory 3.1.0 patch
 
 	/* predefined variables (names with more than 1 character); most of them are undocumented in FilterFactory */
 	/* the predefined variables with 1 character are defined in lexer.l and process.c */
