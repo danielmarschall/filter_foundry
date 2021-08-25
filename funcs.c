@@ -38,17 +38,23 @@
 	#define use_filterfactory_implementation_d
 	#define use_filterfactory_implementation_m
 	#define use_filterfactory_implementation_M
+	//#define use_filterfactory_implementation_get
 #endif
 
 #ifdef MAC_ENV
-#include <fp.h>
+	#include <fp.h>
 #endif
 
 #include <math.h>
 #include <stdlib.h>
 
 #ifndef PARSERTEST
-#include "ff.h"
+	#include "ff.h"
+#else
+	#define value_type int
+	#define uint16_t int
+	#define uint32_t int
+	#define int32_t int
 #endif
 
 #include "funcs.h"
@@ -278,6 +284,9 @@ extern unsigned char *image_ptr;
 double costab[COSTABSIZE];
 double tantab[TANTABSIZE];
 void init_trigtab(){
+#ifdef PARSERTEST
+	return 0;
+#else
 	int i;
 	for(i=0;i<COSTABSIZE;++i){
 		costab[i] = cos(FFANGLE(i));
@@ -290,6 +299,7 @@ void init_trigtab(){
 			tantab[i] = tan(FFANGLE(i));
 		}
 	}
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -297,6 +307,9 @@ void init_trigtab(){
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
 static value_type rawsrc(value_type x,value_type y,value_type z){
+#ifdef PARSERTEST
+	return 0;
+#else
 	if (HAS_BIG_DOC(gpb)) {
 		if (x < BIGDOC_IN_RECT(gpb).left)
 			x = BIGDOC_IN_RECT(gpb).left;
@@ -320,6 +333,7 @@ static value_type rawsrc(value_type x,value_type y,value_type z){
 		return ((unsigned char*)gpb->inData)[(long)gpb->inRowBytes * (y - IN_RECT(gpb).top)
 			+ (long)nplanes * (x - IN_RECT(gpb).left) + z];
 	}
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -328,9 +342,9 @@ static value_type rawsrc(value_type x,value_type y,value_type z){
  * Coordinates are relative to filtered area (selection). */
 
 value_type ff_src(value_type x,value_type y,value_type z){
-	#ifdef PARSERTEST
+#ifdef PARSERTEST
 	return 0;
-	#else
+#else
 	if(x < 0)
 		x = 0;
 	else if(x >= var['X'])
@@ -341,7 +355,7 @@ value_type ff_src(value_type x,value_type y,value_type z){
 		y = var['Y']-1;
 	return z >= 0 && z < var['Z'] ?
 		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -351,23 +365,31 @@ value_type ff_src(value_type x,value_type y,value_type z){
 
 value_type factory_r2x(value_type d, value_type m) {
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2x.html
+#ifdef PARSERTEST
+	return 0;
+#else
 	int eax = m;
 	int ebx = d;
 	ebx &= 1023;
 	ebx = FACTORY_COS_LOOKUP[ebx];
 	return (((int64_t)eax * (int64_t)ebx) + 8191) >> 14;
+#endif
 }
 
 value_type foundry_r2x(value_type d, value_type m) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return (value_type)RINT(m * costab[abs(d) % COSTABSIZE]);
+#endif
 }
 
 value_type ff_r2x(value_type d, value_type m) {
-	#ifdef use_filterfactory_implementation_r2x
+#ifdef use_filterfactory_implementation_r2x
 	return factory_r2x(d, m);
-	#else
+#else
 	return foundry_r2x(d, m);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -376,20 +398,28 @@ value_type ff_r2x(value_type d, value_type m) {
    from an arbitrary center */
 
 value_type factory_r2y(value_type d, value_type m) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2y.html
 	return factory_r2x(d - 256, m);
+#endif
 }
 
 value_type foundry_r2y(value_type d, value_type m) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return (value_type)RINT(m * costab[abs(d - 256) % COSTABSIZE]);
+#endif
 }
 
 value_type ff_r2y(value_type d, value_type m) {
-	#ifdef use_filterfactory_implementation_r2y
+#ifdef use_filterfactory_implementation_r2y
 	return factory_r2y(d, m);
-	#else
+#else
 	return foundry_r2y(d, m);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -398,6 +428,9 @@ value_type ff_r2y(value_type d, value_type m) {
 	at an angle of d, from the center of the image */
 
 value_type factory_rad(value_type d, value_type m, value_type z) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_rad.html
 
 	const int xmin = 0;
@@ -437,32 +470,45 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 	ebx *= gpb->inRowBytes;
 	ecx *= var['Z'] - zmin;
 	return image_ptr[z+ebx+ecx];
+#endif
 }
 
 value_type foundry_rad(value_type d, value_type m, value_type z) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ff_src(foundry_r2x(d, m) + var['X'] / 2, foundry_r2y(d, m) + var['Y'] / 2, z);
+#endif
 }
 
 value_type ff_rad(value_type d,value_type m,value_type z){
-	#ifdef use_filterfactory_implementation_rad
+#ifdef use_filterfactory_implementation_rad
 	return factory_rad(d, m, z);
-	#else
+#else
 	return foundry_rad(d, m, z);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* ctl(i) Value of slider i, where i is an integer between 0 and 7, inclusive */
 value_type ff_ctl(value_type i){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return i>=0 && i<=7 ? slider[i] : 0;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* val(i,a,b) Value of slider i, mapped onto the range a to b */
 value_type ff_val(value_type i,value_type a,value_type b){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ((long)ff_ctl(i)*(b-a))/255 + a;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -471,7 +517,10 @@ value_type ff_val(value_type i,value_type a,value_type b){
 	0 and 3, inclusive, and n is and integer between 0 and 255,
 	inclusive */
 value_type ff_map(value_type i,value_type n){
-/*
+#ifdef PARSERTEST
+	return 0;
+#else
+	/*
 	if( i>=0 && i<=3 && n>=0 && n<=255 ){
 		int H = slider[i*2],L = slider[i*2+1];
 		return n<=L || H==L ? 0 : ( n>=H ? 255 : ((n-L)*255L)/(H-L) );
@@ -482,48 +531,73 @@ value_type ff_map(value_type i,value_type n){
 	value_type x = ff_ctl(i*2),
 			   y = ff_ctl(i*2+1);
 	return abs(((long)n*(y-x) / 255)+x);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* min(a,b) Lesser of a and b */
 value_type ff_min(value_type a,value_type b){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return a < b ? a : b;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* max(a,b) Greater of a and b */
 value_type ff_max(value_type a,value_type b){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return a > b ? a : b;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* abs(a) Absolute value of a */
 value_type ff_abs(value_type a){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return abs(a);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* add(a,b,c) Sum of a and b, or c, whichever is lesser */
 value_type ff_add(value_type a,value_type b,value_type c){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ff_min(a+b,c);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* sub(a,b,c) Difference of a and b, or c, whichever is greater */
 value_type ff_sub(value_type a,value_type b,value_type c){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ff_max(ff_dif(a,b),c);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* dif(a,b) Absolute value of the difference of a and b */
 value_type ff_dif(value_type a,value_type b){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return abs(a-b);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -539,6 +613,9 @@ struct factoryRngState {
 } gFactoryRngState;
 
 void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// Algorithm of Filter Factory
 	// Filter Factory uses Donald E.Knuth's subtractive
 	// random number generator algorithm ("ran3"), which has been published
@@ -573,9 +650,13 @@ void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 	state->seedSave = seed;
 
 	return;
+#endif
 }
 
 uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	uint32_t mj; // Note: This must be "uint32_t". With "long" (as described by Knuth), it won't match FilterFactory's algorithm
 	int range;
 
@@ -627,38 +708,51 @@ uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
 		default:
 			return a + (mj % (range + 1));
 	}
+#endif
 }
 
 value_type foundry_rnd(value_type a, value_type b) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
 	//	return ((unsigned)rand() % (ff_dif(a,b)+1)) + ff_min(a,b);
+#endif
 }
 
 value_type ff_rnd(value_type a,value_type b){
-	#ifdef use_filterfactory_implementation_rnd
+#ifdef use_filterfactory_implementation_rnd
 	return factory_rnd(a, b, &gFactoryRngState);
-	#else
+#else
 	return foundry_rnd(a, b);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 void factory_initialize_rnd_variables() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	gFactoryRngState.seed = 0; // default seed
 	gFactoryRngState.seedSave = gFactoryRngState.seed + 1; // force rnd() to call factory_fill_rnd_lookup()
+#endif
 }
 
 void foundry_initialize_rnd_variables() {
-	srand(691204);
+#ifdef PARSERTEST
+	return 0;
+#else
+	foundry_rst(691204);
+#endif
 }
 
 void initialize_rnd_variables() {
-	#ifdef use_filterfactory_implementation_rnd
+#ifdef use_filterfactory_implementation_rnd
 	factory_initialize_rnd_variables();
-	#else
+#else
 	foundry_initialize_rnd_variables();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -667,6 +761,9 @@ void initialize_rnd_variables() {
    Added by DM, 18 Dec 2018 */
 
 int32_t factory_rst(uint32_t seed, struct factoryRngState* state) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// Attention: This is NOT the FilterFactory rst() implementation!
 
 	// We implement rst(i) completely differently in Filter Foundry:
@@ -688,26 +785,35 @@ int32_t factory_rst(uint32_t seed, struct factoryRngState* state) {
 	state->seedSave = seed + 1;
 
 	return 0;
+#endif
 }
 
 value_type foundry_rst(value_type seed) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	srand(seed);
 	return 0;
+#endif
 }
 
 value_type ff_rst(value_type seed) {
-	#ifdef use_filterfactory_implementation_rnd
+#ifdef use_filterfactory_implementation_rnd
 	return factory_rst(seed, &gFactoryRngState);
-	#else
+#else
 	return foundry_rst(seed);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* mix(a,b,n,d) Mixture of a and b by fraction n/d, a*n/d+b*(d-n)/d */
 value_type ff_mix(value_type a,value_type b,value_type n,value_type d){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return d ? ((long)a*n)/d + ((long)b*(d-n))/d : 0;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -716,7 +822,11 @@ value_type ff_mix(value_type a,value_type b,value_type n,value_type d){
                       to output range (ol to oh) */
 value_type ff_scl(value_type a,value_type il,value_type ih,
                   value_type ol,value_type oh){
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ih==il ? 0 : ol + ((long)(oh-ol)*(a-il))/(ih-il);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -724,6 +834,9 @@ value_type ff_scl(value_type a,value_type il,value_type ih,
 /* sqr(x) Square root of x */
 
 static uint32_t isqrt(uint32_t x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// based on https://gist.github.com/orlp/3481770
 
 	static uint32_t lkpSquares[65535];
@@ -760,9 +873,13 @@ static uint32_t isqrt(uint32_t x) {
 	if (p[1] <= x) p += 1;
 
 	return (uint32_t)(p - lkpSquares);
+#endif
 }
 
 value_type factory_sqr(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_sqr.html
 
 	int eax, ebx, ecx;
@@ -780,19 +897,24 @@ value_type factory_sqr(value_type x) {
 		}
 	}
 	return ebx;
+#endif
 }
 
 value_type foundry_sqr(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// Note: FilterFactory has sqr(x)=x if x<0 . Here we set sqr(x)=0 for x<0
 	return x < 0 ? 0 : isqrt(x);
+#endif
 }
 
 value_type ff_sqr(value_type x){
-	#ifdef use_filterfactory_implementation_sqr
+#ifdef use_filterfactory_implementation_sqr
 	return factory_sqr(x);
-	#else
+#else
 	return foundry_sqr(x);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -803,25 +925,33 @@ value_type ff_sqr(value_type x){
    1024, inclusive (Mac OS) */
 
 value_type factory_cos(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_cos.html
 	int res;
 	if (x < 0) x = -x;
 	x &= 0x3ff; // 1023
 	res = FACTORY_COS_LOOKUP[x];
 	return res >= 0 ? (res / 32) : res / 32 - 1;
+#endif
 }
 
 value_type foundry_cos(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	//return RINT(TRIGAMP*cos(FFANGLE(x)));
 	return (value_type)RINT(TRIGAMP * costab[abs(x) % COSTABSIZE]);
+#endif
 }
 
 value_type ff_cos(value_type x){
-	#ifdef use_filterfactory_implementation_cos
+#ifdef use_filterfactory_implementation_cos
 	return factory_cos(x);
-	#else
+#else
 	return foundry_cos(x);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -832,21 +962,29 @@ value_type ff_cos(value_type x){
    1024, inclusive (Mac OS) */
 
 value_type factory_sin(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_sin.html
 	return factory_cos(x - 256);
+#endif
 }
 
 value_type foundry_sin(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	//return RINT(TRIGAMP*sin(FFANGLE(x)));
 	return foundry_cos(x - 256);
+#endif
 }
 
 value_type ff_sin(value_type x) {
-	#ifdef use_filterfactory_implementation_sin
+#ifdef use_filterfactory_implementation_sin
 	return factory_sin(x);
-	#else
+#else
 	return foundry_sin(x);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -857,6 +995,9 @@ value_type ff_sin(value_type x) {
    -1024 and 1024, inclusive (Mac OS), the output is actually NOT bounded! */
 
 value_type factory_tan(value_type x) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_tan.html
 	int v1 = x;
 	int v2 = v1 < 0 ? -v1 : v1;
@@ -869,9 +1010,13 @@ value_type factory_tan(value_type x) {
 	if (v2 == 0) return 0;
 	v1 = v1 << 10; // v1 *= 1024;
 	return v1 / v2;
+#endif
 }
 
 value_type foundry_tan(value_type x){
+#ifdef PARSERTEST
+	return 0;
+#else
 	// Following filter shows that the Filter Factory manual differs from the implementation.
 	//     R = cos(x) > 1024 || cos(x) < -1024 || cos(-x) > 1024 || cos(-x) < -1024 ? 255 : 0
 	//     G = tan(x) > 1024 || tan(x) < -1024 || tan(-x) > 1024 || tan(-x) < -1024 ? 255 : 0
@@ -881,14 +1026,15 @@ value_type foundry_tan(value_type x){
 	if (x < 0) x--; /* required for Filter Factory compatibility */
 	while (x < 0) x += TANTABSIZE;
 	return (value_type)RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); // We need the x2 multiplicator for some reason
+#endif
 }
 
 value_type ff_tan(value_type x) {
-	#ifdef use_filterfactory_implementation_tan
+#ifdef use_filterfactory_implementation_tan
 	return factory_tan(x);
-	#else
+#else
 	return foundry_tan(x);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -896,6 +1042,9 @@ value_type ff_tan(value_type x) {
 /* c2d(x,y) Angle displacement of the pixel at coordinates x,y */
 
 value_type factory_c2d(value_type x, value_type y) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_c2d.html
 	int32_t eax, ebx, ecx;
 	eax = y;
@@ -937,22 +1086,27 @@ value_type factory_c2d(value_type x, value_type y) {
 		eax = -eax;
 	}
 	return eax;
+#endif
 }
 
 value_type foundry_c2d(value_type x, value_type y) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// Behavior of FilterFoundry <1.7:
 	//return foundry_c2d_negated(x,y);
 
 	// Behavior in FilterFoundry 1.7+: Matches FilterFactory
 	return (value_type)RINT(TO_FFANGLE(atan2(y, x)));
+#endif
 }
 
 value_type ff_c2d(value_type x, value_type y) {
-	#ifdef use_filterfactory_implementation_c2d
+#ifdef use_filterfactory_implementation_c2d
 	return factory_c2d(x, y);
-	#else
+#else
 	return foundry_c2d(x, y);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -960,6 +1114,9 @@ value_type ff_c2d(value_type x, value_type y) {
 /* c2m(x,y) Magnitude displacement of the pixel at coordinates x,y */
 
 value_type factory_c2m(value_type x, value_type y) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_c2m.html
 	int32_t eax, ebx;
 	ebx = y < 0 ? -y : y;
@@ -980,18 +1137,23 @@ value_type factory_c2m(value_type x, value_type y) {
 	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
 	eax += ebx;
 	return eax;
+#endif
 }
 
 value_type foundry_c2m(value_type x, value_type y) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return isqrt((long)x * x + (long)y * y);
+#endif
 }
 
 value_type ff_c2m(value_type x, value_type y) {
-	#ifdef use_filterfactory_implementation_c2m
+#ifdef use_filterfactory_implementation_c2m
 	return factory_c2m(x, y);
-	#else
+#else
 	return foundry_c2m(x, y);
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1008,6 +1170,9 @@ value_type ff_D() {
    where d is an integer between 0 and 1024 inclusive */
 
 value_type factory_d() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_d_lowercase.html
 
 	int eax, ebx, ecx;
@@ -1054,27 +1219,36 @@ value_type factory_d() {
 		eax = -eax;
 	}
 	return eax;
+#endif
 }
 
 value_type foundry_c2d_negated(int x, int y) {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return (value_type)RINT(TO_FFANGLE(atan2(-y, -x)));
+#endif
 }
 
 value_type foundry_d() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// NOTE: FilterFactory uses c2d(x,y):=atan2(y,x), but d:=atan2(-y,-x)
 	// Due to compatibility reasons, we implement it the same way!
 	// Sign of y difference is negated, as we are dealing with top-down coordinates angle is "observed"
 	int x = var['X'] / 2 - var['x'];
 	int y = var['Y'] / 2 - var['y'];
 	return foundry_c2d_negated(x, y);
+#endif
 }
 
 value_type ff_d() {
-	#ifdef use_filterfactory_implementation_d
+#ifdef use_filterfactory_implementation_d
 	return factory_d();
-	#else
+#else
 	return foundry_d();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1082,6 +1256,9 @@ value_type ff_d() {
 /* Range of magnitudes with the image, where M is one half the diagonal size of the image */
 
 value_type factory_M() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_m_uppercase.html
 
 	int eax, ebx;
@@ -1105,18 +1282,23 @@ value_type factory_M() {
 	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
 	eax += ebx;
 	return eax;
+#endif
 }
 
 value_type foundry_M() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return foundry_c2m(var['X'], var['Y']) / 2;
+#endif
 }
 
 value_type ff_M() {
-	#ifdef use_filterfactory_implementation_M
+#ifdef use_filterfactory_implementation_M
 	return factory_M();
-	#else
+#else
 	return foundry_M();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1124,6 +1306,9 @@ value_type ff_M() {
 /* Distance (magnitude) from the center of the image to the current pixel */
 
 value_type factory_m() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// https://misc.daniel-marschall.de/projects/filter_factory/symbol_m_lowercase.html
 
 	int eax, ebx;
@@ -1148,18 +1333,23 @@ value_type factory_m() {
 	eax = ((int64_t)eax * (int64_t)ebx) >> 16;
 	eax += ebx;
 	return eax;
+#endif
 }
 
 value_type foundry_m() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return foundry_c2m(var['X'] / 2 - var['x'], var['Y'] / 2 - var['y']);
+#endif
 }
 
 value_type ff_m() {
-	#ifdef use_filterfactory_implementation_m
+#ifdef use_filterfactory_implementation_m
 	return factory_m();
-	#else
+#else
 	return foundry_m();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1167,20 +1357,28 @@ value_type ff_m() {
 /* "Y" value of the YUV color-space */
 
 value_type factory_i() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ((76L * var['r']) + (150L * var['g']) + (29L * var['b'])) / 256; // range: [0..254]
+#endif
 }
 
 value_type foundry_i() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
 	return ((299L * var['r']) + (587L * var['g']) + (114L * var['b'])) / 1000;    // range: [0..255]
+#endif
 }
 
 value_type ff_i() {
-	#ifdef use_filterfactory_implementation_i
+#ifdef use_filterfactory_implementation_i
 	return factory_i();
-	#else
+#else
 	return foundry_i();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1188,20 +1386,28 @@ value_type ff_i() {
 /* "U" value of the YUV color-space */
 
 value_type factory_u() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ((-19L * var['r']) + (-37L * var['g']) + (56L * var['b'])) / 256; // range: [-55..55]
+#endif
 }
 
 value_type foundry_u() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
 	return ((-147407L * var['r']) + (-289391L * var['g']) + (436798L * var['b'])) / 2000000; // range: [-55..55]
+#endif
 }
 
 value_type ff_u() {
-	#ifdef use_filterfactory_implementation_u
+#ifdef use_filterfactory_implementation_u
 	return factory_u();
-	#else
+#else
 	return foundry_u();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1209,40 +1415,69 @@ value_type ff_u() {
 /* "V" value of the YUV color-space */
 
 value_type factory_v() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	return ((78L * var['r']) + (-65L * var['g']) + (-13L * var['b'])) / 256; // range: [-77..77]
+#endif
 }
 
 value_type foundry_v() {
+#ifdef PARSERTEST
+	return 0;
+#else
 	// These formulas are more accurate, e.g. pure white has now i=255 instead of 254
 	return ((614777L * var['r']) + (-514799L * var['g']) + (-99978L * var['b'])) / 2000000; // range: [-78..78]
+#endif
 }
 
 value_type ff_v() {
-	#ifdef use_filterfactory_implementation_v
+#ifdef use_filterfactory_implementation_v
 	return factory_v();
-	#else
+#else
 	return foundry_v();
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* get(i) Returns the current cell value at i */
-value_type ff_get(value_type i){
-	// Filter Factory:
-	//return i>=0 && i<NUM_CELLS ? cell[i] : i;
 
-	// Filter Foundry:
-	return i>=0 && i<NUM_CELLS ? cell[i] : 0;
+value_type factory_get(value_type i) {
+#ifdef PARSERTEST
+	return 0;
+#else
+	return i>=0 && i<NUM_CELLS ? cell[i] : i;
+#endif
+}
+
+value_type foundry_get(value_type i) {
+#ifdef PARSERTEST
+	return 0;
+#else
+	return i >= 0 && i < NUM_CELLS ? cell[i] : 0;
+#endif
+}
+
+value_type ff_get(value_type i) {
+#ifdef use_filterfactory_implementation_get
+	return factory_get(i);
+#else
+	return foundry_get(i);
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* put(v,i) Puts the new value v into cell i */
 value_type ff_put(value_type v,value_type i){
+#ifdef PARSERTEST
+	return 0;
+#else
 	if(i>=0 && i<NUM_CELLS)
 		cell[i] = v;
 	return v;
+#endif
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1253,9 +1488,9 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
                   value_type m31,value_type m32,value_type m33,
                   value_type d)
 {
-	#ifdef PARSERTEST
+#ifdef PARSERTEST
 	return 0;
-	#else
+#else
 	long total;
 	int x, y, z;
 	// shift x,y from selection-relative to image relative
@@ -1276,7 +1511,7 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 		total = 0;
 
 	return d ? total/d : 0;
-	#endif
+#endif
 }
 
 // -------------------------------------------------------------------------------------------

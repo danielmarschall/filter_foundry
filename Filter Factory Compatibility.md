@@ -14,23 +14,23 @@ One instance is the default implementation (older Filter Foundry versions used),
 and one instance is a 100% replica of the Filter Factory code, obtained
 from the "OPER" resource.
 (More information at https://misc.daniel-marschall.de/projects/filter_factory/res_oper.html )
-If required, the compiler-definitions "use_filterfactory_implementation_*"
+If required, the compiler-definitions `use_filterfactory_implementation_*`
 can be set or unset to select the implementation.
 
 In Filter Foundry 1.7.0.8, following functions have been updated to the Filter Factory replica:
-- rnd
-- cos
-- sin
-- tan
-- r2x
-- r2y
-- rad
-- c2d
-- c2m
-- sqr
-- d
-- m
-- M
+- `rnd(x)`
+- `cos(x)`
+- `sin(x)`
+- `tan(x)`
+- `r2x(d,m)`
+- `r2y(d,m)`
+- `rad(d,m,z)`
+- `c2d(x,y)`
+- `c2m(x,y)`
+- `sqr(x)`
+- `d`
+- `m`
+- `M`
 
 
 sqr(x)
@@ -46,6 +46,7 @@ Filter Factory:
 Filter Foundry (prior to 1.7.0.8):
 
 	sqr(x)=0 for x < 0
+
 
 i, u, v (Testcase iuv.afs)
 -------
