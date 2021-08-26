@@ -276,7 +276,8 @@ const uint16_t FACTORY_C2M_LOOKUP[1024] = {
 
 // -------------------------------------------------------------------------------------------
 
-extern value_type slider[],cell[],var[],map[][0x100];
+extern uint8_t slider[],map[][0x100];
+extern value_type cell[], var[];
 extern unsigned char *image_ptr;
 
 // -------------------------------------------------------------------------------------------
@@ -837,7 +838,11 @@ value_type ff_pow(value_type b, value_type e) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return (value_type)round(pow((double)b, (double)e));
+	double a = pow((double)b, (double)e);
+	if (a - floor(a) >= 0.5)
+		return (value_type)(floor(a) + 1);
+	else
+		return (value_type)(floor(a));
 #endif
 }
 

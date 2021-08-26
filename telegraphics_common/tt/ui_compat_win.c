@@ -135,12 +135,13 @@ _HMONITOR _MonitorFromRect(LPCRECT lprc, DWORD dwFlags) {
 void _doMonitorAdjustments(LPRECT rcPlugin) {
 	RECT rcMonitorWork;
 	_HMONITOR hMonitor;
-	_MONITORINFO grMonitorInfo = { sizeof(grMonitorInfo) };
+	_MONITORINFO grMonitorInfo;
 	int nXAdjust = 0, nYAdjust = 0, nPluginWidth, nPluginHeight, nMonitorWorkWidth, nMonitorWorkHeight;
 
 	hMonitor = _MonitorFromRect(rcPlugin, _MONITOR_DEFAULTTONEAREST);
 	if (hMonitor == NULL) return;
 
+	grMonitorInfo.cbSize = sizeof(grMonitorInfo);
 	if (!_GetMonitorInfoA(hMonitor, &grMonitorInfo)) return;
 	rcMonitorWork = grMonitorInfo.rcWork;
 

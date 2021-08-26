@@ -95,7 +95,7 @@ void dumptree(struct node *root,int level){
 				#ifdef FP_VALUE
 				printf("constant: %g\n",root->v.value);
 				#else
-				printf("constant: %ld\n",root->v.value);
+				printf("constant: %d\n",root->v.value);
 				#endif
 				break;
 			case TOK_SPECIALVAR:
@@ -105,7 +105,7 @@ void dumptree(struct node *root,int level){
 				#ifdef FP_VALUE
 				printf("variable: %s (%g)\n",root->v.sym->name,*root->v.sym->pvar);
 				#else
-				printf("variable: %s (%ld)\n",root->v.sym->name,*root->v.sym->pvar);
+				printf("variable: %s (%d)\n",root->v.sym->name,*root->v.sym->pvar);
 				#endif
 				break;
 			case TOK_FN1:

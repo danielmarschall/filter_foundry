@@ -61,7 +61,7 @@ OSErr saveparams(Handle h){
 
 		/* then slider values, one per line */
 		for( i=0 ; i<8 ; ++i )
-			p += sprintf(p, "%ld\r", slider[i]);
+			p += sprintf(p, "%d\r", slider[i]);
 
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){

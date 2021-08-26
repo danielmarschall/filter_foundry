@@ -77,7 +77,8 @@ extern globals_t *gdata;
 extern struct node *tree[4];
 extern char *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
-extern value_type slider[8],cell[NUM_CELLS],map[4][0x100];
+extern uint8_t slider[8],map[4][0x100];
+extern value_type cell[NUM_CELLS];
 extern char *expr[4];
 // extern long maxSpace;
 

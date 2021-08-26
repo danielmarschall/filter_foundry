@@ -40,7 +40,8 @@
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
-value_type slider[8],cell[NUM_CELLS],map[4][0x100];
+uint8_t slider[8],map[4][0x100];
+value_type cell[NUM_CELLS];
 char *expr[4];
 // long maxSpace;
 globals_t *gdata;

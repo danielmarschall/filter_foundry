@@ -275,7 +275,7 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 	}
 
 	for(i = 0; i < 8; ++i)
-		slider[i] = pparm->val[i];
+		slider[i] = (uint8_t)pparm->val[i];
 
 	return true;
 }
