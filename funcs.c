@@ -51,9 +51,9 @@
 #ifndef PARSERTEST
 	#include "ff.h"
 #else
-	#define value_type int
-	#define uint16_t int
-	#define uint32_t int
+	#define uint8_t unsigned char
+	#define uint16_t unsigned short
+	#define uint32_t unsigned int
 	#define int32_t int
 #endif
 
@@ -286,7 +286,7 @@ double costab[COSTABSIZE];
 double tantab[TANTABSIZE];
 void init_trigtab(){
 #ifdef PARSERTEST
-	return 0;
+	return;
 #else
 	int i;
 	for(i=0;i<COSTABSIZE;++i){
@@ -615,7 +615,7 @@ struct factoryRngState {
 
 void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 #ifdef PARSERTEST
-	return 0;
+	return;
 #else
 	// Algorithm of Filter Factory
 	// Filter Factory uses Donald E.Knuth's subtractive
@@ -783,7 +783,7 @@ value_type ff_rst(value_type seed) {
 
 void factory_initialize_rnd_variables() {
 #ifdef PARSERTEST
-	return 0;
+	return;
 #else
 	gFactoryRngState.seed = 0; // default seed
 	gFactoryRngState.seedSave = gFactoryRngState.seed + 1; // force rnd() to call factory_fill_rnd_lookup()
@@ -792,7 +792,7 @@ void factory_initialize_rnd_variables() {
 
 void foundry_initialize_rnd_variables() {
 #ifdef PARSERTEST
-	return 0;
+	return;
 #else
 	foundry_rst(691204);
 #endif
