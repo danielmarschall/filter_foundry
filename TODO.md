@@ -11,8 +11,6 @@ Known bugs
 TODO
 ----
 
-* Add pow() or "**" operator? pow() is used in Filter Factory 3.1.0
-
 * Write an updated manual based on the Filter Factory documentation
 
 
@@ -64,6 +62,21 @@ Minor priority stuff or ideas
 * With the change in 1.7 in re "*preview evaluates whole picture if state changing functions rst,put,rnd are used*": Is there anything we can do to make it more performant when the user changes sliders? Especially with large pictures, the process becomes a bit laggy!
 
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
+
+
+Questions
+---------
+
+* Why does everybody write that the Filter Factory tan(x) function is bounded?
+  The Filter Factory manual writes that it is bounded, and the Filter Factory Programming Guide
+  does also mention it (including a graphic).
+  Is it a bug that it goes infinity? Do we need to fix it in Filter Foundry???
+  
+  Following examples of Filter Factory show that it is going off-bound! (Also tested with PS 3.0.5)
+  
+    tan(255)  ==  167761 ? 255 : 0
+    tan(256)  == -167772 ? 255 : 0
+    tan(-768) ==  167772 ? 255 : 0
 
 
 Design/UI Tweaks
@@ -122,3 +135,5 @@ Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)
 * Fix AETE resources, make keys unique and remove scope in order to enable AppleScript
 
 * Support BigDocument (Add "ms32" PiPL, set pb->bigDocumentData->PluginUsing32BitCoordinates and use pb->bigDocumentData->*)
+
+* Place plugin dialogs on the correct screen
