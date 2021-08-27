@@ -3,8 +3,8 @@
 Implementation detail differences
 =================================
 
-FilterFoundry tries to be as compatible with Filter Factory as possible.
-However, there are some differences which are explained in this documentation.
+Filter Foundry tries to be as compatible with Filter Factory as possible.
+However, there are some differences that are explained in this documentation.
 
 Various implementations
 -----------------------
@@ -17,7 +17,7 @@ from the "OPER" resource.
 If required, the compiler-definitions `use_filterfactory_implementation_*`
 can be set or unset to select the implementation.
 
-In Filter Foundry 1.7.0.8, following functions have been updated to the Filter Factory replica:
+In Filter Foundry 1.7.0.8, the following functions have been updated to the Filter Factory replica:
 - `rnd(x)`
 - `cos(x)`
 - `sin(x)`
@@ -40,12 +40,14 @@ Filter Factory:
 
 	sqr(x)=x for x < 0
 	
-	Can be tested with following expression:
+	Can be tested with the following expression:
 	sqr(-20)+21 == 1
 
 Filter Foundry (prior to 1.7.0.8):
 
 	sqr(x)=0 for x < 0
+
+Beginning with Filter Foundry 1.7.0.8, the behavior of Filter Factory was implemented.
 
 
 i, u, v (Testcase iuv.afs)
@@ -64,6 +66,21 @@ Filter Foundry 1.7 uses more accurate formulas:
     v=614777*r-514799*g-99978*b)/2000000     // Output range is -78..78
 
 Both formulas follow the same YUV standard but have different accuracy.
+
+
+I, U, V, imin, umin, vmin (Testcase iuv_minmax.afs)
+-------------------------
+
+In Filter Foundry 1.7.0.8, the previously undocumented variables I, U, V as well as imin, umin, vmin
+have been changed to represent the actual results of the i,u,v variables:
+
+    I, imax = 255 (stayed the same)
+    U, umax = 55 (was 255 in Filter Factory)
+    V, vmax = 78 (was 255 in Filter Factory)
+
+    imin = 0 (stayed the same)
+    umin = -55 (was 0 in Filter Factory)
+    vmin = -78 (was 0 in Filter Factory)
 
 
 get(i) (Testcase getput.afs)
@@ -104,11 +121,10 @@ rst(i) (Testcases rnd*.afs and rst_*.afs)
 
 Filter Factory contains an undocumented function that sets the seed for the random number generator.
 
-Filter Factory and FilterFoundry beginning with 1.7.0.8 accept a seed between 0 and 32767, inclusively.
-If the argument is not within this range, the operation "and 0x7FFF" will be applied to it
-to extract the low 15 bits.
+Filter Factory and Filter Foundry beginning with 1.7.0.8 accept a seed between 0 and 32767, inclusively.
+If the argument is not within this range, the operation lowest 15 bits are taken.
 
-There are many differences in the implementation between FilterFactory and FilterFoundry in regards rst(i):
+There are many differences in the implementation between Filter Factory and Filter Foundry in regards rst(i):
 
 **Filter Factory:**
 
@@ -130,7 +146,7 @@ and only the subsequent calls will use the rst(i) of the previous call.
 In Filter Foundry, the function rnd(a,b) retrieves a random number in "realtime"; therefore, if the
 seed is changed via rst(i), there is an immediate effect on the next call of the rnd(a,b) function.
 
-For example, following filter would generate an one-colored picture without any randomness:
+For example, the following filter would generate an one-colored picture without any randomness:
         R: rst(123), rnd(0,255)
         G: rnd(0,255)
         B: rnd(0,255)
@@ -152,7 +168,7 @@ Evaluation of conditional branches
 
 Only the branches which will be chosen due to the conditional expression will be evaluated.
 
-This means that following filter would generate a black canvas: (Testcase conditional_eval_1.afs)
+This means that the following filter would generate a black canvas: (Testcase conditional_eval_1.afs)
 
         R: 1==0 ? put(255,0) : 0
         G: get(0)
@@ -174,14 +190,14 @@ This will also generate a black canvas: (Testcase conditional_eval_3.afs)
 
 **Filter Factory:**
 
-Each branch inside a if-then-else expression will be evaluated.
-This means that following filter would generate a green canvas: (Testcase conditional_eval_1.afs)
+Each branch inside an if-then-else expression will be evaluated.
+This means that the following filter would generate a green canvas: (Testcase conditional_eval_1.afs)
 
         R: 1==0 ? put(255,0) : 0
         G: get(0)
         B: 0
 
-Also, all arguments of an boolean expression will be fully evaluated.
+Also, all arguments of a boolean expression will be fully evaluated.
 So, this will also generate a green canvas: (Testcase conditional_eval_2.afs)
 
         R: 1==0 && put(255,0) ? 0: 0

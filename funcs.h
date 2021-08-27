@@ -90,3 +90,10 @@ value_type ff_D();
 value_type ff_d();
 value_type ff_M();
 value_type ff_m();
+
+value_type min_channel_i;
+value_type max_channel_i;
+value_type min_channel_u;
+value_type max_channel_u;
+value_type min_channel_v;
+value_type max_channel_v;

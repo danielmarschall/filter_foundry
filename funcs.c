@@ -23,9 +23,13 @@
 // for Windows.
 #ifdef WIN_ENV
 	#define use_filterfactory_implementation_rad
+	// i,u,v intentionally not equal to Filter Factory (this has been documented).
 	//#define use_filterfactory_implementation_i
 	//#define use_filterfactory_implementation_u
 	//#define use_filterfactory_implementation_v
+	// U,V,umin,vmin intentionally not equal to Filter Factory (this has been documented).
+	//#define use_filterfactory_implementation_u_minmax
+	//#define use_filterfactory_implementation_v_minmax
 	#define use_filterfactory_implementation_rnd
 	#define use_filterfactory_implementation_c2d
 	#define use_filterfactory_implementation_c2m
@@ -38,6 +42,7 @@
 	#define use_filterfactory_implementation_d
 	#define use_filterfactory_implementation_m
 	#define use_filterfactory_implementation_M
+	// get(i) intentionally not equal to Filter Factory (this has been documented).
 	//#define use_filterfactory_implementation_get
 #endif
 
@@ -1535,7 +1540,25 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 
 value_type zero_val = 0;
 value_type one_val = 1;
-value_type max_channel_val = 255;
+
+value_type min_channel_i = 0;
+value_type max_channel_i = 255;
+
+#ifdef use_filterfactory_implementation_i_minmax
+value_type min_channel_u = 0;
+value_type max_channel_u = 255;
+#else
+value_type min_channel_u = -55;
+value_type max_channel_u = 55;
+#endif
+
+#ifdef use_filterfactory_implementation_v_minmax
+value_type min_channel_v = 0;
+value_type max_channel_v = 255;
+#else
+value_type min_channel_v = -78;
+value_type max_channel_v = 78;
+#endif
 
 /* predefined symbols */
 struct sym_rec predefs[]={
@@ -1570,33 +1593,33 @@ struct sym_rec predefs[]={
 	{0,TOK_FN1,"rst", (pfunc_type)ff_rst, 0}, // undocumented FilterFactory function
 	{0,TOK_FN2,"pow", (pfunc_type)ff_pow, 0}, // new function, also added in inofficial Filter Factory 3.1.0 patch
 
-	/* predefined variables (names with more than 1 character); most of them are undocumented in FilterFactory */
-	/* the predefined variables with 1 character are defined in lexer.l and process.c */
-	/* in this table, you must not add TOK_VAR with only 1 character (since this case is not defined in parser.y) */
+	/* Predefined variables (names with more than 1 character); most of them are undocumented in Filter Factory */
+	/* The predefined variables with 1 character are defined in lexer.l and process.c */
+	/* In this table, you must not add TOK_VAR with only 1 character (since this case is not defined in parser.y) */
 
-	{0,TOK_VAR,"rmax",0, &max_channel_val}, // alias of 'R' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"gmax",0, &max_channel_val}, // alias of 'G' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"bmax",0, &max_channel_val}, // alias of 'B' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"amax",0, &max_channel_val}, // alias of 'A' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"cmax",0, &max_channel_val}, // alias of 'C' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"imax",0, &max_channel_val}, // alias of 'I' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"umax",0, &max_channel_val}, // alias of 'U' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"vmax",0, &max_channel_val}, // alias of 'V' (defined in lexer.l, line 129)
-	{0,TOK_VAR,"dmax",0, &var['D']},
-	{0,TOK_VAR,"mmax",0, &var['M']},
-	{0,TOK_VAR,"pmax",0, &var['Z']},
-	{0,TOK_VAR,"xmax",0, &var['X']},
-	{0,TOK_VAR,"ymax",0, &var['Y']},
-	{0,TOK_VAR,"zmax",0, &var['Z']},
+	{0,TOK_VAR,"rmax",0, &var['R']}, // alias of R (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"gmax",0, &var['G']}, // alias of G (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"bmax",0, &var['B']}, // alias of B (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"amax",0, &var['A']}, // alias of A (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"cmax",0, &var['C']}, // alias of C (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"imax",0, &var['I']}, // alias of I (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"umax",0, &var['U']}, // alias of U (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"vmax",0, &var['V']}, // alias of V (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"dmax",0, &var['D']}, // alias of D (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"mmax",0, &var['M']}, // alias of M (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"pmax",0, &var['Z']}, // alias of P (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"xmax",0, &var['X']}, // alias of X (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"ymax",0, &var['Y']}, // alias of Y (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"zmax",0, &var['Z']}, // alias of Z (defined in lexer.l nad set by process.c)
 
 	{0,TOK_VAR,"rmin",0, &zero_val},
 	{0,TOK_VAR,"gmin",0, &zero_val},
 	{0,TOK_VAR,"bmin",0, &zero_val},
 	{0,TOK_VAR,"amin",0, &zero_val},
 	{0,TOK_VAR,"cmin",0, &zero_val},
-	{0,TOK_VAR,"imin",0, &zero_val},
-	{0,TOK_VAR,"umin",0, &zero_val},
-	{0,TOK_VAR,"vmin",0, &zero_val},
+	{0,TOK_VAR,"imin",0, &min_channel_i},
+	{0,TOK_VAR,"umin",0, &min_channel_u},
+	{0,TOK_VAR,"vmin",0, &min_channel_v},
 	{0,TOK_VAR,"dmin",0, &zero_val},
 	{0,TOK_VAR,"mmin",0, &zero_val},
 	{0,TOK_VAR,"pmin",0, &zero_val},

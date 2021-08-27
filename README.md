@@ -5,6 +5,8 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory. For informa
 
 Initially written by [Toby Thain](https://www.telegraphics.com.au/sw/) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) / [ViaThinkSoft](https://www.viathinksoft.com/) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
+A full description of Filter Foundry including a reference of all functions, variables, and operators can be found in the "doc" folder.
+
 
 ### Windows version 1.7.0.7
 

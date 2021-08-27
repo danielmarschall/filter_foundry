@@ -11,7 +11,7 @@ Known bugs
 TODO
 ----
 
-* Write an updated manual based on the Filter Factory documentation
+* Make a "Help" button which opens the manual (on the web)
 
 
 Minor priority stuff or ideas

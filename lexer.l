@@ -126,12 +126,6 @@ HEXDIGIT	[0-9A-Fa-f]
 		}else
 			return TOK_UNKNOWN; 
 	}
-	
-[RGBACIUV] {  /* undocumented(?) variables indicating channel range */
-		yylval = newnode(TOK_NUM);
-		yylval->v.value = 255;
-		return TOK_NUM; 
-	}
 
 [t] {
 		yylval = newnode(TOK_NUM);
@@ -139,7 +133,7 @@ HEXDIGIT	[0-9A-Fa-f]
 		return TOK_NUM; 
 	}
 
-[rgbaciuvxyzpdmXYZDM] { /* single character variable */
+[rgbaciuvxyzpdmXYZDMRGBACIUV] { /* single character variable */
 		yylval = newnode(TOK_SPECIALVAR);
 		yylval->v.specialvar = yytext[0];
 		/* values are defined in process.c */

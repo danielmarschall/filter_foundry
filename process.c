@@ -69,6 +69,11 @@ Boolean setup(FilterRecordPtr pb){
 	var['D'] = ff_D();
 	var['M'] = ff_M();
 
+	var['R'] = var['G'] = var['B'] = var['A'] = var['C'] = 255;
+	var['I'] = max_channel_i;
+	var['U'] = max_channel_u;
+	var['V'] = max_channel_v;
+
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;

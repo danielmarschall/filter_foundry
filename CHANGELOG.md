@@ -19,6 +19,14 @@
 	* M
 - The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens. (*)
 - Added new function `pow(b,e)` which are already part of the inofficial Filter Factory 3.1.0 patch by Daniel Marschall.
+- The previously undocumented variables I, U, V as well as imin, umin, vmin have been changed to represent the actual results of the i,u,v variables:
+	imin = 0 (stayed the same)
+	umin = -55 (was 0)
+	vmin = -78 (was 0)
+	I, imax = 255 (stayed the same)
+	U, umax = 55 (was 255)
+	V, vmax = 78 (was 255)
+- Added a documentation based on the Filter Factory documentation.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
