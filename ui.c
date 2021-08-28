@@ -429,7 +429,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case HELPITEM:
 		#ifdef MAC_ENV
 		// TODO: Open web-browser instead
-		simplealert(strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"))
+		simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"))
 		#else
 		ShellExecuteA(
 			gdata->hWndMainDlg,
