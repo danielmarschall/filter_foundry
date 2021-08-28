@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-(None known)
+* Modern Photoshop x64 versions show a warning if a 32-bit plugin is stored in the plug-ins folder. This is not very nice. But we need the 32-bit plugin so that 32/64-bit plugins can both be built!
 
 
 Minor priority stuff or ideas
