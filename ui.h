@@ -24,19 +24,20 @@
 #define SAVEITEM 4
 #define PARAMCOPYITEM 4
 #define MAKEITEM 5
+#define HELPITEM 6
 
-#define PREVIEWITEM 6
-#define ZOOMINITEM 7
-#define ZOOMOUTITEM 8
-#define ZOOMLEVELITEM 9
+#define PREVIEWITEM 7
+#define ZOOMINITEM 8
+#define ZOOMOUTITEM 9
+#define ZOOMLEVELITEM 10
 
-#define FIRSTCTLLABELITEM 10  /* 10-17 */
-#define FIRSTCTLITEM 18       /* 18-25 */
-#define FIRSTCTLTEXTITEM 26   /* 26-33 */
-#define FIRSTLABELITEM 34     /* 34-37 */
-#define FIRSTICONITEM 38      /* 38-41 */
-#define FIRSTEXPRITEM 42      /* 42-45 */
-#define FIRSTMAPLABELITEM 46  /* 46-49 */
+#define FIRSTCTLLABELITEM 11  /* 11-18 */
+#define FIRSTCTLITEM 19       /* 19-26 */
+#define FIRSTCTLTEXTITEM 27   /* 27-34 */
+#define FIRSTLABELITEM 35     /* 35-38 */
+#define FIRSTICONITEM 39      /* 39-42 */
+#define FIRSTEXPRITEM 43      /* 43-46 */
+#define FIRSTMAPLABELITEM 47  /* 47-50 */
 
 /* Build dialog */
 #define CATEGORYITEM 3

@@ -219,6 +219,7 @@ void maindlgupdate(DIALOGREF dp){
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
+				DISABLEDLGITEM(dp,HELPITEM);
 			}
 			return;
 		}
@@ -232,6 +233,7 @@ void maindlgupdate(DIALOGREF dp){
 	if(!gdata->standalone){
 		ENABLEDLGITEM(dp,SAVEITEM);
 		ENABLEDLGITEM(dp,MAKEITEM);
+		ENABLEDLGITEM(dp,HELPITEM);
 	}
 }
 
@@ -423,6 +425,21 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		gdata->parmloaded = bak_parmloaded;
 		memcpy(&gdata->parm, &bak_parm, sizeof(PARM_T));
 
+		break;
+	case HELPITEM:
+		#ifdef MAC_ENV
+		// TODO: Open web-browser instead
+		simplealert(strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"))
+		#else
+		ShellExecuteA(
+			gdata->hWndMainDlg,
+			"open",
+			"https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf",
+			"",
+			"",
+			SW_NORMAL
+		);
+		#endif
 		break;
 	case ZOOMINITEM:
 		zoomfactor = zoomfactor > 2. ? zoomfactor/2. : 1.;

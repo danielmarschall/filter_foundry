@@ -188,6 +188,7 @@ resource 'DITL' (ID_MAINDLG, purgeable) {
 		{426,  20, 446,  90}, Button { enabled, "Load…" },
 		{426, 105, 446, 175}, Button { enabled, "Save…" },
 		{426, 190, 446, 260}, Button { enabled, "Make…" },
+		{426, 275, 446, 345}, Button { enabled, "Help" },
 
 		{ 10, 15,210,215}, useritem { disabled }, /* preview area */
 		{215,204,226,215}, picture { enabled,ID_ZOOMINPICT },
