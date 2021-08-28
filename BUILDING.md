@@ -116,3 +116,15 @@ BUILDING WITH MINGW32/64
 * Most recently tested with mingw64 and Adobe Photoshop SDK CC 2017:
   - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
   - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit
+
+
+Allowing 32/64 cross-building
+-----------------------------
+
+(Currently only available in Windows)
+
+The 32-bit version of Windows is able to create a 64-bit standalone filter
+and vice-versa. Therefore, the filters need to have each other be included
+as resource. To achieve this, place the created FilterFoundry.8bf and FilterFoundry64.8bf
+into the folder **3264_mixer\in**. Then, run **3264_mixer\foundry_3264_mixer.bat**.
+The updated files ready for publishing are then placed in **3264_mixer\out**.

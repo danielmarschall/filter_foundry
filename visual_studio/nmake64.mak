@@ -52,7 +52,7 @@ CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
 CFLAGS = -O2 $(CPPFLAGS)
 
 # Note since VS8 it is necessary to link with multithreaded standard lib, using /MT
-LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib
+LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # resource compiler flags
 RFLAGS = -i$(PSAPI)\Photoshop -d_WIN64

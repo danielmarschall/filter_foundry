@@ -354,7 +354,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
-		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000),"TPLT"))
+		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000), "TPLT"))
 			&& (datah = LoadResource(srcmod,datarsrc))
 			&& (datap = (Ptr)LockResource(datah))
 			&& (aetersrc = FindResource(srcmod, MAKEINTRESOURCE(16000), "AETE"))
@@ -431,13 +431,18 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
 
-				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(50), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) 
-					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)
-					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0)
-					&& _UpdateResource(hupdate,"PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
+				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(50), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)  // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_GROUP_ICON, "CAUTION_ICO", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
-					&& _UpdateResource(hupdate,parm_type,MAKEINTRESOURCE(parm_id), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
+					&& _UpdateResource(hupdate, parm_type,MAKEINTRESOURCE(parm_id), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 				{
 					discard = false;
 				} else {
@@ -513,22 +518,45 @@ BOOL FileExists(LPCTSTR szPath) {
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
+Boolean extractFile(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
+	HGLOBAL datah;
+	LPVOID datap;
+	HRSRC datarsrc;
+	size_t datalen;
+
+	if ((datarsrc = FindResource((HMODULE)hDllInstance, lpName, lpType))
+		&& (datah = LoadResource((HMODULE)hDllInstance, datarsrc))
+		&& (datalen = SizeofResource((HMODULE)hDllInstance, datarsrc))
+		&& (datap = (Ptr)LockResource(datah))) {
+
+		FILE* fp = fopen(outName, "wb+");
+		if (fp == NULL) return false;
+		if (fwrite(datap, 1, datalen, fp) != datalen) return false;
+		if (fclose(fp)) return false;
+
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+OSErr do_make_standalone(char* dstname, int bits) {
 	Boolean res;
 	char err[MAX_PATH + 200];
 
 	//DeleteFile(dstname);
-	if (CopyFile(srcname, dstname, false)) {
+	if (extractFile("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
 		HMODULE hSrcmod;
-		hSrcmod = LoadLibraryEx(srcname, NULL, LOAD_LIBRARY_AS_DATAFILE);
+		hSrcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
 		if (hSrcmod) {
 			res = doresources(hSrcmod, dstname, bits);
+			FreeLibrary(hSrcmod); // do it now, otherwise DeleteFile() will not work
 			if (!res) {
 				DeleteFile(dstname);
 				sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
 				alertuser(_strdup(&err[0]), _strdup(""));
 			}
-			FreeLibrary(hSrcmod);
 		}
 		else {
 			DWORD dwErr = GetLastError();
@@ -540,11 +568,10 @@ OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 		}
 	}
 	else {
-		DWORD dwErr = GetLastError();
+		// If you see this error, please make sure that you have called foundry_3264_mixer to include the 32/64 plugins as resource!
 		res = false;
 		//DeleteFile(dstname);
-		// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
-		sprintf(err, "Could not create %d bit standalone plugin (CopyFile failed, Win32 error %lu).", bits, dwErr);
+		sprintf(err, "Could not create %d bit standalone plugin (File extraction failed).", bits);
 		alertuser(_strdup(&err[0]), _strdup(""));
 	}
 
@@ -553,7 +580,7 @@ OSErr do_make_standalone(char* srcname, char* dstname, int bits) {
 
 OSErr make_standalone(StandardFileReply *sfr){
 	OSErr tmpErr, outErr;
-	char dstname[0x100],srcname[MAX_PATH+1];
+	char dstname[MAX_PATH+1];
 
 	if (!isWin32NT()) {
 		HMODULE hLib;
@@ -577,88 +604,35 @@ OSErr make_standalone(StandardFileReply *sfr){
 	}
 
 	outErr = noErr;
-
-#ifdef _WIN64
-
-	//64 bit DLL makes 64 bit:
-	// Source file = module filename
-	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
-	// Destfile = no64_or_32(chosenname) + 64
-	myp2cstrcpy(dstname, sfr->sfFile.name);
-	remove_64_filename_prefix(dstname);
-	add_64_filename_prefix(dstname);
-	tmpErr = do_make_standalone(&srcname[0], &dstname[0], 64);
-	if (tmpErr != noErr)
-		outErr = tmpErr;
-	else
-		showmessage(_strdup("64 bit standalone filter was successfully created"));
-
-	//64 bit DLL makes 32 bit:
-	// Source file = no32(modulefilename)
-	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
-	if (!remove_64_filename_prefix(srcname)) {
-		char err[MAX_PATH + 200];
-		sprintf(err, "Cannot create the %d bit version of this filter, because the 32-bit variant of this plugin could not be found", 32);
-		alertuser(_strdup(&err[0]), _strdup(""));
-	}
-	else if (!FileExists(srcname)) {
-		char err[MAX_PATH + 200];
-		sprintf(err, "%s was not found. Therefore, the %d bit version of the standalone filter could not be created!", srcname, 32);
-		alertuser(_strdup(&err[0]), _strdup(""));
-	}
-	else {
-		// Destfile = no64_or_32(chosenname)
-		myp2cstrcpy(dstname, sfr->sfFile.name);
-		remove_64_filename_prefix(dstname);
-		tmpErr = do_make_standalone(&srcname[0], &dstname[0], 32);
-		if (tmpErr != noErr)
-			outErr = tmpErr;
-		else
-			showmessage(_strdup("32 bit standalone filter was successfully created"));
-	}
-
-#else
 	
-	//32 bit DLL makes 32 bit:
-	// Source file = module filename
-	GetModuleFileName(hDllInstance, srcname, MAX_PATH);
+	// Make 32 bit:
 	// Destfile = no64_or_32(chosenname)
 	myp2cstrcpy(dstname, sfr->sfFile.name);
 	remove_64_filename_prefix(dstname);
-	tmpErr = do_make_standalone(&srcname[0], &dstname[0], 32);
+	tmpErr = do_make_standalone(&dstname[0], 32);
 	if (tmpErr != noErr)
 		outErr = tmpErr;
 	else
 		showmessage(_strdup("32 bit standalone filter was successfully created"));
 
 	if (isWin32NT()) {
-		//32 bit DLL makes 64 bit:
-		// Source file = module filename + 64
-		GetModuleFileName(hDllInstance, srcname, MAX_PATH);
-		add_64_filename_prefix(srcname);
-		if (!FileExists(srcname)) {
-			char err[MAX_PATH + 200];
-			sprintf(err, "%s was not found. Therefore, the %d bit version of the standalone filter could not be created!", srcname, 64);
-			alertuser(_strdup(&err[0]), _strdup(""));
-		}
-		else {
-			// Destfile = no64_or_32(chosenname) + 64
-			myp2cstrcpy(dstname, sfr->sfFile.name);
-			remove_64_filename_prefix(dstname);
-			add_64_filename_prefix(dstname);
-			tmpErr = do_make_standalone(&srcname[0], &dstname[0], 64);
-			if (tmpErr != noErr)
-				outErr = tmpErr;
-			else
-				showmessage(_strdup("64 bit standalone filter was successfully created"));
-		}
+		// Make 64 bit:
+		// Destfile = no64_or_32(chosenname) + 64
+		myp2cstrcpy(dstname, sfr->sfFile.name);
+		remove_64_filename_prefix(dstname);
+		add_64_filename_prefix(dstname);
+		tmpErr = do_make_standalone(&dstname[0], 64);
+		if (tmpErr != noErr)
+			outErr = tmpErr;
+		else
+			showmessage(_strdup("64 bit standalone filter was successfully created"));
 	}
 	else {
 		// Unicows.dll cannot edit resources of 64 bit DLLs.
 		// The normal Kernel function BeginUpdateResource can edit 64 bit DLLs, even in NT4.0 SP6
 		simplealert(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
 	}
-#endif
 
 	return outErr;
 }
+

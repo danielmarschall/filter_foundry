@@ -28,6 +28,7 @@
 	V, vmax = 78 (was 255)
 - Added a documentation based on the Filter Factory documentation.
 - Added a help button which opens the documentation on the web. (*)
+- For 32/64-bit cross-build, there is now no requirement that both plugin files must be installed anymore.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

@@ -190,7 +190,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 		// check DOS EXE magic number
 		count = 2;
 		if(FSRead(refnum,&count,magic) == noErr /*&& magic[0]=='M' && magic[1]=='Z'*/){
-			if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 2048L<<10){ // sanity check file size < 2MiB (note that "Debug" builds can have approx 700 KiB while "Release" builds have approx 300 KiB)
+			if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 8192L<<10){ // sanity check file size < 8MiB (note that "Debug" builds can have approx 700 KiB while "Release" builds have approx 300 KiB) The 32/64 bit mixer triples the size.
 				if( (h = readfileintohandle(refnum)) ){
 					long *q = (long*)PILOCKHANDLE(h,false);
 
@@ -216,7 +216,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 						if( ((q[0] == PARM_SIZE) ||
 						     (q[0] == PARM_SIZE_PREMIERE) ||
 						     (q[0] == PARM_SIG_MAC)) && q[1] == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 1)) )
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 1/*fromwin*/)))
 						{
 						}
 

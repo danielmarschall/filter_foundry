@@ -14,8 +14,6 @@ Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf, [Downl
 
 To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not Filter Foundry works on a non-Photoshop host application, please send us a message!
 
-Beginning with version 1.7.0.7, Filter Foundry allows you to create standalone filters in 32 and 64 bit! To make this possible, you must install **both** files (FilterFoundry.8bf and FilterFoundry64.8bf without renaming) in your Photoshop plugin directory.
-
 
 ### Macintosh version 1.6b1
 
