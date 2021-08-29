@@ -221,7 +221,17 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
-			DoAbout((AboutRecordPtr)pb);
+			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+				if (gdata->obfusc) {
+					simplealert(_strdup("Incompatible obfuscation."));
+				}
+				else {
+					simplealert(_strdup("Invalid parameter data."));
+				}
+			}
+			else {
+				DoAbout((AboutRecordPtr)pb);
+			}
 			free(gdata);
 			gdata = NULL;
 		} else {
@@ -368,6 +378,16 @@ int checkandinitparams(Handle params){
 		// Reason: readPARMresource() reads parameters from the DLL while loadfile() reads parameters from the AFS file
 		// But loadfile() will reset gdata->standalone ...
 		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason, READ_OBFUSC);
+		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+			if (gdata->obfusc) {
+				simplealert(_strdup("Incompatible obfuscation."));
+			}
+			else {
+				simplealert(_strdup("Invalid parameter data."));
+			}
+			gdata->parmloaded = false;
+			return false;
+		}
 
 		tempdir = getenv("TMP");
 		#ifdef WIN_ENV
@@ -413,7 +433,16 @@ int checkandinitparams(Handle params){
 
 		// see if saved parameters exist
 		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
-
+		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+			if (gdata->obfusc) {
+				simplealert(_strdup("Incompatible obfuscation."));
+			}
+			else {
+				simplealert(_strdup("Invalid parameter data."));
+			}
+			gdata->parmloaded = false;
+			return false;
+		}
 
 		if(!gdata->standalone){
 			// no saved settings (not standalone)

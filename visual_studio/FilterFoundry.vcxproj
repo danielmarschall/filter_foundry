@@ -75,8 +75,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>.\</OutDir>
+    <IntDir>.\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
@@ -84,17 +84,18 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>.\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
+    <IntDir>.\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>.\</OutDir>
+    <IntDir>.\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
@@ -102,10 +103,11 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;.\;$(IncludePath)</IncludePath>
     <TargetExt>.8bf</TargetExt>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>.\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
+    <IntDir>.\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

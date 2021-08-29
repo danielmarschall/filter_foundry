@@ -190,7 +190,7 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 		// check DOS EXE magic number
 		count = 2;
 		if(FSRead(refnum,&count,magic) == noErr /*&& magic[0]=='M' && magic[1]=='Z'*/){
-			if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 8192L<<10){ // sanity check file size < 8MiB (note that "Debug" builds can have approx 700 KiB while "Release" builds have approx 300 KiB) The 32/64 bit mixer triples the size.
+			if(GetEOF(refnum,(FILEPOS*)&count) == noErr && count < 4096L<<10){ // sanity check file size < 4MiB (note that "Debug" builds can have approx 700 KiB while "Release" builds have approx 300 KiB)
 				if( (h = readfileintohandle(refnum)) ){
 					long *q = (long*)PILOCKHANDLE(h,false);
 

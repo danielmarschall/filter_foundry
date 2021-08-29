@@ -29,6 +29,8 @@ Introduced in **Filter Foundry 1.7.0.8**
 Obfuscation version 5 is the same as version 4, but there is a constraint
 that the seed must be equal to the hash of the deobfuscated PARM.
 This is done to check the integrity of the deobfuscation.
+Also, the xor-shifting is intentionally incompatible with version 4
+to avoid downgrade-attacks.
 
 ### Obfuscation "Version 4"
 

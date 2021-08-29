@@ -52,7 +52,7 @@ void xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 }
 
 int obfuscation_version(PARM_T* pparm) {
-	unsigned int obfusc_info = pparm->unknown2;
+	uint32_t obfusc_info = pparm->unknown2;
 
 	if (obfusc_info == 0x00000000) { // 00 00 00 00
 		// Photoshop FilterFactory default initialization
@@ -85,14 +85,14 @@ int obfuscation_version(PARM_T* pparm) {
 	}
 }
 
-unsigned int obfusc(PARM_T* pparm) {
+uint32_t obfusc(PARM_T* pparm) {
 	// Windows:   Version 5 obfuscation (Introduced in Filter Foundry 1.7.0.8)
 	// Macintosh: Version 4 obfuscation (Introduced in Filter Foundry 1.7.0.7)
 
 	unsigned char* p;
 	size_t size, seed_position;
-	unsigned int seed, initial_seed;
-	unsigned int obfusc_version;
+	uint32_t seed, initial_seed;
+	uint32_t obfusc_version;
 	
 #ifdef MAC_ENV
 	// For Mac, we use obfuscation version 4, because the placing the seed into the produced executable code is not implemented in Mac!
@@ -101,7 +101,7 @@ unsigned int obfusc(PARM_T* pparm) {
 	obfusc_version = 4;
 #else
 	// In obfuscation version 5, the seed is also the checksum. It will be verified at deobfusc()!
-	initial_seed = (unsigned int)get_parm_hash(pparm);
+	initial_seed = (uint32_t)get_parm_hash(pparm);
 	obfusc_version = 5;
 #endif
 
@@ -109,9 +109,14 @@ unsigned int obfusc(PARM_T* pparm) {
 	size = sizeof(PARM_T);
 	seed = initial_seed;
 
+	if (obfusc_version == 5) {
+		// make v4 and v5 intentionally incompatible to avoid a downgrade-attack
+		seed ^= 0xFFFFFFFF;
+	}
+
 	p = (unsigned char*)pparm;
 	xorshift(&p, &seed, seed_position);
-	*((unsigned int*)p) = obfusc_version;
+	*((uint32_t*)p) = obfusc_version;
 	p += 4;
 	xorshift(&p, &seed, size - seed_position - 4);
 
@@ -119,7 +124,7 @@ unsigned int obfusc(PARM_T* pparm) {
 }
 
 void deobfusc(PARM_T* pparm) {
-	unsigned int obfusc_version;
+	uint32_t obfusc_version;
 	size_t size = sizeof(PARM_T);
 
 	obfusc_version = obfuscation_version(pparm);
@@ -134,7 +139,7 @@ void deobfusc(PARM_T* pparm) {
 
 			unsigned char* p;
 			size_t i;
-			unsigned int seed;
+			uint32_t seed;
 
 			seed = 0xdc43df3c;
 
@@ -149,7 +154,7 @@ void deobfusc(PARM_T* pparm) {
 
 			unsigned char* p;
 			size_t i;
-			unsigned int seed;
+			uint32_t seed;
 
 			seed = 0x95d4a68f;
 
@@ -173,7 +178,7 @@ void deobfusc(PARM_T* pparm) {
 
 			unsigned char* p;
 			size_t i;
-			unsigned int seed;
+			uint32_t seed;
 			size_t seed_position;
 
 			seed = pparm->unknown2;
@@ -182,7 +187,7 @@ void deobfusc(PARM_T* pparm) {
 			srand(seed);
 			p = (unsigned char*)pparm;
 			for (i = 0; i < seed_position; i++) *p++ ^= rand();
-			*((unsigned int*)p) = 0; // here was the seed. Fill it with 0x00000000
+			*((uint32_t*)p) = 0; // here was the seed. Fill it with 0x00000000
 			p += 4;
 			for (i = 0; i < size - seed_position - 4; i++) *p++ ^= rand();
 			break;
@@ -198,10 +203,17 @@ void deobfusc(PARM_T* pparm) {
 
 			unsigned char* p;
 			size_t seed_position;
-			uint32_t seed;
+			uint32_t seed, initial_seed;
 
-			seed = cObfuscV4Seed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed = cObfuscV4Seed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+
+			seed = initial_seed;
 			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
+
+			if (obfusc_version == 5) {
+				// make v4 and v5 intentionally incompatible to avoid a downgrade-attack
+				seed ^= 0xFFFFFFFF;
+			}
 
 			p = (unsigned char*)pparm;
 			xorshift(&p, &seed, seed_position);
@@ -209,10 +221,9 @@ void deobfusc(PARM_T* pparm) {
 			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
-				if ((unsigned int)get_parm_hash(pparm) != seed) {
+				if ((uint32_t)get_parm_hash(pparm) != initial_seed) {
 					// Integrity check failed!
-					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything, forcing error "incompatible obfuscation"
-					return;
+					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 				}
 			}
 
@@ -220,11 +231,16 @@ void deobfusc(PARM_T* pparm) {
 		}
 		default: {
 			// Obfuscation version unexpected!
-			memset(pparm, 0, sizeof(PARM_T)); // invalidate everything, forcing error "incompatible obfuscation"
-			return;
+			memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 		}
 	}
 
+	if ((pparm->cbSize != PARM_SIZE) &&
+		//(pparm->cbSize != PARM_SIZE_PREMIERE) &&
+		(pparm->cbSize != PARM_SIG_MAC)) {
+		memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
+	}
+		
 	if (obfusc_version >= 3) {
 		// Filter Foundry >= 1.7.0.5 builds combines obfuscation and protection
 		// when a standalone filter is built. Theoretically, you can un-protect a

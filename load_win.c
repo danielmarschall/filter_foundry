@@ -63,7 +63,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 				gdata->obfusc = true;
 				free(copy);
 			} else {
-				// Obfuscationed PARM has wrong size. Should not happen!
+				// Obfuscationed PARM has wrong size. It is probably a file with different RCDATA
 				gdata->obfusc = false;
 				return false;
 			}
