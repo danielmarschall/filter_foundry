@@ -233,12 +233,12 @@ int main()
 	LPCTSTR lpName64 = (LPCTSTR)1064;
 	WORD wLanguage = 1033; // en-US
 
-	LPCTSTR file32in = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\in\\FilterFoundry.8bf";
-	LPCTSTR file64in = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\in\\FilterFoundry64.8bf";
-	LPCTSTR file32out = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\out\\FilterFoundry.8bf";
-	LPCTSTR file64out = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\out\\FilterFoundry64.8bf";
-	LPCTSTR file32tmp = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\FilterFoundry.tmp";
-	LPCTSTR file64tmp = L"d:\\SVN\\FilterFoundry\\trunk\\3264_mixer\\FilterFoundry64.tmp";
+	LPCTSTR file32in = L"in\\FilterFoundry.8bf";
+	LPCTSTR file64in = L"in\\FilterFoundry64.8bf";
+	LPCTSTR file32out = L"out\\FilterFoundry.8bf";
+	LPCTSTR file64out = L"out\\FilterFoundry64.8bf";
+	LPCTSTR file32tmp = L"FilterFoundry.tmp";
+	LPCTSTR file64tmp = L"FilterFoundry64.tmp";
 
 	// 1. Copy "IN" to "TMP"
 

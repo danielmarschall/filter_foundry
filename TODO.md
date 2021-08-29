@@ -5,15 +5,13 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-)(None)
+(None)
 
 
 Minor priority stuff or ideas
 -----------------------------
 
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
-
-* Why doesn't the OpenWatcom files have a PE checksum?
 
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
@@ -56,6 +54,9 @@ Minor priority stuff or ideas
 * With the change in 1.7 in re "*preview evaluates whole picture if state changing functions rst,put,rnd are used*": Is there anything we can do to make it more performant when the user changes sliders? Especially with large pictures, the process becomes a bit laggy!
 
 * Check why the plugin crashes Premiere 5 (called in image filter mode; obviously not as transition filter)
+
+* Cosmetics: Include a plugin-like-icon as icon #1 so that there would be a good icon in case some apps try to display an icon from the 8BF file?
+(Attention: make_win.c deletes icon #1 because it thinks that it is the exclamation icon, so this needs to be changed then)
 
 
 Questions

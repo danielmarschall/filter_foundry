@@ -22,11 +22,15 @@
 #include "compat_win.h"
 
 Boolean isWin32NT(void){
+#ifdef _WIN64
+	// 64 bit OS is never Win9x, so it must be WinNT
+	return true;
+#else
 	OSVERSIONINFO osv;
-
 	osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	#pragma warning(suppress : 4996 28159)
 	return GetVersionEx(&osv) && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
+#endif
 }
 
 // ---------------------------------

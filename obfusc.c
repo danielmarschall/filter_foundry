@@ -85,6 +85,25 @@ int obfuscation_version(PARM_T* pparm) {
 	}
 }
 
+uint32_t crc32b(char *data, int nLength) {
+	int i, j, k;
+	unsigned int byte, crc, mask;
+
+	i = 0;
+	crc = 0xFFFFFFFF;
+
+	for(k=0;k<nLength;k++) {
+		byte = data[k];
+		crc = crc ^ byte;
+		for (j = 7; j >= 0; j--) {
+			mask = -(crc & 1);
+			crc = (crc >> 1) ^ (0xEDB88320 & mask);
+		}
+		i++;
+	}
+	return ~crc;
+}
+
 uint32_t obfusc(PARM_T* pparm) {
 	// Windows:   Version 5 obfuscation (Introduced in Filter Foundry 1.7.0.8)
 	// Macintosh: Version 4 obfuscation (Introduced in Filter Foundry 1.7.0.7)
@@ -101,7 +120,7 @@ uint32_t obfusc(PARM_T* pparm) {
 	obfusc_version = 4;
 #else
 	// In obfuscation version 5, the seed is also the checksum. It will be verified at deobfusc()!
-	initial_seed = (uint32_t)get_parm_hash(pparm);
+	initial_seed = crc32b(pparm,sizeof(PARM_T));
 	obfusc_version = 5;
 #endif
 
@@ -221,7 +240,7 @@ void deobfusc(PARM_T* pparm) {
 			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
-				if ((uint32_t)get_parm_hash(pparm) != initial_seed) {
+				if (crc32b(pparm,sizeof(PARM_T)) != initial_seed) {
 					// Integrity check failed!
 					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 				}
@@ -232,6 +251,10 @@ void deobfusc(PARM_T* pparm) {
 		default: {
 			// Obfuscation version unexpected!
 			memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
+
+			// If "return" is present: Calling function will receive an invalid cbSize value, hence showing "incompatible obfuscation"
+			// If "return" is not present: Then the code below will set a correct cbSize and iProtect flag if obfusc_version>=3, which will raise the error "filter is protected"
+			return;
 		}
 	}
 
