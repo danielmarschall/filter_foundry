@@ -280,8 +280,8 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (!needinput || !(e = pb->advanceState())) {
 			Ptr outptr = PILOCKHANDLE(preview_handle, false);
 			int blankrows = (preview_h - imgh) / 2,
-				blankcols = (preview_w - imgw) / 2,
-				pmrb = preview_pmap.rowBytes;
+			    blankcols = (preview_w - imgw) / 2,
+			    pmrb = preview_pmap.rowBytes;
 
 			evalinit();
 
@@ -415,8 +415,8 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (!needinput || !(e = pb->advanceState())) {
 			Ptr outptr = PILOCKHANDLE(preview_handle, false);
 			int blankrows = (preview_h - imgh) / 2,
-				blankcols = (preview_w - imgw) / 2,
-				pmrb = preview_pmap.rowBytes;
+			    blankcols = (preview_w - imgw) / 2,
+			    pmrb = preview_pmap.rowBytes;
 
 			evalinit();
 

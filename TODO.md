@@ -8,6 +8,20 @@ Known bugs
 (None)
 
 
+TODO for the next release
+-------------------------
+
+* Do another Win9x test with building a filter
+
+* Will ShellExecuteA + URLs (for the help button) always work?
+
+* Test everything in re obfuscation again
+
+* Renew OP5 import testcase
+
+* Verify if all testcases still work
+
+
 Minor priority stuff or ideas
 -----------------------------
 
@@ -61,6 +75,10 @@ Minor priority stuff or ideas
 
 Questions
 ---------
+
+* What is the exact purpose of the variable "needinput"?
+  It is set if we use rgbaiuvc or cnv()
+  But why isn't it set if we use src() or rad(). Is that OK???
 
 * Why does everybody write that the Filter Factory tan(x) function is bounded?
   The Filter Factory manual writes that it is bounded, and the Filter Factory Programming Guide

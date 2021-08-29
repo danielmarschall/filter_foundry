@@ -267,11 +267,11 @@ void maindlginit(DIALOGREF dp){
 				}
 			} else if(gdata->parm.ctl_used[i]){
 				myp2cstrcpy(s,gdata->parm.ctl[i]);
-				SetDlgItemText(dp,FIRSTCTLLABELITEM+i,s);
+				SetDlgItemText(dp, FIRSTCTLLABELITEM+i,s);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}else{
-				HideDialogItem(dp,FIRSTCTLITEM+i);
-				HideDialogItem(dp,FIRSTCTLTEXTITEM+i);
+				HideDialogItem(dp, FIRSTCTLITEM+i);
+				HideDialogItem(dp, FIRSTCTLTEXTITEM+i);
 				HideDialogItem(dp, FIRSTCTLLABELITEM + i);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}
@@ -429,16 +429,19 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case HELPITEM:
 		#ifdef MAC_ENV
 		// TODO: Open web-browser instead
-		simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"))
+		simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		#else
-		ShellExecuteA(
+		if (ShellExecuteA(
 			gdata->hWndMainDlg,
 			"open",
 			"https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf",
-			"",
-			"",
-			SW_NORMAL
-		);
+			NULL,
+			NULL,
+			SW_SHOWNORMAL
+		) <= 32) {
+			// MSDN states: "If the function succeeds, it returns a value greater than 32."
+			simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
+		}
 		#endif
 		break;
 	case ZOOMINITEM:

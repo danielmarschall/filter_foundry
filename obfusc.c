@@ -20,12 +20,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <assert.h>
-#include <time.h>
 
 #include "ff.h"
 
-const volatile uint32_t cObfuscV4Seed = 0x52830517; // this value will be manipulated during the building of each individual filter (see make_win.c)
+// this value will be manipulated during the building of each individual filter (see make_win.c)
+const volatile uint32_t cObfuscV4Seed = 0x52830517;
 
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
@@ -275,5 +274,10 @@ void deobfusc(PARM_T* pparm) {
 		// we still want that load_*.c is able to detect pparm->iProtected instead
 		// of throwing the error "Incompatible obfuscation".
 		pparm->cbSize = PARM_SIZE;
+	}
+
+	if (obfusc_version >= 1) {
+		// information was lost due to obfuscation. Make sure it is zero.
+		pparm->unknown2 = 0;
 	}
 }

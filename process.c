@@ -79,9 +79,10 @@ Boolean setup(FilterRecordPtr pb){
 		varused[i] = 0;
 	needall = cnvused = state_changing_funcs_used = 0;
 	for(i = 0; i < nplanes; ++i){
-//char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
+		//char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
 		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
-			checkvars(tree[i],varused,&cnvused,&needall,&state_changing_funcs_used);
+			// if src() and rad() is used => needall=1, since we need arbitary access to all pixels
+			checkvars(tree[i],varused,&cnvused,/*srcrad=*/&needall,&state_changing_funcs_used);
 		else
 			break;
 	}
@@ -129,6 +130,7 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		// Due to compatibility reasons, we adopt that behavior.
 		if(varused['v']) var['v'] = ff_v();
 	}
+
 	if(varused['d']) var['d'] = ff_d();
 	if(varused['m']) var['m'] = ff_m();
 

@@ -21,7 +21,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <assert.h>
-#include <time.h>
 
 #include "ff.h"
 #include "symtab.h"
@@ -286,15 +285,15 @@ void _aete_write_c2pstr(void** aeteptr, char* str) {
 #define AETE_WRITE_C2PSTR(s) _aete_write_c2pstr(&aeteptr, (s));
 
 void _aete_write_p2pstr(void** aeteptr, char* str) {
-    char* tmp;
+	char* tmp;
 
-    if (strlen(str) == 0) {
-	_aete_write_byte(aeteptr, 0);
-    } else {
-	tmp = *((char**)aeteptr);
-	strcpy(tmp, str);
-	*aeteptr = (void*)((unsigned char*)tmp + strlen(str));
-    }
+	if (strlen(str) == 0) {
+		_aete_write_byte(aeteptr, 0);
+	} else {
+		tmp = *((char**)aeteptr);
+		strcpy(tmp, str);
+		*aeteptr = (void*)((unsigned char*)tmp + strlen(str));
+	}
 }
 #define AETE_WRITE_P2PSTR(s) _aete_write_p2pstr(&aeteptr, (s));
 
