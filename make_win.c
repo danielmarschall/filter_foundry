@@ -602,7 +602,7 @@ Boolean check_unicows() {
 			hLib = LoadLibraryA("UNICOWS.DLL");
 			if (!hLib) {
 				// This should not happen
-				alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into your system directory"));
+				simplealert(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into your system directory"));
 				free(dstname);
 
 				return false;
