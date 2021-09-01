@@ -168,7 +168,7 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 	tmp += mbstowcs(tmp, "", 1);
 
 	if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
-		alertuser(_strdup("UpdateVersionInfoWithHandle failed"), _strdup(""));
+		simplealert(_strdup("UpdateVersionInfoWithHandle failed"));
 	}
 
 	free(changeRequestStr);

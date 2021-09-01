@@ -119,7 +119,7 @@ uint32_t obfusc(PARM_T* pparm) {
 	obfusc_version = 4;
 #else
 	// In obfuscation version 5, the seed is also the checksum. It will be verified at deobfusc()!
-	initial_seed = crc32b(pparm,sizeof(PARM_T));
+	initial_seed = crc32b((char*)&pparm,sizeof(PARM_T));
 	obfusc_version = 5;
 #endif
 
@@ -239,7 +239,7 @@ void deobfusc(PARM_T* pparm) {
 			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
-				if (crc32b(pparm,sizeof(PARM_T)) != initial_seed) {
+				if (crc32b((char*)&pparm,sizeof(PARM_T)) != initial_seed) {
 					// Integrity check failed!
 					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 				}

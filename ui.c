@@ -438,7 +438,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			NULL,
 			NULL,
 			SW_SHOWNORMAL
-		) <= 32) {
+		) <= (HINSTANCE)32) {
 			// MSDN states: "If the function succeeds, it returns a value greater than 32."
 			simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		}
