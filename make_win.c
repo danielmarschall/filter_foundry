@@ -518,7 +518,7 @@ BOOL FileExists(LPCTSTR szPath) {
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-Boolean extractFile(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
+Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
 	HGLOBAL datah;
 	LPVOID datap;
 	HRSRC datarsrc;
@@ -546,7 +546,7 @@ OSErr do_make_standalone(char* dstname, int bits) {
 	char err[MAX_PATH + 200];
 
 	//DeleteFile(dstname);
-	if (extractFile("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
+	if (extract_file("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
 		HMODULE hSrcmod;
 		hSrcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
 		if (hSrcmod) {
@@ -578,32 +578,54 @@ OSErr do_make_standalone(char* dstname, int bits) {
 	return res ? noErr : ioErr;
 }
 
-OSErr make_standalone(StandardFileReply *sfr){
-	OSErr tmpErr, outErr;
+Boolean check_unicows() {
+	// Unicows.dll is required for Win9x to implement the BeginUpdateResource functionalities
+
 	char dstname[MAX_PATH+1];
 
-	if (!isWin32NT()) {
+	if (isWin32NT()) {
+		// Modern Windows don't require UnicoWS
+		return true;
+	} else {
 		HMODULE hLib;
 
 		hLib = LoadLibraryA("UNICOWS.DLL");
 		if (!hLib) {
-			char* sysdir;
+			char* dstname;
 
-			// Unicows.dll is required to implement the BeginUpdateResource functionalities in Win9x
+			// Try to install UnicoWS automatically
+			dstname = (char*)malloc(MAX_PATH);
+			GetSystemDirectoryA(dstname, MAX_PATH);
+			strcat(dstname, "\\UNICOWS.DLL");
+			extract_file("DLL", "UNICOWS", dstname); // included in make_win.rc
 
-			sysdir = (char*)malloc(MAX_PATH);
-			GetSystemDirectoryA(sysdir, MAX_PATH);
-			alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into following directory:"), sysdir);
-			free(sysdir);
+			hLib = LoadLibraryA("UNICOWS.DLL");
+			if (!hLib) {
+				// This should not happen
+				alertuser(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into your system directory"));
+				free(dstname);
 
-			return false;
+				return false;
+			}
+			else {
+				FreeLibrary(hLib);
+				return true;
+			}
 		}
 		else {
 			FreeLibrary(hLib);
+			return true;
 		}
 	}
+}
+
+OSErr make_standalone(StandardFileReply *sfr){
+	OSErr tmpErr, outErr;
+	char dstname[MAX_PATH+1];
 
 	outErr = noErr;
+
+	check_unicows();
 	
 	// Make 32 bit:
 	// Destfile = no64_or_32(chosenname)

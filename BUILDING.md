@@ -117,6 +117,10 @@ BUILDING WITH MINGW32/64
   - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
   - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit
 
+ViaThikSoft builds the 32-bit version using OpenWatcom (to keep Win9x compatibility)
+and the 64-bit version using Visual Studio batch file. Of course, you can do it
+the way you like.
+
 
 Allowing 32/64 cross-building
 -----------------------------
