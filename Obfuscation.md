@@ -14,11 +14,12 @@ Normal standalone filters:
 
 Defined in **ff.h**, implemented in **obfusc.c**:
 
-    // Only implements V5. Returns a seed that needs to be stored in the executable code.
-    unsigned int obfusc(PARM_T* pparm);
+    // Implements Obfusc V5 on Windows and Obfusc V4 on MacOS.
+    // Returns a seed that needs to be stored in the executable code.
+    uint32_t obfusc(PARM_T* pparm);
 
     // In V1+V2: Seed is hardcoded
-    // In V3: Seed is in PARM (field "unknown2")
+    // In V3:    Seed is in PARM (field "unknown2")
     // In V4+V5: Seed is in the program code and will me modified with a binary search+replace
     void deobfusc(PARM_T* pparm);
 

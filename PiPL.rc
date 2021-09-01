@@ -24,7 +24,7 @@
 #include "ui.h"
 #include "version.h"
 
-#define LC(a,b,c,d)		#d, #c, #b, #a
+#define LC(a,b,c,d) #d, #c, #b, #a
 
 /* 8BIM = Adobe Photoshop */
 #define VENDORID LC(8,B,I,M)
@@ -36,23 +36,23 @@
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 16000  PiPL  DISCARDABLE
 BEGIN
-	0x0001, 		/* Reserved (for Photoshop) */
-	0L, 			/* kCurrentPiPLVersion */
-	9L, 			/* Property Count */
+	0x0001,     /* Reserved (for Photoshop) */
+	0L,         /* kCurrentPiPLVersion */
+	9L,         /* Property Count */
 
-	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0", /* PString */
+	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0",    /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
 
 	/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
 	VENDORID, LC(h,s,t,m), NULLID, 16L, /* = 3*4 + 2 + sizeof(c string) + padding */
-	0L,								/* version */
-	LC(F,l,t,r),					/* Class ID, always required.  Must be eventFilter='Fltr' to show up in "Actions" tab. */
-	LC(f,i,F,o),					/* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
-	AETE_ID,						/* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
+	0L,                /* version */
+	LC(F,l,t,r),       /* Class ID, always required.  Must be eventFilter='Fltr' to show up in "Actions" tab. */
+	LC(f,i,F,o),       /* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
+	AETE_ID,           /* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
 
 	/*"Telegraphics FilterFoundry\0\0\0\0"*/
 	/* Unique scope string, C format, long padded. If set, the plugin will only communicate with the host (Photoshop), not with AppleScript. */
-	/* Since 1.7.0.2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
+	/* Beginning with 1.7.0.2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
 	"\0\0"
 
 
@@ -63,9 +63,9 @@ END
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 16000  TPLT  DISCARDABLE
 BEGIN
-	0x0001, 		/* Reserved (for Photoshop) */
-	0L, 			/* kCurrentPiPLVersion */
-	6L, 			/* Property Count */
+	0x0001,       /* Reserved (for Photoshop) */
+	0L,           /* kCurrentPiPLVersion */
+	6L,           /* Property Count */
 
 #include "PiPL_body.rc"
 
