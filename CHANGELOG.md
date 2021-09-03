@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.8 [Work-In-Progress]
+## 1.7.0.8 [03-Sep-2021]
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
 - Introduced obfuscation version 5 (it is like version 4, but contains an integrity check); also fixed some smaller issues with obfuscation loading.
 - Following functions have been changed to a 100% replica of the Filter Factory implementation:

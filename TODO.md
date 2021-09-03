@@ -8,14 +8,6 @@ Known bugs
 (None)
 
 
-TODO for the next release
--------------------------
-
-* Renew OP5 import testcase
-
-* Verify if all testcases still work
-
-
 Minor priority stuff or ideas
 -----------------------------
 

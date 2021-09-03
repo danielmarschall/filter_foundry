@@ -335,7 +335,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	Str255 fname;
 	Boolean bak_obfusc, bak_standalone, bak_parmloaded;
 	PARM_T bak_parm;
-	long hShellRes;
+	HINSTANCE hShellRes;
 
 	switch(item){
 	case IDOK:
@@ -431,7 +431,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		// TODO: Open web-browser instead
 		showmessage(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		#else
-		hShellRes = (long)ShellExecuteA(
+		hShellRes = ShellExecuteA(
 			gdata->hWndMainDlg,
 			"open",
 			"https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf",
@@ -439,11 +439,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			NULL,
 			SW_SHOWNORMAL
 		);
-		if (hShellRes == ERROR_FILE_NOT_FOUND) {
+		if (hShellRes == (HINSTANCE)ERROR_FILE_NOT_FOUND) {
 			// On Win98 we get ERROR_FILE_NOT_FOUND, but the browser still opens!
 			// So we ignore it for now...
 		}
-		else if (hShellRes <= 32) {
+		else if (hShellRes <= (HINSTANCE)32) {
 			// MSDN states: "If the function succeeds, it returns a value greater than 32."
 
 			char s[100];
