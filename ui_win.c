@@ -92,6 +92,19 @@ Boolean simplealert(char *s){
 	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
+Boolean simplewarning(char* s) {
+	HWND hwnd;
+	char* title;
+	if (gdata && gdata->standalone) {
+		title = INPLACEP2CSTR(gdata->parm.title);
+	}
+	else {
+		title = _strdup("Filter Foundry");
+	}
+	hwnd = gdata ? gdata->hWndMainDlg : NULL;
+	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONEXCLAMATION|MB_OK) == IDOK;
+}
+
 Boolean showmessage(char *s){
 	HWND hwnd;
 	char* title;

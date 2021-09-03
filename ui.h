@@ -105,7 +105,8 @@
 	void DoAbout(AboutRecordPtr prec);
 	Boolean maindialog(FilterRecordPtr pb);
 	Boolean builddialog(FilterRecordPtr pb);
-	Boolean simplealert(char *s);
+	Boolean simplealert(char* s);
+	Boolean simplewarning(char* s);
 	Boolean showmessage(char *s);
 
 	// platform independent

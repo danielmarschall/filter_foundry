@@ -655,7 +655,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	else {
 		// Unicows.dll cannot edit resources of 64 bit DLLs.
 		// The normal Kernel function BeginUpdateResource can edit 64 bit DLLs, even in NT4.0 SP6
-		simplealert(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
+		simplewarning(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
 	}
 
 	return outErr;
