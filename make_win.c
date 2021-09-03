@@ -581,8 +581,6 @@ OSErr do_make_standalone(char* dstname, int bits) {
 Boolean check_unicows() {
 	// Unicows.dll is required for Win9x to implement the BeginUpdateResource functionalities
 
-	char dstname[MAX_PATH+1];
-
 	if (isWin32NT()) {
 		// Modern Windows don't require UnicoWS
 		return true;
@@ -591,19 +589,17 @@ Boolean check_unicows() {
 
 		hLib = LoadLibraryA("UNICOWS.DLL");
 		if (!hLib) {
-			char* dstname;
+			char dstname[MAX_PATH + 1];
 
 			// Try to install UnicoWS automatically
-			dstname = (char*)malloc(MAX_PATH);
-			GetSystemDirectoryA(dstname, MAX_PATH);
-			strcat(dstname, "\\UNICOWS.DLL");
-			extract_file("DLL", "UNICOWS", dstname); // included in make_win.rc
+			GetSystemDirectoryA(&dstname[0], MAX_PATH);
+			strcat(&dstname[0], "\\UNICOWS.DLL");
+			extract_file("DLL", "UNICOWS", &dstname[0]); // included in make_win.rc
 
 			hLib = LoadLibraryA("UNICOWS.DLL");
 			if (!hLib) {
 				// This should not happen
 				simplealert(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into your system directory"));
-				free(dstname);
 
 				return false;
 			}
