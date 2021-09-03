@@ -1,10 +1,5 @@
 # Changelog
 
-## 1.7.0.9 [Work-In-Progress]
-- Win9x: Updated built-in UNICOWS.dll to version 1.1.3790.0 (signed 07 Dec 2004)
-- Standalone 32-bit filters are now ~250KiB smaller because UNICOWS is stripped from the 8BF file
-- Fixed error where the 8BF manifest file contained garbage data at the end
-
 ## 1.7.0.8 [03-Sep-2021]
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
 - Introduced obfuscation version 5 (it is like version 4, but contains an integrity check); also fixed some smaller issues with obfuscation loading.
@@ -34,7 +29,8 @@
 - Added a documentation based on the Filter Factory documentation.
 - Added a help button which opens the documentation on the web. (*)
 - For 32/64-bit cross-build, there is now no requirement that both plugin files must be installed anymore.
-- Windows 95/98/Me: If UNICOWS.DLL is missing (required for building a standalone filter), it will be automatically installed for you.
+- Windows 95/98/Me: If UNICOWS.DLL is missing (required for building a standalone filter), it will be automatically installed for you (version 1.1.3790.0, signed 07 Dec 2004)
+- Fixed error where the 8BF manifest file contained garbage data at the end, resulting in the standalone filter having no "XP design"
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
