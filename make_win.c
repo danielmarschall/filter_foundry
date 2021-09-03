@@ -50,7 +50,7 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 }
 */
 
-int domanifest(char *newmanifest, const char *manifestp, PARM_T* pparm, int bits) {
+int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	char name[1024];
 	char description[1024];
 	size_t i;
@@ -343,8 +343,9 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	HGLOBAL datah,aeteh,hupdate,manifesth;
 	Ptr newpipl = NULL, newaete = NULL;
 	LPVOID datap, aetep, manifestp;
+	char* manifestp_copy;
 	PARM_T *pparm = NULL;
-	size_t piplsize,aetesize,origsize,manifestsize;
+	size_t piplsize,aetesize,origsize;
 	Str255 title;
 	LPCTSTR parm_type;
 	int i,parm_id;
@@ -377,7 +378,10 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 			&& (manifesth = LoadResource(srcmod, manifestsrc))
 			&& (manifestp = (Ptr)LockResource(manifesth)) )
 		{
-			char newmanifest[5000];
+			char* newmanifest;
+			int manifestsize = SizeofResource(srcmod, manifestsrc);
+
+			newmanifest = (char*)malloc(manifestsize + 4096/*+4KiB for name,description,etc.*/);
 
 			DBG("loaded DATA, PiPL");
 
@@ -418,7 +422,15 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				for (i = 0; i < 8; ++i)
 					myp2cstr(pparm->ctl[i]);
 
-				manifestsize = domanifest(newmanifest, (const char*)manifestp, pparm, bits);
+				// ====== Create fitting manifest for the activation context
+
+				manifestp_copy = (char*)malloc(manifestsize + 1/*sz*/);
+				if (manifestp_copy != 0) {
+					memcpy(manifestp_copy, manifestp, manifestsize); // copy manifestp to manifestp_copy, because manifestp is readonly
+					manifestp_copy[manifestsize] = '\0'; // and add the null-terminating char, because domanifest() uses sprintf() on it
+					manifestsize = domanifest(newmanifest, manifestp_copy, pparm, bits);
+					free(manifestp_copy);
+				}
 
 				// ====== Change version attributes
 
@@ -452,6 +464,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0)) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
