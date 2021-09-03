@@ -36,6 +36,7 @@ void dbglasterror(char *func){
 
 	strcpy(s,func);
 	strcat(s," failed: ");
+	// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
 	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM,NULL,GetLastError(),0,s+strlen(s),0x100,NULL );
 	dbg(s);
 }
@@ -351,6 +352,19 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	Boolean discard = true;
 	unsigned int obfuscseed = 0;
 	long event_id;
+	Boolean mustFreeSrcMod;
+
+	if (srcmod == NULL) {
+		srcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
+		if (!srcmod) {
+			dbglasterror(_strdup("LoadLibraryEx"));
+			return false;
+		}
+		mustFreeSrcMod = true;
+	}
+	else {
+		mustFreeSrcMod = false;
+	}
 
 	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
@@ -453,24 +467,30 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
 
 		// Here, the file will be saved
-		if(!_EndUpdateResource(hupdate,discard))
-			dbglasterror(_strdup("EndUpdateResource"));
-
-		if (gdata->obfusc) {
-			// We modify the binary code to replace the deobfuscate-seed from <cObfuscV4Seed> to <obfuscseed>
-			if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) != 1) {
-				// The seed must only be exactly 1 time inside the 8BF file,
-				// since "const volatile" makes sure that the compiler won't place
-				// it at several locations in the code.
-				dbg("binary_replace_file failed");
-				discard = true;
-			}
+		if (mustFreeSrcMod) {
+			FreeLibrary(srcmod);
 		}
+		if (!_EndUpdateResource(hupdate, discard)) {
+			dbglasterror(_strdup("EndUpdateResource"));
+		}
+		else {
 
-		update_pe_timestamp(dstname, time(0));
+			if (gdata->obfusc) {
+				// We modify the binary code to replace the deobfuscate-seed from <cObfuscV4Seed> to <obfuscseed>
+				if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) != 1) {
+					// The seed must only be exactly 1 time inside the 8BF file,
+					// since "const volatile" makes sure that the compiler won't place
+					// it at several locations in the code.
+					dbg("binary_replace_file failed");
+					discard = true;
+				}
+			}
 
-		repair_pe_checksum(dstname);
+			update_pe_timestamp(dstname, time(0));
 
+			repair_pe_checksum(dstname);
+		}
+		
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
@@ -547,23 +567,10 @@ OSErr do_make_standalone(char* dstname, int bits) {
 
 	//DeleteFile(dstname);
 	if (extract_file("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
-		HMODULE hSrcmod;
-		hSrcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
-		if (hSrcmod) {
-			res = doresources(hSrcmod, dstname, bits);
-			FreeLibrary(hSrcmod); // do it now, otherwise DeleteFile() will not work
-			if (!res) {
-				DeleteFile(dstname);
-				sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
-				alertuser(_strdup(&err[0]), _strdup(""));
-			}
-		}
-		else {
-			DWORD dwErr = GetLastError();
-			res = false;
+		res = doresources(NULL, dstname, bits);
+		if (!res) {
 			DeleteFile(dstname);
-			// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
-			sprintf(err, "Could not create %d bit standalone plugin (LoadLibraryEx failed, Win32 error %lu).", bits, dwErr);
+			sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
 			alertuser(_strdup(&err[0]), _strdup(""));
 		}
 	}
