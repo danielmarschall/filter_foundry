@@ -219,7 +219,6 @@ void maindlgupdate(DIALOGREF dp){
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
-				DISABLEDLGITEM(dp,HELPITEM);
 			}
 			return;
 		}
