@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0.9 [Work-In-Progress]
+- Win9x: Updated built-in UNICOWS.dll to version 1.1.3790.0 (signed 07 Dec 2004)
+- Standalone 32-bit filters are now ~250KiB smaller because UNICOWS is stripped from the 8BF file
+- Fixed error where the 8BF manifest file contained garbage data at the end
+
 ## 1.7.0.8 [03-Sep-2021]
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
 - Introduced obfuscation version 5 (it is like version 4, but contains an integrity check); also fixed some smaller issues with obfuscation loading.
