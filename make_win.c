@@ -36,7 +36,6 @@ void dbglasterror(char *func){
 
 	strcpy(s,func);
 	strcat(s," failed: ");
-	// TODO: Also translate Win32 error to use readable text ( https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code )
 	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM,NULL,GetLastError(),0,s+strlen(s),0x100,NULL );
 	dbg(s);
 }

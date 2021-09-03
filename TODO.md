@@ -11,12 +11,6 @@ Known bugs
 TODO for the next release
 -------------------------
 
-* Do another Win9x test with building a filter
-
-* Will ShellExecuteA + URLs (for the help button) always work?
-
-* Test everything in re obfuscation again
-
 * Renew OP5 import testcase
 
 * Verify if all testcases still work

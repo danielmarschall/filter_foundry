@@ -335,6 +335,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	Str255 fname;
 	Boolean bak_obfusc, bak_standalone, bak_parmloaded;
 	PARM_T bak_parm;
+	long hShellRes;
 
 	switch(item){
 	case IDOK:
@@ -428,18 +429,29 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case HELPITEM:
 		#ifdef MAC_ENV
 		// TODO: Open web-browser instead
-		simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
+		showmessage(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		#else
-		if (ShellExecuteA(
+		hShellRes = (long)ShellExecuteA(
 			gdata->hWndMainDlg,
 			"open",
 			"https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf",
 			NULL,
 			NULL,
 			SW_SHOWNORMAL
-		) <= (HINSTANCE)32) {
+		);
+		if (hShellRes == ERROR_FILE_NOT_FOUND) {
+			// On Win98 we get ERROR_FILE_NOT_FOUND, but the browser still opens!
+			// So we ignore it for now...
+		}
+		else if (hShellRes <= 32) {
 			// MSDN states: "If the function succeeds, it returns a value greater than 32."
-			simplealert(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
+
+			char s[100];
+			strcpy(s, "ShellExecuteA failed: ");
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+			dbg(s);
+
+			showmessage(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		}
 		#endif
 		break;
