@@ -34,6 +34,13 @@ This is done to check the integrity of the deobfuscation.
 Also, the xor-shifting is intentionally incompatible with version 4
 (to avoid downgrade-attacks) by XORing the initial seed with 0xFFFFFFFF.
 
+The DWORD value `0x00000005` will be stored at field `unknown2`
+(byte 0x30..0x33; the field is not used in the `PARM` resource).
+
+While generating and applying the random data stream, the bytes
+0x30..0x33 (the location where the version info is stored) are skipped,
+like in version 3.
+
 ### Obfuscation "Version 4"
 
 Introduced in **Filter Foundry 1.7.0.7**
@@ -47,22 +54,33 @@ The placeholder value is `OBFUSC_V4_DEFAULT_SEED 0x52830517`
 This allows that 32-bit and 64-bit filters are "cross built".
 
 (Theoretical) Macintosh version:
-Obfuscation and deobfuscation has the seed 0x52830517, since the
+Obfuscation and deobfuscation has the seed `0x52830517`, since the
 manipulation of the binary code is not implemented.
 
 Algorithm: XOR-Shift like in version 2, but the seed is individual for
 each individual built standalone filter.
 
-The DWORD value "0x00000004" will be stored at position 0x30 (this field is not used in the `PARM` resource).
+The DWORD value `0x00000004` will be stored at field `unknown2`
+(byte 0x30..0x33; the field is not used in the `PARM` resource).
+
+While generating and applying the random data stream, the bytes
+0x30..0x33 (the location where the version info is stored) are skipped,
+like in version 3.
 
 ### Obfuscation "Version 3"
 
 Introduced in **Filter Foundry 1.7.0.5**
 
-It is compiler-dependant, therefore the resource cannot be exchanged between plugins!
+A random seed is chosen and written to field `unknown2` (byte 0x30..0x33).
 
-Algorithm: XOR with a modified `rand()`-stream with seed that is stored at position 0x30
-(this field is not used in the `PARM` resource).
+Then, the `PARM` resource will be obfuscated by applying an XOR operation to a random data stream:
+
+    unsigned char *p;
+    *p++ ^= (int)(rand() * 1.0 / (RAND_MAX + 1) * 256);
+    
+Bytes 0x30..0x33 (the location where the seed is stored) are skipped.
+
+The `rand()` operation is compiler-dependant, and therefore the resource cannot be exchanged between plugins.
 
 32 bit plugin is built with OpenWatcom (for Win95 compatibility) which has following formula:
 
@@ -82,7 +100,7 @@ Algorithm: XOR with a modified `rand()`-stream with seed that is stored at posit
 
 Introduced in **Filter Foundry 1.7b1**
 
-It is compiler-independant!
+It is compiler-independent!
 
 Algorithm: [XOR-Shift](https://de.wikipedia.org/wiki/Xorshift "XOR-Shift") with hardcoded seed `0x95d4a68f`.
 
@@ -98,7 +116,7 @@ Algorithm: [XOR-Shift](https://de.wikipedia.org/wiki/Xorshift "XOR-Shift") with 
 
 Introduced in **Filter Foundry 1.4b8,9,10**
 
-It is compiler-dependant, therefore the resource cannot be exchanged between plugins!
+It is compiler-dependant, and therefore the resource cannot be exchanged between plugins!
 
 Algorithm: XOR with `rand()`-stream with hardcoded seed `0xdc43df3c`.
 

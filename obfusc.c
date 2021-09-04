@@ -205,11 +205,13 @@ void deobfusc(PARM_T* pparm) {
 			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
 
 			srand(seed);
+
 			p = (unsigned char*)pparm;
-			for (i = 0; i < seed_position; i++) *p++ ^= rand();
+			for (i = 0; i < seed_position; i++) *p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
 			*((uint32_t*)p) = 0; // here was the seed. Fill it with 0x00000000
 			p += 4;
-			for (i = 0; i < size - seed_position - 4; i++) *p++ ^= rand();
+			for (i = 0; i < size - seed_position - 4; i++) *p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
+
 			break;
 		}
 		case 4:
@@ -237,7 +239,8 @@ void deobfusc(PARM_T* pparm) {
 
 			p = (unsigned char*)pparm;
 			xorshift(&p, &seed, seed_position);
-			p += 4; // obfusc info == 4
+			*((uint32_t*)p) = 0; // here was the version info. Fill it with 0x00000000
+			p += 4; // obfusc info was 4 or 5
 			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
