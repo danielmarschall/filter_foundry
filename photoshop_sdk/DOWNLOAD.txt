@@ -37,6 +37,7 @@ are accidentally uploaded somewhere.
 Actually, you only need the following files:
 - pluginsdk/photoshopapi/photoshop/*.h
 - pluginsdk/photoshopapi/pica_sp/*.h
+- pluginsdk/photoshopapi/resources/*.r
 
 
 Additional notes:

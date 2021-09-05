@@ -18,3 +18,5 @@ ViaThinkSoft release procedure
 	CHANGELOG.md                      => CHANGELOG.txt
 	doc\The Filter Foundry.pdf        => The Filter Foundry.pdf
 	examples\                         => examples\
+	LICENSE_GPLv2.txt                 => LICENSE_GPLv2.txt
+	LICENSE_GPLv3.html                => LICENSE_GPLv3.html
