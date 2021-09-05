@@ -30,7 +30,7 @@
 #include "symtab.h"
 #include "PARM.h"
 #include "preview.h"
-#include "misc.h"
+#include "ff_misc.h"
 
 #ifndef INCLUDED_FF_H
 #define INCLUDED_FF_H

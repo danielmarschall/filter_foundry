@@ -34,6 +34,11 @@ These folders are excluded in SVN and GIT to avoid that they
 are accidentally uploaded somewhere.
 
 
+Actually, you only need the following files:
+- pluginsdk/photoshopapi/photoshop/*.h
+- pluginsdk/photoshopapi/pica_sp/*.h
+
+
 Additional notes:
 - Adobe's stand in regards to using SDK to write OpenSource plugins:
   https://web.archive.org/web/20070203075622/http://blogs.adobe.com/notesfrommnr/2006/04/using_adobe_sdk.html

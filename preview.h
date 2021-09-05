@@ -27,7 +27,7 @@
 
 #include "ui_compat.h"
 
-#include "misc.h"
+#include "ff_misc.h"
 
 extern PSPixelMap preview_pmap;
 extern PSPixelMask preview_pmask;

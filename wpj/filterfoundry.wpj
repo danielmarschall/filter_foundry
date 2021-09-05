@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
-0
+518
 0
 7680
-9723
+9713
 2
 MProject
 3
@@ -40,9 +40,9 @@ VComponent
 8
 WRect
 0
-653
-5711
-4349
+643
+6674
+6748
 0
 0
 9
@@ -50,5 +50,5 @@ WFileName
 17
 filterfoundry.tgt
 0
-0
+37
 7

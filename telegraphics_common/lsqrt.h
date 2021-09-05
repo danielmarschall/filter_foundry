@@ -1,1 +1,0 @@
-unsigned long lsqrt (unsigned long n);
