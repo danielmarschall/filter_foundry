@@ -78,6 +78,7 @@
     <OutDir>.\</OutDir>
     <IntDir>.\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -87,6 +88,7 @@
     <OutDir>.\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
     <IntDir>.\</IntDir>
   </PropertyGroup>
@@ -97,6 +99,7 @@
     <OutDir>.\</OutDir>
     <IntDir>.\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -106,6 +109,7 @@
     <OutDir>.\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <EmbedManifest>false</EmbedManifest>
     <IntDir>.\</IntDir>
   </PropertyGroup>
@@ -134,6 +138,12 @@ win_flex_bison\win_bison.exe parser.y -d -y
 win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>cd ..
+cd 3264_mixer
+foundry_3264_mixer.bat
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,6 +170,12 @@ win_flex_bison\win_bison.exe parser.y -d -y
 win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>cd ..
+cd 3264_mixer
+foundry_3264_mixer.bat
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -190,6 +206,12 @@ win_flex_bison\win_bison.exe parser.y -d -y
 win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>cd ..
+cd 3264_mixer
+foundry_3264_mixer.bat
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -220,6 +242,12 @@ win_flex_bison\win_bison.exe parser.y -d -y
 win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
 move lex.yy.c lex_yy.c</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>cd ..
+cd 3264_mixer
+foundry_3264_mixer.bat
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\c.h" />

@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
-518
+512
 0
 7680
-9713
+9703
 2
 MProject
 3
@@ -26,7 +26,10 @@ ren lex.yy.c lex_yy.c
 cd wpj
 4
 MCommand
-0
+56
+cd ..\3264_mixer
+call foundry_3264_mixer.bat
+cd ..\wpj
 1
 5
 WFileName
@@ -40,9 +43,9 @@ VComponent
 8
 WRect
 0
-643
-6674
-6748
+633
+6668
+6738
 0
 0
 9

@@ -21,7 +21,7 @@ if exist "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Au
 
 echo Found Visual Studio Path %VCPATH%
 
-cd "%~dp0"
+cd /d "%~dp0"
 
 echo Now build 32 Bit Plugin
 call "%VCPATH%\vcvars32.bat"
@@ -32,6 +32,12 @@ echo Now build 64 Bit Plugin
 call "%VCPATH%\vcvars64.bat"
 nmake /f nmake64.mak clean
 nmake /f nmake64.mak
+
+echo Mix 32/64
+cd ..\3264_mixer
+call foundry_3264_mixer.bat
+
+cd /d "%~dp0"
 
 echo Finished. Please check console output.
 pause.

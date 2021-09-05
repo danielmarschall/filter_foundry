@@ -464,7 +464,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0)) // clean up things we don't need in the standalone plugin
+					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
@@ -665,7 +665,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 			showmessage(_strdup("64 bit standalone filter was successfully created"));
 	}
 	else {
-		// Unicows.dll cannot edit resources of 64 bit DLLs.
+		// Unicows.dll cannot edit resources of 64 bit DLLs. (Tested with UnicoWS 1.1.3790.0)
 		// The normal Kernel function BeginUpdateResource can edit 64 bit DLLs, even in NT4.0 SP6
 		simplewarning(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
 	}
