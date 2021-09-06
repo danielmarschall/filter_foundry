@@ -18,8 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* Portions Copyright 1996 - 1999 Adobe Systems Incorporated                */
-/* All Rights Reserved.                                            */
+/* Portions Copyright 1996 - 1999 Adobe Systems Incorporated */
+/* All Rights Reserved.                                      */
 
 //#include <stdio.h>
 

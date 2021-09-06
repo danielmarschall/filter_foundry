@@ -1,26 +1,50 @@
-/* Copyright 1993 - 1999 Adobe Systems Incorporated                */
-/* All Rights Reserved.                                            */
- 
-#include <stddef.h>				// Standard definitions.
-//#include <Types.h>				// Standard types.
+/*
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
-#include "PITypes.h"			// Photoshop types.
-#include "PIGeneral.h"			// Photoshop general routines.
-#include "PIActions.h"			// Photoshop scripting.
-#include "PIAbout.h"			// AboutRecord structure.
-#include "PIFormat.h"			// AboutRecord structure.
-//#include "PIDefines.h"			// Plug-in definitions.
-//#include "FileUtilities.h"		// Simple file utilities.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/* Portions Copyright 1993 - 1999 Adobe Systems Incorporated */
+/* All Rights Reserved.                                      */
+
+#include <stddef.h>                     // Standard definitions.
+//#include <Types.h>                    // Standard types.
+
+#include "PITypes.h"                    // Photoshop types.
+#include "PIGeneral.h"                  // Photoshop general routines.
+#include "PIActions.h"                  // Photoshop scripting.
+#include "PIAbout.h"                    // AboutRecord structure.
+#include "PIFormat.h"                   // AboutRecord structure.
+//#include "PIDefines.h"                // Plug-in definitions.
+//#include "FileUtilities.h"            // Simple file utilities.
 
 Boolean HostDescriptorAvailable (PIDescriptorParameters *procs,
-								 Boolean *outNewerVersion);
+                                 Boolean *outNewerVersion);
+
 OSErr HostCloseReader (PIDescriptorParameters *procs,
-					   HandleProcs *hProcs,
-					   PIReadDescriptor *token);
-OSErr	HostCloseWriter(PIDescriptorParameters *procs,
-						HandleProcs *hProcs,
-						PIWriteDescriptor *token);
-OSErr put_cstring(PIWriteDescriptor token,DescriptorKeyID key,char *s);
+                       HandleProcs *hProcs,
+                       PIReadDescriptor *token);
+
+OSErr HostCloseWriter(PIDescriptorParameters *procs,
+                      HandleProcs *hProcs,
+                      PIWriteDescriptor *token);
+
+OSErr put_cstring(PIWriteDescriptor token, DescriptorKeyID key, char *s);
+
 char *get_cstring(PIReadDescriptor token);
 
 enum ScriptingShowDialog {
@@ -30,6 +54,7 @@ enum ScriptingShowDialog {
 };
 
 enum ScriptingShowDialog ReadScriptParamsOnRead(void);
+
 OSErr WriteScriptParamsOnRead(void);
 
 OSType getAeteKey(char c, PARM_T *parm);

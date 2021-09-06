@@ -27,4 +27,6 @@ echo.
 echo.
 dir *.8bf
 
+call 3264_mixer/foundry_3264_mixer.bat
+
 pause.

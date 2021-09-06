@@ -10,7 +10,7 @@ A full description of Filter Foundry including a reference of all functions, var
 
 ### Windows version 1.7.0.8
 
-Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can be downloaded at [ViaThinkSoft.com](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
+Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
 
 To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not Filter Foundry works on a non-Photoshop host application, please send us a message!
 
