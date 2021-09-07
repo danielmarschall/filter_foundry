@@ -1,5 +1,3 @@
-
-
 Implementation detail differences
 =================================
 
@@ -74,13 +72,48 @@ I, U, V, imin, umin, vmin (Testcase iuv_minmax.afs)
 In Filter Foundry 1.7.0.8, the previously undocumented variables I, U, V as well as imin, umin, vmin
 have been changed to represent the actual results of the i,u,v variables:
 
-    I, imax = 255 (stayed the same)
-    U, umax = 55 (was 255 in Filter Factory)
-    V, vmax = 78 (was 255 in Filter Factory)
+    imax = 255 (stayed the same)
+    umax = 55 (was 255 in Filter Factory)
+    vmax = 78 (was 255 in Filter Factory)
 
     imin = 0 (stayed the same)
     umin = -55 (was 0 in Filter Factory)
     vmin = -78 (was 0 in Filter Factory)
+
+It is questionable if `I` was meant to be a synonym of `imax`, or if `I` was meant to be `I := imax - imin`.
+We have chosen the latter in Filter Foundry 1.7.0.9. Same thing with `U` and `V`.
+
+Therefore:
+
+    I := imax-imin = 255
+    U := umax-umin = 110
+    V := vmax-vmin = 156
+
+
+dmin, D (Testcase d_minmax.afs)
+-------
+
+**The Filter Factory manual writes:**
+
+0 corresponds to the 3 o'clock position
+256 to the 6 o'clock position,
+512 to the 9 o'clock position,
+768 to the 12 o'clock position,
+and 1024 to the full rotation back to the 3 o'clock position
+
+But this does not match the Windows implementation of Filter Factory
+(maybe it is true to the Mac implementation?)
+
+**In the original Windows implementation we can observe:**
+
+d=-512 is at 9 o'clock position
+d=-256 is at 12 o'clock position
+d=0 is at 3 o'clock position
+d=256 is at 6 o'clock position
+d=512 is the full rotation back to 3 o'clock position
+
+Therefore, `dmin` has been changed from 0 to -512,
+and `D`, `dmax` has been changed from 1024 to 512.
 
 
 get(i) (Testcase getput.afs)

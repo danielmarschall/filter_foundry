@@ -20,6 +20,42 @@
 
 #include <math.h>
 
+// Strict compatibility to Filter Factory by using an alternative
+// implementation which is a 100% replica of the Filter Factory 3.0.4
+// for Windows.
+#ifdef WIN_ENV
+// i,u,v intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_i
+//#define use_filterfactory_implementation_u
+//#define use_filterfactory_implementation_v
+// umin,umax and vmin,vmax intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_u_minmax
+//#define use_filterfactory_implementation_v_minmax
+// U and V intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_U
+//#define use_filterfactory_implementation_V
+// dmin,dmax intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_d_minmax
+// D intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_D
+// get(i) intentionally not equal to Filter Factory (this has been documented).
+//#define use_filterfactory_implementation_get
+// Following functions are implemented as 100% replicas
+#define use_filterfactory_implementation_rad
+#define use_filterfactory_implementation_rnd
+#define use_filterfactory_implementation_c2d
+#define use_filterfactory_implementation_c2m
+#define use_filterfactory_implementation_r2x
+#define use_filterfactory_implementation_r2y
+#define use_filterfactory_implementation_cos
+#define use_filterfactory_implementation_sin
+#define use_filterfactory_implementation_tan
+#define use_filterfactory_implementation_sqr
+#define use_filterfactory_implementation_d
+#define use_filterfactory_implementation_m
+#define use_filterfactory_implementation_M
+#endif
+
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327
@@ -91,9 +127,15 @@ value_type ff_d();
 value_type ff_M();
 value_type ff_m();
 
-extern value_type min_channel_i;
-extern value_type max_channel_i;
-extern value_type min_channel_u;
-extern value_type max_channel_u;
-extern value_type min_channel_v;
-extern value_type max_channel_v;
+extern value_type min_val_i;
+extern value_type max_val_i;
+extern value_type min_val_u;
+extern value_type max_val_u;
+extern value_type min_val_v;
+extern value_type max_val_v;
+extern value_type min_val_d;
+extern value_type max_val_d;
+extern value_type val_D;
+extern value_type val_I;
+extern value_type val_U;
+extern value_type val_V;

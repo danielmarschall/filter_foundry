@@ -18,34 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Strict compatibility to Filter Factory by using an alternative
-// implementation which is a 100% replica of the Filter Factory 3.0.4
-// for Windows.
-#ifdef WIN_ENV
-	#define use_filterfactory_implementation_rad
-	// i,u,v intentionally not equal to Filter Factory (this has been documented).
-	//#define use_filterfactory_implementation_i
-	//#define use_filterfactory_implementation_u
-	//#define use_filterfactory_implementation_v
-	// U,V,umin,vmin intentionally not equal to Filter Factory (this has been documented).
-	//#define use_filterfactory_implementation_u_minmax
-	//#define use_filterfactory_implementation_v_minmax
-	#define use_filterfactory_implementation_rnd
-	#define use_filterfactory_implementation_c2d
-	#define use_filterfactory_implementation_c2m
-	#define use_filterfactory_implementation_r2x
-	#define use_filterfactory_implementation_r2y
-	#define use_filterfactory_implementation_cos
-	#define use_filterfactory_implementation_sin
-	#define use_filterfactory_implementation_tan
-	#define use_filterfactory_implementation_sqr
-	#define use_filterfactory_implementation_d
-	#define use_filterfactory_implementation_m
-	#define use_filterfactory_implementation_M
-	// get(i) intentionally not equal to Filter Factory (this has been documented).
-	//#define use_filterfactory_implementation_get
-#endif
-
 #ifdef MAC_ENV
 	#include <fp.h>
 #endif
@@ -1180,16 +1152,8 @@ value_type ff_c2m(value_type x, value_type y) {
 
 // -------------------------------------------------------------------------------------------
 
-/* Range of angles within the image, where D is always 1024 */
-
-value_type ff_D() {
-	return 1024;
-}
-
-// -------------------------------------------------------------------------------------------
-
 /* Direction(angle) of the current pixel from the center of the image,
-   where d is an integer between 0 and 1024 inclusive */
+   where d is an integer between -512 and 512 inclusive */
 
 value_type factory_d() {
 #ifdef PARSERTEST
@@ -1541,23 +1505,50 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 value_type zero_val = 0;
 value_type one_val = 1;
 
-value_type min_channel_i = 0;
-value_type max_channel_i = 255;
+value_type min_val_i = 0;
+value_type max_val_i = 255;
+value_type val_I = 255;
 
-#ifdef use_filterfactory_implementation_i_minmax
-value_type min_channel_u = 0;
-value_type max_channel_u = 255;
+#ifdef use_filterfactory_implementation_u_minmax
+value_type min_val_u = 0;
+value_type max_val_u = 255;
 #else
-value_type min_channel_u = -55;
-value_type max_channel_u = 55;
+value_type min_val_u = -55;
+value_type max_val_u = 55;
+#endif
+
+#ifdef use_filterfactory_implementation_U
+value_type val_U = 255;
+#else
+value_type val_U = 110; // max_val_u - min_val_u;
 #endif
 
 #ifdef use_filterfactory_implementation_v_minmax
-value_type min_channel_v = 0;
-value_type max_channel_v = 255;
+value_type min_val_v = 0;
+value_type max_val_v = 255;
 #else
-value_type min_channel_v = -78;
-value_type max_channel_v = 78;
+value_type min_val_v = -78;
+value_type max_val_v = 78;
+#endif
+
+#ifdef use_filterfactory_implementation_V
+value_type val_V = 255;
+#else
+value_type val_V = 156; // max_val_v - min_val_v;
+#endif
+
+#ifdef use_filterfactory_implementation_d_minmax
+value_type min_val_d = 0;
+value_type max_val_d = 1024;
+#else
+value_type min_val_d = -512;
+value_type max_val_d = 512;
+#endif
+
+#ifdef use_filterfactory_implementation_D
+value_type val_D = 1024;
+#else
+value_type val_D = 1024; // max_val_d - min_val_d;
 #endif
 
 /* predefined symbols */
@@ -1597,30 +1588,30 @@ struct sym_rec predefs[]={
 	/* The predefined variables with 1 character are defined in lexer.l and process.c */
 	/* In this table, you must not add TOK_VAR with only 1 character (since this case is not defined in parser.y) */
 
-	{0,TOK_VAR,"rmax",0, &var['R']}, // alias of R (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"gmax",0, &var['G']}, // alias of G (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"bmax",0, &var['B']}, // alias of B (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"amax",0, &var['A']}, // alias of A (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"cmax",0, &var['C']}, // alias of C (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"imax",0, &var['I']}, // alias of I (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"umax",0, &var['U']}, // alias of U (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"vmax",0, &var['V']}, // alias of V (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"dmax",0, &var['D']}, // alias of D (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"mmax",0, &var['M']}, // alias of M (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"pmax",0, &var['Z']}, // alias of P (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"xmax",0, &var['X']}, // alias of X (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"ymax",0, &var['Y']}, // alias of Y (defined in lexer.l nad set by process.c)
-	{0,TOK_VAR,"zmax",0, &var['Z']}, // alias of Z (defined in lexer.l nad set by process.c)
+	{0,TOK_VAR,"rmax",0, &var['R']}, // alias of R (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"gmax",0, &var['G']}, // alias of G (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"bmax",0, &var['B']}, // alias of B (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"amax",0, &var['A']}, // alias of A (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"cmax",0, &var['C']}, // alias of C (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"imax",0, &max_val_i},
+	{0,TOK_VAR,"umax",0, &max_val_u},
+	{0,TOK_VAR,"vmax",0, &max_val_v},
+	{0,TOK_VAR,"dmax",0, &max_val_d},
+	{0,TOK_VAR,"mmax",0, &var['M']}, // alias of M (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"pmax",0, &var['Z']}, // alias of P (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"xmax",0, &var['X']}, // alias of X (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"ymax",0, &var['Y']}, // alias of Y (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"zmax",0, &var['Z']}, // alias of Z (defined in lexer.l and set by process.c)
 
 	{0,TOK_VAR,"rmin",0, &zero_val},
 	{0,TOK_VAR,"gmin",0, &zero_val},
 	{0,TOK_VAR,"bmin",0, &zero_val},
 	{0,TOK_VAR,"amin",0, &zero_val},
 	{0,TOK_VAR,"cmin",0, &zero_val},
-	{0,TOK_VAR,"imin",0, &min_channel_i},
-	{0,TOK_VAR,"umin",0, &min_channel_u},
-	{0,TOK_VAR,"vmin",0, &min_channel_v},
-	{0,TOK_VAR,"dmin",0, &zero_val},
+	{0,TOK_VAR,"imin",0, &min_val_i},
+	{0,TOK_VAR,"umin",0, &min_val_u},
+	{0,TOK_VAR,"vmin",0, &min_val_v},
+	{0,TOK_VAR,"dmin",0, &min_val_d},
 	{0,TOK_VAR,"mmin",0, &zero_val},
 	{0,TOK_VAR,"pmin",0, &zero_val},
 	{0,TOK_VAR,"xmin",0, &zero_val},

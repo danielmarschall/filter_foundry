@@ -77,6 +77,9 @@ Questions
     tan(256)  == -167772 ? 255 : 0
     tan(-768) ==  167772 ? 255 : 0
 
+* Is `D` is supposed to be a synonym `dmax` (then `D` should stay 512),
+  or is `D` supposed to be `dmax-dmin` (then `D` should be 1024 and `dmin` should be 512)?
+
 
 Design/UI Tweaks
 ----------------
