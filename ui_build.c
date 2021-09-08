@@ -82,6 +82,8 @@ void builddlginit(DIALOGREF dp){
 			HideDialogItem(dp,FIRSTCTLNAMEITEM+i);
 	}
 
+	CHECKDLGBUTTON(dp, PROTECTITEM, 0); // TODO: should we remember the last setting?
+
 	SELECTDLGITEMTEXT(dp,TITLEITEM,0,-1);
 }
 

@@ -84,6 +84,8 @@ Questions
 Design/UI Tweaks
 ----------------
 
+* Make dialog: Why can't we have newlines in the copyright field?!
+
 * The tabstops are a bit weird. But how can he affect them?! Where are they defined at the moment?!
 
 * Windows open file dialog: Why does it have a preview pane?

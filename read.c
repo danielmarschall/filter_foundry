@@ -220,16 +220,26 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 						{
 						}
 
-						// Case #3: Windows is reading an old FilterFactory Mac file (.bin)
+						// Case #3: Windows is reading an old FilterFactory Mac file
+						// Note: You must read the ".rsrc" resource fork, not the standalone binary!
 						else if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
 							&& (res = readPARM((char*)q, &gdata->parm, reason, 0 /*Strings are already PStrings*/)) )
 						{
-							// these are the only numeric fields we *have* to swap
-							// all the rest are flags which (if we're careful) will work in either ordering
-							for(i = 0; i < 8; ++i)
-								slider[i] = EndianS32_LtoN(slider[i]);
+							// Note: slider[i] = EndianS32_LtoN(slider[i]); will be done in readPARM()
+							// All the rest are flags which (if we're careful) will work in either ordering
+
+							int i;
+							for (i = 1; i < gdata->parm.copyright[0]; i++) {
+								if (gdata->parm.copyright[i] == '\r') {
+									// Things like copyright have '\r'. In Windows we would need '\r\n', however,
+									// the Window control does not allow multi-lines, so we replace it with a space-character ' '.
+									// (TODO: Why can't we have multi-line copyright in the Windows control???)
+									gdata->parm.copyright[i] = ' ';
+								}
+							}
+
 						}
 						#endif
 
@@ -274,8 +284,15 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 		expr[i] = my_strdup(pparm->formula[i]);
 	}
 
-	for(i = 0; i < 8; ++i)
-		slider[i] = (uint8_t)pparm->val[i];
+	for (i = 0; i < 8; ++i) {
+		if (pparm->val[i] > 0xFF) {
+			// Wrong endianess (e.g. reading a Mac rsrc on Windows)
+			slider[i] = (uint8_t)EndianS32_LtoN(pparm->val[i]);
+		}
+		else {
+			slider[i] = (uint8_t)pparm->val[i];
+		}
+	}
 
 	return true;
 }

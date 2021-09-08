@@ -3,6 +3,7 @@
 ## 1.7.0.9 [Work-In-Progress]
 - `dmin` has been changed from 0 to -512, `dmax` has been changed from 1024 to 512, and `D` stayed 1024 (`D:=dmax-dmin`), in order to fit the actual ranges of `d`, as implemented in Filter Factory.
 - `I` is now defined as `imax-imin`. Same with `U` and `V`. Therefore, the variables are now `I=255`, `U=110`, and `V=156`.
+- Reading of Mac standalone plugins (rsrc files): The initial values of the sliders are now correctly read.
 
 ## 1.7.0.8 [03-Sep-2021]
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
