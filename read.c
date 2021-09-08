@@ -184,7 +184,6 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
-	int i;
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum) == noErr){
 		// check DOS EXE magic number
