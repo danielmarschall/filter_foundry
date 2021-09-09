@@ -54,18 +54,20 @@ type 'PARM' {
 // However, internally, we work with Pascal Strings:
 // readPARM() converts C to Pascal strings, and doresources() converts them back to C strings for saving.
 
+typedef uint32_t bool32_t;
+
 // Photoshop's Filter Factory has PARM:16
 // Filter Foundry has PARM:16000
 typedef struct {   //structure of FF PARM resource
 	uint32_t cbSize;     //size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7)
-	uint32_t standalone; //0=original FF, 1=standalone filter
+	bool32_t standalone; //0=original FF, 1=standalone filter
 	uint32_t val[8];     //initial values of controls
-	uint32_t popDialog;  //1 if need to pop a parameter dialog
+	bool32_t popDialog;  //1 if need to pop a parameter dialog
 	uint32_t unknown1;
 	uint32_t unknown2; // Byte 48..52 must be 0 to make obfuscation of FF>=7.0.5 work
 	uint32_t unknown3;
-	uint32_t map_used[4];   //true if map(n) is used
-	uint32_t ctl_used[8];   //true if ctl(n) is used
+	bool32_t map_used[4];   //true if map(n) is used
+	bool32_t ctl_used[8];   //true if ctl(n) is used
 	unsigned char category[252];    //Category name
 	// Michael Johannhanwahr's protect flag...
 	uint32_t iProtected;            // == 1 means protected
@@ -80,15 +82,15 @@ typedef struct {   //structure of FF PARM resource
 // Premiere's Transition/Filter Factory has PARM:16000
 typedef struct {   //structure of Premiere FF/TF PARM resource
 	uint32_t cbSize;    //size of this structure = 0x206C
-	uint32_t standalone;  //0=original FF, 1=standalone filter
-	uint32_t singleExpression; //1 if "single expression" is checked (member only available in Premiere)
+	bool32_t standalone;  //0=original FF, 1=standalone filter
+	bool32_t singleExpression; //1 if "single expression" is checked (member only available in Premiere)
 	uint32_t val[8];    //initial values of controls
-	uint32_t popDialog; //1 if need to pop a parameter dialog
+	bool32_t popDialog; //1 if need to pop a parameter dialog
 	uint32_t unknown1;
 	uint32_t unknown2;
 	uint32_t unknown3;
-	uint32_t map_used[4];   //true if map(n) is used
-	uint32_t ctl_used[8];   //true if ctl(n) is used
+	bool32_t map_used[4];   //true if map(n) is used
+	bool32_t ctl_used[8];   //true if ctl(n) is used
 	unsigned char title[256]; // in Photoshop Filter Factory: Category
 	unsigned char author[256]; // in Photoshop Filter Factory: Title
 	unsigned char modulename[256]; // in Photoshop Filter Factory: Copyright

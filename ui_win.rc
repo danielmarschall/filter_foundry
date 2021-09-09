@@ -163,7 +163,7 @@ BEGIN
 	/* for initial values of the following EDITTEXT fields, see ui_build.c */
 	EDITTEXT        CATEGORYITEM,                    50, 10, 148,12
 	EDITTEXT        TITLEITEM,                       50, 25, 148,12
-	EDITTEXT        COPYRIGHTITEM,                   50, 40, 148,24
+	EDITTEXT        COPYRIGHTITEM,                   50, 40, 148,24, ES_MULTILINE|ES_WANTRETURN
 	EDITTEXT        AUTHORITEM,                      50, 67, 148,12
 
 	EDITTEXT        FIRSTMAPNAMEITEM,                50, 92,  50,12

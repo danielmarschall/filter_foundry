@@ -11,7 +11,15 @@ Known bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* Mixer: If someone just wants to compile using OpenWatcom, then they cannot do it because
+  there is no 64 bit file which can be included!
+
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
+  This filter (BlowOut by Greg Schorno) is super super super slow!!!
+    R = put(sin(d*ctl(0)/4+ctl(2)*4)/(val(1,256,16)*256/M),0),src(x+get(0),y+get(0),z)
+    G = src(x+get(0),y+get(0),z)
+    B = src(x+get(0),y+get(0),z)
+  Possible reason: Preview "needall"
 
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
@@ -83,8 +91,6 @@ Questions
 
 Design/UI Tweaks
 ----------------
-
-* Make dialog: Why can't we have newlines in the copyright field?!
 
 * The tabstops are a bit weird. But how can he affect them?! Where are they defined at the moment?!
 

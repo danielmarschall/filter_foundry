@@ -229,21 +229,23 @@ Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 							// Note: slider[i] = EndianS32_LtoN(slider[i]); will be done in readPARM()
 							// All the rest are flags which (if we're careful) will work in either ordering
 
-							int i;
+							// Convert '\r' in the copyright field to '\r\n'.
+							int i, j;
 							for (i = 1; i < gdata->parm.copyright[0]; i++) {
 								if (gdata->parm.copyright[i] == '\r') {
-									// Things like copyright have '\r'. In Windows we would need '\r\n', however,
-									// the Window control does not allow multi-lines, so we replace it with a space-character ' '.
-									// (TODO: Why can't we have multi-line copyright in the Windows control???)
-									gdata->parm.copyright[i] = ' ';
+									for (j = gdata->parm.copyright[0]; j>i; j--) {
+										gdata->parm.copyright[j+1] = gdata->parm.copyright[j];
+									}
+									gdata->parm.copyright[0]++;
+									gdata->parm.copyright[i+1] = '\n';
 								}
 							}
-
 						}
 						#endif
 
 						if (res) break;
 					}
+
 					PIDISPOSEHANDLE(h);
 				}
 			}
