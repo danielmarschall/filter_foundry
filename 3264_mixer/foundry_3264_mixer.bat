@@ -32,7 +32,8 @@ if not exist %FILE1% (
 	if not exist %FILE2% (
 		if not exist %FILE3% (
 			echo No compiled 32 bit file found! Stop.
-			exit
+			rem We must output 0 to make sure that the very first compilation (where 32/64 does not exist) does not fail
+			exit /b 0
 		)
 	)
 )
@@ -69,7 +70,8 @@ SET FILE2=in\FilterFoundry64_mingw.8bf
 if not exist %FILE1% (
 	if not exist %FILE2% (
 		echo No compiled 64 bit file found! Stop.
-		exit
+		rem We must output 0 to make sure that the very first compilation (where 32/64 does not exist) does not fail
+		exit /b 0
 	)
 )
 FOR /F %%i IN ('DIR /B /O:D %FILE1% %FILE2%') DO SET NEWEST=%%i
@@ -99,4 +101,4 @@ copy /y out\FilterFoundry.8bf %X32TARGET%
 rem Copy back 64 bit to original build dir, to enable debugging in IDE
 echo Copy back 64 bit to %X64COMPILER% build dir, to enable debugging in IDE
 copy /y out\FilterFoundry64.8bf %X64TARGET%
-echo .
+echo.

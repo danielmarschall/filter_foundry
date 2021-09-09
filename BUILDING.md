@@ -129,6 +129,16 @@ Allowing 32/64 cross-building
 
 The 32-bit version of Windows is able to create a 64-bit standalone filter
 and vice-versa. Therefore, the filters need to have each other be included
-as resource. To achieve this, place the created FilterFoundry.8bf and FilterFoundry64.8bf
-into the folder **3264_mixer\in**. Then, run **3264_mixer\foundry_3264_mixer.bat**.
-The updated files ready for publishing are then placed in **3264_mixer\out**.
+as a resource. To achieve this, a post-build event is started that will
+place the newest FilterFoundry.8bf and FilterFoundry64.8bf into the folder
+**3264_mixer\in**. Then, **3264_mixer\foundry_3264_mixer.bat** will be started,
+which mixes everything together. It will then copy back the mixed 8BF files
+into the original locations so that your debugger/IDE can work with them.
+The files ready for publishing are always placed in **3264_mixer\out**.
+
+Unfortunately, the mixer will only work if a 64-bit file is existing,
+therefore you MUST compile both 32-bit and 64-bit before you can continue!
+Note: 32-bit and 64-bit don't need to be compiled using the same compiler.
+It is fine to compile 64-bit using Visual C++ and 32-bit using OpenWatcom
+(this is done by ViaThinkSoft to achieve Windows 9x compatibility).
+
