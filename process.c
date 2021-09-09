@@ -55,6 +55,7 @@ void evalinit(){
 
 // full setup for evaluation, called when formulae have changed.
 Boolean setup(FilterRecordPtr pb){
+	int srcrad;
 	int i;
 
 	// Attention: If you introduce new variables, please define them also in lexer.l
@@ -77,15 +78,16 @@ Boolean setup(FilterRecordPtr pb){
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;
-	needall = cnvused = state_changing_funcs_used = 0;
+	needall = srcrad = cnvused = state_changing_funcs_used = 0;
 	for(i = 0; i < nplanes; ++i){
 		//char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
 		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
 			// if src() and rad() is used => needall=1, since we need arbitary access to all pixels
-			checkvars(tree[i],varused,&cnvused,/*srcrad=*/&needall,&state_changing_funcs_used);
+			checkvars(tree[i],varused,&cnvused,&srcrad,&state_changing_funcs_used);
 		else
 			break;
 	}
+	needall = srcrad;
 	needinput = ( cnvused || needall
 		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
@@ -104,6 +106,13 @@ Boolean setup(FilterRecordPtr pb){
 	// exactly the same picture), we must not use chunked processing.
 	if (state_changing_funcs_used) needall = true;
 
+	// DM 09 Sep 2021: Added, because otherwise, some filters are very, very, very slow!
+	// e.g. BlowOut by Greg Schorno:
+    //     R = put(sin(d*ctl(0)/4+ctl(2)*4)/(val(1,256,16)*256/M),0),src(x+get(0),y+get(0),z)
+    //     G = src(x+get(0),y+get(0),z)
+    //     B = src(x+get(0),y+get(0),z)
+	state_changing_funcs_used = 0;
+	
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */
 }

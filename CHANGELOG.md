@@ -4,7 +4,8 @@
 - `dmin` has been changed from 0 to -512, `dmax` has been changed from 1024 to 512, and `D` stayed 1024 (`D:=dmax-dmin`), in order to fit the actual ranges of `d`, as implemented in Filter Factory.
 - `I` is now defined as `imax-imin`. Same with `U` and `V`. Therefore, the variables are now `I=255`, `U=110`, and `V=156`.
 - Windows: Reading of Mac standalone plugins (rsrc files): The initial values of the sliders are now correctly read, as well as the line-breaks of the copyright-field.
-- Standalone dialog: Can now have multi-line text (*)
+- Standalone dialog: Can now have multi-line copyright text (*)
+- Increased speed of the creation of the preview picture if state-changing functions (put,rnd,rst) are used (reverted change in 1.7b1). The preview might not be accurate at some rare cases, but at least it is now very fast again...
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

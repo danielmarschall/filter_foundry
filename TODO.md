@@ -15,11 +15,6 @@ Minor priority stuff or ideas
   there is no 64 bit file which can be included!
 
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
-  This filter (BlowOut by Greg Schorno) is super super super slow!!!
-    R = put(sin(d*ctl(0)/4+ctl(2)*4)/(val(1,256,16)*256/M),0),src(x+get(0),y+get(0),z)
-    G = src(x+get(0),y+get(0),z)
-    B = src(x+get(0),y+get(0),z)
-  Possible reason: Preview "needall"
 
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
@@ -102,7 +97,7 @@ Design/UI Tweaks
 
 * The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac). Unfortunately, this task is very hard in WIN32 API.
 
-* Should there be more (visual) space for expressions, like in Filter Factory?
+* Should there be more (visual) space for expressions, like in Filter Factory? Also, Filter Factory had more visual space for slider names (e.g. required in Alf's Power Tools).
 
 * Sliders are extremely tiny!
 
