@@ -29,9 +29,11 @@ static UINT16 parm_id;
 static BOOL CALLBACK enumnames(HMODULE hModule,LPCTSTR lpszType,
                                LPTSTR lpszName,LONG_PTR lParam)
 {
-	if(IS_INTRESOURCE(lpszName))
+	if (IS_INTRESOURCE(lpszName)) {
 		parm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
-	return false; // we only want the first one
+		return false; // we only want the first one
+	}
+	else return true;
 }
 
 Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
@@ -40,8 +42,8 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	Ptr pparm;
 	int res = false;
 
-	parm_id = PARM_ID;
-	EnumResourceNames(hm,"PARM",enumnames,0);
+	parm_id = PARM_ID; // default value
+	EnumResourceNames(hm,"PARM",enumnames,0); // callback function enumnames() will find the actual found parm_id
 
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){

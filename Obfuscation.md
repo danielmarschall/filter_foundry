@@ -7,8 +7,8 @@ Obfuscated standalone filters:
 - MacOS resource: 'DATA' 16001
 
 Normal standalone filters:
-- Windows resource: PARM\16000\0
-- MacOS resource: 'PARM' 16000
+- Windows resource: PARM\16\0
+- MacOS resource: 'PARM' 16
 
 ## Implementation
 

@@ -338,9 +338,29 @@ Boolean repair_pe_checksum(const char* filename) {
 	return true;
 }
 
+typedef struct {
+	char funcname[8];
+	uint16_t codelen;
+} operdef_t;
+
+typedef struct {
+	char funcname[8];
+	uint16_t numparams;
+} funcdef_t;
+
+typedef struct {
+	char funcname[8];
+	char referencename[8];
+} symndef_t;
+
 Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
+
+	operdef_t dummy_oper;
+	funcdef_t dummy_func;
+	symndef_t dummy_symn;
+
 	Ptr newpipl = NULL, newaete = NULL;
 	LPVOID datap, aetep, manifestp;
 	char* manifestp_copy;
@@ -353,6 +373,10 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	unsigned int obfuscseed = 0;
 	long event_id;
 	Boolean mustFreeSrcMod;
+
+	memset(&dummy_oper, 0, sizeof(operdef_t));
+	memset(&dummy_func, 0, sizeof(funcdef_t));
+	memset(&dummy_symn, 0, sizeof(symndef_t));
 
 	if (srcmod == NULL) {
 		srcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
@@ -467,6 +491,10 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
+					// OPER and FUNC are written so that "Plugin Manager 2.1" thinks that this plugin is a Filter Factory plugin! SYNM is not important, though.
+					&& (gdata->obfusc || _UpdateResource(hupdate, "OPER", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_oper, sizeof(dummy_oper)))
+					&& (gdata->obfusc || _UpdateResource(hupdate, "FUNC", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_func, sizeof(dummy_func)))
+					&& (gdata->obfusc || _UpdateResource(hupdate, "SYNM", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_symn, sizeof(dummy_symn)))
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
 					&& _UpdateResource(hupdate, parm_type,MAKEINTRESOURCE(parm_id), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 				{

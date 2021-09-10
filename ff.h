@@ -52,7 +52,7 @@ enum{
 	CHUNK_ROWS = 64,
 
 	PARM_TYPE = 'PARM',
-	PARM_ID = 16000,
+	PARM_ID = 16, // older versions of Filter Foundry used 16000. Now 16 for compatibility with Filter Factory
 	OBFUSCDATA_ID = 16001,
 	TEXT_FILETYPE = 'TEXT',
 	SIG_SIMPLETEXT = 'ttxt',

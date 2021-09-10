@@ -6,6 +6,7 @@
 - Windows: Reading of Mac standalone plugins (rsrc files): The initial values of the sliders are now correctly read, as well as the line-breaks of the copyright-field.
 - Standalone dialog: Can now have multi-line copyright text (*)
 - Increased speed of the creation of the preview picture if state-changing functions (put,rnd,rst) are used (reverted change in 1.7b1). The preview might not be accurate at some rare cases, but at least it is now very fast again...
+- Built filters can now be read by Plugin Manager 2.1 by I.C.NET (Michael Johannhanwahr)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
