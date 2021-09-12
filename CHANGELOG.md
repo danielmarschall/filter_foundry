@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.7.0.9 [Work-In-Progress]
+## 1.7.0.9 [12-Sep-2021]
 - `dmin` has been changed from 0 to -512, `dmax` has been changed from 1024 to 512, and `D` stayed 1024 (`D:=dmax-dmin`), in order to fit the actual ranges of `d`, as implemented in Filter Factory.
 - `I` is now defined as `imax-imin`. Same with `U` and `V`. Therefore, the variables are now `I=255`, `U=110`, and `V=156`.
 - Windows: Reading of Mac standalone plugins (rsrc files): The initial values of the sliders are now correctly read, as well as the line-breaks of the copyright-field.
 - Standalone dialog: Can now have multi-line copyright text (*)
 - Increased speed of the creation of the preview picture if state-changing functions (put,rnd,rst) are used (reverted change in 1.7b1). The preview might not be accurate at some rare cases, but at least it is now very fast again...
-- Built filters can now be read by Plugin Manager 2.1 by I.C.NET (Michael Johannhanwahr)
+- Built filters can now be read by Plugin Manager 2.1 by I.C.NET (Michael Johannhanwahr). Note that not all filters might work, because PluginManager has its own implementation of the FilterFactory functions and might not implemented some previously undocumented functions. It will not implement the newly added pow() function of FilterFactory 3.1.0 / Filter Foundry 1.7 either.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
@@ -14,19 +14,19 @@
 - Created 8BF standalone filters now contain the correct PE checksum (Note: The original compiled binaries contain "0", compiled with OpenWatcom and Visual C++)
 - Introduced obfuscation version 5 (it is like version 4, but contains an integrity check); also fixed some smaller issues with obfuscation loading.
 - Following functions have been changed to a 100% replica of the Filter Factory implementation:
-	* rnd(a,b)
-	* cos(x)
-	* sin(x)
-	* tan(x)
-	* r2x(d,m)
-	* r2y(d,m)
-	* rad(d,m,z)
-	* c2d(x,y)
-	* c2m(x,y)
-	* sqr(x)
-	* d
-	* m
-	* M
+	* `rnd(a,b)`
+	* `cos(x)`
+	* `sin(x)`
+	* `tan(x)`
+	* `r2x(d,m)`
+	* `r2y(d,m)`
+	* `rad(d,m,z)`
+	* `c2d(x,y)`
+	* `c2m(x,y)`
+	* `sqr(x)`
+	* `d`
+	* `m`
+	* `M`
 - The window is now opened on the correct screen (the one where Photoshop is opened). Additionally, it is avoided that the window is spread over multiple screens. (*)
 - Added new function `pow(b,e)` which are already part of the inofficial Filter Factory 3.1.0 patch by Daniel Marschall.
 - The previously undocumented variables I, U, V as well as imin, umin, vmin have been changed to represent the actual results of the i,u,v variables:

@@ -338,7 +338,7 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	// Attention!
 	// - On some systems (e.g. ARM based CPUs) this will cause an unaligned memory access exception.
 	//   For X86, memory access just becomes slower.
-	// - If you change something here, please also change it in Scripting.rc (Windows) and scripting.r (Mac OS)
+	// - If you change something here, please also change it in scripting.rc (Windows) and scripting.r (Mac OS)
 
 	// Note:
 	// - The 'aete' resource for Mac OS has word alignments after strings (but not if the next element is also a string)

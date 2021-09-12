@@ -5,7 +5,7 @@
 	<assemblyIdentity
 	    name="Telegraphics.FilterFoundry"
 	    processorArchitecture="x86"
-	    version="1.7.0.8"
+	    version="1.7.0.9"
 	    type="win32"/>
 	<description>Filter Foundry</description>
 	<dependency>
