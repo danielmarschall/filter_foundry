@@ -192,8 +192,8 @@ Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
 	return true;
 }
 
-int binary_replace_file(const char* filename, unsigned int search, unsigned int replace) {
-	unsigned int srecord = 0;
+int binary_replace_file(const char* filename, uint64_t search, uint64_t replace, Boolean align, int maxamount) {
+	uint64_t srecord = 0;
 	int found = 0;
 
 	FILE* fptr = fopen(filename, "rb+");
@@ -207,9 +207,12 @@ int binary_replace_file(const char* filename, unsigned int search, unsigned int 
 			fwrite(&srecord, (int)sizeof(srecord), 1, fptr);
 			fseek(fptr, 0, SEEK_CUR); // important!
 			found++;
+			if (found == maxamount) break;
 		}
 		else {
-			fseek(fptr, -1*(long)(sizeof(srecord) - 1), SEEK_CUR);
+			if (!align) {
+				fseek(fptr, -1*(long)(sizeof(srecord) - 1), SEEK_CUR);
+			}
 		}
 	}
 	fclose(fptr);
@@ -370,7 +373,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	LPCTSTR parm_type;
 	int i,parm_id;
 	Boolean discard = true;
-	unsigned int obfuscseed = 0;
+	uint64_t obfuscseed = 0;
 	long event_id;
 	Boolean mustFreeSrcMod;
 
@@ -516,11 +519,15 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 		else {
 
 			if (gdata->obfusc) {
-				// We modify the binary code to replace the deobfuscate-seed from <cObfuscV4Seed> to <obfuscseed>
-				if (binary_replace_file(dstname, cObfuscV4Seed, obfuscseed) != 1) {
-					// The seed must only be exactly 1 time inside the 8BF file,
-					// since "const volatile" makes sure that the compiler won't place
-					// it at several locations in the code.
+				// We modify the binary code to replace the deobfuscate-seed from <cObfuscSeed> to <obfuscseed>
+
+				// First try with alignment "4" (this should be the usual case),
+				// and if that failed, try without alignment ("1").
+				// We only need to set maxamount to "1", because "const volatile" makes sure that
+				// the compiler won't place (inline) it at several locations in the code.
+				if ((binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
+					(binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
+				{
 					dbg("binary_replace_file failed");
 					discard = true;
 				}

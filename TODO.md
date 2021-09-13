@@ -136,7 +136,7 @@ Regarding Macintosh
 
 * Support BigDocument (Add "ms32" PiPL, set `pb->bigDocumentData->PluginUsing32BitCoordinates` and use `pb->bigDocumentData->*`)
 
-* Implement obfuscation version 5 (need to fix the binary executable code during build!)
+* Correctly implement obfuscation version 6 (need to fix the binary executable code during build!)
 
 
 Things to check/correct for other Telegraphics plugins (FIXED in FilterFoundry)

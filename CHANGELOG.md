@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.10 [Work-In-Progress]
+- Introduced obfuscation version 6, which is more secure and 4 times faster!
+
 ## 1.7.0.9 [12-Sep-2021]
 - `dmin` has been changed from 0 to -512, `dmax` has been changed from 1024 to 512, and `D` stayed 1024 (`D:=dmax-dmin`), in order to fit the actual ranges of `d`, as implemented in Filter Factory.
 - `I` is now defined as `imax-imin`. Same with `U` and `V`. Therefore, the variables are now `I=255`, `U=110`, and `V=156`.

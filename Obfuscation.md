@@ -14,14 +14,40 @@ Normal standalone filters:
 
 Defined in **ff.h**, implemented in **obfusc.c**:
 
-    // Implements Obfusc V5 on Windows and Obfusc V4 on MacOS.
+    // Implements Obfusc V6.
     // Returns a seed that needs to be stored in the executable code.
-    uint32_t obfusc(PARM_T* pparm);
+    uint64_t obfusc(PARM_T* pparm);
 
     // In V1+V2: Seed is hardcoded
     // In V3:    Seed is in PARM (field "unknown2")
-    // In V4+V5: Seed is in the program code and will me modified with a binary search+replace
+    // In V4-V6: Seed is in the program code and will me modified with a binary search+replace
     void deobfusc(PARM_T* pparm);
+
+### Obfuscation "Version 6"
+
+Introduced in **Filter Foundry 1.7.0.10**
+
+The CRC32b checksum of the PARM (with `unknown1,2,3` set to 0)
+will be written to `unknown1`.
+
+Then, the PARM will be XORed with a random data stream of seed #1,
+and then XORed with a random data stream of seed #2.
+The algorithm is the XORshift which was introcuced in obfuscation version 2.
+Unlike obfuscation version 3-5, while generating and applying the random data
+stream, no bytes are skipped.
+
+Seed #1 and seed #2 are merged in a 64-bit "initial seed" which is stored
+in the executable.
+
+(Theoretical) Macintosh version:
+Obfuscation and deobfuscation has the seed `0x38AD972A52830517`, since the
+manipulation of the binary code is currently not implemented.
+
+The DWORD value `0x00000006` will be stored at field `unknown2`
+(byte 0x30..0x33; the field is not used in the `PARM` resource).
+
+During de-obfuscation, the program will check if the checksum in `unknown1`
+matches. If it does not match, the data will be discarded.
 
 ### Obfuscation "Version 5"
 

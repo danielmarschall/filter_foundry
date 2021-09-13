@@ -24,7 +24,7 @@
 #include "ff.h"
 
 // this value will be manipulated during the building of each individual filter (see make_win.c)
-const volatile uint32_t cObfuscV4Seed = 0x52830517;
+const volatile uint64_t cObfuscSeed = 0x38AD972A52830517L;
 
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
@@ -104,41 +104,42 @@ uint32_t crc32b(char *data, int nLength) {
 	return ~crc;
 }
 
-uint32_t obfusc(PARM_T* pparm) {
-	// Windows:   Version 5 obfuscation (Introduced in Filter Foundry 1.7.0.8)
-	// Macintosh: Version 4 obfuscation (Introduced in Filter Foundry 1.7.0.7)
+uint64_t obfusc(PARM_T* pparm) {
+	// Version 6 obfuscation (Introduced in Filter Foundry 1.7.0.10)
 
 	unsigned char* p;
-	size_t size, seed_position;
-	uint32_t seed, initial_seed;
-	uint32_t obfusc_version;
-	
+	uint32_t seed1, seed2;
+
 #ifdef MAC_ENV
-	// For Mac, we use obfuscation version 4, because the placing the seed into the produced executable code is not implemented in Mac!
-	// (It needs to be implemented in make_mac.c)
-	initial_seed = OBFUSC_V4_DEFAULT_SEED;
-	obfusc_version = 4;
+	// Currently, make_mac.c does not implement modifying the executable code (TODO),
+	// so we will use the default initial_seed!
+	uint64_t initial_seed = cObfuscSeed;
+	seed1 = cObfuscSeed & 0xFFFFFFFF;
+	seed2 = cObfuscSeed >> 32;
 #else
-	// In obfuscation version 5, the seed is also the checksum. It will be verified at deobfusc()!
-	pparm->unknown2 = 0; // make sure crc32b matches always
-	initial_seed = crc32b((char*)pparm,sizeof(PARM_T));
-	obfusc_version = 5;
+	// Give always the same seed if the parameters are the same. No random values.
+	// This initial seed will be returned and built into the executable code by make_win.c
+	seed1 = get_parm_hash(pparm);
+	seed2 = crc32b((char*)pparm, sizeof(PARM_T));
+	uint64_t initial_seed = ((uint64_t)seed2 << 32) + seed1;
 #endif
 
-	seed_position = offsetof(PARM_T, unknown2);
-	size = sizeof(PARM_T);
-	seed = initial_seed;
+	pparm->unknown1 = 0;
+	pparm->unknown2 = 0;
+	pparm->unknown3 = 0;
 
-	if (obfusc_version == 5) {
-		// make v4 and v5 intentionally incompatible to avoid a downgrade-attack
-		seed ^= 0xFFFFFFFF;
-	}
+	// AFTER unknown1-3 have been set to 0, calculate the checksum!
+	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T));
 
+	seed1 = initial_seed & 0xFFFFFFFF;
 	p = (unsigned char*)pparm;
-	xorshift(&p, &seed, seed_position);
-	*((uint32_t*)p) = obfusc_version;
-	p += 4;
-	xorshift(&p, &seed, size - seed_position - 4);
+	xorshift(&p, &seed1, sizeof(PARM_T));
+
+	seed2 = initial_seed >> 32;
+	p = (unsigned char*)pparm;
+	xorshift(&p, &seed2, sizeof(PARM_T));
+
+	pparm->unknown2 = 6; // obfusc version
 
 	return initial_seed;
 }
@@ -227,7 +228,7 @@ void deobfusc(PARM_T* pparm) {
 			size_t seed_position;
 			uint32_t seed, initial_seed;
 
-			initial_seed = cObfuscV4Seed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed = cObfuscSeed & 0xFFFFFFFF; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			seed = initial_seed;
 			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
@@ -245,10 +246,41 @@ void deobfusc(PARM_T* pparm) {
 
 			if (obfusc_version == 5) {
 				pparm->unknown2 = 0; // make sure crc32b matches always
-				if (crc32b((char*)pparm,sizeof(PARM_T)) != initial_seed) {
+				if (crc32b((char*)pparm, sizeof(PARM_T)) != initial_seed) {
 					// Integrity check failed!
 					memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 				}
+			}
+
+			break;
+		}
+		case 6: {
+			// Version 6 obfuscation (Filter Foundry 1.7.0.10)
+			// Not compiler dependent, but individual for each build
+			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
+			// otherwise, the cross-make x86/x64 won't work!
+
+			unsigned char* p;
+			uint32_t seed1, seed2, checksum;
+			uint64_t initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+
+			seed2 = initial_seed >> 32;
+			p = (unsigned char*)pparm;
+			xorshift(&p, &seed2, sizeof(PARM_T));
+
+			seed1 = initial_seed & 0xFFFFFFFF;
+			p = (unsigned char*)pparm;
+			xorshift(&p, &seed1, sizeof(PARM_T));
+
+			checksum = pparm->unknown1;
+
+			pparm->unknown1 = 0;
+			pparm->unknown2 = 0;
+			pparm->unknown3 = 0;
+
+			if (checksum != crc32b((char*)pparm, sizeof(PARM_T))) {
+				// Integrity check failed!
+				memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 			}
 
 			break;
