@@ -30,14 +30,21 @@ Introduced in **Filter Foundry 1.7.0.10**
 The CRC32b checksum of the PARM (with `unknown1,2,3` set to 0)
 will be written to `unknown1`.
 
-Then, the PARM will be XORed with a random data stream of seed #1,
-and then XORed with a random data stream of seed #2.
+A 64 bit seed will be generated.
+
+The PARM will be XORed with a random data stream of the lower 32 bits of the seed.
 The algorithm is the XORshift which was introcuced in obfuscation version 2.
 Unlike obfuscation version 3-5, while generating and applying the random data
 stream, no bytes are skipped.
 
-Seed #1 and seed #2 are merged in a 64-bit "initial seed" which is stored
-in the executable.
+After this, PARM will be XORed with the 64 bit seed,
+which will be ROLed by 1 bit after each byte:
+
+    uint64_t rol_u64(uint64_t value, uint64_t by) {
+        return value << by | value >> (sizeof(uint64_t) * 8 - by);
+    }
+
+The 64 bit seed is stored in the executable.
 
 (Theoretical) Macintosh version:
 Obfuscation and deobfuscation has the seed `0x38AD972A52830517`, since the

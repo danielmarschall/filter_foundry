@@ -24,7 +24,7 @@
 #include "ff.h"
 
 // this value will be manipulated during the building of each individual filter (see make_win.c)
-const volatile uint64_t cObfuscSeed = 0x38AD972A52830517L;
+const volatile uint64_t cObfuscSeed = 0x38AD972A52830517ull;
 
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
@@ -46,6 +46,24 @@ void xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 		*x32 ^= *x32 >> 17;
 		*x32 ^= *x32 << 5;
 		*x++ ^= *x32;
+	}
+	*p = x;
+}
+
+#ifndef CHAR_BIT
+#define CHAR_BIT 8
+#endif
+
+uint64_t rol_u64(uint64_t value, uint64_t by) {
+	return value << by | value >> (sizeof(uint64_t) * CHAR_BIT - by);
+}
+
+void rolshift(unsigned char** p, uint64_t* x64, size_t num) {
+	size_t i;
+	unsigned char* x = *p;
+	for (i = 0; i < num; i++) {
+		*x++ ^= *x64;
+		*x64 = rol_u64(*x64, 1);
 	}
 	*p = x;
 }
@@ -109,19 +127,20 @@ uint64_t obfusc(PARM_T* pparm) {
 
 	unsigned char* p;
 	uint32_t seed1, seed2;
+	uint64_t initial_seed, rolseed;
 
 #ifdef MAC_ENV
 	// Currently, make_mac.c does not implement modifying the executable code (TODO),
 	// so we will use the default initial_seed!
-	uint64_t initial_seed = cObfuscSeed;
-	seed1 = cObfuscSeed & 0xFFFFFFFF;
-	seed2 = cObfuscSeed >> 32;
+	initial_seed = cObfuscSeed;
+	seed1 = initial_seed & 0xFFFFFFFF;
+	seed2 = initial_seed >> 32;
 #else
 	// Give always the same seed if the parameters are the same. No random values.
 	// This initial seed will be returned and built into the executable code by make_win.c
 	seed1 = get_parm_hash(pparm);
 	seed2 = crc32b((char*)pparm, sizeof(PARM_T));
-	uint64_t initial_seed = ((uint64_t)seed2 << 32) + seed1;
+	initial_seed = ((uint64_t)seed2 << 32) + seed1;
 #endif
 
 	pparm->unknown1 = 0;
@@ -135,9 +154,9 @@ uint64_t obfusc(PARM_T* pparm) {
 	p = (unsigned char*)pparm;
 	xorshift(&p, &seed1, sizeof(PARM_T));
 
-	seed2 = initial_seed >> 32;
+	rolseed = initial_seed;
 	p = (unsigned char*)pparm;
-	xorshift(&p, &seed2, sizeof(PARM_T));
+	rolshift(&p, &rolseed, sizeof(PARM_T));
 
 	pparm->unknown2 = 6; // obfusc version
 
@@ -261,12 +280,14 @@ void deobfusc(PARM_T* pparm) {
 			// otherwise, the cross-make x86/x64 won't work!
 
 			unsigned char* p;
-			uint32_t seed1, seed2, checksum;
-			uint64_t initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			uint32_t seed1, checksum;
+			uint64_t initial_seed, rolseed;
+			
+			initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
-			seed2 = initial_seed >> 32;
+			rolseed = initial_seed;
 			p = (unsigned char*)pparm;
-			xorshift(&p, &seed2, sizeof(PARM_T));
+			rolshift(&p, &rolseed, sizeof(PARM_T));
 
 			seed1 = initial_seed & 0xFFFFFFFF;
 			p = (unsigned char*)pparm;
