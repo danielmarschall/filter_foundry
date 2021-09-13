@@ -27,12 +27,16 @@ Defined in **ff.h**, implemented in **obfusc.c**:
 
 Introduced in **Filter Foundry 1.7.0.10**
 
-The CRC32b checksum of the PARM (with `unknown1,2,3` set to 0)
-will be written to `unknown1`.
+First, the fields `unknown1,2,3` are set to 0.
 
 A 64 bit seed will be generated.
+On Windows, the seed is the ECMA 182 CRC64 checksum of the PARM.
+On Macintosh, it stays at the default value `0x38AD972A52830517`
+(because the manipulation of the binary code is not implemented).
 
-The PARM will be XORed with a random data stream of the lower 32 bits of the seed.
+Then, the CRC32b checksum of the PARM will be written to `unknown1`.
+
+The PARM will then be XORed with a random data stream of the lower 32 bits of the 64 bit seed.
 The algorithm is the XORshift which was introcuced in obfuscation version 2.
 Unlike obfuscation version 3-5, while generating and applying the random data
 stream, no bytes are skipped.
@@ -45,10 +49,6 @@ which will be ROLed by 1 bit after each byte:
     }
 
 The 64 bit seed is stored in the executable.
-
-(Theoretical) Macintosh version:
-Obfuscation and deobfuscation has the seed `0x38AD972A52830517`, since the
-manipulation of the binary code is currently not implemented.
 
 The DWORD value `0x00000006` will be stored at field `unknown2`
 (byte 0x30..0x33; the field is not used in the `PARM` resource).
