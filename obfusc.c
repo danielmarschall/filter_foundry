@@ -24,6 +24,7 @@
 #include "ff.h"
 
 // this value will be manipulated during the building of each individual filter (see make_win.c)
+// It should be aligned to 4
 const volatile uint64_t cObfuscSeed = 0x38AD972A52830517ull;
 
 int rand_msvcc(unsigned int* seed) {
@@ -72,12 +73,12 @@ int obfuscation_version(PARM_T* pparm) {
 	uint32_t obfusc_info = pparm->unknown2;
 
 	if (obfusc_info == 0x00000000) { // 00 00 00 00
-		// Photoshop FilterFactory default initialization
+		// Photoshop FilterFactory default initialization of field "unknown2"
 		// (no obfuscation)
 		return 0;
 	}
 	else if (obfusc_info == 0x00000001) { // 01 00 00 00
-		// Premiere FilterFactory default initialization
+		// Premiere FilterFactory default initialization of field "unknown1" (it is at the offset of Photoshop's "unknown2")
 		// (no obfuscation)
 		return 0;
 	}
@@ -92,6 +93,7 @@ int obfuscation_version(PARM_T* pparm) {
 	else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
 		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
+		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
 		// Future: Version 6, 7, 8, ... 255
 		return obfusc_info;
 	}
@@ -327,10 +329,14 @@ void deobfusc(PARM_T* pparm) {
 			srand(seed);
 
 			p = (unsigned char*)pparm;
-			for (i = 0; i < seed_position; i++) *p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
+			for (i = 0; i < seed_position; i++) {
+				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
+			}
 			*((uint32_t*)p) = 0; // here was the seed. Fill it with 0x00000000
 			p += 4;
-			for (i = 0; i < size - seed_position - 4; i++) *p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
+			for (i = 0; i < size - seed_position - 4; i++) {
+				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
+			}
 
 			break;
 		}
@@ -417,7 +423,7 @@ void deobfusc(PARM_T* pparm) {
 	}
 
 	if ((pparm->cbSize != PARM_SIZE) &&
-		//(pparm->cbSize != PARM_SIZE_PREMIERE) &&
+		(pparm->cbSize != PARM_SIZE_PREMIERE) &&
 		(pparm->cbSize != PARM_SIG_MAC)) {
 		memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 	}
@@ -438,5 +444,10 @@ void deobfusc(PARM_T* pparm) {
 	if (obfusc_version >= 1) {
 		// information was lost due to obfuscation. Make sure it is zero.
 		pparm->unknown2 = 0;
+	}
+
+	if (obfusc_version >= 6) {
+		// information was lost due to checksum. Make sure it is zero.
+		pparm->unknown1 = 0;
 	}
 }
