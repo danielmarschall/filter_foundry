@@ -122,7 +122,6 @@ uint32_t crc32b(char *data, int nLength) {
 	return ~crc;
 }
 
-
 static const uint64_t crc64_tab[256] = {
 	0x0000000000000000ULL, 0x42F0E1EBA9EA3693ULL, 0x85E1C3D753D46D26ULL,
 	0xC711223CFA3E5BB5ULL, 0x493366450E42ECDFULL, 0x0BC387AEA7A8DA4CULL,
@@ -232,7 +231,7 @@ uint64_t obfusc(PARM_T* pparm) {
 
 	unsigned char* p;
 	uint64_t initial_seed, rolseed;
-	uint32_t seed1;
+	uint32_t xorseed;
 
 	pparm->unknown1 = 0;
 	pparm->unknown2 = 0;
@@ -245,15 +244,15 @@ uint64_t obfusc(PARM_T* pparm) {
 #else
 	// Give always the same seed if the parameters are the same. No random values.
 	// This initial seed will be returned and built into the executable code by make_win.c
-	initial_seed = crc64((char*)pparm, sizeof(PARM_T));
+	initial_seed = crc64((unsigned char*)pparm, sizeof(PARM_T));
 #endif
 
 	// AFTER unknown1-3 have been set to 0, calculate the checksum!
 	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T));
 
-	seed1 = initial_seed & 0xFFFFFFFF;
+	xorseed = initial_seed & 0xFFFFFFFF;
 	p = (unsigned char*)pparm;
-	xorshift(&p, &seed1, sizeof(PARM_T));
+	xorshift(&p, &xorseed, sizeof(PARM_T));
 
 	rolseed = initial_seed;
 	p = (unsigned char*)pparm;
@@ -381,7 +380,7 @@ void deobfusc(PARM_T* pparm) {
 			// otherwise, the cross-make x86/x64 won't work!
 
 			unsigned char* p;
-			uint32_t seed1, checksum;
+			uint32_t xorseed, checksum;
 			uint64_t initial_seed, rolseed;
 			
 			initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
@@ -390,9 +389,9 @@ void deobfusc(PARM_T* pparm) {
 			p = (unsigned char*)pparm;
 			rolshift(&p, &rolseed, sizeof(PARM_T));
 
-			seed1 = initial_seed & 0xFFFFFFFF;
+			xorseed = initial_seed & 0xFFFFFFFF;
 			p = (unsigned char*)pparm;
-			xorshift(&p, &seed1, sizeof(PARM_T));
+			xorshift(&p, &xorseed, sizeof(PARM_T));
 
 			checksum = pparm->unknown1;
 

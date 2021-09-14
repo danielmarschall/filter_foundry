@@ -63,14 +63,14 @@ typedef struct {   //structure of FF PARM resource
 	bool32_t standalone; //0=original FF, 1=standalone filter
 	uint32_t val[8];     //initial values of controls
 	bool32_t popDialog;  //1 if need to pop a parameter dialog
-	uint32_t unknown1;
-	uint32_t unknown2; // Byte 48..52 must be 0 to make obfuscation of FF>=7.0.5 work
-	uint32_t unknown3;
+	uint32_t unknown1; // This field is used for the obfuscation (checksum for obfusc v6+)
+	uint32_t unknown2; // This field is used for the obfuscation (obfusc version info for obfusc v2+)
+	uint32_t unknown3; // This field is reserved for future use
 	bool32_t map_used[4];   //true if map(n) is used
 	bool32_t ctl_used[8];   //true if ctl(n) is used
 	unsigned char category[252];    //Category name
 	// Michael Johannhanwahr's protect flag...
-	uint32_t iProtected;            // == 1 means protected
+	bool32_t iProtected;            // == 1 means protected
 	unsigned char title[256];       //Filter title
 	unsigned char copyright[256];   //Copyright info
 	unsigned char author[256];      //Filter author(s)
