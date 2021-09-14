@@ -80,14 +80,14 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	iname = strlen("Telegraphics.FilterFoundry.");
 	for (i = 0; i < strlen((char*)pparm->category); i++) {
 		char c = pparm->category[i];
-		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'))) {
+		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'))) {
 			name[iname++] = c;
 		}
 	}
 	name[iname++] = '.';
 	for (i = 0; i < strlen((char*)pparm->title); i++) {
 		char c = pparm->title[i];
-		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'))) {
+		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'))) {
 			name[iname++] = c;
 		}
 	}

@@ -69,41 +69,6 @@ void rolshift(unsigned char** p, uint64_t* x64, size_t num) {
 	*p = x;
 }
 
-int obfuscation_version(PARM_T* pparm) {
-	uint32_t obfusc_info = pparm->unknown2;
-
-	if (obfusc_info == 0x00000000) { // 00 00 00 00
-		// Photoshop FilterFactory default initialization of field "unknown2"
-		// (no obfuscation)
-		return 0;
-	}
-	else if (obfusc_info == 0x00000001) { // 01 00 00 00
-		// Premiere FilterFactory default initialization of field "unknown1" (it is at the offset of Photoshop's "unknown2")
-		// (no obfuscation)
-		return 0;
-	}
-	else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
-		// Version 1 obfuscation (Filter Foundry 1.4b8,9,10)
-		return 1;
-	}
-	else if (obfusc_info == 0xE2CFCA34) { // 34 CA CF E2
-		// Version 2 obfuscation (Filter Foundry 1.7b1)
-		return 2;
-	}
-	else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
-		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
-		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
-		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
-		// Future: Version 6, 7, 8, ... 255
-		return obfusc_info;
-	}
-	else {
-		// Version 3 obfuscation (Filter Foundry 1.7.0.5)
-		// obfusc_info is the srand() seed and is equal to the time(0) build timestamp
-		return 3;
-	}
-}
-
 uint32_t crc32b(char *data, int nLength) {
 	int i, j, k;
 	uint32_t crc, mask;
@@ -226,6 +191,42 @@ uint64_t crc64(const unsigned char* data, size_t len)
 	}
 
 	return crc;
+}
+
+
+int obfuscation_version(PARM_T* pparm) {
+	uint32_t obfusc_info = pparm->unknown2;
+
+	if (obfusc_info == 0x00000000) { // 00 00 00 00
+		// Photoshop FilterFactory default initialization of field "unknown2"
+		// (no obfuscation)
+		return 0;
+	}
+	else if (obfusc_info == 0x00000001) { // 01 00 00 00
+		// Premiere FilterFactory default initialization of field "unknown1" (it is at the offset of Photoshop's "unknown2")
+		// (no obfuscation)
+		return 0;
+	}
+	else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
+		// Version 1 obfuscation (Filter Foundry 1.4b8,9,10)
+		return 1;
+	}
+	else if (obfusc_info == 0xE2CFCA34) { // 34 CA CF E2
+		// Version 2 obfuscation (Filter Foundry 1.7b1)
+		return 2;
+	}
+	else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
+		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
+		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
+		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
+		// Future: Version 6, 7, 8, ... 255
+		return obfusc_info;
+	}
+	else {
+		// Version 3 obfuscation (Filter Foundry 1.7.0.5)
+		// obfusc_info is the srand() seed and is equal to the time(0) build timestamp
+		return 3;
+	}
 }
 
 uint64_t obfusc(PARM_T* pparm) {
