@@ -82,13 +82,15 @@ Questions
 * Is `D` is supposed to be a synonym `dmax` (then `D` should stay 512),
   or is `D` supposed to be `dmax-dmin` (then `D` should be 1024 and `dmin` should be 512)?
 
-* In regards length of the PIPL TLV, should it contain padding or not?
+* In regards length of the PIPL TLV, should it contain padding or not? Asked in https://community.adobe.com/t5/photoshop-ecosystem-discussions/question-about-pipl-tlv-encoding/m-p/12377822
    - No:
 	* Photoshop does not accept if padding is not added to the length value
-	* SPPIPL.h states: "Number of characters in the data array. Rounded to a multiple of 4."
+	* pluginsdk\photoshopapi\pica_sp\SPPiPL.h states: "Number of characters in the data array. Rounded to a multiple of 4."
 	* Official Adobe plugins, e.g. „3D Transform.8bf“ are rounding the length to a multiple of 4 (actually, rounding to the next possible multiple 4, so that padding is always guaranteed).
+	* cnvtpipl.exe does the same
    - Yes:
 	* The 1997 PICA documentation (page 23) and 1996 "Cross-Application Plug-in Development Resource Guide" describe both: "Contains the length of the propertyData field. It does not include any padding bytes after propertyData to achieve four byte alignment. This field may be zero."
+	* pluginsdk/documentation/html/struct_p_i_property.html writes the same thing
 
   Is there really a defect in these documentations?
 
@@ -99,8 +101,6 @@ Design/UI Tweaks
 * The tabstop-order is a bit weird. But how can he affect them?! Where are they defined at the moment?!
 
 * Windows open file dialog: Why does it have a preview pane?
-
-* The exclamation mark symbols should have a tooltip ("hint") when the mouse hovers over it. (Also for Mac). Not sure how easy it is to do that with WIN32 API
 
 * Should it be possible to zoom more than 100%?
 

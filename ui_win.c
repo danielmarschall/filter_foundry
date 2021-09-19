@@ -35,6 +35,7 @@ HWND preview_hwnd;
 HCURSOR hCurHandOpen;
 HCURSOR hCurHandGrab;
 HCURSOR hCurHandQuestion;
+HCURSOR hCurHandPoint;
 
 extern HINSTANCE hDllInstance;
 
@@ -105,7 +106,7 @@ Boolean simplewarning(char* s) {
 	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONEXCLAMATION|MB_OK) == IDOK;
 }
 
-Boolean showmessage(char *s){
+Boolean showmessage(char *s) {
 	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
@@ -118,6 +119,47 @@ Boolean showmessage(char *s){
 }
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
+
+// Description:
+//   Creates a tooltip for an item in a dialog box. 
+// Parameters:
+//   idTool - identifier of an dialog box item.
+//   nDlg - window handle of the dialog box.
+//   pszText - string to use as the tooltip text.
+// Returns:
+//   The handle to the tooltip.
+//
+HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
+	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control
+	if (!toolID || !hDlg || !pszText) {
+		return FALSE;
+	}
+	// Get the window of the tool.
+	HWND hwndTool = GetDlgItem(hDlg, toolID);
+
+	// Create the tooltip. g_hInst is the global instance handle.
+	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+		WS_POPUP | TTS_ALWAYSTIP /* | TTS_BALLOON*/,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		hDlg, NULL,
+		hDllInstance, NULL);
+
+	if (!hwndTool || !hwndTip) {
+		return (HWND)NULL;
+	}
+
+	// Associate the tooltip with the tool.
+	TOOLINFO toolInfo = { 0 };
+	toolInfo.cbSize = sizeof(toolInfo);
+	toolInfo.hwnd = hDlg;
+	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+	toolInfo.uId = (UINT_PTR)hwndTool;
+	toolInfo.lpszText = pszText;
+	SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+
+	return hwndTip;
+}
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
@@ -149,6 +191,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		hCurHandOpen = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_OPEN));
 		hCurHandGrab = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_GRAB));
 		hCurHandQuestion = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION));
+		hCurHandPoint = LoadCursor(NULL, IDC_HAND);
 
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
 		GetClientRect(preview_hwnd, &preview_rect);
@@ -160,7 +203,17 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			// If Visual Themes are applied, SS_ICON will be ignored for controls which are not exactly "STATIC" class.
 			// Our derivated "CautionSign" class won't work. So we need to set the icon explicitly.
 			SendDlgItemMessage(hDlg, FIRSTICONITEM+i, STM_SETICON, (WPARAM)LoadImage(hDllInstance, "CAUTION_ICO",IMAGE_ICON,16,16, LR_DEFAULTCOLOR), 0);
+			CreateToolTip(FIRSTICONITEM + i, hDlg, "Syntax error! Click to see details.");
 		}
+
+		CreateToolTip(ZOOMINITEM, hDlg, "Zoom in");
+		CreateToolTip(ZOOMOUTITEM, hDlg, "Zoom out");
+		CreateToolTip(ZOOMLEVELITEM, hDlg, "Zoom fully in/out");
+
+		// Note: Actually, the whole class gets the cursor, not just these three controls!!
+		SetClassLongPtr(GetDlgItem(hDlg, ZOOMINITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+		SetClassLongPtr(GetDlgItem(hDlg, ZOOMOUTITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+		SetClassLongPtr(GetDlgItem(hDlg, ZOOMLEVELITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
@@ -261,6 +314,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0) == IDOK;
 
+	// Clean up after the dialog has been closed
 	UnregisterClass("Preview", hDllInstance);
 	UnregisterClass("CautionSign", hDllInstance);
 
