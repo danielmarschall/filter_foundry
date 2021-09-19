@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.10 [Work-In-Progress]
+## 1.7.0.10 [19-Sep-2021]
 - Introduced obfuscation version 6, which is more secure and 4 times faster!
 - Warning signs and zoom in/out pictures now have "tool tips" so that you know what will happen if you click them (*)
 

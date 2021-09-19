@@ -17,6 +17,8 @@ Minor priority stuff or ideas
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
+* When do we need to do `strdup` and when do we do `my_strdup` ?
+
 * Memory leak: `strdup()` and `my_strdup()` need `free()` !
 
 * Why can't we edit *.rc files in Visual Studio?
@@ -100,7 +102,7 @@ Design/UI Tweaks
 
 * The tabstop-order is a bit weird. But how can he affect them?! Where are they defined at the moment?!
 
-* Windows open file dialog: Why does it have a preview pane?
+* Windows open file dialog: Why does it have a preview pane by default?
 
 * Should it be possible to zoom more than 100%?
 
@@ -109,8 +111,6 @@ Design/UI Tweaks
 * Should there be more (visual) space for expressions, like in Filter Factory? Also, Filter Factory had more visual space for slider names (e.g. required in Alf's Power Tools).
 
 * Sliders are extremely tiny!
-
-* "+" and "-" buttons with hand pointer cursor?
 
 * With some canvas formats, the initial zoom level is not "fully zoomed out"
 

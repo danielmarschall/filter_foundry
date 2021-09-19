@@ -130,15 +130,19 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 //   The handle to the tooltip.
 //
 HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
-	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control
+	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control (modified)
+	
+	HWND hwndTool, hwndTip;
+	TOOLINFO toolInfo;
+
 	if (!toolID || !hDlg || !pszText) {
 		return FALSE;
 	}
 	// Get the window of the tool.
-	HWND hwndTool = GetDlgItem(hDlg, toolID);
+	hwndTool = GetDlgItem(hDlg, toolID);
 
 	// Create the tooltip. g_hInst is the global instance handle.
-	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+	hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
 		WS_POPUP | TTS_ALWAYSTIP /* | TTS_BALLOON*/,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
@@ -150,7 +154,7 @@ HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
 	}
 
 	// Associate the tooltip with the tool.
-	TOOLINFO toolInfo = { 0 };
+	memset(&toolInfo, 0, sizeof(TOOLINFO)); // toolInfo = { 0 };
 	toolInfo.cbSize = sizeof(toolInfo);
 	toolInfo.hwnd = hDlg;
 	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
@@ -160,6 +164,10 @@ HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
 
 	return hwndTip;
 }
+
+#ifndef IDC_HAND
+#define IDC_HAND            MAKEINTRESOURCE(32649)
+#endif
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
@@ -211,9 +219,11 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(ZOOMLEVELITEM, hDlg, "Zoom fully in/out");
 
 		// Note: Actually, the whole class gets the cursor, not just these three controls!!
-		SetClassLongPtr(GetDlgItem(hDlg, ZOOMINITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
-		SetClassLongPtr(GetDlgItem(hDlg, ZOOMOUTITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
-		SetClassLongPtr(GetDlgItem(hDlg, ZOOMLEVELITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+		if (hCurHandPoint) {
+			SetClassLongPtr(GetDlgItem(hDlg, ZOOMINITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+			SetClassLongPtr(GetDlgItem(hDlg, ZOOMOUTITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+			SetClassLongPtr(GetDlgItem(hDlg, ZOOMLEVELITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
+		}
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
