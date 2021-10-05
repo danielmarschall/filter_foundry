@@ -22,8 +22,8 @@ char *myp2cstr(unsigned char *s);
 char *myp2cstrcpy(char *dst,const unsigned char *src);
 unsigned char *myc2pstrcpy(unsigned char *dst,const char *src);
 char *cat(char *d,char *s); // returns pointer after last character copied
-void *my_memset(void *dst, int val, size_t len);
-char *my_strdup(char *s);
+//void *my_memset(void *dst, int val, size_t len);
+char *my_strdup(char *s); // my_strdup() is like _strdup(), with the difference that it accepts "char*" instead of "const char*" as argument
 
 unsigned char *PLcstrcat(unsigned char * str1,const char * s2);
 unsigned char *PLcstrcpy(unsigned char *s1,const char *s2);

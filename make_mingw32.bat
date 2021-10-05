@@ -6,14 +6,14 @@ set PATHBAK=%PATH%
 
 rem 64 Bit
 rem Please adjust this path!
-set PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATHBAK%
+set PATH=D:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry64.tmp
 
 rem 32 Bit
 rem Please adjust this path!
-set PATH=C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;%PATHBAK%
+set PATH=D:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry32.tmp
@@ -27,6 +27,8 @@ echo.
 echo.
 dir *.8bf
 
-call 3264_mixer/foundry_3264_mixer.bat
+cd 3264_mixer
+call foundry_3264_mixer.bat
+cd ..
 
 pause.

@@ -63,12 +63,16 @@ char *cat(char *d,char *s){
 	return d;
 }
 
+/*
 void *my_memset(void *dst, int val, size_t len){
 	char *p;
 	for(p=(char*)dst;len--;)
 		*p++ = val;
 	return dst;
 }
+*/
+
+// my_strdup() is like _strdup(), with the difference that it accepts "char*" instead of "const char*" as argument
 char *my_strdup(char *s){
 	size_t n = strlen(s);
 	char *p = (char*)malloc(n+1);

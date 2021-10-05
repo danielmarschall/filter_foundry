@@ -211,12 +211,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			// If Visual Themes are applied, SS_ICON will be ignored for controls which are not exactly "STATIC" class.
 			// Our derivated "CautionSign" class won't work. So we need to set the icon explicitly.
 			SendDlgItemMessage(hDlg, FIRSTICONITEM+i, STM_SETICON, (WPARAM)LoadImage(hDllInstance, "CAUTION_ICO",IMAGE_ICON,16,16, LR_DEFAULTCOLOR), 0);
-			CreateToolTip(FIRSTICONITEM + i, hDlg, "Syntax error! Click to see details.");
+			CreateToolTip(FIRSTICONITEM + i, hDlg, _strdup("Syntax error! Click to see details."));
 		}
 
-		CreateToolTip(ZOOMINITEM, hDlg, "Zoom in");
-		CreateToolTip(ZOOMOUTITEM, hDlg, "Zoom out");
-		CreateToolTip(ZOOMLEVELITEM, hDlg, "Zoom fully in/out");
+		CreateToolTip(ZOOMINITEM, hDlg, _strdup("Zoom in"));
+		CreateToolTip(ZOOMOUTITEM, hDlg, _strdup("Zoom out"));
+		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Zoom fully in/out"));
 
 		// Note: Actually, the whole class gets the cursor, not just these three controls!!
 		if (hCurHandPoint) {

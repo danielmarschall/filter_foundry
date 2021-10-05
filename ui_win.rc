@@ -38,6 +38,8 @@ IDC_FF_HAND_QUESTION CURSOR "cursor_hand_question.cur"
 
 /* left,top,w,h */
 
+/* Note: The order of the controls is equal to the tab-order */
+
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 ID_MAINDLG DIALOG DISCARDABLE  150,50, 312,277
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
@@ -45,11 +47,6 @@ CAPTION "Filter Foundry"
 FONT 8, "MS Sans Serif"
 BEGIN
 	DEFPUSHBUTTON   "OK",      IDOK,        260, 253, 42, 14
-	PUSHBUTTON      "Cancel",  IDCANCEL,    210, 253, 42, 14
-	PUSHBUTTON      "Load...", OPENITEM,     10, 253, 42, 14
-	PUSHBUTTON      "Save...", SAVEITEM,     60, 253, 42, 14
-	PUSHBUTTON      "Make...", MAKEITEM,    110, 253, 42, 14
-	PUSHBUTTON      "Help",    HELPITEM,    160, 253, 42, 14 
 
 	/* The class "Preview" is defined during run-time ui_win.c */
 	CONTROL         "",            PREVIEWITEM,     "Preview",  SS_OWNERDRAW|SS_NOTIFY|SS_SUNKEN,   15,10, 100,100
@@ -99,6 +96,12 @@ BEGIN
 	EDITTEXT        FIRSTEXPRITEM+1,  35,163, 262, 24, ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN|WS_VSCROLL
 	EDITTEXT        FIRSTEXPRITEM+2,  35,191, 262, 24, ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN|WS_VSCROLL
 	EDITTEXT        FIRSTEXPRITEM+3,  35,219, 262, 24, ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN|WS_VSCROLL
+
+	PUSHBUTTON      "Load...", OPENITEM,     10, 253, 42, 14
+	PUSHBUTTON      "Save...", SAVEITEM,     60, 253, 42, 14
+	PUSHBUTTON      "Make...", MAKEITEM,    110, 253, 42, 14
+	PUSHBUTTON      "Help",    HELPITEM,    160, 253, 42, 14 
+	PUSHBUTTON      "Cancel",  IDCANCEL,    210, 253, 42, 14
 END
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -108,9 +111,6 @@ CAPTION "Filter Foundry"
 FONT 8, "MS Sans Serif"
 BEGIN
 	DEFPUSHBUTTON   "OK",     IDOK,               256,137,  42,14
-	PUSHBUTTON      "Cancel", IDCANCEL,           206,137,  42,14
-	LTEXT           "",       PARAMAUTHORITEM,     10,137,  42,20
-	LTEXT           "",       PARAMCOPYITEM,       60,137, 140,20
 
 	/* The class "Preview" is defined during run-time ui_win.c */
 	CONTROL         "",           PREVIEWITEM,      "Preview",SS_OWNERDRAW|SS_NOTIFY|SS_SUNKEN,     15,10, 100,100
@@ -149,6 +149,10 @@ BEGIN
 	EDITTEXT        FIRSTCTLTEXTITEM+5,   269, 85, 24,12,  ES_NUMBER|ES_RIGHT
 	EDITTEXT        FIRSTCTLTEXTITEM+6,   269,100, 24,12,  ES_NUMBER|ES_RIGHT
 	EDITTEXT        FIRSTCTLTEXTITEM+7,   269,115, 24,12,  ES_NUMBER|ES_RIGHT
+
+	PUSHBUTTON      "Cancel", IDCANCEL,           206,137,  42,14
+	LTEXT           "",       PARAMAUTHORITEM,     10,137,  42,20
+	LTEXT           "",       PARAMCOPYITEM,       60,137, 140,20
 END
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -158,7 +162,6 @@ CAPTION "Make Standalone Filter"
 FONT 8, "MS Sans Serif"
 BEGIN
 	DEFPUSHBUTTON   "OK",     IDOK,         156,219, 42,14
-	PUSHBUTTON      "Cancel", IDCANCEL,     106,219, 42,14
 
 	/* for initial values of the following EDITTEXT fields, see ui_build.c */
 	EDITTEXT        CATEGORYITEM,                    50, 10, 148,12
@@ -200,4 +203,6 @@ BEGIN
 	LTEXT           "Title:",     101,        10,25, 35,12
 	LTEXT           "Copyright:", 102,        10,40, 35,12
 	LTEXT           "Author:",    103,        10,67, 35,12
+
+	PUSHBUTTON      "Cancel", IDCANCEL,     106,219, 42,14
 END

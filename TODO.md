@@ -17,8 +17,6 @@ Minor priority stuff or ideas
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
-* When do we need to do `strdup` and when do we do `my_strdup` ?
-
 * Memory leak: `strdup()` and `my_strdup()` need `free()` !
 
 * Why can't we edit *.rc files in Visual Studio?
@@ -99,8 +97,6 @@ Questions
 
 Design/UI Tweaks
 ----------------
-
-* The tabstop-order is a bit weird. But how can he affect them?! Where are they defined at the moment?!
 
 * Windows open file dialog: Why does it have a preview pane by default?
 
