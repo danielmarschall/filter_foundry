@@ -423,7 +423,9 @@ ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes) {
 	{
 		ctx.fDiscard = TRUE;
 
-		if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE))
+		// LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE requires at least Windows Vista, so we use
+		// LOAD_LIBRARY_AS_DATAFILE
+		if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE/*_EXCLUSIVE*/))
 		{
 			if (!EnumResourceLanguages(hmod, RT_VERSION,
 				MAKEINTRESOURCE(VS_VERSION_INFO),
@@ -464,7 +466,9 @@ ULONG UpdateVersionInfoWithHandle(PCTSTR FileName, HANDLE hUpdate, PCWSTR change
 
 	ctx.fDiscard = TRUE;
 
-	if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE))
+	// LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE requires at least Windows Vista, so we use
+	// LOAD_LIBRARY_AS_DATAFILE
+	if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE/*_EXCLUSIVE*/))
 	{
 		if (!EnumResourceLanguages(hmod, RT_VERSION,
 			MAKEINTRESOURCE(VS_VERSION_INFO),

@@ -98,8 +98,6 @@ Questions
 Design/UI Tweaks
 ----------------
 
-* Windows open file dialog: Why does it have a preview pane by default?
-
 * Should it be possible to zoom more than 100%?
 
 * The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac). Unfortunately, this task is very hard in WIN32 API.

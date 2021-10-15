@@ -31,13 +31,15 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   Serif PhotoPlus 6
 -   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
+-   I.C.NET Plugin-Manager 2.0 (though this is technically an emulator rather than a host)
+
 
 Operating systems:
 
--   Windows NT4, 2000, XP, Vista, 7, 8, 8.1, and 10 are fully compatible (32- and 64-bit)
--   Windows 95, 98, Me: Supported, but 64-bit standalone filters cannot be created
--   Macintosh currently not supported
--   Linux (Wine) not tested
+-   Windows NT4, 2000, XP, Vista, 7, 8, 8.1, 10, and 11 are fully compatible (32- and 64-bit)
+-   Windows 95, 98, and Me are supported, but 64-bit standalone filters cannot be created
+-   Linux using the emulator "Wine" is supported
+-   Macintosh is currently not supported
 
 
 ### Donation

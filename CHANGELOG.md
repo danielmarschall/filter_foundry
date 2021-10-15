@@ -2,6 +2,7 @@
 
 ## 1.7.0.11 [Work-In-Progress]
 - Tab-Order has been changed (*)
+- Fixed incompatibility with older versions of Wine (Windows emulator for Linux systems)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
