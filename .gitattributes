@@ -1,11 +1,14 @@
-LICENSE*.* linguist-vendored
-
+# GIT files
 .gitattributes text eol=lf
 .gitignore text eol=lf
 #.gitconfig text eol=lf
 #.gitmodules text eol=lf
 .gitkeep text eol=lf
 
+# Vendored
+LICENSE*.* linguist-vendored
+
+# File types (text/binary, EOL, language, documentation)
 *.8bf binary
 *.afs text eol=cr
 *.ai binary
@@ -18,7 +21,7 @@ LICENSE*.* linguist-vendored
 *.cur binary
 *.def text eol=crlf
 *.dll binary
-*.docx binary
+*.docx binary linguist-documentation
 *.exe binary
 *.exp text eol=crlf
 *.h text eol=crlf linguist-language=C
@@ -31,8 +34,8 @@ Makefile.mac text eol=lf linguist-language=Makefile
 *.mak text eol=crlf linguist-language=Makefile
 FilterFoundry.make text eol=lf linguist-language=Makefile
 *.mcp binary
-*.md text eol=crlf linguist-language=Markdown
-*.pdf binary
+*.md text eol=crlf linguist-language=Markdown linguist-documentation
+*.pdf binary linguist-documentation
 *.pff text eol=cr
 *.plist text eol=lf
 *.png binary
@@ -43,7 +46,7 @@ FilterFoundry.make text eol=lf linguist-language=Makefile
 *.sln text eol=crlf
 *.svg binary
 *.tgt text eol=crlf
-*.txt text eol=crlf
+*.txt text eol=crlf linguist-language=Text linguist-documentation
 *.vcxproj text eol=crlf
 Makefile.win text eol=crlf linguist-language=Makefile
 *.wpj text eol=crlf
