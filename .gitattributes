@@ -1,6 +1,53 @@
 LICENSE*.* linguist-vendored
-*.h linguist-language=C
-*.c linguist-language=C
-*.hpp linguist-language=C++
-*.cpp linguist-language=C++
 
+.gitattributes text eol=lf
+.gitignore text eol=lf
+#.gitconfig text eol=lf
+#.gitmodules text eol=lf
+.gitkeep text eol=lf
+
+*.8bf binary
+*.afs text eol=cr
+*.ai binary
+*.bat text eol=crlf linguist-language=Batchfile
+*.bin binary
+*.bmp binary
+*.c text eol=crlf linguist-language=C
+*.cpp text eol=crlf linguist-language=C++
+*.csv text eol=crlf
+*.cur binary
+*.def text eol=crlf
+*.dll binary
+*.docx binary
+*.exe binary
+*.exp text eol=crlf
+*.h text eol=crlf linguist-language=C
+*.hpp text eol=crlf linguist-language=C++
+*.html text eol=crlf linguist-language=HTML
+*.ico binary
+*.jpg binary
+*.l text eol=crlf linguist-language=Lex
+Makefile.mac text eol=lf linguist-language=Makefile
+*.mak text eol=crlf linguist-language=Makefile
+FilterFoundry.make text eol=lf linguist-language=Makefile
+*.mcp binary
+*.md text eol=crlf linguist-language=Markdown
+*.pdf binary
+*.pff text eol=cr
+*.plist text eol=lf
+*.png binary
+*.prm binary
+*.psd binary
+*.r text eol=crlf linguist-language=R
+*.rc text eol=crlf
+*.sln text eol=crlf
+*.svg binary
+*.tgt text eol=crlf
+*.txt text eol=crlf
+*.vcxproj text eol=crlf
+Makefile.win text eol=crlf linguist-language=Makefile
+*.wpj text eol=crlf
+*.xlsx binary
+*.xml text eol=crlf linguist-language=XML
+*.y text eol=crlf linguist-language=Yacc
+*.yy text eol=crlf linguist-language=Yacc
