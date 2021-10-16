@@ -91,4 +91,6 @@ void _GetNativeSystemInfo(
 	LPSYSTEM_INFO lpSystemInfo
 );
 
+BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index);
+
 #endif

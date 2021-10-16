@@ -24,6 +24,7 @@
 
 #include "file_compat.h"
 #include "compat_string.h"
+#include "compat_win.h"
 #include "versioninfo_modify_win.h"
 #include "version.h"
 
@@ -608,6 +609,14 @@ Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
 	}
 }
 
+BOOL StripAuthenticode(const char* pszFileName) {
+	HANDLE hFile = CreateFile(pszFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) return FALSE;
+	if (!_ImageRemoveCertificate(hFile, 0)) return FALSE;
+	CloseHandle(hFile);
+	return TRUE;
+}
+
 OSErr do_make_standalone(char* dstname, int bits) {
 	Boolean res;
 	char err[MAX_PATH + 200];
@@ -620,6 +629,10 @@ OSErr do_make_standalone(char* dstname, int bits) {
 			sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
 			alertuser(_strdup(&err[0]), _strdup(""));
 		}
+
+		// In case we did digitally sign the FilterFoundry plugin (which is currently not the case though),
+		// we must now remove the signature, because the embedding of parameter data has invalidated it.
+		StripAuthenticode(dstname);
 	}
 	else {
 		// If you see this error, please make sure that you have called foundry_3264_mixer to include the 32/64 plugins as resource!

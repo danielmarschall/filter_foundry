@@ -147,3 +147,20 @@ void _GetNativeSystemInfo(LPSYSTEM_INFO lpSystemInfo) {
 		GetSystemInfo(lpSystemInfo);
 	}
 }
+
+typedef BOOL(__stdcall* f_ImageRemoveCertificate)(HANDLE FileHandle, DWORD Index);
+BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
+	HMODULE hLib;
+	f_ImageRemoveCertificate fImageRemoveCertificate;
+	BOOL res = FALSE;
+
+	hLib = LoadLibraryA("IMAGEHLP.DLL");
+	if (!hLib) return FALSE;
+	fImageRemoveCertificate = (f_ImageRemoveCertificate)(void*)GetProcAddress(hLib, "ImageRemoveCertificate");
+	if (fImageRemoveCertificate != 0) {
+		res = fImageRemoveCertificate(FileHandle, Index);
+		FreeLibrary(hLib);
+	}
+
+	return res;
+}
