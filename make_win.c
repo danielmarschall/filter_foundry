@@ -623,16 +623,18 @@ OSErr do_make_standalone(char* dstname, int bits) {
 
 	//DeleteFile(dstname);
 	if (extract_file("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
+		// In case we did digitally sign the FilterFoundry plugin (which is currently not the case though),
+		// we must now remove the signature, because the embedding of parameter data has invalidated it.
+		// Do it before we manipulate anything, in order to avoid that there is an invalid binary (which might annoy AntiVirus software)
+		StripAuthenticode(dstname);
+
+		// Now do the resources
 		res = doresources(NULL, dstname, bits);
 		if (!res) {
 			DeleteFile(dstname);
 			sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
 			alertuser(_strdup(&err[0]), _strdup(""));
 		}
-
-		// In case we did digitally sign the FilterFoundry plugin (which is currently not the case though),
-		// we must now remove the signature, because the embedding of parameter data has invalidated it.
-		StripAuthenticode(dstname);
 	}
 	else {
 		// If you see this error, please make sure that you have called foundry_3264_mixer to include the 32/64 plugins as resource!
