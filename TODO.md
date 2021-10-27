@@ -5,7 +5,11 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-(None)
+* .gitattributes eol=cr => -text or binary
+
+* Implement FFX file format (Filters Unlimited), read-only. Note that not all functions from the FFX language will be supported.
+
+* Bug: In the Make dialog, click Save and then cancel the save dialog. It will also exit the Make dialog, which is not good.
 
 
 Minor priority stuff or ideas
