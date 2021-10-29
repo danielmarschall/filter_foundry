@@ -96,17 +96,21 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	int i,needui;
 
 	switch(item){
+#ifdef MAC_ENV
+	case ok:
+#else
 	case IDOK:
+#endif
 		// Do a few checks first
 		GetDlgItemText(dp, CATEGORYITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
 			simplealert(_strdup("Category must not be empty!"));
-			return false;
+			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
 		}
 		GetDlgItemText(dp, TITLEITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
 			simplealert(_strdup("Title must not be empty!"));
-			return false;
+			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
 		}
 
 		// Now begin
@@ -135,7 +139,11 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,PROTECTITEM);
 		/* ... falls through ... */
+#ifdef MAC_ENV
+	case cancel:
+#else
 	case IDCANCEL:
+#endif
 		return false; // end dialog
 	case PROTECTITEM:
 		CHECKDLGBUTTON(dp, item, ISDLGBUTTONCHECKED(dp,item) ^ 1);

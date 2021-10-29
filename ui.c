@@ -338,8 +338,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	HINSTANCE hShellRes;
 
 	switch(item){
+#ifdef MAC_ENV
+	case ok:
+	case cancel:
+#else
 	case IDOK:
 	case IDCANCEL:
+#endif
 		dispose_preview();
 		return false; // end dialog
 	case OPENITEM:
