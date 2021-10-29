@@ -611,8 +611,14 @@ Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
 
 BOOL StripAuthenticode(const char* pszFileName) {
 	HANDLE hFile = CreateFile(pszFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return FALSE;
-	if (!_ImageRemoveCertificate(hFile, 0)) return FALSE;
+	if (hFile == INVALID_HANDLE_VALUE) {
+		CloseHandle(hFile);
+		return FALSE;
+	}
+	if (!_ImageRemoveCertificate(hFile, 0)) {
+		CloseHandle(hFile);
+		return FALSE;
+	}
 	CloseHandle(hFile);
 	return TRUE;
 }
