@@ -21,6 +21,7 @@
 /* This is PLATFORM INDEPENDENT user interface code - mainly dialog logic */
 
 #include "ff.h"
+#include "compat_string.h"
 
 int ctls[8],maps[4];
 int checksliders_result;
@@ -94,6 +95,9 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	enum{MAXFIELD=0x100};
 	char s[MAXFIELD+1];
 	int i,needui;
+	Str255 fname;
+	StandardFileReply sfr;
+	NavReplyRecord reply;
 
 	switch(item){
 #ifdef MAC_ENV
@@ -138,6 +142,30 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,PROTECTITEM);
+
+		PLstrcpy(fname, gdata->parm.title);
+		#ifdef MACMACHO
+		PLstrcat(fname, (StringPtr)"\p.plugin"); // "\p" means "Pascal string"
+		#endif
+		if (putfile(
+			#ifdef MAC_ENV
+			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"
+			#else
+			(StringPtr)_strdup("\026Make standalone filter"),
+			#endif
+			fname,
+			PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
+			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1
+			#ifdef _WIN32
+			, (HWND)dp
+			#endif /* _WIN32 */
+		)) {
+			make_standalone(&sfr);
+		}
+		else {
+			return true; // keep going. Let the user correct their input
+		}
+
 		/* ... falls through ... */
 #ifdef MAC_ENV
 	case cancel:

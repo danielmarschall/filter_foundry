@@ -5,15 +5,13 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-* .gitattributes eol=cr => -text or binary
-
-* Implement FFX file format (Filters Unlimited), read-only. Note that not all functions from the FFX language will be supported.
-
-* Bug: In the Make dialog, click Save and then cancel the save dialog. It will also exit the Make dialog, which is not good.
+* Implement FFX file format (Filters Unlimited). Note that not all functions from the FFX language will be supported.
 
 
 Minor priority stuff or ideas
 -----------------------------
+
+* .gitattributes eol=cr => -text or binary
 
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
 

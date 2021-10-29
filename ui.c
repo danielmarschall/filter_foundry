@@ -332,7 +332,6 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
 	char *reason;
-	Str255 fname;
 	Boolean bak_obfusc, bak_standalone, bak_parmloaded;
 	PARM_T bak_parm;
 	HINSTANCE hShellRes;
@@ -398,32 +397,14 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		}
 		break;
 	case MAKEITEM:
+		if (gdata->standalone) return true; // should not happen since the button should be grayed out
+
 		bak_obfusc = gdata->obfusc;
 		bak_standalone = gdata->standalone;
 		bak_parmloaded = gdata->parmloaded;
 		memcpy(&bak_parm,&gdata->parm,sizeof(PARM_T));
 
-		if( !gdata->standalone && builddialog(gpb) ){
-			PLstrcpy(fname,gdata->parm.title);
-			#ifdef MACMACHO
-			PLstrcat(fname,(StringPtr)"\p.plugin"); // "\p" means "Pascal string"
-			#endif
-			if( putfile(
-				#ifdef MAC_ENV
-				(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"
-				#else
-				(StringPtr)_strdup("\026Make standalone filter"),
-				#endif
-				fname,
-				PS_FILTER_FILETYPE,kPhotoshopSignature,&reply,&sfr,
-				"8bf","Filter plugin file (.8bf)\0*.8bf\0\0",1
-				#ifdef _WIN32
-				,gdata->hWndMainDlg
-				#endif /* _WIN32 */
-			)) {
-				make_standalone(&sfr);
-			}
-		}
+		builddialog(gpb);
 
 		gdata->obfusc = bak_obfusc;
 		gdata->standalone = bak_standalone;

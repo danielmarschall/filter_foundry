@@ -3,6 +3,7 @@
 ## 1.7.0.11 [Work-In-Progress]
 - Tab-Order has been changed (*)
 - Fixed incompatibility with older versions of Wine (Windows emulator for Linux systems)
+- In the Make dialog, if you clicked "OK" and then cancelled the save dialog, you didn't get back to the Make-dialog. Fixed.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
