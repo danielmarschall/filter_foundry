@@ -199,7 +199,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 	FILEREF refnum;
 	uint32_t len;
 	char* val;
-	Boolean valid_file;
+	int format_version = -1;
 	int i;
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
@@ -209,9 +209,11 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 			len = *((uint32_t*)q);
 			if (len == 6) {
 				val = _ffx_read_str(&q);
-				valid_file = (strcmp(val, "FFX1.0") == 0) || (strcmp(val, "FFX1.1") == 0) || (strcmp(val, "FFX1.2") == 0);
+				if (strcmp(val, "FFX1.0") == 0) format_version = 10;
+				else if (strcmp(val, "FFX1.1") == 0) format_version = 11;
+				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
-				if (valid_file) {
+				if (format_version > 0) {
 					val = _ffx_read_str(&q);
 					myc2pstrcpy(gdata->parm.title, val);
 					free(val);
@@ -251,10 +253,17 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 
 					// Sliders
 					for (i = 0; i < 8; i++) {
+						char* sliderName;
 						val = _ffx_read_str(&q);
-						myc2pstrcpy(gdata->parm.ctl[i], val);
+						sliderName = val;
+						if (format_version >= 12) {
+							// Format FFX1.2 has prefixes {S} = Slider, {C} = Checkbox, none = Slider
+							if ((sliderName[0] == '{') && (sliderName[1] == 'S') && (sliderName[2] == '}')) sliderName += 3;
+							else if ((sliderName[0] == '{') && (sliderName[1] == 'C') && (sliderName[2] == '}')) sliderName += 3;
+						}
+						myc2pstrcpy(gdata->parm.ctl[i], sliderName);
 						free(val);
-						gdata->parm.ctl_used[i] = (bool32_t) * ((byte*)q);
+						gdata->parm.ctl_used[i] = (bool32_t)*((byte*)q);
 						q += sizeof(byte);
 						gdata->parm.val[i] = *((uint32_t*)q);
 						slider[i] = *((uint32_t*)q);
