@@ -76,7 +76,7 @@ typedef struct {   //structure of FF PARM resource
 	unsigned char author[256];      //Filter author(s)
 	unsigned char map[4][256];      //4 map labels
 	unsigned char ctl[8][256];      //8 control labels
-	char formula[4][1024];          //4 channel formulas; in Photoshop: (r,g,b,a)
+	unsigned char formula[4][1024]; //4 channel formulas; in Photoshop: (r,g,b,a)
 } PARM_T/*_PHOTOSHOP*/;
 
 // Premiere's Transition/Filter Factory has PARM:16000
@@ -97,7 +97,7 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	unsigned char copyright[256]; // in Photoshop Filter Factory: Author
 	unsigned char map[4][256];      //4 map labels
 	unsigned char ctl[8][256];      //8 control labels
-	char formula[4][1024];          //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
+	unsigned char formula[4][1024]; //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
 } PARM_T_PREMIERE;
 
 #endif

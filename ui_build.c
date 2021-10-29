@@ -136,7 +136,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
 			needui |= gdata->parm.map_used[i];
 			GetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.map[i],s);
-			strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
+			strcpy((char*)gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
 		}
 		gdata->parm.popDialog = needui; //true if need to pop a parameter dialog
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;

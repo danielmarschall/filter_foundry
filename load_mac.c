@@ -73,11 +73,17 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
-		if( (readok = readfile(sfr,reason)) ) {
+		if( (readok = readfile_afs_pff(sfr,reason)) ) {
 			gdata->parmloaded = false;
 			gdata->obfusc = false;
-			// then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
-		}else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
+		
+		} // then try "Filters Unlimited" file (FFX)
+		else if( (readok = readfile_ffx(sfr,reason)) ) {
+			gdata->parmloaded = true;
+			gdata->obfusc = false;
+		
+		} // then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
+		else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
 			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				*reason = "Incompatible obfuscation.";
 				//gdata->parmloaded = false;

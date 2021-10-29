@@ -41,3 +41,9 @@ This directory contains various standalone plugins to test if the current Filter
 | Import FF Prot+Obfsc "V4" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op4.8bf     | MSVC++   | Locked OK       |
 | Import FF Prot+Obfsc "V5" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op5.8bf     | MSVC++   | Locked OK       |
 | Import FF Prot+Obfsc "V6" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op6.8bf     | MSVC++   | Locked OK       |
+
+### Filters Unlimited filters
+
+| FiltersUnlimited => FilterFoundry         | Ext.   | Sig.     | Testcase file(s)         | Import          |
+| ------------------------------------------| -------| ---------| -------------------------| ----------------|
+| Filters Unlimited FFX 1.1                 | .ffx   | FFX1.1   | ffx_11.ffx               | Works           |

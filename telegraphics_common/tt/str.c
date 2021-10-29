@@ -48,6 +48,8 @@ char *myp2cstrcpy(char *dst,const unsigned char *src){
 	dst[src[0]] = 0;
 	return dst;
 }
+
+// copy C string to Pascal string
 unsigned char *myc2pstrcpy(unsigned char *dst,const char *src){
 	size_t n = strlen(src);
 	*dst = n <= 255 ? (unsigned char)n : 255;

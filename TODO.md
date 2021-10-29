@@ -5,11 +5,13 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-* Implement FFX file format (Filters Unlimited). Note that not all functions from the FFX language will be supported.
+(None)
 
 
 Minor priority stuff or ideas
 -----------------------------
+
+* Add functionality to save to FFX (Filters Unlimited) and PFF (Premiere Filter Factory) format
 
 * .gitattributes eol=cr => -text or binary
 
@@ -61,6 +63,12 @@ Minor priority stuff or ideas
 * Make Filter Foundry ready for translations? In Windows, put all strings in string lists (resources, `LoadStringA`), as well as in Mac resources.
 
 * Should the compiler flags in `funcs.h` placed as resource (binary bits), so that the behavior can be changed if required?
+
+
+Big ideas
+---------
+
+* How about implementing the "Filters Unlimited" (FFX) language?
 
 
 Questions

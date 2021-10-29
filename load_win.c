@@ -82,7 +82,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	HMODULE hm;
 
 	// First, try to read the file as AFS/PFF/TXT file
-	if( (readok = readfile(sfr,reason)) ){
+	if( (readok = readfile_afs_pff(sfr,reason)) ){
 		gdata->obfusc = false;
 		gdata->parmloaded = false;
 	}
@@ -105,6 +105,13 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				}
 			}
 			FreeLibrary(hm);
+		}
+	}
+
+	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
+	if (!readok) {
+		if (readfile_ffx(sfr, reason)) {
+			readok = gdata->parmloaded = true;
 		}
 	}
 

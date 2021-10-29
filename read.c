@@ -178,6 +178,103 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 	}
 }
 
+char* _ffx_read_str(char** q) {
+	uint32_t len;
+	char* val;
+
+	len = *((uint32_t*)*q);
+	*q += sizeof(uint32_t);
+	val = (char*)malloc(len + 1);
+	if (val != NULL) {
+		memcpy(val, (char*)*q, len);
+		val[len] = 0;
+	}
+	*q += len;
+	return val;
+}
+
+Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
+	Handle h;
+	Boolean res = false;
+	FILEREF refnum;
+	uint32_t len;
+	char* val;
+	Boolean valid_file;
+	int i;
+
+	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
+		if ((h = readfileintohandle(refnum))) {
+			char* q = (char*)PILOCKHANDLE(h, false);
+
+			len = *((uint32_t*)q);
+			if (len == 6) {
+				val = _ffx_read_str(&q);
+				valid_file = (strcmp(val, "FFX1.0") == 0) || (strcmp(val, "FFX1.1") == 0) || (strcmp(val, "FFX1.2") == 0);
+				free(val);
+				if (valid_file) {
+					val = _ffx_read_str(&q);
+					myc2pstrcpy(gdata->parm.title, val);
+					free(val);
+
+					val = _ffx_read_str(&q);
+					myc2pstrcpy(gdata->parm.category, val);
+					free(val);
+
+					val = _ffx_read_str(&q);
+					myc2pstrcpy(gdata->parm.author, val);
+					free(val);
+
+					val = _ffx_read_str(&q);
+					myc2pstrcpy(gdata->parm.copyright, val);
+					free(val);
+
+					// Channels I, R, G, B, A
+					for (i = 0; i < 4; i++) {
+						val = _ffx_read_str(&q);
+						if (i == 0) {
+							if (strcmp(val, "0") != 0) {
+								// "Intro channel" existing
+								char* val2 = _ffx_read_str(&q);
+								strcat(val, ",");
+								strcat(val, val2);
+								free(val2);
+							}
+							else {
+								free(val);
+								val = _ffx_read_str(&q);
+							}
+						}
+						expr[i] = my_strdup(val);
+						myc2pstrcpy(gdata->parm.formula[i], val);
+						free(val);
+					}
+
+					// Sliders
+					for (i = 0; i < 8; i++) {
+						val = _ffx_read_str(&q);
+						myc2pstrcpy(gdata->parm.ctl[i], val);
+						free(val);
+						gdata->parm.ctl_used[i] = (bool32_t) * ((byte*)q);
+						q += sizeof(byte);
+						gdata->parm.val[i] = *((uint32_t*)q);
+						slider[i] = *((uint32_t*)q);
+						q += sizeof(uint32_t);
+					}
+
+					simplewarning(_strdup("Attention! You loaded a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
+
+					res = true;
+				}
+			}
+			PIDISPOSEHANDLE(h);
+		}
+		FSClose(refnum);
+	}
+
+	if (res) gdata->obfusc = false;
+	return res;
+}
+
 Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
 	unsigned char magic[2];
 	FILECOUNT count;
@@ -282,7 +379,7 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 
 	for(i = 0; i < 4; ++i){
 		if(expr[i]) free(expr[i]);
-		expr[i] = my_strdup(pparm->formula[i]);
+		expr[i] = my_strdup((char*)pparm->formula[i]);
 	}
 
 	for (i = 0; i < 8; ++i) {
@@ -329,7 +426,7 @@ Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
 	#endif
 }
 
-Boolean readfile(StandardFileReply *sfr,char **reason){
+Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
