@@ -81,6 +81,12 @@
     <ClInclude Include="..\ff.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\telegraphics_common\adobeplugin\entry.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\telegraphics_common\adobeplugin\world.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c">

@@ -25,10 +25,17 @@
 
 #include <windows.h>
 
+#include "world.h"
 #include "choosefile.h"
 #include "str.h"
 #include "dbg.h"
 #include "compat_string.h"
+
+
+Boolean fileHasExtension(StandardFileReply* sfr, const char* extension) {
+	char name[MAX_PATH + 1];
+	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name, sfr->sfFile.name) + sfr->nFileExtension - 1, extension);
+}
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
                         OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){

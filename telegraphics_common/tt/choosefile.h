@@ -44,6 +44,8 @@
 	} NavReplyRecord;
 #endif
 
+Boolean fileHasExtension(StandardFileReply* sfr, const char* extension);
+    
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
                              OSType tlist[], StringPtr extlist[],Boolean *premult);
 

@@ -260,6 +260,8 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\preview.h" />
     <ClInclude Include="..\scripting.h" />
     <ClInclude Include="..\symtab.h" />
+    <ClInclude Include="..\telegraphics_common\adobeplugin\entry.h" />
+    <ClInclude Include="..\telegraphics_common\adobeplugin\world.h" />
     <ClInclude Include="..\telegraphics_common\tt\choosefile.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_string.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_win.h" />

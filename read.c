@@ -443,21 +443,6 @@ Handle readfileintohandle(FILEREF r){
 	return NULL;
 }
 
-Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
-	#ifdef WIN_ENV
-
-	char name[MAX_PATH+1];
-	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name,sfr->sfFile.name) + sfr->nFileExtension - 1,extension);
-
-	#else
-
-	char name[1025]; // https://stackoverflow.com/questions/1295135/longest-pathname-string-in-mac-os-x-hfs
-	char* s = myp2cstrcpy(name,sfr->sfFile.name);
-	return strcmp(s + strlen(s) - strlen(extension), extension) == 0;
-
-	#endif
-}
-
 Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 	FILEREF r;
 	Handle h;

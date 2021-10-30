@@ -24,6 +24,7 @@ LICENSE*.* linguist-vendored
 *.docx binary linguist-documentation
 *.exe binary
 *.exp text eol=crlf
+*.ffx binary
 *.h text eol=crlf linguist-language=C
 *.hpp text eol=crlf linguist-language=C++
 *.html text eol=crlf linguist-language=HTML

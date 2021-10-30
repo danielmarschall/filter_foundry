@@ -111,4 +111,10 @@
 	#define ATTRIBUTE_PACKED
 #endif
 
+#ifdef _MSC_VER
+	// Microsoft dumbassery
+	#define strcasecmp _stricmp
+	#define snprintf _snprintf
+#endif /* _MSC_VER */
+
 #endif

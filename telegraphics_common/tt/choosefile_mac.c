@@ -18,6 +18,7 @@
 */
 
 #include "choosefile.h"
+#include "str.h"
 
 #include <codefragments.h>
 #include <navigation.h>
@@ -27,6 +28,12 @@
 #else
 	#define HAS_NAVSERVICES (NavChooseFile != kUnresolvedCFragSymbolAddress)
 #endif
+
+Boolean fileHasExtension(StandardFileReply *sfr, const char* extension) {
+	char name[1025]; // https://stackoverflow.com/questions/1295135/longest-pathname-string-in-mac-os-x-hfs
+	char* s = myp2cstrcpy(name,sfr->sfFile.name);
+	return strcmp(s + strlen(s) - strlen(extension), extension) == 0;
+}
 
 Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
                    OSType type,const char *lpstrFilter){
