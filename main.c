@@ -311,7 +311,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 						expr[3] = _strdup("a");
 					}
 
-					savefile(&sfr);
+					savefile_afs_pff(&sfr);
 
 					if (gdata->standalone) {
 						free(expr[0]); expr[0] = bakexpr[0];

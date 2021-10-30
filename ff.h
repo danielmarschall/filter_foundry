@@ -104,11 +104,12 @@ Handle readfileintohandle(FILEREF r);
 Boolean readfile_afs_pff(StandardFileReply* sfr, char** reason);
 Boolean readfile_ffx(StandardFileReply* sfr, char** reason);
 Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr,int fromwin);
+Boolean fileHasExtension(StandardFileReply* sfr, const char* extension); // TODO: find a new home for this method? Because it can be also used for saving
 
 // from save.c
 OSErr saveparams(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
-Boolean savefile(StandardFileReply *sfr);
+Boolean savefile_afs_pff(StandardFileReply *sfr);
 
 // from make_*.c
 OSErr make_standalone(StandardFileReply *sfr);

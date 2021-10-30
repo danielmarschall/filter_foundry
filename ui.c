@@ -354,7 +354,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			(StringPtr)_strdup("\026Choose filter settings"),
 			#endif
 			&sfr,&reply,types,2,
-			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt; *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff, *.txt)\0*.pff;*.txt\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0"
+			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt; *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0"
 			#ifdef _WIN32
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */
@@ -387,12 +387,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			#endif
 			(StringPtr)_strdup("\0"),
 			TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-			"afs","Settings file (.afs, .txt)\0*.afs;*.txt\0All files (*.*)\0*.*\0\0",1
+			"afs","All supported files (.afs, .txt; *.pff)\0*.afs;*.txt;*.pff\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Premiere TF/FF Settings (*.pff)\0*.pff\0All files (*.*)\0*.*\0\0",1
 			#ifdef _WIN32
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */
 		)){
-			if(savefile(&sfr))
+			if(savefile_afs_pff(&sfr))
 				completesave(&reply);
 		}
 		break;

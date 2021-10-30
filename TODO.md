@@ -5,13 +5,13 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-(None)
+* Sometimes, when you open a FFX file, the program crashes. Why?! Has something to do with changing filters in OpenDiloag first?
 
 
 Minor priority stuff or ideas
 -----------------------------
 
-* Add functionality to save to FFX (Filters Unlimited) and PFF (Premiere Filter Factory) format
+* Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
 
 * .gitattributes eol=cr => -text or binary
 

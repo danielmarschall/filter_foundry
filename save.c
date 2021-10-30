@@ -76,7 +76,7 @@ OSErr saveparams(Handle h){
 						}else if (*r == LF) {
 							
 							// This can only happen with Windows or Linux.
-							// Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
+							// Native Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
 							++r;
 						}else
 							*q++ = *r++;
@@ -106,7 +106,7 @@ OSErr savehandleintofile(Handle h,FILEREF r){
 	return e;
 }
 
-Boolean savefile(StandardFileReply *sfr){
+Boolean savefile_afs_pff(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
@@ -116,9 +116,26 @@ Boolean savefile(StandardFileReply *sfr){
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
 		if(FSpOpenDF(&sfr->sfFile,fsWrPerm,&r) == noErr){
 
+			if (fileHasExtension(sfr, ".pff")) {
+				// If it is a Premiere settings file, we need to swap the channels red and blue
+				// We just swap the pointers!
+				char* tmp;
+				tmp = expr[0];
+				expr[0] = expr[2];
+				expr[2] = tmp;
+			}
+
 			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.				res = !(saveparams(h) || savehandleintofile(h,r)) ;
-				res = !(saveparams(h) || savehandleintofile(h,r)) ;
+				res = !(saveparams(h) || savehandleintofile(h,r));
 				PIDISPOSEHANDLE(h);
+			}
+
+			if (fileHasExtension(sfr, ".pff")) {
+				// Swap back so that the other program stuff will work normally again
+				char* tmp;
+				tmp = expr[0];
+				expr[0] = expr[2];
+				expr[2] = tmp;
 			}
 
 			FSClose(r);

@@ -89,6 +89,7 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 
 	if(GetSaveFileName(&ofn)){
 		myc2pstrcpy(sfr->sfFile.name,file);
+		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
 	}else{
 		#ifdef DEBUG
