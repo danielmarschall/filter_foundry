@@ -236,16 +236,22 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 					for (i = 0; i < 4; i++) {
 						val = _ffx_read_str(&q);
 						if (i == 0) {
+							char* val2 = _ffx_read_str(&q);
 							if (strcmp(val, "0") != 0) {
 								// "Intro channel" existing
-								char* val2 = _ffx_read_str(&q);
-								strcat(val, ",");
-								strcat(val, val2);
-								free(val2);
+								// C++ wrong warning: Using uninitialized memory "val2" (C6001)
+								#pragma warning(suppress : 6001)
+								char* combined = (char*)malloc(strlen(val) + strlen(",") + strlen(val2) + 1);
+								if (combined != NULL) {
+									sprintf(combined, "%s,%s", val, val2);
+									free(val);
+									free(val2);
+									val = combined;
+								}
 							}
 							else {
 								free(val);
-								val = _ffx_read_str(&q);
+								val = val2;
 							}
 						}
 						if (strlen(val) >= sizeof(gdata->parm.formula[i])) {
@@ -261,6 +267,8 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 							else if (i == 3) {
 								simplealert("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated.");
 							}
+							// C++ wrong warning: Buffer overflow (C6386)
+							#pragma warning(suppress : 6386)
 							val[sizeof(gdata->parm.formula[i]) - 1] = '\0';
 						}
 						expr[i] = my_strdup(val);

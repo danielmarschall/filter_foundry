@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 Known bugs
 ----------
 
-* Sometimes, when you open a FFX file, the program crashes. Why?! Has something to do with changing filters in OpenDiloag first?
+(None)
 
 
 Minor priority stuff or ideas
