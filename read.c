@@ -214,6 +214,8 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
 				if (format_version > 0) {
+					simplewarning(_strdup("Attention! You are loading a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
+
 					val = _ffx_read_str(&q);
 					myc2pstrcpy(gdata->parm.title, val);
 					free(val);
@@ -246,8 +248,23 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 								val = _ffx_read_str(&q);
 							}
 						}
+						if (strlen(val) >= sizeof(gdata->parm.formula[i])) {
+							if (i == 0) {
+								simplealert("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated.");
+							}
+							else if (i == 1) {
+								simplealert("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated.");
+							}
+							else if (i == 2) {
+								simplealert("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated.");
+							}
+							else if (i == 3) {
+								simplealert("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated.");
+							}
+							val[sizeof(gdata->parm.formula[i]) - 1] = '\0';
+						}
 						expr[i] = my_strdup(val);
-						myc2pstrcpy(gdata->parm.formula[i], val);
+						strcpy((char*)gdata->parm.formula[i], val); // Attention! This is not a Pascal string!
 						free(val);
 					}
 
@@ -269,8 +286,6 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						slider[i] = *((uint32_t*)q);
 						q += sizeof(uint32_t);
 					}
-
-					simplewarning(_strdup("Attention! You loaded a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
 
 					res = true;
 				}
