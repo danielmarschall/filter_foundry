@@ -21,7 +21,6 @@ echo "\n";
 # ------------------------------------------------------------------------------
 
 ostype_header("AppleScript related");
-ostype_info('aete', 'Apple Event Terminology', 'Apple'); // https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf
 ostype_info('tELE', 'Plugin Suite ID', 'Telegraphics');
 ostype_info('Fltr', 'Class ID "Filter" (PITerminology.h:eventFilter)', 'Adobe');
 ostype_info('fiFo', 'Event ID (for non-standalone filter)', 'Telegraphics');
@@ -40,6 +39,7 @@ ostype_info('cTl7', 'Slider 7 (for non-standalone filter)', 'Telegraphics');
 ostype_footer();
 
 ostype_header("Resource types");
+ostype_info('aete', 'Apple Event Terminology', 'Apple'); // https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf
 ostype_info('tpLT', 'Template for standalone filter resources', 'Telegraphics');
 ostype_info('DATA', 'Generic Data (used in for obfuscated filters)', 'Apple?');
 ostype_info('PARM', 'Filter Factory parameter data (PARM.h)', 'Adobe');
@@ -61,11 +61,11 @@ ostype_info('PiPL', 'PlugIn Property List', 'Adobe');
 ostype_info('catg', 'PiPL property "Category"', 'Adobe');
 ostype_info('name', 'PiPL property "Name"', 'Adobe');
 ostype_info('hstm', 'PiPL property "Has terminology"', 'Adobe');
-ostype_info('8BIM', 'Adobe Photoshop vendor code', 'Adobe');
+ostype_info('8BIM', 'Adobe Photoshop vendor code', 'Adobe'); // was '8B##" assigned to Adobe by Apple?
 ostype_info('wx86', 'PIWin32X86CodeProperty (PIGeneral.h)', 'Adobe');
 ostype_info('8664', 'PIWin64X86CodeProperty (PIGeneral.h)', 'Adobe');
 ostype_info('kind', 'PiPL property "Kind" (PIPL.r)', 'Adobe');
-ostype_info('8BFM', 'Filter module (used in \'kind\' property)', 'Adobe');
+ostype_info('8BFM', 'Adobe Filter module (used in \'kind\' property)', 'Adobe'); // was '8B##" assigned to Adobe by Apple?
 ostype_info('vers', 'PiPL property "Version" (PIPL.r)', 'Adobe');
 ostype_info('mode', 'PiPL property "SupportedModes" (PIPL.r)', 'Adobe');
 ostype_info('ms32', 'PiPL property "PlugInMaxSize" (PIPL.r)', 'Adobe');

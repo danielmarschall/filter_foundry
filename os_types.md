@@ -13,7 +13,6 @@ AppleScript related
 
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
-| `aete` | 1634038885 | 0x61657465 | Apple Event Terminology                                 | Apple           |
 | `tELE` | 1950698565 | 0x74454c45 | Plugin Suite ID                                         | Telegraphics    |
 | `Fltr` | 1181512818 | 0x466c7472 | Class ID "Filter" (PITerminology.h:eventFilter)         | Adobe           |
 | `fiFo` | 1718175343 | 0x6669466f | Event ID (for non-standalone filter)                    | Telegraphics    |
@@ -35,6 +34,7 @@ Resource types
 
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
+| `aete` | 1634038885 | 0x61657465 | Apple Event Terminology                                 | Apple           |
 | `tpLT` | 1953516628 | 0x74704c54 | Template for standalone filter resources                | Telegraphics    |
 | `DATA` | 1145132097 | 0x44415441 | Generic Data (used in for obfuscated filters)           | Apple?          |
 | `PARM` | 1346458189 | 0x5041524d | Filter Factory parameter data (PARM.h)                  | Adobe (illegal) |
@@ -61,7 +61,7 @@ PlugIn Property List (PiPL) related
 | `wx86` | 2004367414 | 0x77783836 | PIWin32X86CodeProperty (PIGeneral.h)                    | Adobe (illegal) |
 | `8664` |  943076916 | 0x38363634 | PIWin64X86CodeProperty (PIGeneral.h)                    | Adobe (illegal) |
 | `kind` | 1802071652 | 0x6b696e64 | PiPL property "Kind" (PIPL.r)                           | Adobe (illegal) |
-| `8BFM` |  943867469 | 0x3842464d | Filter module (used in 'kind' property)                 | Adobe (illegal) |
+| `8BFM` |  943867469 | 0x3842464d | Adobe Filter module (used in 'kind' property)           | Adobe (illegal) |
 | `vers` | 1986359923 | 0x76657273 | PiPL property "Version" (PIPL.r)                        | Adobe (illegal) |
 | `mode` | 1836016741 | 0x6d6f6465 | PiPL property "SupportedModes" (PIPL.r)                 | Adobe (illegal) |
 | `ms32` | 1836266290 | 0x6d733332 | PiPL property "PlugInMaxSize" (PIPL.r)                  | Adobe (illegal) |

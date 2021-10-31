@@ -38,6 +38,7 @@ LICENSE*.* linguist-vendored
 #.md text eol=crlf linguist-language=Markdown linguist-documentation
 #.pdf binary linguist-documentation
 #.pff text eol=cr
+#*.php text eol=crlf linguist-language=PHP
 #.plist text eol=lf
 #.png binary
 #.prm binary
@@ -87,6 +88,7 @@ FilterFoundry.make text=auto linguist-language=Makefile
 *.md text=auto linguist-language=Markdown linguist-documentation
 *.pdf binary linguist-documentation
 *.pff binary
+*.php text=auto linguist-language=PHP
 *.plist text=auto
 *.png binary
 *.prm binary
