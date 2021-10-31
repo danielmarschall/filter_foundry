@@ -42,16 +42,18 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	Ptr pparm;
 	int res = false;
 
-	parm_id = PARM_ID; // default value
-	EnumResourceNames(hm,"PARM",enumnames,0); // callback function enumnames() will find the actual found parm_id
+	parm_id = 0;
+	EnumResourceNames(hm,PARM_TYPE,enumnames,0); // callback function enumnames() will find the actual found parm_id
 
 	// load first PARM resource
-	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),"PARM")) ){
+	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),PARM_TYPE)) ){
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
 			res = readPARM(pparm, &gdata->parm, reason, 1 /*Windows format resource*/);
 			gdata->obfusc = false;
 		}
-	}else if( readobfusc && (resinfo = FindResource(hm,MAKEINTRESOURCE(OBFUSCDATA_ID),RT_RCDATA)) ){
+	}else if( readobfusc &&
+	          ((resinfo = FindResource(hm,OBFUSCDATA_ID_NEW,OBFUSCDATA_TYPE_NEW)) ||
+	          (resinfo = FindResource(hm,OBFUSCDATA_ID_OLD,OBFUSCDATA_TYPE_OLD))) ){
 		if( (h = LoadResource(hm,resinfo)) && (pparm = (Ptr)LockResource(h)) ){
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only

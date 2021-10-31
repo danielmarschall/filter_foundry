@@ -36,6 +36,9 @@ resource 'PiPL' (16000, purgeable)
 
 #include "PiPL_common.r"
 
+#if (defined(__x86_64__))
+		CodeMacIntel64 { "PluginMain" },
+#endif
 #if (defined(__i386__))
 		CodeMacIntel32 { "PluginMain" },
 #endif
@@ -53,6 +56,9 @@ resource 'tpLT' (16000, purgeable)
 	{
 #include "pipl_common.r"
 
+#if (defined(__x86_64__))
+		CodeMacIntel64 { "PluginMain" },
+#endif
 #if (defined(__i386__))
 		CodeMacIntel32 { "PluginMain" },
 #endif

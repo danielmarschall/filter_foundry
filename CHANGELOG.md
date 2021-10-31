@@ -6,6 +6,8 @@
 - In the Make dialog, if you clicked "OK" and then cancelled the save dialog, you didn't get back to the Make-dialog. Fixed.
 - "Filters Unlimited" filters (FFX files) can now be loaded. However, only the basic Filter Factory commands are supported.
 - You can now also save to the "Premiere Filter Factory" (.pff) file format.
+- Internal change: The resource fork type 'TpLT' is now 'tpLT'.
+- Internal change: Obfuscated data is stored in resource fork 'obFS' instead of 'DATA'. For Windows "OBFS" instead of RCDATA.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
@@ -86,7 +88,7 @@
 - Fixed problem where 32bit Windows plugin tries to load 64bit standalone plugin
 - Bugfix: Windows Open/Save dialogs: At the title, the first character was missing. Fixed.
 - Internal change: "Manifest" resource gets individualized in standalone plugins
-- Internal change: PiPL/Manifest-template is now stored in 'TpTL' instead of 'DATA'/RCDATA. (But obfuscated data stays at 'DATA'/RCDATA)
+- Internal change: PiPL/Manifest-template is now stored in 'TpLT' instead of 'DATA'/RCDATA. (But obfuscated data stays at 'DATA'/RCDATA)
 - Bugfix: If you called a standalone filter two times, then the main dialog opened (bug introduced in 1.7.0.3)
 - Ifanview/GIMP can now also work with standalone filters
 - If the user tries to open a protected 8BF file, the error message will now state that it can't be opened because the filter is protected

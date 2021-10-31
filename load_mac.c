@@ -28,9 +28,11 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	Boolean res = false;
 	Handle h;
 
-	if( !(h = Get1Resource(PARM_TYPE,PARM_ID))
+	if(  !(h = Get1Resource(PARM_TYPE,PARM_ID_NEW))
+	  && !(h = Get1Resource(PARM_TYPE,PARM_ID_OLD))
 	  && readobfusc
-	  && (h = Get1Resource('DATA',OBFUSCDATA_ID)) ){
+	  && ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
+	      (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) ){
 		HLock(h);
 		if(GetHandleSize(h) == sizeof(PARM_T)) {
 			deobfusc((PARM_T*)*h);
@@ -76,12 +78,12 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if( (readok = readfile_afs_pff(sfr,reason)) ) {
 			gdata->parmloaded = false;
 			gdata->obfusc = false;
-		
+
 		} // then try "Filters Unlimited" file (FFX)
 		else if( (readok = readfile_ffx(sfr,reason)) ) {
 			gdata->parmloaded = true;
 			gdata->obfusc = false;
-		
+
 		} // then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
 		else if( (readok = readmacplugin(sfr,reason) || readfile_8bf(sfr,reason)) ){
 			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {

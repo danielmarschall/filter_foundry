@@ -51,9 +51,28 @@ enum{
 
 	CHUNK_ROWS = 64,
 
-	PARM_TYPE = 'PARM',
-	PARM_ID = 16, // older versions of Filter Foundry used 16000. Now 16 for compatibility with Filter Factory
-	OBFUSCDATA_ID = 16001,
+#ifdef MAC_ENV
+	PARM_TYPE = 'PARM', // Note: There is also a Rez type in PARM.h
+	PARM_ID_OLD = 16000,
+	PARM_ID_NEW = 16, // Filter Factory compatibility
+#else
+	PARM_TYPE = "PARM",
+	PARM_ID_OLD = MAKEINTRESOURCE(16000),
+	PARM_ID_NEW = MAKEINTRESOURCE(16), // Filter Factory compatibility
+#endif
+
+#ifdef MAC_ENV
+	OBFUSCDATA_TYPE_OLD = 'DATA';
+	OBFUSCDATA_TYPE_NEW = 'obFS';
+	OBFUSCDATA_ID_OLD = 16001,
+	OBFUSCDATA_ID_NEW = 16,
+#else
+	OBFUSCDATA_TYPE_OLD = RT_RCDATA;
+	OBFUSCDATA_TYPE_NEW = "OBFS";
+	OBFUSCDATA_ID_OLD = MAKEINTRESOURCE(16001),
+	OBFUSCDATA_ID_NEW = MAKEINTRESOURCE(16),
+#endif
+
 	TEXT_FILETYPE = 'TEXT',
 	SIG_SIMPLETEXT = 'ttxt',
 	PS_FILTER_FILETYPE = '8BFM',

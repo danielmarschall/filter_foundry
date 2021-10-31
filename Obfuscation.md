@@ -3,12 +3,12 @@
 ## Resource location
 
 Obfuscated standalone filters:
-- Windows resource: RCDATA\16001\0
-- MacOS resource: 'DATA' 16001
+- Windows resource: OBFS\16\0 (previously RCDATA\16001\0)
+- MacOS resource: 'obFS' 16 (previously 'DATA' 16001)
 
 Normal standalone filters:
-- Windows resource: PARM\16\0
-- MacOS resource: 'PARM' 16
+- Windows resource: PARM\16\0 (previously PARM\16000\0)
+- MacOS resource: 'PARM' 16 (previously 'PARM' 16000)
 
 ## Implementation
 

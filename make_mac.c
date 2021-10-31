@@ -108,11 +108,11 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 								HLock(h);
 								obfusc((PARM_T*)*h);
 								HUnlock(h);
-								parm_type = 'DATA';
-								parm_id = OBFUSCDATA_ID;
+								parm_type = OBFUSCDATA_TYPE_NEW;
+								parm_id = OBFUSCDATA_ID_NEW;
 							}else{
-								parm_type = 'PARM';
-								parm_id = PARM_ID;
+								parm_type = PARM_TYPE;
+								parm_id = PARM_ID_NEW;
 							}
 							AddResource(h,parm_type,parm_id,"\p");
 						}

@@ -467,14 +467,14 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				// ====== Obfuscate pparm!
 
 				if (gdata->obfusc) {
-					parm_type = RT_RCDATA;
-					parm_id = OBFUSCDATA_ID;
+					parm_type = OBFUSCDATA_TYPE_NEW;
+					parm_id = OBFUSCDATA_ID_NEW;
 
 					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
 					obfuscseed = obfusc(pparm);
 				}else{
-					parm_type = "PARM";
-					parm_id = PARM_ID;
+					parm_type = PARM_TYPE;
+					parm_id = PARM_ID_NEW;
 				}
 
 				// ====== Save AETE, PIPL, Manifest and PARM/RCDATA
