@@ -42,7 +42,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	Ptr pparm;
 	int res = false;
 
-	parm_id = 0;
+	parm_id = 1;
 	EnumResourceNames(hm,PARM_TYPE,enumnames,0); // callback function enumnames() will find the actual found parm_id
 
 	// load first PARM resource

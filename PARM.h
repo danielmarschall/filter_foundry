@@ -25,9 +25,31 @@
 #define PARM_SIZE_PREMIERE       0x206C // Premiere FF/TF
 #define PARM_SIG_MAC             0x1C68 // Mac OS Filter Factory and Filter Foundy <1.7 use 0x1C68 instead of 0x2068 as first member
 
+#ifdef MAC_ENV
+	#define PARM_TYPE 'PARM'
+	#define PARM_ID_OLD 16000
+	#define PARM_ID_NEW 16 // Filter Factory compatibility
+#else
+	#define PARM_TYPE "PARM"
+	#define PARM_ID_OLD MAKEINTRESOURCE(16000)
+	#define PARM_ID_NEW MAKEINTRESOURCE(16) // Filter Factory compatibility
+#endif
+
+#ifdef MAC_ENV
+	#define OBFUSCDATA_TYPE_OLD 'DATA'
+	#define OBFUSCDATA_TYPE_NEW 'obFS'
+	#define OBFUSCDATA_ID_OLD 16001
+	#define OBFUSCDATA_ID_NEW 16
+#else
+	#define OBFUSCDATA_TYPE_OLD RT_RCDATA
+	#define OBFUSCDATA_TYPE_NEW "OBFS"
+	#define OBFUSCDATA_ID_OLD MAKEINTRESOURCE(16001)
+	#define OBFUSCDATA_ID_NEW MAKEINTRESOURCE(16)
+#endif
+
 #ifdef Rez
 
-type 'PARM' {
+type PARM_TYPE {
 	longint = PARM_SIZE; // cbSize;    //size of this structure
 	longint FilterFactory,standaloneFilter; // standalone;  //0=original FF, 1=standalone filter
 	array[8] { longint; }; // val[8];    //initial values of controls

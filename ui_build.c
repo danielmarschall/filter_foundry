@@ -126,16 +126,21 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.cbSize = PARM_SIZE;
 		gdata->parm.standalone = 1;  //0=original FF, 1=standalone filter
 		needui = 0;
+		// Sliders
 		for(i = 0; i < 8; ++i){
 			gdata->parm.val[i] = slider[i];
 			gdata->parm.ctl_used[i] = ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
 			needui |= gdata->parm.ctl_used[i];
 			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.ctl[i],s);
 		}
-		for(i = 0; i < 4; ++i){
+		// Maps
+		for (i = 0; i < 4; ++i) {
 			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
 			needui |= gdata->parm.map_used[i];
-			GetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.map[i],s);
+			GetDlgItemText(dp, FIRSTMAPNAMEITEM + i, s, MAXFIELD); myc2pstrcpy(gdata->parm.map[i], s);
+		}
+		// Expressions
+		for (i = 0; i < 4; ++i) {
 			if (!expr[i]) {
 				simplealert("Bug! see builddlgitem");
 				return true; // keep going. Let the user try again

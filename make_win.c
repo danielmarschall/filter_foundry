@@ -372,7 +372,8 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	size_t piplsize,aetesize,origsize;
 	Str255 title;
 	LPCTSTR parm_type;
-	int i,parm_id;
+	int i;
+	LPCSTR parm_id;
 	Boolean discard = true;
 	uint64_t obfuscseed = 0;
 	long event_id;
@@ -500,7 +501,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 					&& (gdata->obfusc || _UpdateResource(hupdate, "FUNC", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_func, sizeof(dummy_func)))
 					&& (gdata->obfusc || _UpdateResource(hupdate, "SYNM", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_symn, sizeof(dummy_symn)))
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
-					&& _UpdateResource(hupdate, parm_type,MAKEINTRESOURCE(parm_id), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
+					&& _UpdateResource(hupdate, parm_type,parm_id, MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 				{
 					discard = false;
 				} else {
