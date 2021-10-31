@@ -289,6 +289,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					char outfilename[255];
 					StandardFileReply sfr;
 					char* bakexpr[4];
+					int i;
 
 					sfr.sfGood = true;
 					sfr.sfReplacing = true;
@@ -305,10 +306,9 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					// We only want the parameters (ctl,map) in the temporary .afs file
 					// It is important to remove the expressions, otherwise they would be
 					// revealed in the temporary files.
-					bakexpr[0] = expr[0]; // moved out of the if-definition to make the compiler happy
-					bakexpr[1] = expr[1];
-					bakexpr[2] = expr[2];
-					bakexpr[3] = expr[3];
+					for (i = 0; i < 4; i++) {
+						bakexpr[i] = expr[i]; // moved out of the if-definition to make the compiler happy
+					}
 					if (gdata->standalone) {
 						expr[0] = _strdup("r");
 						expr[1] = _strdup("g");
@@ -319,10 +319,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					savefile_afs_pff(&sfr);
 
 					if (gdata->standalone) {
-						free(expr[0]); expr[0] = bakexpr[0];
-						free(expr[1]); expr[1] = bakexpr[1];
-						free(expr[2]); expr[2] = bakexpr[2];
-						free(expr[3]); expr[3] = bakexpr[3];
+						for (i = 0; i < 4; i++) {
+							if (expr[i]) free(expr[i]);
+							expr[i] = bakexpr[i];
+						}
 					}
 				} else {
 					/* update stored parameters from new user settings */
@@ -402,20 +402,19 @@ int checkandinitparams(Handle params){
 
 		// We only want the parameters (ctl,map) in the temporary .afs file
 		if (isStandalone) {
-			bakexpr[0] = my_strdup(expr[0]);
-			bakexpr[1] = my_strdup(expr[1]);
-			bakexpr[2] = my_strdup(expr[2]);
-			bakexpr[3] = my_strdup(expr[3]);
+			for (i = 0; i < 4; i++) {
+				bakexpr[i] = my_strdup(expr[i]);
+			}
 		}
 
 		if (loadfile(&sfr, &reason)) {
 			gdata->standalone = gdata->parmloaded = isStandalone;
 
 			if (isStandalone) {
-				free(expr[0]); expr[0] = bakexpr[0];
-				free(expr[1]); expr[1] = bakexpr[1];
-				free(expr[2]); expr[2] = bakexpr[2];
-				free(expr[3]); expr[3] = bakexpr[3];
+				for (i = 0; i < 4; i++) {
+					if (expr[i]) free(expr[i]);
+					expr[i] = bakexpr[i];
+				}
 			}
 
 			return true;

@@ -8,6 +8,7 @@
 - You can now also save to the "Premiere Filter Factory" (.pff) file format.
 - Internal change: The resource fork type 'TpLT' is now 'tpLT'.
 - Internal change: Obfuscated data is stored in resource fork 'obFS' instead of 'DATA'. For Windows "OBFS" instead of RCDATA.
+- Bugfix: When you tried to load a protected obfuscated filter and then tried to make a new filter, the filter was damaged. Fixed.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
