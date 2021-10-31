@@ -68,7 +68,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 		/* create a new PiPL resource for the standalone plugin,
 		   with updated title and category strings */
 
-		if( (hpipl = Get1Resource('TpLT',16000))
+		if( (hpipl = Get1Resource('tpLT',16000))
 		 && (h = Get1Resource('PiPL',16000)) )
 		{
 			RemoveResource(h);

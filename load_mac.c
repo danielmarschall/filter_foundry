@@ -83,7 +83,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			gdata->obfusc = false;
 		
 		} // then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
-		else if( (readok = readmacplugin(sfr,reason) || read8bfplugin(sfr,reason)) ){
+		else if( (readok = readmacplugin(sfr,reason) || readfile_8bf(sfr,reason)) ){
 			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				*reason = "Incompatible obfuscation.";
 				//gdata->parmloaded = false;

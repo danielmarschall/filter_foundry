@@ -117,7 +117,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or NE executable on Win64)
 	if (!readok) {
-		if (read8bfplugin(sfr, reason)) {
+		if (readfile_8bf(sfr, reason)) {
 			if (gdata->parm.iProtected) {
 				*reason = _strdup("The filter is protected.");
 				return false; // Stop! We know the issue now.

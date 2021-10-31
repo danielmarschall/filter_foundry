@@ -90,6 +90,7 @@ extern char *errstr;
 
 // from main.c
 unsigned long get_parm_hash(PARM_T *parm);
+void get_temp_afs(char* outfilename, Boolean isStandalone, PARM_T* parm);
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
@@ -99,7 +100,7 @@ void RequestNext (FilterRecordPtr epb,long);
 // from read.c
 Boolean readparams(Handle h,Boolean alerts,char **reason);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
-Boolean read8bfplugin(StandardFileReply *sfr,char **reason);
+Boolean readfile_8bf(StandardFileReply *sfr,char **reason);
 Handle readfileintohandle(FILEREF r);
 Boolean readfile_afs_pff(StandardFileReply* sfr, char** reason);
 Boolean readfile_ffx(StandardFileReply* sfr, char** reason);

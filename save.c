@@ -125,7 +125,7 @@ Boolean savefile_afs_pff(StandardFileReply *sfr){
 				expr[2] = tmp;
 			}
 
-			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.				res = !(saveparams(h) || savehandleintofile(h,r)) ;
+			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 				res = !(saveparams(h) || savehandleintofile(h,r));
 				PIDISPOSEHANDLE(h);
 			}

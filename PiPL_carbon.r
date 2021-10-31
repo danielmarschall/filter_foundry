@@ -39,8 +39,8 @@ resource 'PiPL' (16000, purgeable)
 	}
 };
 
-type 'TpLT' as 'PiPL';
-resource 'TpLT' (16000, purgeable)
+type 'tpLT' as 'PiPL';
+resource 'tpLT' (16000, purgeable)
 {
 	{
 #include "pipl_common.r"

@@ -307,7 +307,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 	return res;
 }
 
-Boolean read8bfplugin(StandardFileReply *sfr,char **reason){
+Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 	unsigned char magic[2];
 	FILECOUNT count;
 	Handle h;

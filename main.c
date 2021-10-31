@@ -80,6 +80,21 @@ unsigned long get_parm_hash(PARM_T *parm) {
 	return hash;
 }
 
+void get_temp_afs(char *outfilename, Boolean isStandalone, PARM_T *parm) {
+	char* tempdir;
+	int hash;
+
+	tempdir = getenv("TMP");
+	#ifdef WIN_ENV
+	if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+	#else
+	if (strlen(tempdir) > 0) strcat(tempdir, "/");
+	#endif
+
+	hash = (isStandalone) ? get_parm_hash(parm) : 0;
+	sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+}
+
 DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
@@ -272,8 +287,6 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					   when the window is opened again. */
 					// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
 					char outfilename[255];
-					char* tempdir;
-					int hash;
 					StandardFileReply sfr;
 					char* bakexpr[4];
 
@@ -281,15 +294,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					sfr.sfReplacing = true;
 					sfr.sfType = PS_FILTER_FILETYPE;
 
-					tempdir = getenv("TMP");
-					#ifdef WIN_ENV
-					if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-					#else
-					if (strlen(tempdir) > 0) strcat(tempdir, "/");
-					#endif
-
-					hash = (gdata->standalone) ? get_parm_hash(&gdata->parm) : 0;
-					sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+					get_temp_afs(&outfilename[0], gdata->standalone, &gdata->parm);
 
 					myc2pstrcpy(sfr.sfFile.name, outfilename);
 					#ifdef WIN_ENV
@@ -364,8 +369,6 @@ int checkandinitparams(Handle params){
 	if (!host_preserves_parameters()) {
 		// Workaround: Load settings in "FilterFoundryXX.afs" if host does not preserve pb->parameters
 		char outfilename[255];
-		char* tempdir;
-		int hash;
 		Boolean isStandalone;
 		StandardFileReply sfr;
 		char* bakexpr[4];
@@ -389,15 +392,7 @@ int checkandinitparams(Handle params){
 			return false;
 		}
 
-		tempdir = getenv("TMP");
-		#ifdef WIN_ENV
-		if (strlen(tempdir) > 0) strcat(tempdir, "\\");
-		#else
-		if (strlen(tempdir) > 0) strcat(tempdir, "/");
-		#endif
-
-		hash = (isStandalone) ? get_parm_hash(&gdata->parm) : 0;
-		sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+		get_temp_afs(&outfilename[0], isStandalone, &gdata->parm);
 
 		myc2pstrcpy(sfr.sfFile.name, outfilename);
 		#ifdef WIN_ENV
