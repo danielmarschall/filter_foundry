@@ -74,7 +74,7 @@ extern globals_t *gdata;
 extern struct node *tree[4];
 extern char *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
-extern uint8_t slider[8],map[4][0x100];
+extern uint8_t slider[8];
 extern value_type cell[NUM_CELLS];
 extern char *expr[4];
 // extern long maxSpace;
@@ -85,6 +85,15 @@ extern char *errstr;
 #define DBG(x) {}
 //#define DEBUG
 
+struct InternalState {
+	Boolean bak_obfusc;
+	Boolean bak_standalone;
+	Boolean bak_parmloaded;
+	char* bak_expr[4];
+	uint8_t bak_slider[8];
+	PARM_T bak_parm;
+};
+
 // from main.c
 unsigned long get_parm_hash(PARM_T *parm);
 void get_temp_afs(char* outfilename, Boolean isStandalone, PARM_T* parm);
@@ -93,6 +102,8 @@ void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
 void DoFinish (FilterRecordPtr epb);
 void RequestNext (FilterRecordPtr epb,long);
+struct InternalState saveInternalState();
+void restoreInternalState(struct InternalState state);
 
 // from read.c
 Boolean readparams(Handle h,Boolean alerts,char **reason);

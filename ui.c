@@ -332,12 +332,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
 	char *reason;
-	Boolean bak_obfusc, bak_standalone, bak_parmloaded;
-	char* bak_expr[4];
-	uint8_t bak_slider[8];
-	PARM_T bak_parm;
 	HINSTANCE hShellRes;
-	int i;
+	struct InternalState bakState;
 
 	switch(item){
 #ifdef MAC_ENV
@@ -363,12 +359,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			#endif /* _WIN32 */
 		)){
 			// Backup everything, because obfuscation et. al. causes changing of the state (yes, that's messy :( )
-			bak_obfusc = gdata->obfusc;
-			bak_standalone = gdata->standalone;
-			bak_parmloaded = gdata->parmloaded;
-			memcpy(&bak_parm, &gdata->parm, sizeof(PARM_T));
-			for (i = 0; i < 4; i++) bak_expr[i] = my_strdup(expr[i]);
-			for (i = 0; i < 8; i++) bak_slider[i] = slider[i];
+			bakState = saveInternalState();
 
 			if(loadfile(&sfr,&reason)){
 				updatedialog(dp);
@@ -378,15 +369,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				alertuser(_strdup("Cannot load settings."), reason);
 
 				// Restore
-				gdata->obfusc = bak_obfusc;
-				gdata->standalone = bak_standalone;
-				gdata->parmloaded = bak_parmloaded;
-				memcpy(&gdata->parm, &bak_parm, sizeof(PARM_T));
-				for (i = 0; i < 4; i++) {
-					if (expr[i]) free(expr[i]);
-					expr[i] = bak_expr[i];
-				}
-				for (i = 0; i < 8; i++) slider[i] = bak_slider[i];
+				restoreInternalState(bakState);
 			}
 		}
 		break;
@@ -412,25 +395,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if (gdata->standalone) return true; // should not happen since the button should be grayed out
 
 		// Backup everything, because obfuscation et. al. causes changing of the state (yes, that's messy :( )
-		bak_obfusc = gdata->obfusc;
-		bak_standalone = gdata->standalone;
-		bak_parmloaded = gdata->parmloaded;
-		memcpy(&bak_parm, &gdata->parm, sizeof(PARM_T));
-		for (i = 0; i < 4; i++) bak_expr[i] = my_strdup(expr[i]);
-		for (i = 0; i < 8; i++) bak_slider[i] = slider[i];
+		bakState = saveInternalState();
 
 		builddialog(gpb);
 
 		// Restore
-		gdata->obfusc = bak_obfusc;
-		gdata->standalone = bak_standalone;
-		gdata->parmloaded = bak_parmloaded;
-		memcpy(&gdata->parm, &bak_parm, sizeof(PARM_T));
-		for (i = 0; i < 4; i++) {
-			if (expr[i]) free(expr[i]);
-			expr[i] = bak_expr[i];
-		}
-		for (i = 0; i < 8; i++) slider[i] = bak_slider[i];
+		restoreInternalState(bakState);
 
 		break;
 	case HELPITEM:

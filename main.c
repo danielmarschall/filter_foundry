@@ -40,7 +40,7 @@
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
-uint8_t slider[8],map[4][0x100];
+uint8_t slider[8];
 value_type cell[NUM_CELLS];
 char *expr[4];
 // long maxSpace;
@@ -721,5 +721,34 @@ void DoFinish(FilterRecordPtr pb){
 	for(i = 4; i--;){
 		freetree(tree[i]);
 		if(expr[i]) free(expr[i]);
+	}
+}
+
+struct InternalState saveInternalState() {
+	struct InternalState ret;
+	int i;
+
+	ret.bak_obfusc = gdata->obfusc;
+	ret.bak_standalone = gdata->standalone;
+	ret.bak_parmloaded = gdata->parmloaded;
+	memcpy(&ret.bak_parm, &gdata->parm, sizeof(PARM_T));
+	for (i = 0; i < 4; i++) ret.bak_expr[i] = my_strdup(expr[i]);
+	for (i = 0; i < 8; i++) ret.bak_slider[i] = slider[i];
+
+	return ret;
+}
+
+void restoreInternalState(struct InternalState state) {
+	int i;
+	gdata->obfusc = state.bak_obfusc;
+	gdata->standalone = state.bak_standalone;
+	gdata->parmloaded = state.bak_parmloaded;
+	memcpy(&gdata->parm, &state.bak_parm, sizeof(PARM_T));
+	for (i = 0; i < 4; i++) {
+		if (expr[i]) free(expr[i]);
+		expr[i] = state.bak_expr[i];
+	}
+	for (i = 0; i < 8; i++) {
+		slider[i] = state.bak_slider[i];
 	}
 }

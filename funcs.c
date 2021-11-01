@@ -253,7 +253,7 @@ const uint16_t FACTORY_C2M_LOOKUP[1024] = {
 
 // -------------------------------------------------------------------------------------------
 
-extern uint8_t slider[],map[][0x100];
+extern uint8_t slider[];
 extern value_type cell[], var[];
 extern unsigned char *image_ptr;
 
