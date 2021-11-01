@@ -2,7 +2,7 @@
 Building FilterFoundry with OpenWatcom
 ======================================
 
-Most recently tested with OpenWatcom 1.9 and Adobe Photoshop SDK CC 2017.
+Most recently tested with OpenWatcom 1.9 and Adobe Photoshop SDK 2022.
 
 
 Prerequisites
@@ -42,8 +42,7 @@ Troubleshooting
     If you get the error message "Fatal Error! 62:  Unable to open 'sdkddkver.h'", please open 
     pluginsdk\photoshopapi\photoshop\PITypes.h in your Adobe Photoshop SDK and
     comment out the line "#include <sdkddkver.h> // for WINVER".
-    Alternatively, you can use an older version of the Photoshop SDK, or create an empty
-    sdkddkver.h file in your wpj folder.
+    Alternatively, you can create an empty sdkddkver.h file in your wpj folder.
   * In Open Watcom 2.0:
     The error message has the error code E062.
     Creating an empty sdkddkver.h does not work anymore.

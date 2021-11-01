@@ -6,23 +6,18 @@ Notes on source code
 Source code, makefiles and IDE projects under GPL license are provided
 for MPW (Classic & Carbon PowerPC targets), CodeWarrior 7
 (Classic & Carbon PowerPC, Win32, 68K targets),
-Microsoft Visual C++ (Win32 target), OpenWatcom (Win32 target),
-and mingw32 (Win32 target).
+Microsoft Visual C++ (Win32/64 target), OpenWatcom (Win32 target),
+mingw32 (Win32 target), and mingw64 (Win64 target).
 
-A Photoshop SDK is required (available from Adobe Systems,
-https://www.adobe.com/devnet/photoshop/sdk.html ).
-The SDK was also distributed with Photoshop 6.0 and earlier.
-The source code has been built with SDK 6.0, CS2, CS3 beta, and CC 2017 but older
-versions should work, too.
-(If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
-to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace
-with a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency"
-from PiPL_common.r.)
+A Photoshop SDK is required (available from Adobe Systems).
+Please read the document DOWNLOAD.txt in the directory "photoshop_sdk"
+for further information.
 
 The dependency "telegraphics_common" is available here
 https://www.telegraphics.com.au/svn/common/
 Revision 84 (dated 9 October 2019) is included in this repository
-to simplify the build process.
+to simplify the build process. After the addition, the
+code there was updated.
 
 
 Mac notes
@@ -113,7 +108,7 @@ BUILDING WITH MINGW32/64
   For 32 bit "i686" and for 64 bit "x86_64"
 * Check if all paths inside the file "make_mingw32.bat" are valid, then run it.
   The files FilterFoundry.8bf (32 Bit) and FilterFoundry64.8bf (64 Bit) should now be generated.
-* Most recently tested with mingw64 and Adobe Photoshop SDK CC 2017:
+* Most recently tested with mingw64 and Adobe Photoshop SDK 2022:
   - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
   - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit
 

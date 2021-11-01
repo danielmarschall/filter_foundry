@@ -1,13 +1,32 @@
 
-Please download the Adobe Photoshop SDK here:
-https://www.adobe.com/devnet/photoshop/sdk.html
-	Note: The download of SDK 2017 at the end of the EULA page
-	won't work on some browsers due to security settings:
-	"adobe.com" uses HTTPS, while the download target "macromedia.com" uses HTTP.
-	Therefore, the download does not work.
-	Direct download of SDK 2017 here:
-	http://download.macromedia.com/pub/developer/photoshop/sdk/adobe_photoshop_sdk_cc_2017_win.zip
+How to download the latest version of the SDK:
 
+1. Go to https://www.adobe.com/devnet/photoshop/sdk.html
+
+2. At the section "C++ SDK", click "Download the SDK"
+
+3. You need to create a Adobe developer account now,
+   or log in if you already have an account.
+
+4. Scroll down to "Photoshop" (NOT "Adobe Photoshop API (Trial)")
+   and then click "View downloads".
+
+5. Download "Photoshop Plug-In and Connection SDK" for Windows.
+
+6. Once you have obtained the SDK, extract the SDK contents in the "photoshop_sdk" directory:
+   - connectionsdk/
+   - images/
+   - pluginsdk/
+   - license.html
+   - ReadMe.html
+
+   These folders are excluded in SVN and GIT to avoid that they
+   are accidentally uploaded somewhere.
+
+   Note: Actually, you only need the following files:
+   - pluginsdk/photoshopapi/photoshop/*.h
+   - pluginsdk/photoshopapi/pica_sp/*.h
+   - pluginsdk/photoshopapi/resources/*.r
 
 
 Important:
@@ -19,25 +38,17 @@ or the plugin source code, and must stay on the computer of the developer.
 
 If you do not agree to the EULA of the latest SDK,
 you could try to obtain an older version of the SDK which
-might have different license terms. This plugin should be
-compatible with older versions of the SDK too.
+might have different license terms. For example, the SDK was
+also distributed with Photoshop 6.0 and earlier.
 
 
-Once you have obtained the SDK, extract the SDK contents in this directory:
-- connectionsdk/
-- images/
-- pluginsdk/
-- license.html
-- ReadMe.html
-
-These folders are excluded in SVN and GIT to avoid that they
-are accidentally uploaded somewhere.
-
-
-Actually, you only need the following files:
-- pluginsdk/photoshopapi/photoshop/*.h
-- pluginsdk/photoshopapi/pica_sp/*.h
-- pluginsdk/photoshopapi/resources/*.r
+Compatibility:
+The source code has been built with SDK 6.0, CS2, CS3 beta, CC 2017, and 2022
+but older versions should work, too.
+(If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
+to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace
+with a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency"
+from PiPL_common.r.)
 
 
 Additional notes:
