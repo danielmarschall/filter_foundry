@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.11 [Work-In-Progress]
+## 1.7.0.11 [01-Nov-2021]
 - Tab-Order has been changed (*)
 - Fixed incompatibility with older versions of Wine (Windows emulator for Linux systems)
 - In the Make dialog, if you clicked "OK" and then cancelled the save dialog, you didn't get back to the Make-dialog. Fixed.

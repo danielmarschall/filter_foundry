@@ -8,7 +8,7 @@ Initially written by [Toby Thain](https://www.telegraphics.com.au/sw/) in 2003 -
 A full description of Filter Foundry including a reference of all functions, variables, and operators can be found in the ["doc" folder](https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf).
 
 
-### Windows version 1.7.0.10
+### Windows version 1.7.0.11
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
 
