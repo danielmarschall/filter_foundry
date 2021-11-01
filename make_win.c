@@ -403,7 +403,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 			&& (aetersrc = FindResource(srcmod, MAKEINTRESOURCE(16000), "AETE"))
 			&& (aeteh = LoadResource(srcmod, aetersrc))
 			&& (aetep = (Ptr)LockResource(aeteh))
-			&& (manifestsrc = FindResource(srcmod, MAKEINTRESOURCE(50), "TPLT"))
+			&& (manifestsrc = FindResource(srcmod, MAKEINTRESOURCE(1), "TPLT"))
 			&& (manifesth = LoadResource(srcmod, manifestsrc))
 			&& (manifestp = (Ptr)LockResource(manifesth)) )
 		{
@@ -485,7 +485,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
 
-				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(50), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)  // clean up things we don't need in the standalone plugin
+				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)  // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
