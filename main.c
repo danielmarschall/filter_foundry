@@ -40,9 +40,9 @@
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
-uint8_t slider[8];
+uint8_t slider[8]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
+char* expr[4]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 value_type cell[NUM_CELLS];
-char *expr[4];
 // long maxSpace;
 globals_t *gdata;
 FilterRecordPtr gpb;
@@ -73,9 +73,9 @@ unsigned long get_parm_hash(PARM_T *parm) {
 	hash += djb2((char*)parm->title);
 	hash += djb2((char*)parm->copyright);
 	hash += djb2((char*)parm->author);
-	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm->map[i]);
-	for (i = 0; i < 8; i++) hash += hash += djb2((char*)parm->ctl[i]);
-	for (i = 0; i < 4; i++) hash += hash += djb2((char*)parm->formula[i]);
+	for (i = 0; i < 4; i++) hash += djb2((char*)parm->map[i]);
+	for (i = 0; i < 8; i++) hash += djb2((char*)parm->ctl[i]);
+	for (i = 0; i < 4; i++) hash += djb2((char*)parm->formula[i]);
 
 	return hash;
 }

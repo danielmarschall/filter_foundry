@@ -256,16 +256,16 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						}
 						if (strlen(val) >= sizeof(gdata->parm.formula[i])) {
 							if (i == 0) {
-								simplealert("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated.");
+								simplealert(_strdup("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 1) {
-								simplealert("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated.");
+								simplealert(_strdup("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 2) {
-								simplealert("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated.");
+								simplealert(_strdup("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 3) {
-								simplealert("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated.");
+								simplealert(_strdup("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
 							}
 							// C++ wrong warning: Buffer overflow (C6386)
 							#pragma warning(suppress : 6386)

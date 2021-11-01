@@ -142,21 +142,21 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		// Expressions
 		for (i = 0; i < 4; ++i) {
 			if (!expr[i]) {
-				simplealert("Bug! see builddlgitem");
+				simplealert(_strdup("Bug! see builddlgitem"));
 				return true; // keep going. Let the user try again
 			}
 			if (strlen(expr[i]) >= sizeof(gdata->parm.formula[i])) {
 				if (i == 0) {
-					simplealert("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated.");
+					simplealert(_strdup("Attention!The formula for channel R was too long(longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 1) {
-					simplealert("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated.");
+					simplealert(_strdup("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 2) {
-					simplealert("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated.");
+					simplealert(_strdup("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 3) {
-					simplealert("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated.");
+					simplealert(_strdup("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
 				}
 				expr[i][sizeof(gdata->parm.formula[i]) - 1] = '\0';
 			}
@@ -190,7 +190,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			return true; // keep going. Let the user correct their input
 		}
 
-		/* ... falls through ... */
+		return false; // end dialog
 #ifdef MAC_ENV
 	case cancel:
 #else
