@@ -80,13 +80,13 @@ OSErr saveparams(Handle h){
 							++r;
 						}else
 							*q++ = *r++;
-					*q++ = '\r';
+					*q++ = CR;
 					*q = 0;
 					p = cat(p,outbuf);
 				}
 			else
 				p = cat(p,_strdup("(null expr)\r")); // this shouldn't happen
-			*p++ = '\r';
+			*p++ = CR;
 		}
 
 //		*p = 0; dbg(start);

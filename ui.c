@@ -501,7 +501,7 @@ Boolean alertuser(char *err,char *more){
 	Boolean res;
 
 	q = cat(s,err);
-	*q++ = '\n';
+	*q++ = LF;
 	q = cat(q,more);
 	*q = 0;
 	res = simplealert(s);

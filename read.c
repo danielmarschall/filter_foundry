@@ -358,15 +358,15 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 							// Note: slider[i] = EndianS32_LtoN(slider[i]); will be done in readPARM()
 							// All the rest are flags which (if we're careful) will work in either ordering
 
-							// Convert '\r' in the copyright field to '\r\n'.
+							// Convert CR in the copyright field to CRLF.
 							int i, j;
 							for (i = 1; i < gdata->parm.copyright[0]; i++) {
-								if (gdata->parm.copyright[i] == '\r') {
+								if (gdata->parm.copyright[i] == CR) {
 									for (j = gdata->parm.copyright[0]; j>i; j--) {
 										gdata->parm.copyright[j+1] = gdata->parm.copyright[j];
 									}
 									gdata->parm.copyright[0]++;
-									gdata->parm.copyright[i+1] = '\n';
+									gdata->parm.copyright[i+1] = LF;
 								}
 							}
 						}
@@ -450,7 +450,7 @@ Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*
 			// Note: We are ignoring whitespaces, i.e. " A :" != "A:" (TODO: should we change this?)
 			if ((searchkey == NULL) || ((i == strlen(searchkey)) && (memcmp(line, searchkey, i) == 0))) {
 				i++; // jump over ':' char
-				//while ((line[i] == ' ') || (line[i] == '\t')) i++; // Trim value left
+				//while ((line[i] == ' ') || (line[i] == TAB)) i++; // Trim value left
 				*content = line + i;
 				return true;
 			}
@@ -484,8 +484,8 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	// Replace all \r and \n with \0, so that we can parse easier
 	for (i = 0; i < maxInput; i++) {
 		if (inputwork[i] == 0) break;
-		if (inputwork[i] == '\r') inputwork[i] = 0;
-		if (inputwork[i] == '\n') inputwork[i] = 0;
+		if (inputwork[i] == CR) inputwork[i] = 0;
+		if (inputwork[i] == LF) inputwork[i] = 0;
 	}
 	// C++ wrong warning: Buffer overflow (C6386)
 	// 'The writeable size is "maxInput+1" Byte, but "maxInput" byte can be written'. WTF?
@@ -513,8 +513,8 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	} while (!_picoLineContainsKey(sline, &svalue, property));
 	// Read line(s) until we find a line with another key, or the line end
 	do {
-		while ((svalue[0] == ' ') || (svalue[0] == '\t')) svalue++; // Trim left
-		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == '\t')) svalue[strlen(svalue) - 1] = 0; // Trim right
+		while ((svalue[0] == ' ') || (svalue[0] == TAB)) svalue++; // Trim left
+		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == TAB)) svalue[strlen(svalue) - 1] = 0; // Trim right
 
 		if (strlen(svalue) > 0) {
 			if (outputwork + strlen(svalue) + (isFormula ? 3 : 2) > outputFile + maxOutput) {
@@ -532,10 +532,9 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 				outputwork += strlen(svalue);
 				if (isFormula) {
 					// Formulas: TXT line break stays line break (important if you have comments!)
-					outputwork[0] = '\r';
-					outputwork++;
-					outputwork[0] = '\n';
-					outputwork++;
+					outputwork[1] = CR;
+					outputwork[2] = LF;
+					outputwork += 2;
 				}
 				else {
 					// Everything else: TXT line breaks becomes single whitespace
