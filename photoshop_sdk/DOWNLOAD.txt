@@ -8,8 +8,8 @@ How to download the latest version of the SDK:
 3. You need to create a Adobe developer account now,
    or log in if you already have an account.
 
-4. Scroll down to "Photoshop" (NOT "Adobe Photoshop API (Trial)")
-   and then click "View downloads".
+4. At the top, click the tab "Downloads", then scroll down and and search for "Photoshop"
+   (NOT "Adobe Photoshop API (Trial)") and then click "View downloads".
 
 5. Download "Photoshop Plug-In and Connection SDK" for Windows.
 
@@ -43,7 +43,7 @@ also distributed with Photoshop 6.0 and earlier.
 
 
 Compatibility:
-The source code has been built with SDK 6.0, CS2, CS3 beta, CC 2017, and 2022
+The source code has been built with SDK 6.0, CS2, CS3 beta, CC 2017, and 2021
 but older versions should work, too.
 (If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
 to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace
@@ -51,7 +51,10 @@ with a single #include "PIGeneral.r"; also remove "fmtCanWriteTransparency"
 from PiPL_common.r.)
 
 
-Additional notes:
+Additional notes in regards the SDK license:
+- The SDK contains two files names "license.html". One file in the root directory,
+  which contains a clause about OpenSource software, and one file in the sub-directory
+  "pluginsdk/documentation/html/" which does not mention OpenSource at all.
 - Adobe's stand in regards to using SDK to write OpenSource plugins:
   https://web.archive.org/web/20070203075622/http://blogs.adobe.com/notesfrommnr/2006/04/using_adobe_sdk.html
   So it should be fine if the SDK contents are not included in the plugin's source code and not part of the license.

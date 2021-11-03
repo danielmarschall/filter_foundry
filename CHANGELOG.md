@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.12 [Work-In-Progress]
+- Added possibility to load PluginCommander TXT files.
+
 ## 1.7.0.11 [01-Nov-2021]
 - Tab-Order has been changed (*)
 - Fixed incompatibility with older versions of Wine (Windows emulator for Linux systems)

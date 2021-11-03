@@ -443,6 +443,179 @@ Handle readfileintohandle(FILEREF r){
 	return NULL;
 }
 
+Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*=NULL*/) {
+	for (size_t i = 0; i < strlen(line); i++) {
+		if (line[i] == ':') {
+			if ((searchkey == NULL) || (memcmp(line, searchkey, strlen(searchkey)) == 0)) {
+				i++;
+				while ((line[i] == ' ') || (line[i] == '\t')) i++;
+				*content = line + i;
+				return true;
+			}
+		}
+	}
+	*content = line;
+	return false;
+}
+
+Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean pascalOutput) {
+	char* outputwork = outputFile;
+	char* sline = NULL;
+	char* svalue = NULL;
+	// Check parameters
+	if (maxOutput <= 0) return false;
+	if (inputFile == 0) return false;
+	// Let input memory be read-only, +1 for terminal zero
+	//char* inputwork = inputFile;
+	char* inputwork = (char*)malloc(maxInput + 1);
+	char* inputworkinitial = inputwork;
+	if (inputwork == 0) return false;
+	memcpy(inputwork, inputFile, maxInput);
+	// Replace all \r and \n with \0, so that we can parse easier
+	for (int i = 0; i < maxInput; i++) {
+		if (inputwork[i] == 0) break;
+		if (inputwork[i] == '\r') inputwork[i] = 0;
+		if (inputwork[i] == '\n') inputwork[i] = 0;
+	}
+	// C++ wrong warning: Buffer overflow (C6386)
+	// "The writeable size is "maxInput+1" Byte, but "maxInput" byte can be written". WTF?
+	#pragma warning(suppress : 6386)
+	inputwork[maxInput] = 0;
+	// Find line that contains out key
+	do {
+		if (inputwork > inputworkinitial + maxInput) {
+			// Key not found. Set output to empty string
+			outputwork[0] = 0;
+			free(inputworkinitial);
+			if (pascalOutput) myc2pstr(outputFile);
+			return false;
+		}
+		sline = inputwork;
+		inputwork += strlen(sline) + 1;
+		if (inputwork - 1 > inputworkinitial + maxInput) {
+			// Key not found. Set output to empty string
+			// TODO: will that be ever called?
+			outputwork[0] = 0;
+			free(inputworkinitial);
+			if (pascalOutput) myc2pstr(outputFile);
+			return false;
+		}
+	} while (!_picoLineContainsKey(sline, &svalue, property));
+	// Read line(s) until we find a line with another key, or the line end
+	do {
+		if (strlen(svalue) > 0) {
+			if (outputwork + strlen(svalue) + 2 > outputFile + maxOutput) {
+				int remaining = maxOutput - (outputwork - outputFile) - 1;
+				//printf("BUFFER FULL (remaining = %d)\n", remaining);
+				memcpy(outputwork, svalue, remaining);
+				outputwork += remaining;
+				outputwork[0] = 0;
+				free(inputworkinitial);
+				if (pascalOutput) myc2pstr(outputFile);
+				return true;
+			}
+			else {
+				memcpy(outputwork, svalue, strlen(svalue));
+				outputwork += strlen(svalue);
+				outputwork[0] = ' ';
+				outputwork++;
+			}
+		}
+		outputwork[0] = 0;
+
+		// Process next line
+		if (inputwork > inputworkinitial + maxInput) break;
+		sline = inputwork;
+		inputwork += strlen(sline) + 1;
+		if (inputwork - 1 > inputworkinitial + maxInput) break;
+	} while (!_picoLineContainsKey(sline, &svalue, NULL));
+	// Remove trailing whitespace
+	if (outputwork > outputFile) {
+		outputwork -= 1;
+		outputwork[0] = 0;
+	}
+	free(inputworkinitial);
+	if (pascalOutput) myc2pstr(outputFile);
+	return true;
+}
+
+Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
+	Handle h;
+	Boolean res = false;
+	FILEREF refnum;
+
+	if (!fileHasExtension(sfr, ".txt")) return false;
+
+	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
+		if ((h = readfileintohandle(refnum))) {
+			FILECOUNT count = PIGETHANDLESIZE(h);
+			char* q = PILOCKHANDLE(h, false);
+
+			// TODO: Test if ffdecomp TXT file also works
+			char out[256];
+			if (_picoReadProperty(q, count, "Title", out, sizeof(out), false)) {
+
+				// Plugin infos
+				_picoReadProperty(q, count, "Title", gdata->parm.title, sizeof(gdata->parm.title)-1, true);
+				_picoReadProperty(q, count, "Category", gdata->parm.category, sizeof(gdata->parm.category)-1, true);
+				_picoReadProperty(q, count, "Author", gdata->parm.author, sizeof(gdata->parm.author)-1, true);
+				_picoReadProperty(q, count, "Copyright", gdata->parm.copyright, sizeof(gdata->parm.copyright)-1, true);
+				//_picoReadProperty(q, count, "Filename", gdata->parm.xxx, sizeof(gdata->parm.xxx), false);
+
+				// Expressions
+				_picoReadProperty(q, count, "R", gdata->parm.formula[0], sizeof(gdata->parm.formula[0]), false);
+				_picoReadProperty(q, count, "G", gdata->parm.formula[1], sizeof(gdata->parm.formula[1]), false);
+				_picoReadProperty(q, count, "B", gdata->parm.formula[2], sizeof(gdata->parm.formula[2]), false);
+				_picoReadProperty(q, count, "A", gdata->parm.formula[3], sizeof(gdata->parm.formula[3]), false);
+				for (int i = 0; i < 4; i++) {
+					if (expr[i]) free(expr[i]);
+					expr[i] = my_strdup(gdata->parm.formula[i]);
+				}
+
+				// Slider names
+				for (int i = 0; i < 8; i++) {
+					char keyname[7];
+					sprintf(keyname, "ctl[%d]", i);
+					_picoReadProperty(q, count, keyname, gdata->parm.ctl[i], sizeof(gdata->parm.ctl[i]), true);
+				}
+
+				// Slider values
+				for (int i = 0; i < 8; i++) {
+					char keyname[7], tmp[4];
+					sprintf(keyname, "val[%d]", i);
+					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
+						sprintf(keyname, "def[%d]", i);
+						if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
+							tmp[0] = '0';
+							tmp[1] = 0;
+						}
+					}
+					gdata->parm.val[i] = slider[i] = atoi(tmp);
+				}
+
+				// Map names
+				for (int i = 0; i < 4; i++) {
+					char keyname[7];
+					sprintf(keyname, "map[%d]", i);
+					_picoReadProperty(q, count, keyname, gdata->parm.map[i], sizeof(gdata->parm.map[i]), true);
+				}
+
+				//These will be set when the expressions are evaluated:
+				//gdata->parm.ctl_used[i]
+				//gdata->parm.map_used[i]
+
+				res = true;
+			}
+
+			PIUNLOCKHANDLE(h);
+			PIDISPOSEHANDLE(h);
+		}
+		FSClose(refnum);
+	}
+
+	return res;
+}
+
 Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 	FILEREF r;
 	Handle h;

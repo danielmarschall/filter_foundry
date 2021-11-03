@@ -73,7 +73,7 @@ type PARM_TYPE {
 #else
 
 // Note: In Windows DLL/8BF files, the strings are C-strings, while in MAC-plugins they are Pascal-strings!
-// However, internally, we work with Pascal Strings:
+// However, internally, we work with Pascal Strings (TODO: I don't like that!):
 // readPARM() converts C to Pascal strings, and doresources() converts them back to C strings for saving.
 // formulas are never Pascal strings.
 

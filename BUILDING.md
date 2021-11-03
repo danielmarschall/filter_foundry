@@ -108,7 +108,7 @@ BUILDING WITH MINGW32/64
   For 32 bit "i686" and for 64 bit "x86_64"
 * Check if all paths inside the file "make_mingw32.bat" are valid, then run it.
   The files FilterFoundry.8bf (32 Bit) and FilterFoundry64.8bf (64 Bit) should now be generated.
-* Most recently tested with mingw64 and Adobe Photoshop SDK 2022:
+* Most recently tested with mingw64 and Adobe Photoshop SDK 2021:
   - i686-8.1.0-posix-dwarf-rt_v6-rev0	for 32 Bit	
   - x86_64-8.1.0-posix-seh-rt_v6-rev0	for 64 Bit
 

@@ -117,6 +117,13 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		}
 	}
 
+	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
+	if (!readok) {
+		if (readfile_picotxt(sfr, reason)) {
+			readok = gdata->parmloaded = true;
+		}
+	}
+
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or NE executable on Win64)
 	if (!readok) {
 		if (readfile_8bf(sfr, reason)) {

@@ -1,0 +1,23 @@
+Category: Filter Foundry
+Title: Untitled
+Copyright: 
+Author: Anonymous
+Filename: xxx.8bf
+
+R: ctl(0)
+
+G: map(1,2)
+
+B: b
+
+A: a
+
+ctl[0]: CTL 0
+map[1]: MAP 1
+
+val[0]: 101
+val[2]: 120
+val[3]: 130
+
+def[0]: 102
+def[2]: 120

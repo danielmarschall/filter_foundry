@@ -84,6 +84,11 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			gdata->parmloaded = true;
 			gdata->obfusc = false;
 
+		} // then try "PluginCommander TXT" file (TXT)
+		else if( (readok = readfile_picotxt(sfr,reason)) ) {
+			gdata->parmloaded = true;
+			gdata->obfusc = false;
+
 		} // then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
 		else if( (readok = readmacplugin(sfr,reason) || readfile_8bf(sfr,reason)) ){
 			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
