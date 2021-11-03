@@ -6,19 +6,13 @@ Current TODO
 ------------
 
 * Finish loading of TXT files:
-  - txt_afs_cr.txt
-  - txt_afs_crlf.txt
-  - txt_afs_lf.txt
-  - txt_afs_ffdcomp.txt
-  - txt_afs_ffpico.txt
+  - txt_afs_cr.txt => OK
+  - txt_afs_crlf.txt => OK
+  - txt_afs_lf.txt => OK
+  - txt_afs_ffdcomp.txt => TODO
+  - txt_afs_ffpico.txt => OK
 
-* Verify that PiCo and PluginGalaxy have same TXT format
-  
 * Saving TXT files: PluginCommander file format
-
-* Load/Save AFS/PFF files: Run with ApplicationVerifier
-
-* Document Loading/Saving file formats in documentation & add PluginGalaxy as compatible (loading)
 
 
 Known bugs

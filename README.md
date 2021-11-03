@@ -3,7 +3,7 @@
 
 Filter Foundry is a compatible replacement for Adobe Filter Factory. For information about how to use the Filter Factory-compatible interface, see [The Filter Factory Programming Guide](https://thepluginsite.com/knowhow/ffpg/ffpg.htm). Several example effects come with Filter Factory.
 
-Initially written by [Toby Thain / Telegraphics](https://www.telegraphics.com.au/sw/) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) / [ViaThinkSoft](https://www.viathinksoft.com/) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
+Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 A full description of Filter Foundry including a reference of all functions, variables, and operators can be found in the ["doc" folder](https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf).
 
@@ -31,7 +31,7 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   Serif PhotoPlus 6
 -   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
--   I.C.NET Plugin-Manager 2.x, Filters Unlimited and Plugin Galaxy (though these are technically emulators rather than hosts)
+-   I.C.NET Plugin-Manager 2.x, Filters Unlimited, and Plugin Galaxy can load standalone filters created by Filter Foundry in order to emulate the Filter Factory code.
 
 Operating systems:
 

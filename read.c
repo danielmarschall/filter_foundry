@@ -444,11 +444,13 @@ Handle readfileintohandle(FILEREF r){
 }
 
 Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*=NULL*/) {
-	for (size_t i = 0; i < strlen(line); i++) {
+	size_t i;
+	for (i = 0; i < strlen(line); i++) {
 		if (line[i] == ':') {
-			if ((searchkey == NULL) || (memcmp(line, searchkey, strlen(searchkey)) == 0)) {
-				i++;
-				while ((line[i] == ' ') || (line[i] == '\t')) i++;
+			// Note: We are ignoring whitespaces, i.e. " A :" != "A:" (TODO: should we change this?)
+			if ((searchkey == NULL) || ((i == strlen(searchkey)) && (memcmp(line, searchkey, i) == 0))) {
+				i++; // jump over ':' char
+				//while ((line[i] == ' ') || (line[i] == '\t')) i++; // Trim value left
 				*content = line + i;
 				return true;
 			}
@@ -458,27 +460,35 @@ Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*
 	return false;
 }
 
-Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean pascalOutput) {
-	char* outputwork = outputFile;
-	char* sline = NULL;
-	char* svalue = NULL;
+// isFormula=false => outputFile is Pascal string. TXT linebreaks become spaces.
+// isFormula=true  => outputFile is C string. TXT line breaks become CRLF line breaks
+Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean isFormula) {
+	int i;
+	char* outputwork;
+	char* sline;
+	char* svalue;
+	char* inputwork;
+	char* inputworkinitial;
+	outputwork = outputFile;
+	sline = NULL;
+	svalue = NULL;
 	// Check parameters
-	if (maxOutput <= 0) return false;
+	if (maxOutput == 0) return false;
 	if (inputFile == 0) return false;
 	// Let input memory be read-only, +1 for terminal zero
 	//char* inputwork = inputFile;
-	char* inputwork = (char*)malloc(maxInput + 1);
-	char* inputworkinitial = inputwork;
+	inputwork = (char*)malloc(maxInput + 1);
+	inputworkinitial = inputwork;
 	if (inputwork == 0) return false;
 	memcpy(inputwork, inputFile, maxInput);
 	// Replace all \r and \n with \0, so that we can parse easier
-	for (int i = 0; i < maxInput; i++) {
+	for (i = 0; i < maxInput; i++) {
 		if (inputwork[i] == 0) break;
 		if (inputwork[i] == '\r') inputwork[i] = 0;
 		if (inputwork[i] == '\n') inputwork[i] = 0;
 	}
 	// C++ wrong warning: Buffer overflow (C6386)
-	// "The writeable size is "maxInput+1" Byte, but "maxInput" byte can be written". WTF?
+	// 'The writeable size is "maxInput+1" Byte, but "maxInput" byte can be written'. WTF?
 	#pragma warning(suppress : 6386)
 	inputwork[maxInput] = 0;
 	// Find line that contains out key
@@ -487,7 +497,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			// Key not found. Set output to empty string
 			outputwork[0] = 0;
 			free(inputworkinitial);
-			if (pascalOutput) myc2pstr(outputFile);
+			if (!isFormula) myc2pstr(outputFile);
 			return false;
 		}
 		sline = inputwork;
@@ -497,28 +507,41 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			// TODO: will that be ever called?
 			outputwork[0] = 0;
 			free(inputworkinitial);
-			if (pascalOutput) myc2pstr(outputFile);
+			if (!isFormula) myc2pstr(outputFile);
 			return false;
 		}
 	} while (!_picoLineContainsKey(sline, &svalue, property));
 	// Read line(s) until we find a line with another key, or the line end
 	do {
+		while ((svalue[0] == ' ') || (svalue[0] == '\t')) svalue++; // Trim left
+		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == '\t')) svalue[strlen(svalue) - 1] = 0; // Trim right
+
 		if (strlen(svalue) > 0) {
-			if (outputwork + strlen(svalue) + 2 > outputFile + maxOutput) {
+			if (outputwork + strlen(svalue) + (isFormula ? 3 : 2) > outputFile + maxOutput) {
 				int remaining = maxOutput - (outputwork - outputFile) - 1;
 				//printf("BUFFER FULL (remaining = %d)\n", remaining);
 				memcpy(outputwork, svalue, remaining);
 				outputwork += remaining;
 				outputwork[0] = 0;
 				free(inputworkinitial);
-				if (pascalOutput) myc2pstr(outputFile);
+				if (!isFormula) myc2pstr(outputFile);
 				return true;
 			}
 			else {
 				memcpy(outputwork, svalue, strlen(svalue));
 				outputwork += strlen(svalue);
-				outputwork[0] = ' ';
-				outputwork++;
+				if (isFormula) {
+					// Formulas: TXT line break stays line break (important if you have comments!)
+					outputwork[0] = '\r';
+					outputwork++;
+					outputwork[0] = '\n';
+					outputwork++;
+				}
+				else {
+					// Everything else: TXT line breaks becomes single whitespace
+					outputwork[0] = ' ';
+					outputwork++;
+				}
 			}
 		}
 		outputwork[0] = 0;
@@ -527,7 +550,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		if (inputwork > inputworkinitial + maxInput) break;
 		sline = inputwork;
 		inputwork += strlen(sline) + 1;
-		if (inputwork - 1 > inputworkinitial + maxInput) break;
+		if (inputwork - 1 > inputworkinitial + maxInput) break; // TODO: will that be ever called?
 	} while (!_picoLineContainsKey(sline, &svalue, NULL));
 	// Remove trailing whitespace
 	if (outputwork > outputFile) {
@@ -535,7 +558,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		outputwork[0] = 0;
 	}
 	free(inputworkinitial);
-	if (pascalOutput) myc2pstr(outputFile);
+	if (!isFormula) myc2pstr(outputFile);
 	return true;
 }
 
@@ -554,50 +577,57 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 			// TODO: Test if ffdecomp TXT file also works
 			char out[256];
 			if (_picoReadProperty(q, count, "Title", out, sizeof(out), false)) {
+				int i;
 
 				// Plugin infos
-				_picoReadProperty(q, count, "Title", gdata->parm.title, sizeof(gdata->parm.title)-1, true);
-				_picoReadProperty(q, count, "Category", gdata->parm.category, sizeof(gdata->parm.category)-1, true);
-				_picoReadProperty(q, count, "Author", gdata->parm.author, sizeof(gdata->parm.author)-1, true);
-				_picoReadProperty(q, count, "Copyright", gdata->parm.copyright, sizeof(gdata->parm.copyright)-1, true);
-				//_picoReadProperty(q, count, "Filename", gdata->parm.xxx, sizeof(gdata->parm.xxx), false);
+				_picoReadProperty(q, count, "Title", (char*)gdata->parm.title, sizeof(gdata->parm.title)-1, false);
+				_picoReadProperty(q, count, "Category", (char*)gdata->parm.category, sizeof(gdata->parm.category)-1, false);
+				_picoReadProperty(q, count, "Author", (char*)gdata->parm.author, sizeof(gdata->parm.author)-1, false);
+				_picoReadProperty(q, count, "Copyright", (char*)gdata->parm.copyright, sizeof(gdata->parm.copyright)-1, false);
+				//_picoReadProperty(q, count, "Filename", (char*)gdata->parm.xxx, sizeof(gdata->parm.xxx), false);
 
 				// Expressions
-				_picoReadProperty(q, count, "R", gdata->parm.formula[0], sizeof(gdata->parm.formula[0]), false);
-				_picoReadProperty(q, count, "G", gdata->parm.formula[1], sizeof(gdata->parm.formula[1]), false);
-				_picoReadProperty(q, count, "B", gdata->parm.formula[2], sizeof(gdata->parm.formula[2]), false);
-				_picoReadProperty(q, count, "A", gdata->parm.formula[3], sizeof(gdata->parm.formula[3]), false);
-				for (int i = 0; i < 4; i++) {
+				if (!_picoReadProperty(q, count, "R", (char*)gdata->parm.formula[0], sizeof(gdata->parm.formula[0]), true))
+					strcpy((char*)gdata->parm.formula[0], "r");
+				if (!_picoReadProperty(q, count, "G", (char*)gdata->parm.formula[1], sizeof(gdata->parm.formula[1]), true))
+					strcpy((char*)gdata->parm.formula[1], "g");
+				if (!_picoReadProperty(q, count, "B", (char*)gdata->parm.formula[2], sizeof(gdata->parm.formula[2]), true))
+					strcpy((char*)gdata->parm.formula[2], "b");
+				if (!_picoReadProperty(q, count, "A", (char*)gdata->parm.formula[3], sizeof(gdata->parm.formula[3]), true))
+					strcpy((char*)gdata->parm.formula[3], "a");
+				for (i = 0; i < 4; i++) {
 					if (expr[i]) free(expr[i]);
-					expr[i] = my_strdup(gdata->parm.formula[i]);
+					expr[i] = my_strdup((char*)gdata->parm.formula[i]);
 				}
 
 				// Slider names
-				for (int i = 0; i < 8; i++) {
+				for (i = 0; i < 8; i++) {
 					char keyname[7];
 					sprintf(keyname, "ctl[%d]", i);
-					_picoReadProperty(q, count, keyname, gdata->parm.ctl[i], sizeof(gdata->parm.ctl[i]), true);
+					_picoReadProperty(q, count, keyname, (char*)gdata->parm.ctl[i], sizeof(gdata->parm.ctl[i]), false);
 				}
 
 				// Slider values
-				for (int i = 0; i < 8; i++) {
-					char keyname[7], tmp[4];
+				for (i = 0; i < 8; i++) {
+					char keyname[7], tmp[5];
 					sprintf(keyname, "val[%d]", i);
 					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
 						sprintf(keyname, "def[%d]", i);
 						if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
-							tmp[0] = '0';
-							tmp[1] = 0;
+							tmp[0] = 1;
+							tmp[1] = '0';
+							tmp[2] = 0;
 						}
 					}
+					myp2cstr((unsigned char*)tmp);
 					gdata->parm.val[i] = slider[i] = atoi(tmp);
 				}
 
 				// Map names
-				for (int i = 0; i < 4; i++) {
+				for (i = 0; i < 4; i++) {
 					char keyname[7];
 					sprintf(keyname, "map[%d]", i);
-					_picoReadProperty(q, count, keyname, gdata->parm.map[i], sizeof(gdata->parm.map[i]), true);
+					_picoReadProperty(q, count, keyname, (char*)gdata->parm.map[i], sizeof(gdata->parm.map[i]), false);
 				}
 
 				//These will be set when the expressions are evaluated:

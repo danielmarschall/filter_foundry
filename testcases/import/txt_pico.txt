@@ -1,14 +1,22 @@
 Category: Filter Foundry
-Title: Untitled
+newline
+Title: 
+
+Untitled2
 Copyright: 
 Author: Anonymous
 Filename: xxx.8bf
 
-R: ctl(0)
+R:
 
-G: map(1,2)
+ ctl(0)
+ 
 
-B: b
+    +3   
+
+G:    
+
+map(1,2)
 
 A: a
 
