@@ -106,7 +106,7 @@ struct InternalState saveInternalState();
 void restoreInternalState(struct InternalState state);
 
 // from read.c
-Boolean readparams(Handle h,Boolean alerts,char **reason);
+Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
 Boolean readfile_8bf(StandardFileReply *sfr,char **reason);
 Handle readfileintohandle(FILEREF r);
@@ -116,9 +116,10 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason);
 Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr,int fromwin);
 
 // from save.c
-OSErr saveparams(Handle h);
+OSErr saveparams_afs_pff(Handle h);
+OSErr saveparams_picotxt(Handle h, Boolean useparm);
 OSErr savehandleintofile(Handle h,FILEREF r);
-Boolean savefile_afs_pff(StandardFileReply *sfr);
+Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr);
 
 // from make_*.c
 OSErr make_standalone(StandardFileReply *sfr);

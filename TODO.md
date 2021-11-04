@@ -2,10 +2,10 @@
 Wishlist/ToDo-List
 ==================
 
-Current TODO
-------------
+ToDo for the next release
+-------------------------
 
-* Saving TXT files: PluginCommander file format (meta-data left empty) and then open Notepad, so that the user can enter the meta-data
+(None)
 
 
 Known bugs
@@ -18,8 +18,6 @@ Minor priority stuff or ideas
 -----------------------------
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
-
-* .gitattributes eol=cr => -text or binary
 
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
 

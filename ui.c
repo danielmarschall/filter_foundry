@@ -382,13 +382,45 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			#endif
 			(StringPtr)_strdup("\0"),
 			TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-			"afs","All supported files (.afs, .txt, *.pff)\0*.afs;*.txt;*.pff\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0Premiere TF/FF Settings (*.pff)\0*.pff\0All files (*.*)\0*.*\0\0",1
+			"afs","All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0",1
 			#ifdef _WIN32
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */
 		)){
-			if(savefile_afs_pff(&sfr))
+			if(savefile_afs_pff_picotxt(&sfr)) {
 				completesave(&reply);
+
+				showmessage(_strdup("The file was successfully saved in the \"PluginCommander\" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, Slider/Map names."));
+
+				if (fileHasExtension(&sfr, ".txt")) {
+					#ifdef MAC_ENV
+					// TODO: Open text file instead
+					showmessage(_strdup("Please edit the file manually to enter the title, category, authorname, copyright, slidernames etc."));
+					#else
+					char filename[MAX_PATH];
+					myp2cstrcpy(filename, sfr.sfFile.name);
+					hShellRes = ShellExecuteA(
+						gdata->hWndMainDlg,
+						"open",
+						filename,
+						NULL,
+						NULL,
+						SW_SHOWNORMAL
+					);
+					if (hShellRes <= (HINSTANCE)32) {
+						// MSDN states: "If the function succeeds, it returns a value greater than 32."
+
+						char s[100];
+						strcpy(s, "ShellExecuteA failed: ");
+						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+						dbg(s);
+
+						showmessage(_strdup("Please edit the file manually to enter the title, category, author, copyright, filename, slidernames etc."));
+					}
+					#endif
+				}
+
+			}
 		}
 		break;
 	case MAKEITEM:

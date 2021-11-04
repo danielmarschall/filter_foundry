@@ -5,8 +5,6 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory. For informa
 
 Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
-A full description of Filter Foundry including a reference of all functions, variables, and operators can be found in the ["doc" folder](https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf).
-
 
 ### Windows version 1.7.0.11
 
@@ -18,6 +16,11 @@ To install the plugin to Photoshop, simply place the appropriate 8BF file into t
 ### Macintosh version 1.6b1
 
 The Macintosh version could not be taken over because Apple removed the "Carbon" API, and the new "Cocoa" API is not compatible with the current codebase. If you would like to help porting Filter Foundry to the latest OS X version, it would be highly appreciated! An old version of Filter Foundry for Mac 68k (requires 68020 or later CPU and FPU) and Mac Classic (PowerPC) can be obtained here: https://www.telegraphics.com.au/sw/
+
+
+### Documentation
+
+A full description of Filter Foundry including a reference of all functions, variables, and operators can be found in the ["doc" folder](https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf).
 
 
 ### Compatibility
@@ -39,6 +42,24 @@ Operating systems:
 -   Windows 95, 98, and Me are supported, but 64-bit standalone filters cannot be created
 -   Linux using the emulator "Wine" is supported
 -   Macintosh is currently not supported
+
+
+### Supported file formats
+
+Filter Foundry support a variety of different file formats:
+
+| File ext. | Description                                                                        |Make  |Save  |Load  |
+|-----------|------------------------------------------------------------------------------------|------|------|------|
+|AFS or TXT |Parameter file created by Filter Factory or Filter Foundry for Adobe Photoshop.     |      |Yes   |Yes   |
+|8BF        |Adobe Photoshop plugin created by Filter Factory or Filter Foundry for Photoshop.   |Yes   |      |Yes(1)|
+|PFF        |Parameter file created by Filter Factory or Transaction Factory for Adobe Premiere. |      |Yes   |Yes   |
+|PRM        |Adobe Premiere plugin created by Filter/Transaction Factory for Adobe Premiere.     |      |      |Yes   |
+|FFX        |"Filters Unlimited" file.                                                           |      |      |Yes(2)|
+|TXT        |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
+
+(1) Loading is only possible if the 8BF file was created by Filter Factory, or by Filter Foundry without protection.
+(2) Note that Filter Foundry only implements the basic Filter Factory commands. Therefore, most "Filters Unlimited" filters will not work with Filter Foundry.
+(3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added with a text editor.
 
 
 ### Donation

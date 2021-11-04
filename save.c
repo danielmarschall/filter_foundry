@@ -40,7 +40,7 @@ OSErr putstr(Handle h,char *s){
 	return e;
 }
 
-OSErr saveparams(Handle h){
+OSErr saveparams_afs_pff(Handle h){
 	char outbuf[CHOPLINES*2+2],*q,*p,*r,*start;
 	size_t n, chunk, j;
 	int i;
@@ -48,7 +48,7 @@ OSErr saveparams(Handle h){
 	size_t est;
 	static char afs_sig[] = "%RGB-1.0\r";
 
-	if(!h) DBG("saveparams: Null handle!");
+	if(!h) DBG("saveparams_afs_pff: Null handle!");
 
 	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -98,6 +98,99 @@ OSErr saveparams(Handle h){
 	return e;
 }
 
+OSErr saveparams_picotxt(Handle h, Boolean useparm) {
+	extern int ctls[], maps[];
+
+	char * p, *start;
+	int i;
+	OSErr e;
+	size_t est;
+
+	if (!h) DBG("saveparams_picotxt: Null handle!");
+
+	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	// do not be tempted to combine into one expression: 'est' is referenced below
+	est += 16000;
+
+	PIUNLOCKHANDLE(h); // should not be necessary
+	if (!(e = PISETHANDLESIZE(h, (int32)(est))) && (p = start = PILOCKHANDLE(h, false))) {
+		checksliders(4, ctls, maps);
+
+		// Metadata
+		p += sprintf(p, "Category: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.category) : "...");
+		p += sprintf(p, "Title: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.title) : "...");
+		p += sprintf(p, "Copyright: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.copyright) : "...");
+		p += sprintf(p, "Author: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.author) : "...");
+		p += sprintf(p, "Filename: %s\r\n", useparm ? "Untitled.8bf" : "Untitled.8bf"); // TODO: get .txt filename and change .txt to .8bf
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "R: %s\r\n", useparm ? (char*)gdata->parm.formula[0] : expr[0]);
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "G: %s\r\n", useparm ? (char*)gdata->parm.formula[1] : expr[1]);
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "B: %s\r\n", useparm ? (char*)gdata->parm.formula[2] : expr[2]);
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "A: %s\r\n", useparm ? (char*)gdata->parm.formula[3] : expr[3]);
+		p += sprintf(p, "\r\n");
+		if (useparm) {
+			for (i = 0; i < 8; i++) {
+				if (gdata->parm.ctl_used[i]) {
+					p += sprintf(p, "ctl[%d]: %s\r\n", i, INPLACEP2CSTR(gdata->parm.ctl[i]));
+				}
+			}
+			for (i = 0; i < 4; i++) {
+				if (gdata->parm.map_used[i]) {
+					p += sprintf(p, "map[%d]: %s\r\n", i, INPLACEP2CSTR(gdata->parm.map[i]));
+				}
+			}
+			p += sprintf(p, "\r\n");
+			for (i = 0; i < 8; i++) {
+				if (gdata->parm.ctl_used[i]) {
+					p += sprintf(p, "val[%d]: %d\r\n", i, gdata->parm.val[i]);
+				}
+			}
+			/*
+			p += sprintf(p, "\r\n");
+			for (i = 0; i < 8; i++) {
+				if (gdata->parm.ctl_used[i]) {
+					p += sprintf(p, "def[%d]: %d\r\n", i, gdata->parm.val[i]);
+				}
+			}
+			*/
+		}
+		else {
+			for (i = 0; i < 8; i++) {
+				if (ctls[i]) {
+					p += sprintf(p, "ctl[%d]: %s\r\n", i, "...");
+				}
+			}
+			for (i = 0; i < 4; i++) {
+				if (maps[i]) {
+					p += sprintf(p, "map[%d]: %s\r\n", i, "...");
+				}
+			}
+			p += sprintf(p, "\r\n");
+			for (i = 0; i < 8; i++) {
+				if (ctls[i]) {
+					p += sprintf(p, "val[%d]: %d\r\n", i, slider[i]);
+				}
+			}
+			/*
+			p += sprintf(p, "\r\n");
+			for (i = 0; i < 8; i++) {
+				if (ctls[i]) {
+					p += sprintf(p, "def[%d]: %s\r\n", i, "...");
+				}
+			}
+			*/
+		}
+
+		PIUNLOCKHANDLE(h);
+		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
+	}
+
+	return e;
+}
+
 OSErr savehandleintofile(Handle h,FILEREF r){
 	Ptr p = PILOCKHANDLE(h,false);
 	long n = PIGETHANDLESIZE(h);
@@ -106,7 +199,7 @@ OSErr savehandleintofile(Handle h,FILEREF r){
 	return e;
 }
 
-Boolean savefile_afs_pff(StandardFileReply *sfr){
+Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
@@ -116,26 +209,36 @@ Boolean savefile_afs_pff(StandardFileReply *sfr){
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
 		if(FSpOpenDF(&sfr->sfFile,fsWrPerm,&r) == noErr){
 
-			if (fileHasExtension(sfr, ".pff")) {
-				// If it is a Premiere settings file, we need to swap the channels red and blue
-				// We just swap the pointers!
-				char* tmp;
-				tmp = expr[0];
-				expr[0] = expr[2];
-				expr[2] = tmp;
+			if (fileHasExtension(sfr, ".txt")) {
+				// PluginCommander .txt
+				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
+					res = !(saveparams_picotxt(h,false) || savehandleintofile(h, r));
+					PIDISPOSEHANDLE(h);
+				}
 			}
 
-			if( (h = PINEWHANDLE(1)) ){ // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-				res = !(saveparams(h) || savehandleintofile(h,r));
-				PIDISPOSEHANDLE(h);
-			}
+			if ((fileHasExtension(sfr, ".afs")) || (fileHasExtension(sfr, ".pff"))) {
+				if (fileHasExtension(sfr, ".pff")) {
+					// If it is a Premiere settings file, we need to swap the channels red and blue
+					// We just swap the pointers!
+					char* tmp;
+					tmp = expr[0];
+					expr[0] = expr[2];
+					expr[2] = tmp;
+				}
 
-			if (fileHasExtension(sfr, ".pff")) {
-				// Swap back so that the other program stuff will work normally again
-				char* tmp;
-				tmp = expr[0];
-				expr[0] = expr[2];
-				expr[2] = tmp;
+				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
+					res = !(saveparams_afs_pff(h) || savehandleintofile(h, r));
+					PIDISPOSEHANDLE(h);
+				}
+
+				if (fileHasExtension(sfr, ".pff")) {
+					// Swap back so that the other program stuff will work normally again
+					char* tmp;
+					tmp = expr[0];
+					expr[0] = expr[2];
+					expr[2] = tmp;
+				}
 			}
 
 			FSClose(r);

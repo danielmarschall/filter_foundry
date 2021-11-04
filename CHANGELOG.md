@@ -1,7 +1,8 @@
 # Changelog
 
 ## 1.7.0.12 [Work-In-Progress]
-- Added possibility to load PluginCommander TXT files.
+- Added possibility to load and save PluginCommander TXT files.
+- Added possibility to load TXT files created by FFdecomp.
 
 ## 1.7.0.11 [01-Nov-2021]
 - Tab-Order has been changed (*)

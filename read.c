@@ -38,7 +38,7 @@ enum{
 	MAXLINE = 0x200,
 };
 
-Boolean readparams(Handle h,Boolean alerts,char **reason){
+Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
 	Boolean res = false;
 	char linebuf[MAXLINE+1],curexpr[MAXEXPR+1],*p,*dataend,*q;
 	char c;
@@ -517,13 +517,13 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		char* k2;
 		// Metadata:
 		x = strstr(inputwork, "CATEGORY:");
-		if (x) strncpy(x, "Category:", strlen("Category:"));
+		if (x) memcpy(x, "Category:", strlen("Category:"));
 		x = strstr(inputwork, "TITLE:");
-		if (x) strncpy(x, "Title:", strlen("Title:"));
+		if (x) memcpy(x, "Title:", strlen("Title:"));
 		x = strstr(inputwork, "COPYRIGHT:");
-		if (x) strncpy(x, "Copyright:", strlen("Copyright:"));
+		if (x) memcpy(x, "Copyright:", strlen("Copyright:"));
 		x = strstr(inputwork, "AUTHOR:");
-		if (x) strncpy(x, "Author:", strlen("Author:"));
+		if (x) memcpy(x, "Author:", strlen("Author:"));
 		// Controls:
 		for (i = 0; i < 8; i++) {
 			k1 = (char*)malloc(strlen("Control X:") + 1);
@@ -532,7 +532,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			if (x) {
 				k2 = (char*)malloc(strlen("ctl[X]:   ") + 1);
 				sprintf(k2, "ctl[%d]:   ", i);
-				strncpy(x, k2, strlen(k2));
+				memcpy(x, k2, strlen(k2));
 				x += strlen("ctl[X]");
 				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
 				free(k2);
@@ -547,7 +547,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			if (x) {
 				k2 = (char*)malloc(strlen("map[X]:") + 1);
 				sprintf(k2, "map[%d]:", i);
-				strncpy(x, k2, strlen(k2));
+				memcpy(x, k2, strlen(k2));
 				x += strlen("map[X]");
 				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
 				free(k2);
@@ -559,13 +559,13 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			if (inputworkinitial[i] == CR) inputworkinitial[i] = LF;
 		}
 		x = strstr(inputwork, "\nR=\n");
-		if (x) strncpy(x, "\nR:\n", strlen("\nR:\n"));
+		if (x) memcpy(x, "\nR:\n", strlen("\nR:\n"));
 		x = strstr(inputwork, "\nG=\n");
-		if (x) strncpy(x, "\nG:\n", strlen("\nG:\n"));
+		if (x) memcpy(x, "\nG:\n", strlen("\nG:\n"));
 		x = strstr(inputwork, "\nB=\n");
-		if (x) strncpy(x, "\nB:\n", strlen("\nB:\n"));
+		if (x) memcpy(x, "\nB:\n", strlen("\nB:\n"));
 		x = strstr(inputwork, "\nA=\n");
-		if (x) strncpy(x, "\nA:\n", strlen("\nA:\n"));
+		if (x) memcpy(x, "\nA:\n", strlen("\nA:\n"));
 	}
 	// Replace all \r and \n with \0, so that we can parse easier
 	for (i = 0; i < maxInput; i++) {
@@ -648,6 +648,8 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 }
 
 Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
+	extern int ctls[], maps[];
+
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
@@ -714,9 +716,10 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 					_picoReadProperty(q, count, keyname, (char*)gdata->parm.map[i], sizeof(gdata->parm.map[i]), false);
 				}
 
-				//These will be set when the expressions are evaluated:
-				//gdata->parm.ctl_used[i]
-				//gdata->parm.map_used[i]
+				//These will be set when the expressions are evaluated anyway. So this part is optional:
+				checksliders(4, ctls, maps);
+				for (i = 0; i < 8; i++) gdata->parm.ctl_used[i] = ctls[i];
+				for (i = 0; i < 4; i++) gdata->parm.map_used[i] = maps[i];
 
 				res = true;
 			}
@@ -737,7 +740,7 @@ Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
-			if( (res = readparams(h,true,reason)) ) {
+			if( (res = readparams_afs_pff(h,true,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
 				if (fileHasExtension(sfr, ".pff")) {

@@ -316,7 +316,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 						expr[3] = _strdup("a");
 					}
 
-					savefile_afs_pff(&sfr);
+					savefile_afs_pff_picotxt(&sfr);
 
 					if (gdata->standalone) {
 						for (i = 0; i < 4; i++) {
@@ -326,7 +326,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					}
 				} else {
 					/* update stored parameters from new user settings */
-					saveparams(pb->parameters);
+					saveparams_afs_pff(pb->parameters);
 				}
 			}else
 				e = userCanceledErr;
@@ -421,7 +421,7 @@ int checkandinitparams(Handle params){
 		}
 	}
 
-	if( (bUninitializedParams = !(params && readparams(params,false,&reasonstr))) ){
+	if( (bUninitializedParams = !(params && readparams_afs_pff(params,false,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
@@ -474,7 +474,7 @@ int checkandinitparams(Handle params){
 		break;
 	}
 
-	saveparams(params);
+	saveparams_afs_pff(params);
 
 	return showdialog;
 }
