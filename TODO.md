@@ -5,14 +5,7 @@ Wishlist/ToDo-List
 Current TODO
 ------------
 
-* Finish loading of TXT files:
-  - txt_afs_cr.txt => OK
-  - txt_afs_crlf.txt => OK
-  - txt_afs_lf.txt => OK
-  - txt_afs_ffdcomp.txt => TODO
-  - txt_afs_ffpico.txt => OK
-
-* Saving TXT files: PluginCommander file format
+* Saving TXT files: PluginCommander file format (meta-data left empty) and then open Notepad, so that the user can enter the meta-data
 
 
 Known bugs

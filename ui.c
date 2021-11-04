@@ -353,7 +353,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			(StringPtr)_strdup("\026Choose filter settings"),
 			#endif
 			&sfr,&reply,types,2,
-			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt; *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0"
+			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.txt; *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander or FFDecomp TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0"
 			#ifdef _WIN32
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */

@@ -446,6 +446,7 @@ Handle readfileintohandle(FILEREF r){
 Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*=NULL*/) {
 	size_t i;
 	for (i = 0; i < strlen(line); i++) {
+		if (line[i] == '?') break; // avoid that "a?b:c" is detected as key
 		if (line[i] == ':') {
 			// Note: We are ignoring whitespaces, i.e. " A :" != "A:" (TODO: should we change this?)
 			if ((searchkey == NULL) || ((i == strlen(searchkey)) && (memcmp(line, searchkey, i) == 0))) {
@@ -458,6 +459,32 @@ Boolean _picoLineContainsKey(char* line, char** content, const char* searchkey/*
 	}
 	*content = line;
 	return false;
+}
+
+void _ffdcomp_removebrackets(char* x, char* maxptr) {
+	char* closingBracketPos = NULL;
+	Boolean openingBracketFound = false;
+	if (x[0] == '[') {
+		openingBracketFound = true;
+	}
+	x[0] = ':';
+	x++;
+	while (x < maxptr) {
+		if ((!openingBracketFound) && (x[0] == '[')) {
+			openingBracketFound = true;
+			x[0] = ' ';
+		}
+		else if (openingBracketFound) {
+			if (x[0] == ']') {
+				closingBracketPos = x;
+			}
+			else if ((x[0] == CR) || (x[0] == LF)) {
+				if (closingBracketPos) closingBracketPos[0] = ' '; // last closing pos before CR/LF
+				break;
+			}
+		}
+		x++;
+	}
 }
 
 // isFormula=false => outputFile is Pascal string. TXT linebreaks become spaces.
@@ -481,17 +508,74 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	inputworkinitial = inputwork;
 	if (inputwork == 0) return false;
 	memcpy(inputwork, inputFile, maxInput);
+	inputwork[maxInput] = 0; // otherwise strstr() will crash
+
+	// Transform "FFDecomp" TXT file into the similar "PluginCommander" TXT file
+	if (strstr(inputwork, "Filter Factory Plugin Information:")) {
+		char* x;
+		char* k1;
+		char* k2;
+		// Metadata:
+		x = strstr(inputwork, "CATEGORY:");
+		if (x) strncpy(x, "Category:", strlen("Category:"));
+		x = strstr(inputwork, "TITLE:");
+		if (x) strncpy(x, "Title:", strlen("Title:"));
+		x = strstr(inputwork, "COPYRIGHT:");
+		if (x) strncpy(x, "Copyright:", strlen("Copyright:"));
+		x = strstr(inputwork, "AUTHOR:");
+		if (x) strncpy(x, "Author:", strlen("Author:"));
+		// Controls:
+		for (i = 0; i < 8; i++) {
+			k1 = (char*)malloc(strlen("Control X:") + 1);
+			sprintf(k1, "Control %d:", i);
+			x = strstr(inputwork, k1);
+			if (x) {
+				k2 = (char*)malloc(strlen("ctl[X]:   ") + 1);
+				sprintf(k2, "ctl[%d]:   ", i);
+				strncpy(x, k2, strlen(k2));
+				x += strlen("ctl[X]");
+				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
+				free(k2);
+			}
+			free(k1);
+		}
+		// Maps:
+		for (i = 0; i < 4; i++) {
+			k1 = (char*)malloc(strlen("Map X:") + 1);
+			sprintf(k1, "Map %d:", i);
+			x = strstr(inputwork, k1);
+			if (x) {
+				k2 = (char*)malloc(strlen("map[X]:") + 1);
+				sprintf(k2, "map[%d]:", i);
+				strncpy(x, k2, strlen(k2));
+				x += strlen("map[X]");
+				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
+				free(k2);
+			}
+			free(k1);
+		}
+		// Convert all '\r' to '\n' for the next step to be easier
+		for (i = 0; i < maxInput; i++) {
+			if (inputworkinitial[i] == CR) inputworkinitial[i] = LF;
+		}
+		x = strstr(inputwork, "\nR=\n");
+		if (x) strncpy(x, "\nR:\n", strlen("\nR:\n"));
+		x = strstr(inputwork, "\nG=\n");
+		if (x) strncpy(x, "\nG:\n", strlen("\nG:\n"));
+		x = strstr(inputwork, "\nB=\n");
+		if (x) strncpy(x, "\nB:\n", strlen("\nB:\n"));
+		x = strstr(inputwork, "\nA=\n");
+		if (x) strncpy(x, "\nA:\n", strlen("\nA:\n"));
+	}
 	// Replace all \r and \n with \0, so that we can parse easier
 	for (i = 0; i < maxInput; i++) {
-		if (inputwork[i] == 0) break;
-		if (inputwork[i] == CR) inputwork[i] = 0;
-		if (inputwork[i] == LF) inputwork[i] = 0;
+		if (inputworkinitial[i] == 0) break;
+		if (inputworkinitial[i] == CR) inputworkinitial[i] = 0;
+		if (inputworkinitial[i] == LF) inputworkinitial[i] = 0;
 	}
-	// C++ wrong warning: Buffer overflow (C6386)
-	// 'The writeable size is "maxInput+1" Byte, but "maxInput" byte can be written'. WTF?
-	#pragma warning(suppress : 6386)
-	inputwork[maxInput] = 0;
+
 	// Find line that contains out key
+	inputwork = inputworkinitial;
 	do {
 		if (inputwork > inputworkinitial + maxInput) {
 			// Key not found. Set output to empty string
@@ -511,6 +595,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			return false;
 		}
 	} while (!_picoLineContainsKey(sline, &svalue, property));
+
 	// Read line(s) until we find a line with another key, or the line end
 	do {
 		while ((svalue[0] == ' ') || (svalue[0] == TAB)) svalue++; // Trim left
@@ -532,8 +617,8 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 				outputwork += strlen(svalue);
 				if (isFormula) {
 					// Formulas: TXT line break stays line break (important if you have comments!)
-					outputwork[1] = CR;
-					outputwork[2] = LF;
+					outputwork[0] = CR;
+					outputwork[1] = LF;
 					outputwork += 2;
 				}
 				else {
@@ -551,6 +636,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		inputwork += strlen(sline) + 1;
 		if (inputwork - 1 > inputworkinitial + maxInput) break; // TODO: will that be ever called?
 	} while (!_picoLineContainsKey(sline, &svalue, NULL));
+
 	// Remove trailing whitespace
 	if (outputwork > outputFile) {
 		outputwork -= 1;
@@ -573,7 +659,6 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 			FILECOUNT count = PIGETHANDLESIZE(h);
 			char* q = PILOCKHANDLE(h, false);
 
-			// TODO: Test if ffdecomp TXT file also works
 			char out[256];
 			if (_picoReadProperty(q, count, "Title", out, sizeof(out), false)) {
 				int i;

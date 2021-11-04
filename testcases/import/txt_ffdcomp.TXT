@@ -21,6 +21,7 @@ Map 2: [Map 2:]
 Map 3: [Map 3:]
 
 Control 0: [Control 0:]
+
 Control 1: [Transparency:]
 Control 2: [Control 2:]
 Control 3: [Control 3:]
@@ -30,7 +31,7 @@ Control 6: [Control 6:]
 Control 7: [Control 7:]
 
 R=
-r
+x
 
 G=
 g
