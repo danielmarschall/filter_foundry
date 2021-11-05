@@ -34,10 +34,16 @@ FFX (Filters Unlimited) file format
         String[5]      channels           // I (Intro), R, G, B, A
         SliderInfo[8]  sliders            // Slider names prefix: {C} = Checkbox, {S} or none = Slider
         int32_t        gradientIndex
-        int32_t        bitmapInfoSize
-        byte*          bitmapInfo         // Data: human readable file size (numeric string), 2x NUL, JPG data
+        int32_t        bitmapInfoSize     // new in FFX 1.2
+        BitmapInfo     bitmapInfo         // new in FFX 1.2
         int32_t        numPresets         // new in FFX 1.1
         Preset[]       presets            // new in FFX 1.1
+    }
+    
+    BitmapInfo = {
+        char[]         szFilesize         // human readable file size (numeric string) with NUL terminator
+        char[]         szUnknown          // Always 1 NUL character?
+        char[]         jpgData
     }
     
     String = {

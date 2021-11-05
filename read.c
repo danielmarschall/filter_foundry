@@ -295,6 +295,12 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						q += sizeof(uint32_t);
 					}
 
+					// Maps (are not part of the format!)
+					strcpy((char*)gdata->parm.map[0], "\006Map 0:");
+					strcpy((char*)gdata->parm.map[1], "\006Map 1:");
+					strcpy((char*)gdata->parm.map[2], "\006Map 2:");
+					strcpy((char*)gdata->parm.map[3], "\006Map 3:");
+
 					res = true;
 				}
 			}
