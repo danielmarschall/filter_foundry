@@ -8,7 +8,7 @@ Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/
 
 ### Windows version 1.7.0.11
 
-Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
+Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
 
 To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not Filter Foundry works on a non-Photoshop host application, please send us a message!
 
@@ -58,7 +58,9 @@ Filter Foundry support a variety of different file formats:
 |TXT        |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
 
 (1) Loading is only possible if the 8BF file was created by Filter Factory, or by Filter Foundry without protection.
+
 (2) Note that Filter Foundry only implements the basic Filter Factory commands. Therefore, most "Filters Unlimited" filters will not work with Filter Foundry.
+
 (3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added with a text editor.
 
 

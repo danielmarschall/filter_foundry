@@ -46,4 +46,6 @@ This directory contains various standalone plugins to test if the current Filter
 
 | FiltersUnlimited => FilterFoundry         | Ext.   | Sig.     | Testcase file(s)         | Import          |
 | ------------------------------------------| -------| ---------| -------------------------| ----------------|
+| Filters Unlimited FFX 1.0                 | .ffx   | FFX1.0   | ffx_10.ffx               | Works           |
 | Filters Unlimited FFX 1.1                 | .ffx   | FFX1.1   | ffx_11.ffx               | Works           |
+| Filters Unlimited FFX 1.2                 | .ffx   | FFX1.2   | ffx_12.ffx               | Works           |
