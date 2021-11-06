@@ -147,7 +147,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			}
 			if (strlen(expr[i]) >= sizeof(gdata->parm.formula[i])) {
 				if (i == 0) {
-					simplealert(_strdup("Attention!The formula for channel R was too long(longer than 1023 characters) and was truncated."));
+					simplealert(_strdup("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 1) {
 					simplealert(_strdup("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));

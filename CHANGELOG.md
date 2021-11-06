@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.12 [Work-In-Progress]
+## 1.7.0.12 [06-Nov-2021]
 - Added possibility to load and save PluginCommander TXT files.
 - Added possibility to load TXT files created by FFdecomp.
 
