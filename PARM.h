@@ -81,7 +81,7 @@ typedef uint32_t bool32_t;
 // Photoshop's Filter Factory has PARM:16
 // Filter Foundry has PARM:16000 (old) or PARM:16 (new)
 typedef struct {   //structure of FF PARM resource
-	uint32_t cbSize;     //size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7)
+	uint32_t cbSize;     //size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7 and Mac OS Filter Factory)
 	bool32_t standalone; //0=original FF, 1=standalone filter
 	uint32_t val[8];     //initial values of controls
 	bool32_t popDialog;  //1 if need to pop a parameter dialog

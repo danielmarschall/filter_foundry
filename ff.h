@@ -113,7 +113,7 @@ Handle readfileintohandle(FILEREF r);
 Boolean readfile_afs_pff(StandardFileReply* sfr, char** reason);
 Boolean readfile_ffx(StandardFileReply* sfr, char** reason);
 Boolean readfile_picotxt(StandardFileReply* sfr, char** reason);
-Boolean readPARM(Ptr h,PARM_T *parm,char **reasonstr,int fromwin);
+Boolean readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
 OSErr saveparams_afs_pff(Handle h);

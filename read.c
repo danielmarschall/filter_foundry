@@ -332,52 +332,7 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 					// This signature is observed in Filter Factory standalones.
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
 					{
-
-						#ifdef MAC_ENV
-						// Case #1: Mac is reading Windows (Win16/32/64) plugin
-						if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 1 /*Windows format resource*/)) )
-						{
-							// these are the only numeric fields we *have* to swap
-							// all the rest are flags which (if we're careful) will work in either ordering
-							for(i = 0; i < 8; ++i)
-								slider[i] = EndianS32_LtoN(slider[i]);
-						}
-						#else
-						// Case #2: Windows is reading a Windows plugin (if Resource API failed, e.g. Win64 tries to open NE file, Win32 tries to open 64bit file)
-						if( ((q[0] == PARM_SIZE) ||
-						     (q[0] == PARM_SIZE_PREMIERE) ||
-						     (q[0] == PARM_SIG_MAC)) && q[1] == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 1/*fromwin*/)))
-						{
-						}
-
-						// Case #3: Windows is reading an old FilterFactory Mac file
-						// Note: You must read the ".rsrc" resource fork, not the standalone binary!
-						else if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
-						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 0/*fromwin=0 means that strings are PStrings instead of CStrings*/)) )
-						{
-							// Note: slider[i] = EndianS32_LtoN(slider[i]); will be done in readPARM()
-							// All the rest are flags which (if we're careful) will work in either ordering
-
-							// Convert CR in the copyright field to CRLF.
-							char copyrightCRLF[256];
-							char* p = &copyrightCRLF[0];
-							for (size_t i = 0; i < strlen(gdata->parm.szCopyright); i++) {
-								*p++ = gdata->parm.szCopyright[i];
-								if (gdata->parm.szCopyright[i] == CR) {
-									*p++ = LF;
-								}
-							}
-							*p++ = '\0';
-							strcpy(gdata->parm.szCopyright, copyrightCRLF);
-						}
-						#endif
-
+						res = readPARM(&gdata->parm, (Ptr)q);
 						if (res) break;
 					}
 
@@ -393,27 +348,113 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 	return res;
 }
 
-Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
+Boolean readPARM(PARM_T* pparm, Ptr p){
 	int i;
+	Boolean towin, tomac, fromwin, frommac;
+	unsigned int signature = *((unsigned int*)p);
+	unsigned int standalone = *((unsigned int*)p+1);
 
-	if (*((unsigned int*)p) == PARM_SIZE_PREMIERE) {
-		convert_premiere_to_photoshop(pparm, (PARM_T_PREMIERE*)p);
-	} else {
-		// Assume it is Photoshop. Signature either PARM_SIZE (0x2068) or 0x1C68
-		memcpy(pparm,p,sizeof(PARM_T));
+	// Find out our OS ("reader") the OS of the plugin ("source")
+	#ifdef MAC_ENV
+	towin = false;
+	tomac = true;
+	fromwin = ((EndianS32_LtoN(signature) == PARM_SIZE) ||
+		(EndianS32_LtoN(signature) == PARM_SIZE_PREMIERE) ||
+		(EndianS32_LtoN(signature) == PARM_SIG_MAC)) && EndianS32_LtoN(standalone) == 1;
+	frommac = ((signature == PARM_SIZE) ||
+		(signature == PARM_SIZE_PREMIERE) ||
+		(signature == PARM_SIG_MAC)) && standalone == 1;
+	#else
+	towin = true;
+	tomac = false;
+	fromwin = ((signature == PARM_SIZE) ||
+		(signature == PARM_SIZE_PREMIERE) ||
+		(signature == PARM_SIG_MAC)) && standalone == 1;
+	frommac = ((EndianS32_LtoN(signature) == PARM_SIZE) ||
+		(EndianS32_LtoN(signature) == PARM_SIZE_PREMIERE) ||
+		(EndianS32_LtoN(signature) == PARM_SIG_MAC)) && EndianS32_LtoN(standalone) == 1;
+	#endif
+
+	// Is it a valid signature?
+	if (!fromwin && !frommac) {
+		// No valid signature found
+		return false;
 	}
 
-	if(!fromwin){
-		/* Mac PARM resource stores Pascal strings - convert to C strings  */
+	// Does it come from Premiere or Photoshop?
+	// Initialize pparm
+	if ((signature == PARM_SIZE_PREMIERE) || (EndianS32_LtoN(signature) == PARM_SIZE_PREMIERE)) {
+		// It comes from Premiere. Swap R and B channel and convert to a Photoshop PARM_T
+		convert_premiere_to_photoshop(pparm, (PARM_T_PREMIERE*)p);
+	} else {
+		// It is already Photoshop. Just copy to pparm.
+		memcpy(pparm, p, sizeof(PARM_T));
+	}
+
+	// Do we need to do string conversion?
+	if (frommac) {
+		/* Mac PARM resource stores Pascal strings - convert to C strings, since this is what we work internally with (regardles of OS) */
 		myp2cstr((unsigned char*)pparm->szCategory);
 		myp2cstr((unsigned char*)pparm->szTitle);
 		myp2cstr((unsigned char*)pparm->szCopyright);
 		myp2cstr((unsigned char*)pparm->szAuthor);
-		for(i = 0; i < 4; ++i)
+		for (i = 0; i < 4; ++i)
 			myp2cstr((unsigned char*)pparm->szMap[i]);
-		for(i = 0; i < 8; ++i)
+		for (i = 0; i < 8; ++i)
 			myp2cstr((unsigned char*)pparm->szCtl[i]);
 	}
+
+	// Case #1: Mac is reading Windows (Win16/32/64) plugin
+	if (fromwin && tomac) {
+		size_t i;
+
+		// Convert copyright CRLF to CR (actually, just removing LF)
+		char copyrightCRLF[256];
+		char* p = &copyrightCRLF[0];
+		for (i = 0; i < strlen(pparm->szCopyright); i++) {
+			if (pparm->szCopyright[i] != LF) {
+				*p++ = pparm->szCopyright[i];
+			}
+		}
+		*p++ = '\0';
+		strcpy(pparm->szCopyright, copyrightCRLF);
+
+		// these are the only numeric fields we *have* to swap
+		// all the rest are bool_t flags which (if we're careful) will work in either ordering
+		for (i = 0; i < 8; ++i)
+			pparm->val[i] = EndianS32_LtoN(pparm->val[i]);
+	}
+
+	// Case #2: Mac is reading Mac (in case the normal resource extraction didn't work)
+	// Nothing to do
+
+	// Case #3: Windows is reading a Windows plugin (if Resource API failed, e.g. Win64 tries to open Win16 NE file or Win32 tries to open Win64 file)
+	// Nothing to do
+
+	// Case #4: Windows is reading an old FilterFactory Mac file
+	// Note: You must read the ".rsrc" resource fork, not the standalone binary!
+	if (frommac && towin) {
+		size_t i;
+
+		// Convert CR in the copyright field to CRLF.
+		char copyrightCRLF[256];
+		char* p = &copyrightCRLF[0];
+		for (i = 0; i < strlen(pparm->szCopyright); i++) {
+			*p++ = pparm->szCopyright[i];
+			if (pparm->szCopyright[i] == CR) {
+				*p++ = LF;
+			}
+		}
+		*p++ = '\0';
+		strcpy(pparm->szCopyright, copyrightCRLF);
+
+		// these are the only numeric fields we *have* to swap
+		// all the rest are bool_t flags which (if we're careful) will work in either ordering
+		for (i = 0; i < 8; ++i)
+			pparm->val[i] = EndianS32_LtoN(pparm->val[i]);
+	}
+
+	// Now set the values in pparm into the working variables expr[] and slider[], so that they are visible in the GUI
 
 	for(i = 0; i < 4; ++i){
 		if(expr[i]) free(expr[i]);
@@ -421,13 +462,14 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 	}
 
 	for (i = 0; i < 8; ++i) {
-		if (pparm->val[i] > 0xFF) {
+		slider[i] = (uint8_t)pparm->val[i];
+		/*
+		if (slider[i] > 0xFF) {
 			// Wrong endianess (e.g. reading a Mac rsrc on Windows)
-			slider[i] = (uint8_t)EndianS32_LtoN(pparm->val[i]);
+			// Should not happen since we did the stuff above
+			slider[i] = (uint8_t)EndianS32_LtoN(slider[i]);
 		}
-		else {
-			slider[i] = (uint8_t)pparm->val[i];
-		}
+		*/
 	}
 
 	return true;

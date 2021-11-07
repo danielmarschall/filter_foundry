@@ -48,7 +48,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 	// load first PARM resource
 	if( (resinfo = FindResource(hm,MAKEINTRESOURCE(parm_id),PARM_TYPE)) ){
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
-			res = readPARM(pparm, &gdata->parm, reason, 1 /*Windows format resource*/);
+			res = readPARM(&gdata->parm,pparm);
 			gdata->obfusc = false;
 		}
 	}else if( readobfusc &&
@@ -63,7 +63,7 @@ Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
 				if (!copy) return false;
 				memcpy(copy, pparm, resSize);
 				deobfusc(copy);
-				res = readPARM((Ptr)copy,&gdata->parm,reason,1);
+				res = readPARM(&gdata->parm,(Ptr)copy);
 				gdata->obfusc = true;
 				free(copy);
 			} else {
