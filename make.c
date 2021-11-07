@@ -153,7 +153,7 @@ size_t roundToNext4(size_t x) {
 	return x + pad;
 }
 
-size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *event_id) {
+size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_id) {
 	PIProperty *prop;
 	char *p;
 	struct hstm_data {
@@ -181,9 +181,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 	prop->vendorID = kPhotoshopSignature;
 	prop->propertyKey = PINameProperty;
 	prop->propertyID = 0;
-	prop->propertyLength = (SPInt32)roundToNext4((size_t)title[0] + 1);
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(title) + 1);
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
-	PLstrcpy((StringPtr)prop->propertyData, title);
+	myc2pstrcpy((StringPtr)prop->propertyData, title);
 
 	// skip past new property record, and any padding
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
@@ -195,9 +195,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 	prop->propertyKey = PICategoryProperty;
 	prop->propertyID = 0;
 
-	prop->propertyLength = (SPInt32)roundToNext4((size_t)gdata->parm.category[0] + 1);
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(gdata->parm.szCategory) + 1);
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
-	PLstrcpy((StringPtr)prop->propertyData, gdata->parm.category);
+	myc2pstrcpy((StringPtr)prop->propertyData, gdata->parm.szCategory);
 
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
@@ -209,8 +209,8 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, StringPtr title, long *eve
 	scope = (char*)malloc(0x300);
 	if (!scope) return -1;
 	sprintf(scope, "%s %s",
-	    INPLACEP2CSTR(gdata->parm.category),
-	    INPLACEP2CSTR(title));
+	    gdata->parm.szCategory,
+	    title);
 
 	#ifdef ENABLE_APPLESCRIPT
 	// If the uniqueString/scope is set, the plugin will only communicate with Photoshop.
@@ -312,13 +312,13 @@ void* _aete_property(void* aeteptr, PARM_T *pparm, int ctlidx, int mapidx, OSTyp
 	if (pparm->ctl_used[ctlidx] || pparm->map_used[mapidx]) {
 		if (pparm->map_used[mapidx]) {
 			if (ctlidx & 1) {
-				sprintf(tmp, "... %s", (char*)pparm->map[mapidx]);
+				sprintf(tmp, "... %s", pparm->szMap[mapidx]);
 			} else {
-				sprintf(tmp, "%s ...", (char*)pparm->map[mapidx]);
+				sprintf(tmp, "%s ...", pparm->szMap[mapidx]);
 			}
 			AETE_WRITE_C2PSTR(tmp);
 		} else {
-			AETE_WRITE_P2PSTR((char*)pparm->ctl[ctlidx]);
+			AETE_WRITE_C2PSTR(pparm->szCtl[ctlidx]);
 		}
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(key);
@@ -354,7 +354,7 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 	AETE_WRITE_WORD(roman);
 	AETE_WRITE_WORD(1); /* 1 suite */
 	{
-		AETE_WRITE_P2PSTR((char*)pparm->author); /* vendor suite name */
+		AETE_WRITE_C2PSTR(pparm->szAuthor); /* vendor suite name */
 		AETE_WRITE_C2PSTR(_strdup("")); /* optional description */
 		AETE_ALIGN_WORD();
 		AETE_WRITE_DWORD(plugInSuiteID); /* suite ID */
@@ -362,7 +362,7 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id) {
 		AETE_WRITE_WORD(1); /* suite level, must be 1. Attention: Filters like 'Pointillize' have set this to 0! */
 		AETE_WRITE_WORD(1); /* 1 event (structure for filters) */
 		{
-			AETE_WRITE_P2PSTR((char*)pparm->title); /* event name */
+			AETE_WRITE_C2PSTR(pparm->szTitle); /* event name */
 			AETE_WRITE_C2PSTR(_strdup("")); /* event description */
 			AETE_ALIGN_WORD();
 			AETE_WRITE_DWORD(plugInClassID); /* event class */

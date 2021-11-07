@@ -155,26 +155,26 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 		photoshop->map_used[i] = premiere->map_used[i];
 	for (i=0;i<8;++i)
 		photoshop->ctl_used[i] = premiere->ctl_used[i];
-	sprintf((char*)photoshop->category, "Filter Factory"); // Premiere plugins do not have a category attribute
+	sprintf(photoshop->szCategory, "Filter Factory"); // Premiere plugins do not have a category attribute
 	photoshop->iProtected = 0; // Premiere plugins do not have a protect flag
-	memcpy((void*)photoshop->title, (void*)premiere->title, sizeof(photoshop->title));
-	memcpy((void*)photoshop->copyright, (void*)premiere->copyright, sizeof(photoshop->copyright));
-	memcpy((void*)photoshop->author, (void*)premiere->author, sizeof(photoshop->author));
+	memcpy((void*)photoshop->szTitle, (void*)premiere->szTitle, sizeof(photoshop->szTitle));
+	memcpy((void*)photoshop->szCopyright, (void*)premiere->szCopyright, sizeof(photoshop->szCopyright));
+	memcpy((void*)photoshop->szAuthor, (void*)premiere->szAuthor, sizeof(photoshop->szAuthor));
 	for (i=0;i<4;++i)
-		memcpy((void*)photoshop->map[i], (void*)premiere->map[i], sizeof(photoshop->map[i]));
+		memcpy((void*)photoshop->szMap[i], (void*)premiere->szMap[i], sizeof(photoshop->szMap[i]));
 	for (i=0;i<8;++i)
-		memcpy((void*)photoshop->ctl[i], (void*)premiere->ctl[i], sizeof(photoshop->ctl[i]));
+		memcpy((void*)photoshop->szCtl[i], (void*)premiere->szCtl[i], sizeof(photoshop->szCtl[i]));
 
 	if (premiere->singleExpression) {
-		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
-		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
-		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
-		memcpy((void*)photoshop->formula[3], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+		memcpy((void*)photoshop->szFormula[0], (void*)premiere->szFormula[3], sizeof(photoshop->szFormula[3]));
+		memcpy((void*)photoshop->szFormula[1], (void*)premiere->szFormula[3], sizeof(photoshop->szFormula[3]));
+		memcpy((void*)photoshop->szFormula[2], (void*)premiere->szFormula[3], sizeof(photoshop->szFormula[3]));
+		memcpy((void*)photoshop->szFormula[3], (void*)premiere->szFormula[3], sizeof(photoshop->szFormula[3]));
 	} else {
-		memcpy((void*)photoshop->formula[0], (void*)premiere->formula[2], sizeof(photoshop->formula[2]));
-		memcpy((void*)photoshop->formula[1], (void*)premiere->formula[1], sizeof(photoshop->formula[1]));
-		memcpy((void*)photoshop->formula[2], (void*)premiere->formula[0], sizeof(photoshop->formula[0]));
-		memcpy((void*)photoshop->formula[3], (void*)premiere->formula[3], sizeof(photoshop->formula[3]));
+		memcpy((void*)photoshop->szFormula[0], (void*)premiere->szFormula[2], sizeof(photoshop->szFormula[2]));
+		memcpy((void*)photoshop->szFormula[1], (void*)premiere->szFormula[1], sizeof(photoshop->szFormula[1]));
+		memcpy((void*)photoshop->szFormula[2], (void*)premiere->szFormula[0], sizeof(photoshop->szFormula[0]));
+		memcpy((void*)photoshop->szFormula[3], (void*)premiere->szFormula[3], sizeof(photoshop->szFormula[3]));
 	}
 }
 
@@ -217,19 +217,19 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 					simplewarning(_strdup("Attention! You are loading a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
 
 					val = _ffx_read_str(&q);
-					myc2pstrcpy(gdata->parm.title, val);
+					strcpy(gdata->parm.szTitle, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
-					myc2pstrcpy(gdata->parm.category, val);
+					strcpy(gdata->parm.szCategory, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
-					myc2pstrcpy(gdata->parm.author, val);
+					strcpy(gdata->parm.szAuthor, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
-					myc2pstrcpy(gdata->parm.copyright, val);
+					strcpy(gdata->parm.szCopyright, val);
 					free(val);
 
 					// Channels I, R, G, B, A
@@ -254,7 +254,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 								val = val2;
 							}
 						}
-						if (strlen(val) >= sizeof(gdata->parm.formula[i])) {
+						if (strlen(val) >= sizeof(gdata->parm.szFormula[i])) {
 							if (i == 0) {
 								simplealert(_strdup("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."));
 							}
@@ -269,10 +269,10 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 							}
 							// C++ wrong warning: Buffer overflow (C6386)
 							#pragma warning(suppress : 6386)
-							val[sizeof(gdata->parm.formula[i]) - 1] = '\0';
+							val[sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 						}
 						expr[i] = my_strdup(val);
-						strcpy((char*)gdata->parm.formula[i], val); // Attention! This is not a Pascal string!
+						strcpy(gdata->parm.szFormula[i], val);
 						free(val);
 					}
 
@@ -286,7 +286,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 							if ((sliderName[0] == '{') && (sliderName[1] == 'S') && (sliderName[2] == '}')) sliderName += 3;
 							else if ((sliderName[0] == '{') && (sliderName[1] == 'C') && (sliderName[2] == '}')) sliderName += 3;
 						}
-						myc2pstrcpy(gdata->parm.ctl[i], sliderName);
+						strcpy(gdata->parm.szCtl[i], sliderName);
 						free(val);
 						gdata->parm.ctl_used[i] = (bool32_t)*((byte*)q);
 						q += sizeof(byte);
@@ -296,10 +296,10 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 					}
 
 					// Maps (are not part of the format!)
-					strcpy((char*)gdata->parm.map[0], "\006Map 0:");
-					strcpy((char*)gdata->parm.map[1], "\006Map 1:");
-					strcpy((char*)gdata->parm.map[2], "\006Map 2:");
-					strcpy((char*)gdata->parm.map[3], "\006Map 3:");
+					strcpy(gdata->parm.szMap[0], "Map 0:");
+					strcpy(gdata->parm.szMap[1], "Map 1:");
+					strcpy(gdata->parm.szMap[2], "Map 2:");
+					strcpy(gdata->parm.szMap[3], "Map 3:");
 
 					res = true;
 				}
@@ -359,22 +359,22 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 						else if( ((EndianS32_LtoN(q[0]) == PARM_SIZE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIZE_PREMIERE) ||
 						     (EndianS32_LtoN(q[0]) == PARM_SIG_MAC)) && EndianS32_LtoN(q[1]) == 1
-							&& (res = readPARM((char*)q, &gdata->parm, reason, 0 /*Strings are already PStrings*/)) )
+							&& (res = readPARM((char*)q, &gdata->parm, reason, 0/*fromwin=0 means that strings are PStrings instead of CStrings*/)) )
 						{
 							// Note: slider[i] = EndianS32_LtoN(slider[i]); will be done in readPARM()
 							// All the rest are flags which (if we're careful) will work in either ordering
 
 							// Convert CR in the copyright field to CRLF.
-							int i, j;
-							for (i = 1; i < gdata->parm.copyright[0]; i++) {
-								if (gdata->parm.copyright[i] == CR) {
-									for (j = gdata->parm.copyright[0]; j>i; j--) {
-										gdata->parm.copyright[j+1] = gdata->parm.copyright[j];
-									}
-									gdata->parm.copyright[0]++;
-									gdata->parm.copyright[i+1] = LF;
+							char copyrightCRLF[256];
+							char* p = &copyrightCRLF[0];
+							for (size_t i = 0; i < strlen(gdata->parm.szCopyright); i++) {
+								*p++ = gdata->parm.szCopyright[i];
+								if (gdata->parm.szCopyright[i] == CR) {
+									*p++ = LF;
 								}
 							}
+							*p++ = '\0';
+							strcpy(gdata->parm.szCopyright, copyrightCRLF);
 						}
 						#endif
 
@@ -403,21 +403,21 @@ Boolean readPARM(Ptr p,PARM_T *pparm,char **reasonstr,int fromwin){
 		memcpy(pparm,p,sizeof(PARM_T));
 	}
 
-	if(fromwin){
-		/* Windows PARM resource stores C strings - convert to Pascal strings  */
-		myc2pstr((char*)pparm->category);
-		myc2pstr((char*)pparm->title);
-		myc2pstr((char*)pparm->copyright);
-		myc2pstr((char*)pparm->author);
+	if(!fromwin){
+		/* Mac PARM resource stores Pascal strings - convert to C strings  */
+		myp2cstr((unsigned char*)pparm->szCategory);
+		myp2cstr((unsigned char*)pparm->szTitle);
+		myp2cstr((unsigned char*)pparm->szCopyright);
+		myp2cstr((unsigned char*)pparm->szAuthor);
 		for(i = 0; i < 4; ++i)
-			myc2pstr((char*)pparm->map[i]);
+			myp2cstr((unsigned char*)pparm->szMap[i]);
 		for(i = 0; i < 8; ++i)
-			myc2pstr((char*)pparm->ctl[i]);
+			myp2cstr((unsigned char*)pparm->szCtl[i]);
 	}
 
 	for(i = 0; i < 4; ++i){
 		if(expr[i]) free(expr[i]);
-		expr[i] = my_strdup((char*)pparm->formula[i]);
+		expr[i] = my_strdup(pparm->szFormula[i]);
 	}
 
 	for (i = 0; i < 8; ++i) {
@@ -493,7 +493,7 @@ void _ffdcomp_removebrackets(char* x, char* maxptr) {
 	}
 }
 
-// isFormula=false => outputFile is Pascal string. TXT linebreaks become spaces.
+// isFormula=false => outputFile is C string. TXT linebreaks become spaces.
 // isFormula=true  => outputFile is C string. TXT line breaks become CRLF line breaks
 Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean isFormula) {
 	int i;
@@ -575,9 +575,8 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	}
 	// Replace all \r and \n with \0, so that we can parse easier
 	for (i = 0; i < maxInput; i++) {
-		if (inputworkinitial[i] == 0) break;
 		if (inputworkinitial[i] == CR) inputworkinitial[i] = 0;
-		if (inputworkinitial[i] == LF) inputworkinitial[i] = 0;
+		else if (inputworkinitial[i] == LF) inputworkinitial[i] = 0;
 	}
 
 	// Find line that contains out key
@@ -587,7 +586,6 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			// Key not found. Set output to empty string
 			outputwork[0] = 0;
 			free(inputworkinitial);
-			if (!isFormula) myc2pstr(outputFile);
 			return false;
 		}
 		sline = inputwork;
@@ -597,7 +595,6 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 			// TODO: will that be ever called?
 			outputwork[0] = 0;
 			free(inputworkinitial);
-			if (!isFormula) myc2pstr(outputFile);
 			return false;
 		}
 	} while (!_picoLineContainsKey(sline, &svalue, property));
@@ -608,14 +605,13 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == TAB)) svalue[strlen(svalue) - 1] = 0; // Trim right
 
 		if (strlen(svalue) > 0) {
-			if (outputwork + strlen(svalue) + (isFormula ? 3 : 2) > outputFile + maxOutput) {
+			if (outputwork + strlen(svalue) + (isFormula ? 3/*CRLF+NUL*/ : 2/*space+NUL*/) > outputFile + maxOutput) {
 				int remaining = maxOutput - (outputwork - outputFile) - 1;
 				//printf("BUFFER FULL (remaining = %d)\n", remaining);
 				memcpy(outputwork, svalue, remaining);
 				outputwork += remaining;
 				outputwork[0] = 0;
 				free(inputworkinitial);
-				if (!isFormula) myc2pstr(outputFile);
 				return true;
 			}
 			else {
@@ -649,7 +645,6 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		outputwork[0] = 0;
 	}
 	free(inputworkinitial);
-	if (!isFormula) myc2pstr(outputFile);
 	return true;
 }
 
@@ -672,31 +667,31 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 				int i;
 
 				// Plugin infos
-				_picoReadProperty(q, count, "Title", (char*)gdata->parm.title, sizeof(gdata->parm.title)-1, false);
-				_picoReadProperty(q, count, "Category", (char*)gdata->parm.category, sizeof(gdata->parm.category)-1, false);
-				_picoReadProperty(q, count, "Author", (char*)gdata->parm.author, sizeof(gdata->parm.author)-1, false);
-				_picoReadProperty(q, count, "Copyright", (char*)gdata->parm.copyright, sizeof(gdata->parm.copyright)-1, false);
-				//_picoReadProperty(q, count, "Filename", (char*)gdata->parm.xxx, sizeof(gdata->parm.xxx), false);
+				_picoReadProperty(q, count, "Title", gdata->parm.szTitle, sizeof(gdata->parm.szTitle), false);
+				_picoReadProperty(q, count, "Category", gdata->parm.szCategory, sizeof(gdata->parm.szCategory), false);
+				_picoReadProperty(q, count, "Author", gdata->parm.szAuthor, sizeof(gdata->parm.szAuthor), false);
+				_picoReadProperty(q, count, "Copyright", gdata->parm.szCopyright, sizeof(gdata->parm.szCopyright), false);
+				//_picoReadProperty(q, count, "Filename", gdata->parm.xxx, sizeof(gdata->parm.xxx), false);
 
 				// Expressions
-				if (!_picoReadProperty(q, count, "R", (char*)gdata->parm.formula[0], sizeof(gdata->parm.formula[0]), true))
-					strcpy((char*)gdata->parm.formula[0], "r");
-				if (!_picoReadProperty(q, count, "G", (char*)gdata->parm.formula[1], sizeof(gdata->parm.formula[1]), true))
-					strcpy((char*)gdata->parm.formula[1], "g");
-				if (!_picoReadProperty(q, count, "B", (char*)gdata->parm.formula[2], sizeof(gdata->parm.formula[2]), true))
-					strcpy((char*)gdata->parm.formula[2], "b");
-				if (!_picoReadProperty(q, count, "A", (char*)gdata->parm.formula[3], sizeof(gdata->parm.formula[3]), true))
-					strcpy((char*)gdata->parm.formula[3], "a");
+				if (!_picoReadProperty(q, count, "R", gdata->parm.szFormula[0], sizeof(gdata->parm.szFormula[0]), true))
+					strcpy(gdata->parm.szFormula[0], "r");
+				if (!_picoReadProperty(q, count, "G", gdata->parm.szFormula[1], sizeof(gdata->parm.szFormula[1]), true))
+					strcpy(gdata->parm.szFormula[1], "g");
+				if (!_picoReadProperty(q, count, "B", gdata->parm.szFormula[2], sizeof(gdata->parm.szFormula[2]), true))
+					strcpy(gdata->parm.szFormula[2], "b");
+				if (!_picoReadProperty(q, count, "A", gdata->parm.szFormula[3], sizeof(gdata->parm.szFormula[3]), true))
+					strcpy(gdata->parm.szFormula[3], "a");
 				for (i = 0; i < 4; i++) {
 					if (expr[i]) free(expr[i]);
-					expr[i] = my_strdup((char*)gdata->parm.formula[i]);
+					expr[i] = my_strdup(gdata->parm.szFormula[i]);
 				}
 
 				// Slider names
 				for (i = 0; i < 8; i++) {
 					char keyname[7];
 					sprintf(keyname, "ctl[%d]", i);
-					_picoReadProperty(q, count, keyname, (char*)gdata->parm.ctl[i], sizeof(gdata->parm.ctl[i]), false);
+					_picoReadProperty(q, count, keyname, gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]), false);
 				}
 
 				// Slider values
@@ -706,12 +701,9 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
 						sprintf(keyname, "def[%d]", i);
 						if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
-							tmp[0] = 1;
-							tmp[1] = '0';
-							tmp[2] = 0;
+							strcpy(tmp,"0");
 						}
 					}
-					myp2cstr((unsigned char*)tmp);
 					gdata->parm.val[i] = slider[i] = atoi(tmp);
 				}
 
@@ -719,7 +711,7 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 				for (i = 0; i < 4; i++) {
 					char keyname[7];
 					sprintf(keyname, "map[%d]", i);
-					_picoReadProperty(q, count, keyname, (char*)gdata->parm.map[i], sizeof(gdata->parm.map[i]), false);
+					_picoReadProperty(q, count, keyname, gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]), false);
 				}
 
 				//These will be set when the expressions are evaluated anyway. So this part is optional:

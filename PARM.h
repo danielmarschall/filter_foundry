@@ -73,9 +73,8 @@ type PARM_TYPE {
 #else
 
 // Note: In Windows DLL/8BF files, the strings are C-strings, while in MAC-plugins they are Pascal-strings!
-// However, internally, we work with Pascal Strings (TODO: I don't like that!):
-// readPARM() converts C to Pascal strings, and doresources() converts them back to C strings for saving.
-// formulas are never Pascal strings.
+// Formulas are never Pascal strings.
+// Since 1.7.0.13, we internally, we work with C-strings.
 
 typedef uint32_t bool32_t;
 
@@ -91,15 +90,15 @@ typedef struct {   //structure of FF PARM resource
 	uint32_t unknown3; // This field is reserved for future use
 	bool32_t map_used[4];   //true if map(n) is used
 	bool32_t ctl_used[8];   //true if ctl(n) is used
-	unsigned char category[252];    //Category name
+	char szCategory[252];    //Category name
 	// Michael Johannhanwahr's protect flag...
 	bool32_t iProtected;            // == 1 means protected
-	unsigned char title[256];       //Filter title
-	unsigned char copyright[256];   //Copyright info
-	unsigned char author[256];      //Filter author(s)
-	unsigned char map[4][256];      //4 map labels
-	unsigned char ctl[8][256];      //8 control labels
-	unsigned char formula[4][1024]; //4 channel formulas; in Photoshop: (r,g,b,a)
+	char szTitle[256];       //Filter title
+	char szCopyright[256];   //Copyright info
+	char szAuthor[256];      //Filter author(s)
+	char szMap[4][256];      //4 map labels
+	char szCtl[8][256];      //8 control labels
+	char szFormula[4][1024]; //4 channel formulas; in Photoshop: (r,g,b,a)
 } PARM_T/*_PHOTOSHOP*/;
 
 // Premiere's Transition/Filter Factory has PARM:16000
@@ -114,13 +113,13 @@ typedef struct {   //structure of Premiere FF/TF PARM resource
 	uint32_t unknown3;
 	bool32_t map_used[4];   //true if map(n) is used
 	bool32_t ctl_used[8];   //true if ctl(n) is used
-	unsigned char title[256]; // in Photoshop Filter Factory: Category
-	unsigned char author[256]; // in Photoshop Filter Factory: Title
-	unsigned char modulename[256]; // in Photoshop Filter Factory: Copyright
-	unsigned char copyright[256]; // in Photoshop Filter Factory: Author
-	unsigned char map[4][256];      //4 map labels
-	unsigned char ctl[8][256];      //8 control labels
-	unsigned char formula[4][1024]; //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
+	char szTitle[256]; // in Photoshop Filter Factory: Category
+	char szAuthor[256]; // in Photoshop Filter Factory: Title
+	char szModulename[256]; // in Photoshop Filter Factory: Copyright
+	char szCopyright[256]; // in Photoshop Filter Factory: Author
+	char szMap[4][256];      //4 map labels
+	char szCtl[8][256];      //8 control labels
+	char szFormula[4][1024]; //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
 } PARM_T_PREMIERE;
 
 #endif

@@ -76,7 +76,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		unsigned long hash;
 		char* data;
 		// char* debug = malloc(2000);
-		// sprintf(debug, "getAeteKey %c with title %s/%s in STANDALONE PLUGIN", c, INPLACEP2CSTR(parm->title), INPLACEP2CSTR(parm->category));
+		// sprintf(debug, "getAeteKey %c with title %s/%s in STANDALONE PLUGIN", c, parm->szTitle, parm->szCategory);
 		// simplealert(debug);
 
 		// Use random AETE keys, because AppleScript has a global namespace
@@ -84,8 +84,8 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		data = (char*)malloc(0x300);
 		if (!data) return 0;
 		sprintf(data, "%s %s %c",
-			INPLACEP2CSTR(parm->category),
-			INPLACEP2CSTR(parm->title),
+			parm->szCategory,
+			parm->szTitle,
 			c);
 		hash = printablehash(djb2(data));
 		free(data);

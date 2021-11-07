@@ -59,8 +59,8 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	int idescription = 0;
 
 	// Description
-	for (i = 0; i < strlen((char*)pparm->category); i++) {
-		char c = pparm->category[i];
+	for (i = 0; i < strlen(pparm->szCategory); i++) {
+		char c = pparm->szCategory[i];
 		if ((c != '<') && (c != '>')) {
 			description[idescription++] = c;
 		}
@@ -68,8 +68,8 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	description[idescription++] = ' ';
 	description[idescription++] = '-';
 	description[idescription++] = ' ';
-	for (i = 0; i < strlen((char*)pparm->title); i++) {
-		char c = pparm->title[i];
+	for (i = 0; i < strlen(pparm->szTitle); i++) {
+		char c = pparm->szTitle[i];
 		if ((c != '<') && (c != '>')) {
 			description[idescription++] = c;
 		}
@@ -79,15 +79,15 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	// Name
 	strcpy(name, "Telegraphics.FilterFoundry.");
 	iname = strlen("Telegraphics.FilterFoundry.");
-	for (i = 0; i < strlen((char*)pparm->category); i++) {
-		char c = pparm->category[i];
+	for (i = 0; i < strlen(pparm->szCategory); i++) {
+		char c = pparm->szCategory[i];
 		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'))) {
 			name[iname++] = c;
 		}
 	}
 	name[iname++] = '.';
-	for (i = 0; i < strlen((char*)pparm->title); i++) {
-		char c = pparm->title[i];
+	for (i = 0; i < strlen(pparm->szTitle); i++) {
+		char c = pparm->szTitle[i];
 		if (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'))) {
 			name[iname++] = c;
 		}
@@ -128,8 +128,8 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 
 	tmp += mbstowcs(tmp, "CompanyName", 100);
 	tmp++;
-	if (strlen((char*)pparm->author) > 0) {
-		tmp += mbstowcs(tmp, (char*)pparm->author, 100);
+	if (strlen(pparm->szAuthor) > 0) {
+		tmp += mbstowcs(tmp, pparm->szAuthor, 100);
 	}
 	else {
 		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
@@ -138,8 +138,8 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 
 	tmp += mbstowcs(tmp, "LegalCopyright", 100);
 	tmp++;
-	if (strlen((char*)pparm->copyright) > 0) {
-		tmp += mbstowcs(tmp, (char*)pparm->copyright, 100);
+	if (strlen(pparm->szCopyright) > 0) {
+		tmp += mbstowcs(tmp, pparm->szCopyright, 100);
 	}
 	else {
 		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
@@ -148,8 +148,8 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 
 	tmp += mbstowcs(tmp, "FileDescription", 100);
 	tmp++;
-	if (strlen((char*)pparm->title) > 0) {
-		tmp += mbstowcs(tmp, (char*)pparm->title, 100);
+	if (strlen(pparm->szTitle) > 0) {
+		tmp += mbstowcs(tmp, pparm->szTitle, 100);
 	}
 	else {
 		tmp += mbstowcs(tmp, "Untitled filter", 100);
@@ -178,7 +178,7 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
 	size_t peoffset;
 	FILE* fptr;
-	
+
 	fptr = fopen(filename, "rb+");
 	if (fptr == NULL) return false;
 
@@ -370,9 +370,8 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	char* manifestp_copy;
 	PARM_T *pparm = NULL;
 	size_t piplsize,aetesize,origsize;
-	Str255 title;
+	char title[256];
 	LPCTSTR parm_type;
-	int i;
 	LPCSTR parm_id;
 	Boolean discard = true;
 	uint64_t obfuscseed = 0;
@@ -414,9 +413,9 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 			DBG("loaded DATA, PiPL");
 
-			PLstrcpy(title,gdata->parm.title);
+			strcpy(title,gdata->parm.szTitle);
 			if(gdata->parm.popDialog)
-				PLstrcat(title,(StringPtr)"\003...");
+				strcat(title,"...");
 
 			origsize = SizeofResource(srcmod,datarsrc);
 
@@ -430,26 +429,13 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
-				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,title, &event_id) + 2;
+				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,&title[0], &event_id) + 2;
 
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));
 
 				/* Generate 'aete' resource (contains names of the parameters for the "Actions" tab in Photoshop) */
 				aetesize = aete_generate(newaete, pparm, event_id);
-
-				// ====== Change Pascal strings to C-Strings
-
-				/* convert to C strings for Windows PARM resource */
-				// Don't do it before aete_generate, because they need Pascal strings
-				myp2cstr(pparm->category);
-				myp2cstr(pparm->title);
-				myp2cstr(pparm->copyright);
-				myp2cstr(pparm->author);
-				for (i = 0; i < 4; ++i)
-					myp2cstr(pparm->map[i]);
-				for (i = 0; i < 8; ++i)
-					myp2cstr(pparm->ctl[i]);
 
 				// ====== Create fitting manifest for the activation context
 
@@ -490,9 +476,13 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_ICON, "CAUTION_ICO", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+//					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+//					&& (
+//						// TODO: Sometimes, the cursors get ID 1,2,3 and somestimes 4,5,6. How to do it better?
+//						// TODO: If we do this, we get "Internal error"
+//						_UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(3)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)
+//						|| _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) ) // clean up things we don't need in the standalone plugin
 					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
@@ -539,7 +529,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 
 			repair_pe_checksum(dstname);
 		}
-		
+
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
@@ -698,7 +688,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	outErr = noErr;
 
 	check_unicows();
-	
+
 	// Make 32 bit:
 	// Destfile = no64_or_32(chosenname)
 	myp2cstrcpy(dstname, sfr->sfFile.name);

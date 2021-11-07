@@ -249,23 +249,21 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
-		myp2cstrcpy(s,gdata->parm.author);
-		SetDlgItemText(dp,PARAMAUTHORITEM,s);
-		myp2cstrcpy(s,gdata->parm.copyright);
-		SetDlgItemText(dp,PARAMCOPYITEM,s);
+		SetDlgItemText(dp,PARAMAUTHORITEM,gdata->parm.szAuthor);
+		SetDlgItemText(dp,PARAMCOPYITEM,gdata->parm.szCopyright);
 
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
 			if(gdata->parm.map_used[i/2]){
 				if((i&1) == 0){
 					// even (0, 2, 4, 6)
-					myp2cstrcpy(s,gdata->parm.map[i/2]);
+					strcpy(s,gdata->parm.szMap[i/2]);
 					SetDlgItemText(dp, FIRSTMAPLABELITEM+(i/2),s);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i + 1);
 				}
 			} else if(gdata->parm.ctl_used[i]){
-				myp2cstrcpy(s,gdata->parm.ctl[i]);
+				strcpy(s,gdata->parm.szCtl[i]);
 				SetDlgItemText(dp, FIRSTCTLLABELITEM+i,s);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}else{

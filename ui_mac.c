@@ -44,7 +44,7 @@ void DoAbout(AboutRecordPtr prec){
 	ModalFilterUPP filterproc_UPP = NewModalFilterUPP(aboutfilter);
 
 	if(gdata && gdata->standalone){
-		ParamText(gdata->parm.title,gdata->parm.author,gdata->parm.copyright,NULL);
+		ParamText(myc2pstr(_strdup(gdata->parm.szTitle)), myc2pstr(_strdup(gdata->parm.szAuthor)), myc2pstr(_strdup(gdata->parm.szCopyright)), NULL);
 		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
 	}else
 		Alert(ID_ABOUTDLG,filterproc_UPP);
@@ -55,7 +55,7 @@ void DoAbout(AboutRecordPtr prec){
 Boolean simplealert(char *s){
 	int i;
 
-	myc2pstr(s);
+	myc2pstr(_strdup(s));
 	ParamText((StringPtr)s,NULL,NULL,NULL);
 	i = StopAlert(ID_SYNTAXALERT,NULL);
 	myp2cstr((StringPtr)s);
@@ -65,7 +65,7 @@ Boolean simplealert(char *s){
 Boolean showmessage(char *s){
 	int i;
 
-	myc2pstr(s);
+	myc2pstr(_strdup(s));
 	ParamText((StringPtr)s,NULL,NULL,NULL);
 	i = Alert(ID_SYNTAXALERT,NULL);
 	myp2cstr((StringPtr)s);
@@ -190,7 +190,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	dp = thedialog = GetNewDialog(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG,nil,(WindowPtr)-1);
 
 	if(gdata->standalone)
-		SetWTitle(GetDialogWindow(dp),gdata->parm.title);
+		SetWTitle(GetDialogWindow(dp), myc2pstr(_strdup(gdata->parm.szTitle)));
 
 	GetDialogItem(dp,PREVIEWITEM,&itemType,&itemHdl,&preview_rect);
 	SetDialogItem(dp,PREVIEWITEM,itemType,(Handle)preview_image_UPP,&preview_rect);

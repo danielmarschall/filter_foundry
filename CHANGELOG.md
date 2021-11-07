@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.13 [Work-In-Progress]
+- Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.
+
 ## 1.7.0.12 [06-Nov-2021]
 - Added possibility to load and save PluginCommander TXT files.
 - Added possibility to load TXT files created by FFdecomp.

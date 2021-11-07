@@ -75,7 +75,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 
 			DetachResource(hpipl);
 
-			PLstrcpy(title,gdata->parm.title);
+			myc2pstrcpy(title,gdata->parm.szTitle);
 			if(gdata->parm.popDialog)
 				PLstrcat(title,"\pÉ");
 
@@ -88,6 +88,18 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 
 			AddResource(hpipl,'PiPL',16000,"\p");
 
+			/* convert C strings to Pascal strings */
+			PARM_T pascal_parm = (PARM_T)malloc(sizeof(PARM_T));
+			memcpy(pascal_parm, gdata->parm, sizeof(PARM_T));
+			myc2pstr(pascal_parm->szCategory);
+			myc2pstr(pascal_parm->szTitle);
+			myc2pstr(pascal_parm->szCopyright);
+			myc2pstr(pascal_parm->szAuthor);
+			for (i = 0; i < 4; ++i)
+				myc2pstr(pascal_parm->szMap[i]);
+			for (i = 0; i < 8; ++i)
+				myc2pstr(pascal_parm->szCtl[i]);
+
 			if( !(e = ResError()) ){
 				/* do a similar trick with the terminology resource,
 				   so the scripting system can distinguish the standalone plugin */
@@ -95,7 +107,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 				if( (h = Get1Resource(typeAETE,AETE_ID)) ){
 					SetHandleSize(h,4096);
 					HLock(h);
-					newsize = aete_generate((unsigned char*)*h, &gdata->parm, event_id);
+					newsize = aete_generate((unsigned char*)*h, &pascal_parm, event_id);
 					HUnlock(h);
 					SetHandleSize(h,newsize);
 
@@ -103,7 +115,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 
 					if( !(e = ResError()) ){
 						/* add PARM resource */
-						if( !(e = PtrToHand(&gdata->parm,&h,sizeof(PARM_T))) ){
+						if( !(e = PtrToHand(&pascal_parm,&h,sizeof(PARM_T))) ){
 							if(gdata->obfusc){
 								HLock(h);
 								obfusc((PARM_T*)*h);
@@ -132,14 +144,16 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	return e;
 }
 
-static int copyletters(char *dst,StringPtr src){
+static int copyletters(char *dst,char* src){
 	int i, n;
 
-	for(i = src[0], n = 0; i--;)
-		if(isalpha(*++src)){
-			*dst++ = *src;
+	for(i=0; i<strlen(src); ++i) {
+		if(isalpha(src[i])){
+			*dst++ = src[i];
 			++n;
 		}
+	}
+
 	return n;
 }
 
@@ -167,10 +181,10 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 							strcpy(save,p);
 
 							*p++ = '.';
-							n = copyletters(p,gdata->parm.category);
+							n = copyletters(p,gdata->parm.szCategory);
 							p += n;
 							if(n) *p++ = '.';
-							m = copyletters(p,gdata->parm.title);
+							m = copyletters(p,gdata->parm.szTitle);
 							p += m;
 							if(!m){
 								// generate a random ASCII identifier

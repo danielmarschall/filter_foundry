@@ -130,7 +130,7 @@ void evalpixel(unsigned char *outp,unsigned char *inp);
 
 // from make.c
 unsigned long printablehash(unsigned long hash);
-size_t fixpipl(PIPropertyList *pipl,size_t origsize,StringPtr title, long *event_id);
+size_t fixpipl(PIPropertyList *pipl,size_t origsize,char* title, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 
 // from obfusc.c

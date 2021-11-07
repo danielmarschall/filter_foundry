@@ -33,15 +33,15 @@ void builddlginit(DIALOGREF dp){
 	char s[0x100];
 
 	if(gdata->parmloaded){
-		SetDlgItemText(dp,CATEGORYITEM,	INPLACEP2CSTR(gdata->parm.category));
-		SetDlgItemText(dp,TITLEITEM,	INPLACEP2CSTR(gdata->parm.title));
-		SetDlgItemText(dp,COPYRIGHTITEM,INPLACEP2CSTR(gdata->parm.copyright));
-		SetDlgItemText(dp,AUTHORITEM,	INPLACEP2CSTR(gdata->parm.author));
+		SetDlgItemText(dp,CATEGORYITEM,	gdata->parm.szCategory);
+		SetDlgItemText(dp,TITLEITEM,	gdata->parm.szTitle);
+		SetDlgItemText(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
+		SetDlgItemText(dp,AUTHORITEM,	gdata->parm.szAuthor);
 		for(i=0;i<4;++i){
-			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,INPLACEP2CSTR(gdata->parm.map[i]));
+			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
 		}
 		for(i=0;i<8;++i){
-			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,INPLACEP2CSTR(gdata->parm.ctl[i]));
+			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
 		}
 	}else{
 		/* strictly speaking this is not needed on the Mac,
@@ -95,7 +95,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	enum{MAXFIELD=0x100};
 	char s[MAXFIELD+1];
 	int i,needui;
-	Str255 fname;
+	char fname[256];
 	StandardFileReply sfr;
 	NavReplyRecord reply;
 
@@ -119,10 +119,10 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 		// Now begin
 		memset(&gdata->parm,0,sizeof(PARM_T));
-		GetDlgItemText(dp,CATEGORYITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.category,s);
-		GetDlgItemText(dp,TITLEITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.title,s);
-		GetDlgItemText(dp,COPYRIGHTITEM,s,MAXFIELD);	myc2pstrcpy(gdata->parm.copyright,s);
-		GetDlgItemText(dp,AUTHORITEM,s,MAXFIELD);		myc2pstrcpy(gdata->parm.author,s);
+		GetDlgItemText(dp,CATEGORYITEM,gdata->parm.szCategory,MAXFIELD-4/*ProtectFlag*/);
+		GetDlgItemText(dp,TITLEITEM,gdata->parm.szTitle,MAXFIELD);
+		GetDlgItemText(dp,COPYRIGHTITEM,gdata->parm.szCopyright,MAXFIELD);
+		GetDlgItemText(dp,AUTHORITEM,gdata->parm.szAuthor,MAXFIELD);
 		gdata->parm.cbSize = PARM_SIZE;
 		gdata->parm.standalone = 1;  //0=original FF, 1=standalone filter
 		needui = 0;
@@ -131,13 +131,13 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			gdata->parm.val[i] = slider[i];
 			gdata->parm.ctl_used[i] = ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
 			needui |= gdata->parm.ctl_used[i];
-			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s,MAXFIELD); myc2pstrcpy(gdata->parm.ctl[i],s);
+			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i, gdata->parm.szCtl[i],MAXFIELD);
 		}
 		// Maps
 		for (i = 0; i < 4; ++i) {
 			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
 			needui |= gdata->parm.map_used[i];
-			GetDlgItemText(dp, FIRSTMAPNAMEITEM + i, s, MAXFIELD); myc2pstrcpy(gdata->parm.map[i], s);
+			GetDlgItemText(dp, FIRSTMAPNAMEITEM + i, gdata->parm.szMap[i], MAXFIELD);
 		}
 		// Expressions
 		for (i = 0; i < 4; ++i) {
@@ -145,7 +145,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 				simplealert(_strdup("Bug! see builddlgitem"));
 				return true; // keep going. Let the user try again
 			}
-			if (strlen(expr[i]) >= sizeof(gdata->parm.formula[i])) {
+			if (strlen(expr[i]) >= sizeof(gdata->parm.szFormula[i])) {
 				if (i == 0) {
 					simplealert(_strdup("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));
 				}
@@ -158,18 +158,18 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 				else if (i == 3) {
 					simplealert(_strdup("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
 				}
-				expr[i][sizeof(gdata->parm.formula[i]) - 1] = '\0';
+				expr[i][sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 			}
-			strcpy((char*)gdata->parm.formula[i], expr[i]); // Attention! This is not a Pascal string!
+			strcpy(gdata->parm.szFormula[i], expr[i]);
 		}
 		gdata->parm.popDialog = needui; //true if need to pop a parameter dialog
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,PROTECTITEM);
 
-		PLstrcpy(fname, gdata->parm.title);
+		strcpy(fname, gdata->parm.szTitle);
 		#ifdef MACMACHO
-		PLstrcat(fname, (StringPtr)"\p.plugin"); // "\p" means "Pascal string"
+		strcat(fname, ".plugin");
 		#endif
 		if (putfile(
 			#ifdef MAC_ENV
@@ -177,7 +177,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			#else
 			(StringPtr)_strdup("\026Make standalone filter"),
 			#endif
-			fname,
+			(StringPtr)myc2pstr(_strdup(fname)),
 			PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
 			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1
 			#ifdef _WIN32

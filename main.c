@@ -69,13 +69,13 @@ unsigned long get_parm_hash(PARM_T *parm) {
 	unsigned long hash;
 	int i;
 
-	hash = djb2((char*)parm->category);
-	hash += djb2((char*)parm->title);
-	hash += djb2((char*)parm->copyright);
-	hash += djb2((char*)parm->author);
-	for (i = 0; i < 4; i++) hash += djb2((char*)parm->map[i]);
-	for (i = 0; i < 8; i++) hash += djb2((char*)parm->ctl[i]);
-	for (i = 0; i < 4; i++) hash += djb2((char*)parm->formula[i]);
+	hash = djb2(parm->szCategory);
+	hash += djb2(parm->szTitle);
+	hash += djb2(parm->szCopyright);
+	hash += djb2(parm->szAuthor);
+	for (i = 0; i < 4; i++) hash += djb2(parm->szMap[i]);
+	for (i = 0; i < 8; i++) hash += djb2(parm->szCtl[i]);
+	for (i = 0; i < 4; i++) hash += djb2(parm->szFormula[i]);
 
 	return hash;
 }
@@ -101,7 +101,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	static Boolean premiereWarnedOnce = false;
 	OSErr e = noErr;
 	char *reason;
-	
+
 	#ifdef SHOW_HOST_DEBUG
 	char* tmp;
 	#endif
@@ -135,13 +135,13 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// Even processes like "MicrosoftEdgeUpdate.exe" and "SpeechRuntime.exe" are reported to be our
 		// actions, although they have nothing to do with us!
 		// See https://www.virustotal.com/gui/file/1f1012c567208186be455b81afc1ee407ae6476c197d633c70cc70929113223a/behavior
-		// 
+		//
 		// TODO: Not 100% sure if the calling convention is correct...
 		//       are we corrupting the stack? At least WER isn't triggered...
 		return;
 	}
 	#endif
-	
+
 	#ifdef SHOW_HOST_DEBUG
 	tmp = (char*)malloc(512);
 	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);

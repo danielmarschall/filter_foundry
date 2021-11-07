@@ -74,7 +74,7 @@ OSErr saveparams_afs_pff(Handle h){
 							*q++ = 'r';
 							++r;
 						}else if (*r == LF) {
-							
+
 							// This can only happen with Windows or Linux.
 							// Native Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
 							++r;
@@ -117,29 +117,29 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 		checksliders(4, ctls, maps);
 
 		// Metadata
-		p += sprintf(p, "Category: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.category) : "...");
-		p += sprintf(p, "Title: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.title) : "...");
-		p += sprintf(p, "Copyright: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.copyright) : "...");
-		p += sprintf(p, "Author: %s\r\n", useparm ? INPLACEP2CSTR(gdata->parm.author) : "...");
+		p += sprintf(p, "Category: %s\r\n", useparm ? gdata->parm.szCategory : "...");
+		p += sprintf(p, "Title: %s\r\n", useparm ? gdata->parm.szTitle : "...");
+		p += sprintf(p, "Copyright: %s\r\n", useparm ? gdata->parm.szCopyright : "...");
+		p += sprintf(p, "Author: %s\r\n", useparm ? gdata->parm.szAuthor : "...");
 		p += sprintf(p, "Filename: %s\r\n", useparm ? "Untitled.8bf" : "Untitled.8bf"); // TODO: get .txt filename and change .txt to .8bf
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "R: %s\r\n", useparm ? (char*)gdata->parm.formula[0] : expr[0]);
+		p += sprintf(p, "R: %s\r\n", useparm ? gdata->parm.szFormula[0] : expr[0]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "G: %s\r\n", useparm ? (char*)gdata->parm.formula[1] : expr[1]);
+		p += sprintf(p, "G: %s\r\n", useparm ? gdata->parm.szFormula[1] : expr[1]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "B: %s\r\n", useparm ? (char*)gdata->parm.formula[2] : expr[2]);
+		p += sprintf(p, "B: %s\r\n", useparm ? gdata->parm.szFormula[2] : expr[2]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "A: %s\r\n", useparm ? (char*)gdata->parm.formula[3] : expr[3]);
+		p += sprintf(p, "A: %s\r\n", useparm ? gdata->parm.szFormula[3] : expr[3]);
 		p += sprintf(p, "\r\n");
 		if (useparm) {
 			for (i = 0; i < 8; i++) {
 				if (gdata->parm.ctl_used[i]) {
-					p += sprintf(p, "ctl[%d]: %s\r\n", i, INPLACEP2CSTR(gdata->parm.ctl[i]));
+					p += sprintf(p, "ctl[%d]: %s\r\n", i, gdata->parm.szCtl[i]);
 				}
 			}
 			for (i = 0; i < 4; i++) {
 				if (gdata->parm.map_used[i]) {
-					p += sprintf(p, "map[%d]: %s\r\n", i, INPLACEP2CSTR(gdata->parm.map[i]));
+					p += sprintf(p, "map[%d]: %s\r\n", i, gdata->parm.szMap[i]);
 				}
 			}
 			p += sprintf(p, "\r\n");

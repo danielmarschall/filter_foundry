@@ -45,7 +45,7 @@ void DoAbout(AboutRecordPtr pb){
 	PlatformData *p = (PlatformData*)pb->platformData;
 
 	if (gdata && gdata->standalone) {
-		sprintf(title, "About %s", INPLACEP2CSTR(gdata->parm.title));
+		sprintf(title, "About %s", gdata->parm.szTitle);
 		sprintf(text,  "%s by %s\n" /* {Title} by {Author} */
 		               "%s\n" /* {Copyright} */
 		               "\n"
@@ -57,9 +57,9 @@ void DoAbout(AboutRecordPtr pb){
 				#endif
 		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
 		               "available from " PROJECT_URL,
-		               INPLACEP2CSTR(gdata->parm.title),
-		               INPLACEP2CSTR(gdata->parm.author),
-		               INPLACEP2CSTR(gdata->parm.copyright));
+		               gdata->parm.szTitle,
+		               gdata->parm.szAuthor,
+		               gdata->parm.szCopyright);
 	} else {
 		sprintf(title, "About Filter Foundry");
 		sprintf(text,  "Filter Foundry " VERSION_STR
@@ -85,7 +85,7 @@ Boolean simplealert(char *s){
 	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
-		title = INPLACEP2CSTR(gdata->parm.title);
+		title = gdata->parm.szTitle;
 	} else {
 		title = _strdup("Filter Foundry");
 	}
@@ -97,9 +97,8 @@ Boolean simplewarning(char* s) {
 	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
-		title = INPLACEP2CSTR(gdata->parm.title);
-	}
-	else {
+		title = gdata->parm.szTitle;
+	} else {
 		title = _strdup("Filter Foundry");
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
@@ -110,7 +109,7 @@ Boolean showmessage(char *s) {
 	HWND hwnd;
 	char* title;
 	if (gdata && gdata->standalone) {
-		title = INPLACEP2CSTR(gdata->parm.title);
+		title = gdata->parm.szTitle;
 	} else {
 		title = _strdup("Filter Foundry");
 	}
@@ -121,7 +120,7 @@ Boolean showmessage(char *s) {
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
 // Description:
-//   Creates a tooltip for an item in a dialog box. 
+//   Creates a tooltip for an item in a dialog box.
 // Parameters:
 //   idTool - identifier of an dialog box item.
 //   nDlg - window handle of the dialog box.
@@ -131,7 +130,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 //
 HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
 	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control (modified)
-	
+
 	HWND hwndTool, hwndTip;
 	TOOLINFO toolInfo;
 
@@ -179,7 +178,6 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	DRAWITEMSTRUCT *pdi;
 	Point newscroll;
 	HGDIOBJ hfnt;
-	char s[0x100];
 
 	extern Boolean doupdates;
 	extern Handle preview_handle;
@@ -189,8 +187,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		gdata->hWndMainDlg = hDlg;
 
 		if(gdata->standalone){
-			myp2cstrcpy(s,gdata->parm.title);
-			SetWindowText(hDlg,s); // window title bar
+			SetWindowText(hDlg,gdata->parm.szTitle); // window title bar
 		}
 		centre_window(hDlg);
 

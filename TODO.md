@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* Internal code change: Let PARM.h fields be C-strings instead of Pascal strings!
+(None)
 
 
 Known bugs
