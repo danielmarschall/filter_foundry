@@ -49,6 +49,7 @@ PSAPI = "..\photoshop_sdk\pluginsdk\photoshopapi"
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
            -I$(PSAPI)\Pica_sp -I$(PSAPI)\Photoshop -I$(PSAPI)\General \
            -I..\telegraphics_common\adobeplugin -I..\telegraphics_common\tt -I..
+# /O2 = Max optimization (prefer performance). /O2 implies /Ot
 CFLAGS = -O2 $(CPPFLAGS)
 
 # Note since VS8 it is necessary to link with multithreaded standard lib, using /MT

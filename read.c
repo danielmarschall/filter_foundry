@@ -271,6 +271,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 							#pragma warning(suppress : 6386)
 							val[sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 						}
+						if (expr[i]) free(expr[i]);
 						expr[i] = my_strdup(val);
 						strcpy(gdata->parm.szFormula[i], val);
 						free(val);
