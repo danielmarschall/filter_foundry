@@ -150,7 +150,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
 		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 (yes, that's possible,
-		// and there is even a FilterFactory for Premeire!),
+		// and there is even a FilterFactory for Premiere!),
 		// but it crashes in evalpixel() where there is write-access to the "outp".
 		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
 		if (!premiereWarnedOnce) {

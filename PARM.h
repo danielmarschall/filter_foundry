@@ -74,52 +74,51 @@ type PARM_TYPE {
 
 // Note: In Windows DLL/8BF files, the strings are C-strings, while in MAC-plugins they are Pascal-strings!
 // Formulas are never Pascal strings.
-// Since 1.7.0.13, we internally, we work with C-strings.
+// Since 1.7.0.13 we internally work with C-strings.
 
 typedef uint32_t bool32_t;
 
 // Photoshop's Filter Factory has PARM:16
 // Filter Foundry has PARM:16000 (old) or PARM:16 (new)
-typedef struct {   //structure of FF PARM resource
-	uint32_t cbSize;     //size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7 and Mac OS Filter Factory)
-	bool32_t standalone; //0=original FF, 1=standalone filter
-	uint32_t val[8];     //initial values of controls
-	bool32_t popDialog;  //1 if need to pop a parameter dialog
-	uint32_t unknown1; // This field is used for the obfuscation (checksum for obfusc v6+)
-	uint32_t unknown2; // This field is used for the obfuscation (obfusc version info for obfusc v2+)
-	uint32_t unknown3; // This field is reserved for future use
-	bool32_t map_used[4];   //true if map(n) is used
-	bool32_t ctl_used[8];   //true if ctl(n) is used
-	char szCategory[252];    //Category name
-	// Michael Johannhanwahr's protect flag...
-	bool32_t iProtected;            // == 1 means protected
-	char szTitle[256];       //Filter title
-	char szCopyright[256];   //Copyright info
-	char szAuthor[256];      //Filter author(s)
-	char szMap[4][256];      //4 map labels
-	char szCtl[8][256];      //8 control labels
-	char szFormula[4][1024]; //4 channel formulas; in Photoshop: (r,g,b,a)
+typedef struct {             // structure of FF PARM resource
+	uint32_t cbSize;         // size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7 and Mac OS Filter Factory)
+	bool32_t standalone;     // 0=original FF, 1=standalone filter
+	uint32_t val[8];         // initial values of controls
+	bool32_t popDialog;      // 1 if need to pop a parameter dialog
+	uint32_t unknown1;       // This field is used for the obfuscation (checksum for obfusc v6+)
+	uint32_t unknown2;       // This field is used for the obfuscation (obfusc version info for obfusc v2+)
+	uint32_t unknown3;       // This field is reserved for future use
+	bool32_t map_used[4];    // true if map(n) is used
+	bool32_t ctl_used[8];    // true if ctl(n) is used
+	char szCategory[252];    // Category name
+	bool32_t iProtected;     // Michael Johannhanwahr's protect flag... (1 means protected)
+	char szTitle[256];       // Filter title
+	char szCopyright[256];   // Copyright info
+	char szAuthor[256];      // Filter author(s)
+	char szMap[4][256];      // 4 map labels
+	char szCtl[8][256];      // 8 control labels
+	char szFormula[4][1024]; // 4 channel formulas; in Photoshop: (r,g,b,a)
 } PARM_T/*_PHOTOSHOP*/;
 
 // Premiere's Transition/Filter Factory has PARM:16000
-typedef struct {   //structure of Premiere FF/TF PARM resource
-	uint32_t cbSize;    //size of this structure = 0x206C
-	bool32_t standalone;  //0=original FF, 1=standalone filter
-	bool32_t singleExpression; //1 if "single expression" is checked (member only available in Premiere)
-	uint32_t val[8];    //initial values of controls
-	bool32_t popDialog; //1 if need to pop a parameter dialog
+typedef struct {             // structure of Premiere FF/TF PARM resource
+	uint32_t cbSize;         // size of this structure = 0x206C
+	bool32_t standalone;     // 0=original FF, 1=standalone filter
+	bool32_t singleExpression; // 1 if "single expression" is checked (member only available in Premiere)
+	uint32_t val[8];         // initial values of controls
+	bool32_t popDialog;      // 1 if need to pop a parameter dialog
 	uint32_t unknown1;
 	uint32_t unknown2;
 	uint32_t unknown3;
-	bool32_t map_used[4];   //true if map(n) is used
-	bool32_t ctl_used[8];   //true if ctl(n) is used
-	char szTitle[256]; // in Photoshop Filter Factory: Category
-	char szAuthor[256]; // in Photoshop Filter Factory: Title
-	char szModulename[256]; // in Photoshop Filter Factory: Copyright
-	char szCopyright[256]; // in Photoshop Filter Factory: Author
-	char szMap[4][256];      //4 map labels
-	char szCtl[8][256];      //8 control labels
-	char szFormula[4][1024]; //4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
+	bool32_t map_used[4];    // true if map(n) is used
+	bool32_t ctl_used[8];    // true if ctl(n) is used
+	char szTitle[256];       // in Photoshop Filter Factory: Category
+	char szAuthor[256];      // in Photoshop Filter Factory: Title
+	char szModulename[256];  // in Photoshop Filter Factory: Copyright
+	char szCopyright[256];   // in Photoshop Filter Factory: Author
+	char szMap[4][256];      // 4 map labels
+	char szCtl[8][256];      // 8 control labels
+	char szFormula[4][1024]; // 4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
 } PARM_T_PREMIERE;
 
 #endif
