@@ -130,7 +130,7 @@
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_X86_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
@@ -162,7 +162,7 @@ foundry_3264_mixer.bat
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;_AMD64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
@@ -198,7 +198,7 @@ foundry_3264_mixer.bat
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>photoshop_sdk\pluginsdk\photoshopapi\pica_sp;photoshop_sdk\pluginsdk\photoshopapi\photoshop;telegraphics_common\adobeplugin;telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN_ENV;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_X86_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..
@@ -234,7 +234,7 @@ foundry_3264_mixer.bat
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\photoshop_sdk\pluginsdk\photoshopapi\pica_sp;..\photoshop_sdk\pluginsdk\photoshopapi\photoshop;..\telegraphics_common\adobeplugin;..\telegraphics_common\tt;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN_ENV;WIN32;_WIN64;_AMD64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>cd ..

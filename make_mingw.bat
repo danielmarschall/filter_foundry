@@ -9,14 +9,14 @@ rem https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20W
 
 rem 64 Bit
 rem Please adjust this path!
-set PATH=D:\mingw-w64\x86_64-8.1.0-win32-seh-rt_v6-rev0\mingw64\bin;%PATHBAK%
+set PATH=D:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry64.tmp
 
 rem 32 Bit
 rem Please adjust this path!
-set PATH=D:\mingw-w64\i686-8.1.0-win32-dwarf-rt_v6-rev0\mingw32\bin;%PATHBAK%
+set PATH=D:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry32.tmp
