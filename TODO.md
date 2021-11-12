@@ -19,7 +19,7 @@ Minor priority stuff or ideas
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
 
-* Filter Factory is much faster than Filter Foundry (example rad.afs). Why?!
+* Filter Factory is much faster than Filter Foundry (example rad.afs). Why?! Test if it is also the case if optimized with "-O2" (release configuration).
 
 * When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
 
