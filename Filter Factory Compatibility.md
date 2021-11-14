@@ -69,12 +69,12 @@ Both formulas follow the same YUV standard but have different accuracy.
 I, U, V, imin, umin, vmin (Testcase iuv_minmax.afs)
 -------------------------
 
-In Filter Foundry 1.7.0.8, the previously undocumented variables I, U, V as well as imin, umin, vmin
-have been changed to represent the actual results of the i,u,v variables:
+In Filter Foundry 1.7.0.8, the previously undocumented variables `I`, `U`, `V` as well as `imin`, `umin`, and `vmin`
+have been changed to represent the actual results of the `i`, `u`, and `v` variables:
 
-    imax = 255 (stayed the same)
-    umax = 55 (was 255 in Filter Factory)
-    vmax = 78 (was 255 in Filter Factory)
+    imax = 255 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
+    umax = 55 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
+    vmax = 78 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
 
     imin = 0 (stayed the same)
     umin = -55 (was 0 in Filter Factory)
@@ -85,9 +85,9 @@ We have chosen the latter in Filter Foundry 1.7.0.9. Same thing with `U` and `V`
 
 Therefore:
 
-    I := imax-imin = 255
-    U := umax-umin = 110
-    V := vmax-vmin = 156
+    I := imax-imin = 255 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
+    U := umax-umin = 110 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
+    V := vmax-vmin = 156 (was 255 in Filter Factory for Windows and 256 in Filter Factory for Mac OS)
 
 
 dmin, D (Testcase d_minmax.afs)
@@ -95,25 +95,25 @@ dmin, D (Testcase d_minmax.afs)
 
 **The Filter Factory manual writes:**
 
-0 corresponds to the 3 o'clock position
-256 to the 6 o'clock position,
-512 to the 9 o'clock position,
-768 to the 12 o'clock position,
-and 1024 to the full rotation back to the 3 o'clock position
+- 0 corresponds to the 3 o'clock position,
+- 256 to the 6 o'clock position,
+- 512 to the 9 o'clock position,
+- 768 to the 12 o'clock position,
+- and 1024 to the full rotation back to the 3 o'clock position.
 
-But this does not match the Windows implementation of Filter Factory
-(maybe it is true to the Mac implementation?)
+But this does neither match the Windows implementation of Filter Factory nor its Mac OS implementation!
 
-**In the original Windows implementation we can observe:**
+**In the original Windows & Mac OS Filter Factory implementations we can observe:**
 
-d=-512 is at 9 o'clock position
-d=-256 is at 12 o'clock position
-d=0 is at 3 o'clock position
-d=256 is at 6 o'clock position
-d=512 is the full rotation back to 3 o'clock position
+- d=-512 is at 9 o'clock position
+- d=-256 is at 12 o'clock position
+- d=0 is at 3 o'clock position
+- d=256 is at 6 o'clock position
+- d=512 is the full rotation back to 3 o'clock position
 
-Therefore, `dmin` has been changed from 0 to -512,
-and `D`, `dmax` has been changed from 1024 to 512.
+Therefore, `dmin` has been changed from 0 to -512, and `dmax` have been changed from 1024 to 512.
+It is questionable if `D` was meant to be a synonym of `dmax`, or if `D` was meant to be `D := dmax - dmin`.
+We have chosen the latter, so it stayed 1024.
 
 
 get(i) (Testcase getput.afs)
