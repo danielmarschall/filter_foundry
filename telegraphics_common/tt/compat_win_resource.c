@@ -497,7 +497,7 @@ static inline BOOL set_ntstatus(NTSTATUS status) {
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* retrieve the resource name to pass to the ntdll functions */
+ /* retrieve the resource name to pass to the ntdll functions */
 static NTSTATUS get_res_nameA(LPCSTR name, UNICODE_STRING* str)
 {
     if (IS_INTRESOURCE(name))
@@ -695,7 +695,7 @@ static LPWSTR res_strdupW(LPCWSTR str)
         return (LPWSTR)(UINT_PTR)LOWORD(str);
     len = (lstrlenW(str) + 1) * sizeof(WCHAR);
     ret = (LPWSTR)HeapAlloc(GetProcessHeap(), 0, len);
-    if (!ret) return NULL;
+    if (!ret) return NULL; // Added by Daniel Marschall
     memcpy(ret, str, len);
     return ret;
 }
@@ -712,6 +712,9 @@ static BOOL update_add_resource(QUEUEDUPDATES* updates, LPCWSTR Type, LPCWSTR Na
 {
     struct resource_dir_entry* restype, * resname;
     struct resource_data* existing;
+
+    //TRACE("%p %s %s %p %d\n", updates,
+    //      debugstr_w(Type), debugstr_w(Name), resdata, overwrite_existing );
 
     restype = find_resource_dir_entry(&updates->root, Type);
     if (!restype)
@@ -873,10 +876,14 @@ static BOOL check_pe_exe(HANDLE file, QUEUEDUPDATES* updates)
     if (!nt)
         goto done;
 
+    //Fix by Daniel Marschall: Removed, because the variables are not used!
     //nt64 = (IMAGE_NT_HEADERS64*)nt;
     //dd = &nt->OptionalHeader.DataDirectory[0];
     //if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     //    dd = &nt64->OptionalHeader.DataDirectory[0];
+    //TRACE("resources: %08x %08x\n",
+    //      dd[IMAGE_DIRECTORY_ENTRY_RESOURCE].VirtualAddress,
+    //      dd[IMAGE_DIRECTORY_ENTRY_RESOURCE].Size);
 
     sec = get_section_header(base, mapping_size, &num_sections);
     if (!sec)
@@ -963,6 +970,7 @@ static LPWSTR resource_dup_string(const IMAGE_RESOURCE_DIRECTORY* root, const My
     return s;
 }
 
+/* this function is based on the code in winedump's pe.c */
 static BOOL enumerate_mapped_resources(QUEUEDUPDATES* updates,
     void* base, DWORD mapping_size,
     const IMAGE_RESOURCE_DIRECTORY* root)
@@ -971,6 +979,9 @@ static BOOL enumerate_mapped_resources(QUEUEDUPDATES* updates,
     const MyIMAGE_RESOURCE_DIRECTORY_ENTRY* e1, * e2, * e3;
     const IMAGE_RESOURCE_DATA_ENTRY* data;
     DWORD i, j, k;
+
+    //TRACE("version (%d.%d) %d named %d id entries\n",
+    //      root->MajorVersion, root->MinorVersion, root->NumberOfNamedEntries, root->NumberOfIdEntries);
 
     for (i = 0; i < (DWORD)root->NumberOfNamedEntries + (DWORD)root->NumberOfIdEntries; i++)
     {
@@ -1046,6 +1057,8 @@ static BOOL read_mapped_resources(QUEUEDUPDATES* updates, void* base, DWORD mapp
         (sec[i].PointerToRawData + sec[i].SizeOfRawData) > mapping_size)
         return TRUE;
 
+    //TRACE("found .rsrc at %08x, size %08x\n", sec[i].PointerToRawData, sec[i].SizeOfRawData);
+
     if (!sec[i].PointerToRawData || sec[i].SizeOfRawData < sizeof(IMAGE_RESOURCE_DIRECTORY))
         return TRUE;
 
@@ -1102,6 +1115,7 @@ static struct mapping_info* create_mapping(LPCSTR filename, BOOL rw)
 {
     struct mapping_info* mi;
 
+    // TODO: Which Windows version supports HEAP_ZERO_MEMORY? Can we safely use it, or is memset() safer?
     mi = (struct mapping_info*)HeapAlloc(GetProcessHeap(), 0/*HEAP_ZERO_MEMORY*/, sizeof * mi);
     if (!mi) {
         return NULL;
@@ -1110,6 +1124,7 @@ static struct mapping_info* create_mapping(LPCSTR filename, BOOL rw)
 
     mi->read_write = rw;
 
+    // Fix by Daniel Marschall: Changed "0" to "FILE_SHARE_READ | (rw ? FILE_SHARE_WRITE : 0)"
     mi->file = CreateFileA(filename, GENERIC_READ | (rw ? GENERIC_WRITE : 0),
         FILE_SHARE_READ | (rw ? FILE_SHARE_WRITE : 0), NULL, OPEN_EXISTING, 0, 0);
 
@@ -1117,9 +1132,8 @@ static struct mapping_info* create_mapping(LPCSTR filename, BOOL rw)
     {
         mi->size = GetFileSize(mi->file, NULL);
 
-        if (map_file_into_memory(mi)) {
+        if (map_file_into_memory(mi))
             return mi;
-        }
     }
     destroy_mapping(mi);
     return NULL;
@@ -1191,6 +1205,10 @@ static void get_resource_sizes(QUEUEDUPDATES* updates, struct resource_size_info
     si->data_ofs = si->strings_ofs + ((strings_size + 3) & ~3);
 
     si->total_size = si->data_ofs + data_size;
+
+    //TRACE("names %08x langs %08x data entries %08x strings %08x data %08x total %08x\n",
+    //      si->names_ofs, si->langs_ofs, si->data_entry_ofs,
+    //      si->strings_ofs, si->data_ofs, si->total_size);
 }
 
 static void res_write_padding(BYTE* res_base, DWORD size)
@@ -1209,6 +1227,8 @@ static BOOL write_resources(QUEUEDUPDATES* updates, LPBYTE base, struct resource
     struct resource_dir_entry* types, * names;
     struct resource_data* data;
     IMAGE_RESOURCE_DIRECTORY* root;
+
+    //TRACE("%p %p %p %08x\n", updates, base, si, rva );
 
     memset(base, 0, si->total_size);
 
@@ -1325,6 +1345,21 @@ static BOOL write_resources(QUEUEDUPDATES* updates, LPBYTE base, struct resource
     return TRUE;
 }
 
+/*
+ *  FIXME:
+ *  Assumes that the resources are in .rsrc
+ *   and .rsrc is the last section in the file.
+ *  Not sure whether updating resources will other cases on Windows.
+ *  If the resources lie in a section containing other data,
+ *   resizing that section could possibly cause trouble.
+ *  If the section with the resources isn't last, the remaining
+ *   sections need to be moved down in the file, and the section header
+ *   would need to be adjusted.
+ *  If we needed to add a section, what would we name it?
+ *  If we needed to add a section and there wasn't space in the file
+ *   header, how would that work?
+ *  Seems that at least some of these cases can't be handled properly.
+ */
 static IMAGE_SECTION_HEADER* get_resource_section(void* base, DWORD mapping_size)
 {
     IMAGE_SECTION_HEADER* sec;
@@ -1361,6 +1396,8 @@ static DWORD get_init_data_size(void* base, DWORD mapping_size)
         if (s[i].Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA)
             sz += s[i].SizeOfRawData;
 
+    //TRACE("size = %08x\n", sz);
+
     return sz;
 }
 
@@ -1379,24 +1416,22 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
 
     /* copy the exe to a temp file then update the temp file... */
     tempdir[0] = 0;
-    if (!GetTempPathA(MAX_PATH, tempdir)) {
+    if (!GetTempPathA(MAX_PATH, tempdir))
         return ret;
-    }
 
-    if (!GetTempFileNameA(tempdir, "resu", 0, tempfile)) {
+    if (!GetTempFileNameA(tempdir, "resu", 0, tempfile))
         return ret;
-    }
 
-    if (!CopyFileA(updates->pFileName, tempfile, FALSE)) {
+    if (!CopyFileA(updates->pFileName, tempfile, FALSE))
         goto done;
-    }
+
+    //TRACE("tempfile %s\n", debugstr_w(tempfile));
 
     if (!updates->bDeleteExistingResources)
     {
         read_map = create_mapping(updates->pFileName, FALSE);
-        if (!read_map) {
+        if (!read_map)
             goto done;
-        }
 
         ret = read_mapped_resources(updates, read_map->base, read_map->size);
         if (!ret)
@@ -1407,14 +1442,12 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
     }
 
     write_map = create_mapping(tempfile, TRUE);
-    if (!write_map) {
+    if (!write_map)
         goto done;
-    }
 
     nt = (IMAGE_NT_HEADERS32*)get_nt_header(write_map->base, write_map->size);
-    if (!nt) {
+    if (!nt)
         goto done;
-    }
 
     nt64 = (IMAGE_NT_HEADERS64*)nt;
     if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
@@ -1446,9 +1479,8 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
         DWORD num_sections;
 
         sec = get_section_header(write_map->base, write_map->size, &num_sections);
-        if (!sec) {
+        if (!sec)
             goto done;
-        }
 
         sec += num_sections;
         nt->FileHeader.NumberOfSections++;
@@ -1465,11 +1497,15 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
         sec->SizeOfRawData = 0;
     }
 
+    //TRACE("before .rsrc at %08x, size %08x\n", sec->PointerToRawData, sec->SizeOfRawData);
+
     get_resource_sizes(updates, &res_size);
 
     /* round up the section size */
     section_size = res_size.total_size;
     section_size += (-(int)section_size) % PeFileAlignment;
+
+    //TRACE("requires %08x (%08x) bytes\n", res_size.total_size, section_size );
 
     /* check if the file size needs to be changed */
     if (section_size != sec->SizeOfRawData)
@@ -1487,6 +1523,8 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
         /* postpone file truncation if there are some data to be moved down from file end */
         BOOL resize_after = mapping_size < old_size && !rsrc_is_last;
 
+        //TRACE("file size %08x -> %08x\n", old_size, mapping_size);
+
         if (!resize_after)
         {
             /* unmap the file before changing the file size */
@@ -1502,9 +1540,8 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             nt64 = (IMAGE_NT_HEADERS64*)nt;
 
             sec = get_resource_section(write_map->base, mapping_size);
-            if (!sec) {
+            if (!sec)
                 goto done;
-            }
         }
 
         if (!rsrc_is_last) /* not last section, relocate trailing sections */
@@ -1540,9 +1577,8 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             nt64 = (IMAGE_NT_HEADERS64*)nt;
 
             sec = get_resource_section(write_map->base, mapping_size);
-            if (!sec) {
+            if (!sec)
                 goto done;
-            }
         }
 
         /* adjust the PE header information */
@@ -1572,17 +1608,20 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
 
     res_base = (LPBYTE)write_map->base + sec->PointerToRawData;
 
+    //TRACE("base = %p offset = %08x\n", write_map->base, sec->PointerToRawData);
+
     ret = write_resources(updates, res_base, &res_size, sec->VirtualAddress);
 
     res_write_padding(res_base + res_size.total_size, section_size - res_size.total_size);
+
+    //TRACE("after  .rsrc at %08x, size %08x\n", sec->PointerToRawData, sec->SizeOfRawData);
 
 done:
     destroy_mapping(read_map);
     destroy_mapping(write_map);
 
-    if (ret) {
+    if (ret)
         ret = CopyFileA(tempfile, updates->pFileName, FALSE);
-    }
 
     DeleteFileA(tempfile);
 
@@ -1595,6 +1634,8 @@ HANDLE WINAPI WineBeginUpdateResourceA(LPCSTR pFileName, BOOL bDeleteExistingRes
 {
     QUEUEDUPDATES* updates = NULL;
     HANDLE hUpdate, file, ret = NULL;
+
+    //TRACE("%s, %d\n", debugstr_w(pFileName), bDeleteExistingResources);
 
     hUpdate = GlobalAlloc(GHND, sizeof(QUEUEDUPDATES));
     if (!hUpdate)
@@ -1610,7 +1651,7 @@ HANDLE WINAPI WineBeginUpdateResourceA(LPCSTR pFileName, BOOL bDeleteExistingRes
         {
             lstrcpyA(updates->pFileName, pFileName);
 
-//            file = CreateFileA(pFileName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0);
+            // Fix by Daniel Marschall: Changed "GENERIC_READ | GENERIC_WRITE, 0" to "GENERIC_READ, FILE_SHARE_READ"
             file = CreateFileA(pFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
 
             /* if resources are deleted, only the file's presence is checked */
@@ -1621,23 +1662,6 @@ HANDLE WINAPI WineBeginUpdateResourceA(LPCSTR pFileName, BOOL bDeleteExistingRes
                 HeapFree(GetProcessHeap(), 0, updates->pFileName);
 
             CloseHandle(file);
-
-
-
-
-
-            // TODO: TEST!!! LOAD EXISTING RESOURCES
-            /*
-            if (!bDeleteExistingResources) {
-                struct mapping_info* read_map = create_mapping(updates->pFileName, FALSE);
-                if (read_map) {
-                    read_mapped_resources(updates, read_map->base, read_map->size);
-                }
-            }
-            */
-            // TODO: TEST!!! LOAD EXISTING RESOURCES
-
-
         }
         GlobalUnlock(hUpdate);
     }
@@ -1653,10 +1677,11 @@ BOOL WINAPI WineEndUpdateResourceA(HANDLE hUpdate, BOOL fDiscard)
     QUEUEDUPDATES* updates;
     BOOL ret;
 
+    // TRACE("%p %d\n", hUpdate, fDiscard);
+
     updates = (QUEUEDUPDATES*)GlobalLock(hUpdate);
-    if (!updates) {
+    if (!updates)
         return FALSE;
-    }
 
     ret = fDiscard || write_raw_resources(updates);
 
@@ -1675,6 +1700,9 @@ BOOL WINAPI WineUpdateResourceA(HANDLE hUpdate, LPCSTR lpType, LPCSTR lpName,
     QUEUEDUPDATES* updates;
     UNICODE_STRING nameW, typeW;
     BOOL ret = FALSE;
+
+    //TRACE("%p %s %s %08x %p %d\n", hUpdate,
+    //      debugstr_w(lpType), debugstr_w(lpName), wLanguage, lpData, cbData);
 
     nameW.Buffer = typeW.Buffer = NULL;
     updates = (QUEUEDUPDATES*)GlobalLock(hUpdate);

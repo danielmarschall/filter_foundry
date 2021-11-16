@@ -5,9 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-- compat_win_resource.c: Cannot delete resources: https://bugs.winehq.org/show_bug.cgi?id=52046
-
-- compat_win_resource.c: Verify code (diff with original, maybe include findresources etc.)
+(None)
 
 
 Known bugs
@@ -18,6 +16,8 @@ Known bugs
 
 Minor priority stuff or ideas
 -----------------------------
+
+* compat_win_resource.c (compatibility for Win9x resource generation): Cannot delete resources, see https://bugs.winehq.org/show_bug.cgi?id=52046
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
 
