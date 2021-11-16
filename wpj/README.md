@@ -73,6 +73,51 @@ Troubleshooting
   assignments in between.
 
 
+Attention! Some optimizations break the code
+--------------------------------------------
+
+Don't choose "Fastest possible code (-otexan)" for optimization!
+
+As soon as "Disable stack depth checking" is enabled, the code crashes
+on some combinations of machines and Photoshop versions.
+
+Win98 VM + Photoshop 3.0.x: Clicking any button (Make, Load, Cancel) will cause SegFault.
+Win10 PC + Photoshop 3.0.x: No problem.
+
+"otexan" contains "s" (because "ox" is equal to "obmiler" and "s").
+
+So, "-otexan" means:
+
+- Branch prediction (-ob)
+- Loop optimizations (-ol)
+- In-line intrinsic functions (-oi)
+- Instruction scheduling (-or)
+- Math optimizations (-om)
+- Expand function in-line (-oe)
+- Disable stack depth checking (-s)
+
+The program works if "-ot" is enabled and all other optimizations (except "s") are enabled.
+
+However, for now we just use the optimizations which "-otaxan" contains, except "s",
+so we enabled:
+
+- Time optimizations (-ot)
+- Branch prediction (-ob)
+- Loop optimizations (-ol)
+- In-line intrinsic functions (-oi)
+- Instruction scheduling (-or)
+- Math optimizations (-om)
+- Expand function in-line (-oe)
+
+I haven't been able to detect why/where the stack is overloaded.
+If anyone has an idea, please contact me.
+Maybe the initial stack size is just too small?
+Because the code should be OK - Application Verifier has not detected anything wrong.
+
+https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html
+http://www.azillionmonkeys.com/qed/watfaq.shtml (Q19)
+
+
 Remarks
 -------
 

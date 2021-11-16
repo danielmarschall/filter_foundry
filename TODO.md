@@ -9,8 +9,6 @@ ToDo for the next release
 
 - compat_win_resource.c: Verify code (diff with original, maybe include findresources etc.)
 
-- Win98 + Photoshop 3.0.5: Clicking any button (Make, Load, Cancel) will cause SegFault
-
 
 Known bugs
 ----------
