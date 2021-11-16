@@ -508,14 +508,14 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 		preview_pmap.baseAddr = imageptr;
 		preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!
 
-		if(gpb->propertyProcs->getPropertyProc){
+		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc){
 			gpb->propertyProcs->getPropertyProc(kPhotoshopSignature,propWatchSuspension,0,&watchsusp,NULL);
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp+1,NULL);
 		}
 
 		e = gpb->displayPixels(&preview_pmap,&srcRect,imagebounds.top,imagebounds.left,hdc);
 
-		if(gpb->propertyProcs->getPropertyProc)
+		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc)
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp,NULL);
 	}
 	return e;

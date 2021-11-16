@@ -205,9 +205,10 @@ OSErr WriteScriptParamsOnRead(void)
 //
 //-------------------------------------------------------------------------------
 
-Boolean HostDescriptorAvailable(PIDescriptorParameters* procs,
-	Boolean* outNewerVersion)
+Boolean HostDescriptorAvailable(PIDescriptorParameters* procs, Boolean* outNewerVersion)
 {
+	if (procs == NULL) return FALSE; // Photoshop < 4.0 don't has scripting
+
 	if (outNewerVersion)
 		*outNewerVersion = procs->descriptorParametersVersion > kCurrentDescriptorParametersVersion
 		|| procs->readDescriptorProcs->readDescriptorProcsVersion > kCurrentReadDescriptorProcsVersion

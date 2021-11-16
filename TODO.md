@@ -11,8 +11,6 @@ ToDo for the next release
 
 - Win98 + Photoshop 3.0.5: Clicking any button (Make, Load, Cancel) will cause SegFault
 
-- Win95 + PS3 crashes when plugin dialog opens (but About dialog is OK)
-
 
 Known bugs
 ----------
