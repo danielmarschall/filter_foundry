@@ -30,7 +30,7 @@
 
 extern HINSTANCE hDllInstance;
 
-Boolean doresources(HMODULE srcmod,char *dstname, int bits);
+Boolean doresources(char *dstname, int bits);
 
 void dbglasterror(char *func){
 	char s[0x100];
@@ -357,7 +357,7 @@ typedef struct {
 	char referencename[8];
 } symndef_t;
 
-Boolean doresources(HMODULE srcmod,char *dstname, int bits){
+Boolean doresources(char *dstname, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
 
@@ -376,38 +376,25 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 	Boolean discard = true;
 	uint64_t obfuscseed = 0;
 	long event_id;
-	Boolean mustFreeSrcMod;
 
 	memset(&dummy_oper, 0, sizeof(operdef_t));
 	memset(&dummy_func, 0, sizeof(funcdef_t));
 	memset(&dummy_symn, 0, sizeof(symndef_t));
 
-	if (srcmod == NULL) {
-		srcmod = LoadLibraryEx(dstname, NULL, LOAD_LIBRARY_AS_DATAFILE);
-		if (!srcmod) {
-			dbglasterror(_strdup("LoadLibraryEx"));
-			return false;
-		}
-		mustFreeSrcMod = true;
-	}
-	else {
-		mustFreeSrcMod = false;
-	}
-
 	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
 		DBG("BeginUpdateResource OK");
-		if( (datarsrc = FindResource(srcmod,MAKEINTRESOURCE(16000), "TPLT"))
-			&& (datah = LoadResource(srcmod,datarsrc))
+		if( (datarsrc = FindResource(hDllInstance,MAKEINTRESOURCE(16000 + bits), "TPLT"))
+			&& (datah = LoadResource(hDllInstance,datarsrc))
 			&& (datap = (Ptr)LockResource(datah))
-			&& (aetersrc = FindResource(srcmod, MAKEINTRESOURCE(16000), "AETE"))
-			&& (aeteh = LoadResource(srcmod, aetersrc))
+			&& (aetersrc = FindResource(hDllInstance, MAKEINTRESOURCE(16000), "AETE"))
+			&& (aeteh = LoadResource(hDllInstance, aetersrc))
 			&& (aetep = (Ptr)LockResource(aeteh))
-			&& (manifestsrc = FindResource(srcmod, MAKEINTRESOURCE(1), "TPLT"))
-			&& (manifesth = LoadResource(srcmod, manifestsrc))
+			&& (manifestsrc = FindResource(hDllInstance, MAKEINTRESOURCE(1), "TPLT"))
+			&& (manifesth = LoadResource(hDllInstance, manifestsrc))
 			&& (manifestp = (Ptr)LockResource(manifesth)) )
 		{
 			char* newmanifest;
-			int manifestsize = SizeofResource(srcmod, manifestsrc);
+			int manifestsize = SizeofResource(hDllInstance, manifestsrc);
 
 			newmanifest = (char*)malloc(manifestsize + 4096/*+4KiB for name,description,etc.*/);
 
@@ -417,7 +404,7 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 			if(gdata->parm.popDialog)
 				strcat(title,"...");
 
-			origsize = SizeofResource(srcmod,datarsrc);
+			origsize = SizeofResource(hDllInstance,datarsrc);
 
 			if( (newpipl = (Ptr)malloc(origsize+0x300))
 			 && (newaete = (Ptr)malloc(4096))
@@ -472,18 +459,15 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
 
 				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)  // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16032), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16064), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_ICON, "CAUTION_ICO", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 //					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-//					&& (
-//						// TODO: Sometimes, the cursors get ID 1,2,3 and somestimes 4,5,6. How to do it better?
-//						// TODO: If we do this, we get "Internal error"
-//						_UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(3)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)
-//						|| _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(6)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) ) // clean up things we don't need in the standalone plugin
-					&& ((bits != 32) || _UpdateResource(hupdate, "DLL", "UNICOWS", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, "HAND_QUESTION", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					// TODO: Removing the single resources don't work correctly. Sometimes the cursors are numbered 4,5,6 and sometimes 1,2,3 . Probably conflicts with icons
+//					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(3)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					// OPER and FUNC are written so that "Plugin Manager 2.1" thinks that this plugin is a Filter Factory plugin! SYNM is not important, though.
@@ -502,9 +486,6 @@ Boolean doresources(HMODULE srcmod,char *dstname, int bits){
 		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
 
 		// Here, the file will be saved
-		if (mustFreeSrcMod) {
-			FreeLibrary(srcmod);
-		}
 		if (!_EndUpdateResource(hupdate, discard)) {
 			dbglasterror(_strdup("EndUpdateResource"));
 		}
@@ -626,7 +607,7 @@ OSErr do_make_standalone(char* dstname, int bits) {
 		StripAuthenticode(dstname);
 
 		// Now do the resources
-		res = doresources(NULL, dstname, bits);
+		res = doresources(dstname, bits);
 		if (!res) {
 			DeleteFile(dstname);
 			sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
@@ -644,50 +625,11 @@ OSErr do_make_standalone(char* dstname, int bits) {
 	return res ? noErr : ioErr;
 }
 
-Boolean check_unicows() {
-	// Unicows.dll is required for Win9x to implement the BeginUpdateResource functionalities
-
-	if (isWin32NT()) {
-		// Modern Windows don't require UnicoWS
-		return true;
-	} else {
-		HMODULE hLib;
-
-		hLib = LoadLibraryA("UNICOWS.DLL");
-		if (!hLib) {
-			char dstname[MAX_PATH + 1];
-
-			// Try to install UnicoWS automatically
-			GetSystemDirectoryA(&dstname[0], MAX_PATH);
-			strcat(&dstname[0], "\\UNICOWS.DLL");
-			extract_file("DLL", "UNICOWS", &dstname[0]); // included in make_win.rc
-
-			hLib = LoadLibraryA("UNICOWS.DLL");
-			if (!hLib) {
-				// This should not happen
-				simplealert(_strdup("To build standalone plugins using this version of\nWindows, you need to install UNICOWS.DLL\n\nPlease download it from the Internet\nand place it into your system directory"));
-
-				return false;
-			}
-			else {
-				FreeLibrary(hLib);
-				return true;
-			}
-		}
-		else {
-			FreeLibrary(hLib);
-			return true;
-		}
-	}
-}
-
 OSErr make_standalone(StandardFileReply *sfr){
 	OSErr tmpErr, outErr;
 	char dstname[MAX_PATH+1];
 
 	outErr = noErr;
-
-	check_unicows();
 
 	// Make 32 bit:
 	// Destfile = no64_or_32(chosenname)
@@ -699,23 +641,16 @@ OSErr make_standalone(StandardFileReply *sfr){
 	else
 		showmessage(_strdup("32 bit standalone filter was successfully created"));
 
-	if (isWin32NT()) {
-		// Make 64 bit:
-		// Destfile = no64_or_32(chosenname) + 64
-		myp2cstrcpy(dstname, sfr->sfFile.name);
-		remove_64_filename_prefix(dstname);
-		add_64_filename_prefix(dstname);
-		tmpErr = do_make_standalone(&dstname[0], 64);
-		if (tmpErr != noErr)
-			outErr = tmpErr;
-		else
-			showmessage(_strdup("64 bit standalone filter was successfully created"));
-	}
-	else {
-		// Unicows.dll cannot edit resources of 64 bit DLLs. (Tested with UnicoWS 1.1.3790.0)
-		// On WinNT+, the normal Kernel function BeginUpdateResource can edit 64 bit DLLs, even in NT4.0 SP6
-		simplewarning(_strdup("Note: A 64 bit standalone filter cannot be created with your Windows version"));
-	}
+	// Make 64 bit:
+	// Destfile = no64_or_32(chosenname) + 64
+	myp2cstrcpy(dstname, sfr->sfFile.name);
+	remove_64_filename_prefix(dstname);
+	add_64_filename_prefix(dstname);
+	tmpErr = do_make_standalone(&dstname[0], 64);
+	if (tmpErr != noErr)
+		outErr = tmpErr;
+	else
+		showmessage(_strdup("64 bit standalone filter was successfully created"));
 
 	return outErr;
 }

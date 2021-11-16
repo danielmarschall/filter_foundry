@@ -265,6 +265,7 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\telegraphics_common\tt\choosefile.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_string.h" />
     <ClInclude Include="..\telegraphics_common\tt\compat_win.h" />
+    <ClInclude Include="..\telegraphics_common\tt\compat_win_resource.h" />
     <ClInclude Include="..\telegraphics_common\tt\dbg.h" />
     <ClInclude Include="..\telegraphics_common\tt\file_compat.h" />
     <ClInclude Include="..\telegraphics_common\tt\sprintf_tiny.h" />
@@ -281,6 +282,7 @@ foundry_3264_mixer.bat
     <ClCompile Include="..\telegraphics_common\tt\choosefile_win.c" />
     <ClCompile Include="..\telegraphics_common\tt\compat_string.c" />
     <ClCompile Include="..\telegraphics_common\tt\compat_win.c" />
+    <ClCompile Include="..\telegraphics_common\tt\compat_win_resource.c" />
     <ClCompile Include="..\telegraphics_common\tt\dbg_win.c" />
     <ClCompile Include="..\telegraphics_common\tt\file_compat_win.c" />
     <ClCompile Include="..\telegraphics_common\tt\str.c" />

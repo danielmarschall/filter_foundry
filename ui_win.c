@@ -193,9 +193,9 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		hfnt = GetStockObject(ANSI_FIXED_FONT);
 
-		hCurHandOpen = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_OPEN));
-		hCurHandGrab = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_GRAB));
-		hCurHandQuestion = LoadCursor(hDllInstance, MAKEINTRESOURCE(IDC_FF_HAND_QUESTION));
+		hCurHandOpen = LoadCursor(hDllInstance, "HAND_OPEN");
+		hCurHandGrab = LoadCursor(hDllInstance, "HAND_GRAB");
+		hCurHandQuestion = LoadCursor(hDllInstance, "HAND_QUESTION");
 		hCurHandPoint = LoadCursor(NULL, IDC_HAND);
 
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);

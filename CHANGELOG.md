@@ -4,6 +4,7 @@
 - Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.
 - The released 32-bit version is now optimized by the compiler.
 - Updated documentation.
+- Windows 95, 98 and Me can now also build 64-bit modules.
 
 ## 1.7.0.12 [06-Nov-2021]
 - Added possibility to load and save PluginCommander TXT files.

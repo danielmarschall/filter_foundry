@@ -20,6 +20,7 @@
 #include <windows.h>
 
 #include "compat_win.h"
+#include "compat_win_resource.h"
 
 Boolean isWin32NT(void){
 #ifdef _WIN64
@@ -55,61 +56,35 @@ ULONGLONG _GetTickCount64() {
 	return res;
 }
 
-typedef HANDLE(__stdcall *f_BeginUpdateResourceA)(
-	LPCSTR pFileName,
-	BOOL   bDeleteExistingResources
-);
+// ---------------------------------
+
 HANDLE _BeginUpdateResource/*A*/(
 	LPCSTR pFileName,
 	BOOL   bDeleteExistingResources
 ) {
-	HMODULE hLib;
-	f_BeginUpdateResourceA fBeginUpdateResourceA;
-	HANDLE res;
-
-	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
-	if (!hLib) return 0;
-	fBeginUpdateResourceA = (f_BeginUpdateResourceA)(void*)GetProcAddress(hLib, "BeginUpdateResourceA");
-	res = fBeginUpdateResourceA(pFileName, bDeleteExistingResources);
-	FreeLibrary(hLib);
-
-	return res;
+	if (isWin32NT()) {
+		return BeginUpdateResourceA(pFileName, bDeleteExistingResources);
+	} else {
+		return WineBeginUpdateResourceA(pFileName, bDeleteExistingResources);
+	}
 }
 
 // ---------------------------------
-
-typedef BOOL(__stdcall *f_EndUpdateResourceA)(
-	HANDLE hUpdate,
-	BOOL   fDiscard
-);
 
 BOOL _EndUpdateResource/*A*/(
 	HANDLE hUpdate,
 	BOOL   fDiscard
 ) {
-	HMODULE hLib;
-	f_EndUpdateResourceA fEndUpdateResourceA;
-	BOOL res;
+	if (isWin32NT()) {
+		return EndUpdateResourceA(hUpdate, fDiscard);
 
-	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
-	if (!hLib) return 0;
-	fEndUpdateResourceA = (f_EndUpdateResourceA)(void*)GetProcAddress(hLib, "EndUpdateResourceA");
-	res = fEndUpdateResourceA(hUpdate, fDiscard);
-	FreeLibrary(hLib);
-
-	return res;
+	} else {
+		return WineEndUpdateResourceA(hUpdate, fDiscard);
+	}
 }
 
 // ---------------------------------
 
-typedef BOOL(__stdcall *f_UpdateResourceA)(
-	HANDLE hUpdate,
-	LPCSTR lpType,
-	LPCSTR lpName,
-	WORD   wLanguage,
-	LPVOID lpData,
-	DWORD  cb
-);
 BOOL _UpdateResource/*A*/(
 	HANDLE hUpdate,
 	LPCSTR lpType,
@@ -118,17 +93,13 @@ BOOL _UpdateResource/*A*/(
 	LPVOID lpData,
 	DWORD  cb
 ) {
-	HMODULE hLib;
-	f_UpdateResourceA fUpdateResourceA;
-	BOOL res;
+	if (isWin32NT()) {
+		return UpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 
-	hLib = LoadLibraryA(isWin32NT() ? "KERNEL32.DLL" : "UNICOWS.DLL");
-	if (!hLib) return 0;
-	fUpdateResourceA = (f_UpdateResourceA)(void*)GetProcAddress(hLib, "UpdateResourceA");
-	res = fUpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
-	FreeLibrary(hLib);
 
-	return res;
+	} else {
+		return WineUpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
+	}
 }
 
 typedef void(__stdcall* f_GetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);

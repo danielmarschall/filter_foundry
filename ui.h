@@ -67,10 +67,6 @@
 #define ID_ZOOMOUTPICT 16002
 #define ID_HANDCURSOR 16000
 
-#define IDC_FF_HAND_OPEN 1001
-#define IDC_FF_HAND_GRAB 1002
-#define IDC_FF_HAND_QUESTION 1003
-
 /* --- constants for terminology (scripting) resource */
 #define AETE_ID			16000
 #define vendorName		"Telegraphics"

@@ -5,7 +5,13 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+- compat_win_resource.c: Cannot delete resources: https://bugs.winehq.org/show_bug.cgi?id=52046
+
+- compat_win_resource.c: Verify code (diff with original, maybe include findresources etc.)
+
+- Win98 + Photoshop 3.0.5: Clicking any button (Make, Load, Cancel) will cause SegFault
+
+- Win95 + PS3 crashes when plugin dialog opens (but About dialog is OK)
 
 
 Known bugs

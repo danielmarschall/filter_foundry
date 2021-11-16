@@ -87,6 +87,9 @@
     <ClInclude Include="..\telegraphics_common\adobeplugin\world.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\telegraphics_common\tt\compat_win_resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c">
@@ -171,6 +174,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\obfusc.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\telegraphics_common\tt\compat_win_resource.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -27,12 +27,6 @@
 VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),	/* Filter module */
 VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion,latestFilterVersion, /* Version Number */
 
-#ifdef _WIN64
-    VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
-#else
-    VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
-#endif
-
 VENDORID, LC(m,o,d,e), NULLID, 4L, /* first 2 bytes:  */ flagSupportsGrayScale|flagSupportsIndexedColor|flagSupportsRGBColor|flagSupportsCMYKColor|flagSupportsHSLColor|flagSupportsHSBColor|flagSupportsMultichannel,
                                    /* second 2 bytes: */ flagSupportsDuotone|flagSupportsLABColor,
 

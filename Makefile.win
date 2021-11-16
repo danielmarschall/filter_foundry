@@ -23,8 +23,8 @@ EXEC = FilterFoundry
 
 # gcc should be used to ensure that the project is 100% C and not C++
 # g++ can be used for improving code quality, because the compiler warnings are very good
-#CC = g++.exe
-CC = gcc.exe
+CC = g++.exe
+#CC = gcc.exe
 DLLWRAP = dllwrap.exe
 WINDRES = windres.exe
 
@@ -53,7 +53,7 @@ SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
 	ui.c ui_build.c preview.c read.c save.c make.c obfusc.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_W32 = dbg_win.c manifest.c ui_win.c make_win.c versioninfo_modify_win.c load_win.c ui_compat_win.c \
-	choosefile_win.c ui_build_win.c compat_string.c compat_win.c \
+	choosefile_win.c ui_build_win.c compat_string.c compat_win.c compat_win_resource.c \
 	file_compat_win.c dllmain.c
 
 # derive lists of object files, separate for each platform

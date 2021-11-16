@@ -55,18 +55,32 @@ BEGIN
 	/* Beginning with 1.7.0.2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
 	"\0\0"
 
+	#ifdef _WIN64
+		VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+	#else
+		VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+	#endif
 
-#include "PiPL_body.rc"
+	#include "PiPL_body.rc"
 
 END
 
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
-16000  TPLT  DISCARDABLE
+16032  TPLT  DISCARDABLE
 BEGIN
 	0x0001,       /* Reserved (for Photoshop) */
 	0L,           /* kCurrentPiPLVersion */
 	6L,           /* Property Count */
+	VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+	#include "PiPL_body.rc"
+END
 
-#include "PiPL_body.rc"
-
+LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
+16064  TPLT  DISCARDABLE
+BEGIN
+	0x0001,       /* Reserved (for Photoshop) */
+	0L,           /* kCurrentPiPLVersion */
+	6L,           /* Property Count */
+	VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
+	#include "PiPL_body.rc"
 END

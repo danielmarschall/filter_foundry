@@ -67,7 +67,7 @@ OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
 	..\scripting.obj ..\lex.yy.obj ..\manifest.obj ..\ui_win.obj ..\make_win.obj ..\versioninfo_modify_win.obj ..\load_win.obj \
 	..\telegraphics_common\tt\dbg_win.obj ..\telegraphics_common\tt\ui_compat_win.obj \
 	..\telegraphics_common\tt\choosefile_win.obj ..\ui_build_win.obj \
-	..\telegraphics_common\tt\compat_string.obj ..\telegraphics_common\tt\compat_win.obj \
+	..\telegraphics_common\tt\compat_string.obj ..\telegraphics_common\tt\compat_win.obj ..\telegraphics_common\tt\compat_win_resource.obj \
 	..\telegraphics_common\tt\file_compat_win.obj ..\telegraphics_common\tt\str.obj \
 	..\telegraphics_common\adobeplugin\dllmain.obj
 
