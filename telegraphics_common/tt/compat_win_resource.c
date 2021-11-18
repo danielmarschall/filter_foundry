@@ -121,6 +121,7 @@ typedef CONST char* PCSZ;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Supplement created by Daniel Marschall
+// Attention: These supplements are VERY simple and they ONLY accept ASCII!
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 NTSTATUS WINAPI _RtlCreateUnicodeStringFromAsciiz(PUNICODE_STRING target, LPCSTR src)
@@ -138,6 +139,16 @@ NTSTATUS WINAPI _RtlCreateUnicodeStringFromAsciiz(PUNICODE_STRING target, LPCSTR
         // C++ wrong warning: Buffer overflow (C6386)
         #pragma warning(suppress : 6386)
         target->Buffer[i] = (WCHAR)src[i];
+    }
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS WINAPI _InplaceRtlUpcaseUnicodeString(PUNICODE_STRING str) {
+    int i;
+
+    for (i = 0; i < (int)(str->Length / sizeof(WCHAR)); i++) {
+        str->Buffer[i] = toupper(str->Buffer[i]);
     }
 
     return STATUS_SUCCESS;
@@ -516,6 +527,12 @@ static NTSTATUS get_res_nameA(LPCSTR name, UNICODE_STRING* str)
     else
     {
         _RtlCreateUnicodeStringFromAsciiz(str, name);
+
+        // Fix by Daniel Marschall: Added RtlUpcaseUnicodeString for get_res_nameA, like it was done for get_res_nameW
+        // RtlUpcaseUnicodeString(str, str, FALSE);
+        // For our implementation, this simple inplace function works:
+        _InplaceRtlUpcaseUnicodeString(str);
+        
         return STATUS_SUCCESS;
     }
 }
