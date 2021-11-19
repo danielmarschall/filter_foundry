@@ -17,6 +17,8 @@ Known bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* Win95 cannot detect a 64 bit obfuscated filter, because it cannot read the resources. Should there be a different mechanism for detecting an obfuscated filter? (e.g. a signature in PiPL which can be found using binary search?)
+
 * compat_win_resource.c (compatibility for Win9x resource generation): Cannot delete resources, see https://bugs.winehq.org/show_bug.cgi?id=52046
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?

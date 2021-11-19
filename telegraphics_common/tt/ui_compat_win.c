@@ -28,6 +28,26 @@
 /* see "DIBs and Their Use",
    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dngdi/html/msdn_dibs2.asp */
 
+typedef HBITMAP(__stdcall* f_CreateDIBSection)(HDC hdc, CONST BITMAPINFO* pbmi, UINT usage, VOID** ppvBits, HANDLE hSection, DWORD offset);
+HBITMAP _CreateDIBSection(HDC hdc, CONST BITMAPINFO* pbmi, UINT usage, VOID** ppvBits, HANDLE hSection, DWORD offset) {
+	// Calling dynamically, because Windows NT 3.1 does not support CreateDIBSection
+	HMODULE hLib;
+	f_CreateDIBSection fCreateDIBSection;
+	HBITMAP res;
+
+	hLib = LoadLibraryA("GDI32.DLL");
+	if (!hLib) return 0;
+	fCreateDIBSection = (f_CreateDIBSection)(void*)GetProcAddress(hLib, "CreateDIBSection");
+	if (fCreateDIBSection != 0) {
+		res = fCreateDIBSection(hdc, pbmi, usage, ppvBits, hSection, offset);
+		FreeLibrary(hLib);
+		return res;
+	}
+	else {
+		return NULL;
+	}
+}
+
 Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 	//char s[0x100];
 	if( (*ppb = (BITMAPREF)malloc(sizeof(**ppb))) ){
@@ -45,7 +65,7 @@ Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 		pbmih->biClrUsed =
 		pbmih->biClrImportant = 0;
 
-		(*ppb)->hbmp = CreateDIBSection(NULL/*hDC*/,&(*ppb)->bmi,DIB_RGB_COLORS,(void**)&(*ppb)->pbits,NULL,0);
+		(*ppb)->hbmp = _CreateDIBSection(NULL/*hDC*/,&(*ppb)->bmi,DIB_RGB_COLORS,(void**)&(*ppb)->pbits,NULL,0);
 
 		(*ppb)->rowbytes = ((depth * pbmih->biWidth + 31) >> 3) & -4;
 
