@@ -356,10 +356,10 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			,gdata->hWndMainDlg
 			#endif /* _WIN32 */
 		)){
-			// Backup everything, because obfuscation et. al. causes changing of the state (yes, that's messy :( )
+			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
-			if(loadfile(&sfr,&reason)){
+			if (loadfile(&sfr,&reason)) {
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}
@@ -388,14 +388,15 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			if(savefile_afs_pff_picotxt(&sfr)) {
 				completesave(&reply);
 
-				showmessage(_strdup("The file was successfully saved in the \"PluginCommander\" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, Slider/Map names."));
-
 				if (fileHasExtension(&sfr, ".txt")) {
+					char filename[MAX_PATH];
+
+					showmessage(_strdup("The file was successfully saved in the \"PluginCommander\" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, Slider/Map names."));
+
 					#ifdef MAC_ENV
 					// TODO: Open text file instead
 					showmessage(_strdup("Please edit the file manually to enter the title, category, authorname, copyright, slidernames etc."));
 					#else
-					char filename[MAX_PATH];
 					myp2cstrcpy(filename, sfr.sfFile.name);
 					hShellRes = ShellExecuteA(
 						gdata->hWndMainDlg,
@@ -424,13 +425,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case MAKEITEM:
 		if (gdata->standalone) return true; // should not happen since the button should be grayed out
 
-		// Backup everything, because obfuscation et. al. causes changing of the state (yes, that's messy :( )
-		bakState = saveInternalState();
-
 		builddialog(gpb);
-
-		// Restore
-		restoreInternalState(bakState);
 
 		break;
 	case HELPITEM:

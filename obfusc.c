@@ -440,6 +440,7 @@ void deobfusc(PARM_T* pparm) {
 		// we still want that load_*.c is able to detect pparm->iProtected instead
 		// of throwing the error "Incompatible obfuscation".
 		pparm->cbSize = PARM_SIZE;
+		pparm->standalone = 1;
 	}
 
 	if (obfusc_version >= 1) {

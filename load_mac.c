@@ -73,37 +73,72 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 	Boolean readok = false;
 	FInfo fndrInfo;
 
+	// The different read-functions will return true if the resource was successfully loaded,
+	// or false otherwise. If *reason is set, then the answer is clearly "No". If the result
+	// is just false, it means that the program should continue with the next read-function.
+	*reason = NULL;
+
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
-		if( (readok = readfile_afs_pff(sfr,reason)) ) {
-			gdata->parmloaded = false;
-			gdata->obfusc = false;
-
-		} // then try "Filters Unlimited" file (FFX)
-		else if( (readok = readfile_ffx(sfr,reason)) ) {
-			gdata->parmloaded = true;
-			gdata->obfusc = false;
-
-		} // then try "PluginCommander TXT" file (TXT)
-		else if( (readok = readfile_picotxt(sfr,reason)) ) {
-			gdata->parmloaded = true;
-			gdata->obfusc = false;
-
-		} // then try plugin formats (Mac first, then Windows .8bf or .prm DLL)
-		else if( (readok = readmacplugin(sfr,reason) || readfile_8bf(sfr,reason)) ){
-			if ((gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
-				*reason = "Incompatible obfuscation.";
-				//gdata->parmloaded = false;
-				return false; // Stop! We know the issue now.
-			}else if(gdata->parm.iProtected){
-				*reason = "The filter is protected.";
-				//gdata->parmloaded = false;
-				return false;
-			}else
+		if (*reason == NULL) {
+			if (readfile_afs_pff(sfr,reason)) {
+				gdata->parmloaded = false;
+				gdata->obfusc = false;
+				return true;
+			}
+		}
+		
+		// then try "Filters Unlimited" file (FFX)
+		if (*reason == NULL) {
+			if (readfile_ffx(sfr,reason)) {
 				gdata->parmloaded = true;
-		}else
-			*reason = "It is not a text parameter (AFS) file, nor a standalone Mac/PC filter made by Filter Factory/Filter Foundry.";
-	}
+				gdata->obfusc = false;
+				return true;
+			}
+		}
+		
+		// then try "PluginCommander TXT" file (TXT)
+		if (*reason == NULL) {
+			if (readfile_picotxt(sfr,reason)) {
+				gdata->parmloaded = true;
+				gdata->obfusc = false;
+				return true;
+			}
+		}
+		
+		// Try Mac plugin resource
+		if (*reason == NULL) {
+			if (readmacplugin(sfr,reason)) {
+				if (gdata->parm.iProtected) {
+					*reason = "The filter is protected.";
+				} else {
+					gdata->parmloaded = true;
+					return true;
+				}
+			}
+		}
+		
+		// Try Windows resources (we need to do a binary scan)
+		// Note that we cannot detect obfuscated filters here!
+		if (*reason == NULL) {
+			if (readfile_8bf(sfr,reason)) {
+				if (gdata->parm.iProtected) {
+					*reason = "The filter is protected.";
+				} else {
+					gdata->parmloaded = true;
+					return true;
+				}
+			}
+		}
 
-	return readok;
+		// We didn't had success. If we have a clear reason, return false and the reason.
+		// If we don't have a clear reason, set a generic reason and return false.
+		if (*reason == NULL) {		
+			*reason = "It is not a text parameter file, nor a standalone Mac/PC filter created by Filter Factory/Filter Foundry.";
+		}
+		return false;
+	} else {
+		*reason = "File cannot be opened";
+		return false;
+	}
 }

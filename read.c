@@ -38,7 +38,7 @@ enum{
 	MAXLINE = 0x200,
 };
 
-Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
+Boolean readparams_afs_pff(Handle h,char **reason){
 	Boolean res = false;
 	char linebuf[MAXLINE+1],curexpr[MAXEXPR+1],*p,*dataend,*q;
 	char c;
@@ -55,7 +55,7 @@ Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
 	q = curexpr;
 	linecnt = exprcnt = lineptr = 0;
 
-	*reason = _strdup("File was too short.");
+	//*reason = _strdup("File was too short.");
 	while(p < dataend){
 
 		c = *p++;
@@ -71,8 +71,7 @@ Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
 			/* process complete line */
 			if(linecnt==0){
 				if(strcmp(linebuf,"%RGB-1.0")){
-					if(alerts)
-						*reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").");
+					// *reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").");
 					break;
 				}
 			}else if(linecnt<=8){
@@ -123,8 +122,8 @@ Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
 						#endif
 						break;
 					case '\\': break;
-					default:
-						if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));
+					//default:
+					//	if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));
 					}
 				}//else if(alerts) alertuser(_strdup("Warning:"),_strdup("truncated escape sequence ends input"));
 			}
@@ -136,7 +135,6 @@ Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason){
 
 	PIUNLOCKHANDLE(h);
 
-	if (res) *reason = NULL; // no error
 	return res;
 }
 
@@ -781,7 +779,7 @@ Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
-			if( (res = readparams_afs_pff(h,true,reason)) ) {
+			if( (res = readparams_afs_pff(h,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
 				if (fileHasExtension(sfr, ".pff")) {

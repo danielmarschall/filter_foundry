@@ -421,7 +421,7 @@ int checkandinitparams(Handle params){
 		}
 	}
 
-	if( (bUninitializedParams = !(params && readparams_afs_pff(params,false,&reasonstr))) ){
+	if( (bUninitializedParams = !(params && readparams_afs_pff(params,&reasonstr))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 

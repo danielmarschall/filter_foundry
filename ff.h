@@ -60,7 +60,9 @@ enum{
 };
 
 typedef struct{
-	Boolean standalone,parmloaded,obfusc;
+	Boolean standalone;
+	Boolean parmloaded; // this means that the filter is loaded, but without PARM (title, author, etc.)
+	Boolean obfusc;
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
@@ -106,7 +108,7 @@ struct InternalState saveInternalState();
 void restoreInternalState(struct InternalState state);
 
 // from read.c
-Boolean readparams_afs_pff(Handle h,Boolean alerts,char **reason);
+Boolean readparams_afs_pff(Handle h,char **reason);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
 Boolean readfile_8bf(StandardFileReply *sfr,char **reason);
 Handle readfileintohandle(FILEREF r);

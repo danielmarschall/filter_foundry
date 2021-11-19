@@ -5,6 +5,9 @@
 - The released 32-bit version is now optimized by the compiler.
 - Updated documentation.
 - Windows 95, 98 and Me can now also build 64-bit modules.
+- Bugfix: When you saved a AFS or PFF file, you received a wrong information about PluginCommander TXT files.
+- Bugfix: Trying to open a protected filter now correctly displays the message "Filter is protected" again, instead of "No filter detected".
+- If you click "Make" after the make dialog has been opened once, your previous input will be shown again.
 
 ## 1.7.0.12 [06-Nov-2021]
 - Added possibility to load and save PluginCommander TXT files.

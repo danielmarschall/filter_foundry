@@ -25,7 +25,7 @@ Minor priority stuff or ideas
 
 * Filter Factory is much faster than Filter Foundry (example rad.afs). Why?! Test if it is also the case if optimized with "-O2" (release configuration).
 
-* When a filter is created obfuscated and you click "Make" again, should then be the "obfuscate" checkbox be checked again?
+* When a filter is created obfuscated and you click "Make" again, or if you loaded an old obfuscated filter (without protection), should then be the "obfuscate" checkbox be checked again?
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
