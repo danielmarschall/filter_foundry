@@ -64,8 +64,6 @@ PixMapHandle GetGWorldPixMap(GWorldPtr);
 
 enum{ ok = 1,cancel = 2 };
 
-Boolean isWin32NT(void);
-
 ULONGLONG _GetTickCount64();
 
 HANDLE _BeginUpdateResource/*A*/(

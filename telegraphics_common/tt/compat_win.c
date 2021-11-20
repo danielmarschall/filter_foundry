@@ -22,15 +22,34 @@
 #include "compat_win.h"
 #include "compat_win_resource.h"
 
-Boolean isWin32NT(void){
+typedef BOOL(__stdcall* f_GetVersionEx)(LPOSVERSIONINFOA lpVersionInformation);
+Boolean Implements3264ResourceAPI() {
 #ifdef _WIN64
 	// 64 bit OS is never Win9x, so it must be WinNT
 	return true;
 #else
-	OSVERSIONINFO osv;
-	osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	#pragma warning(suppress : 4996 28159)
-	return GetVersionEx(&osv) && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
+	HMODULE hLib;
+	f_GetVersionEx fGetVersionEx;
+	BOOL res;
+
+	hLib = LoadLibraryA("KERNEL32.DLL");
+	if (!hLib) return 0;
+	fGetVersionEx = (f_GetVersionEx)(void*)GetProcAddress(hLib, "GetVersionExA");
+	if (fGetVersionEx != 0) {
+		OSVERSIONINFO osv;
+		osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		res = fGetVersionEx(&osv);
+		FreeLibrary(hLib);
+		// Windows NT 4.0 does implement UpdateResourceA(), and it can handle 64 bit images
+		return res && osv.dwMajorVersion >= 4 && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
+	}
+	else {
+		// Windows NT 3.1 doesn't have GetVersionExA(), and doesn't implement UpdateResourceA and doesn't know about 64 bit images
+		// Therefore, we conclude that if GetVersionExA() is missing, then we are on a system that required manual resource processing
+		// TODO: Windows NT 3.5x not tested
+		FreeLibrary(hLib);
+		return false;
+	}
 #endif
 }
 
@@ -62,7 +81,7 @@ HANDLE _BeginUpdateResource/*A*/(
 	LPCSTR pFileName,
 	BOOL   bDeleteExistingResources
 ) {
-	if (isWin32NT()) {
+	if (Implements3264ResourceAPI()) {
 		return BeginUpdateResourceA(pFileName, bDeleteExistingResources);
 	} else {
 		return WineBeginUpdateResourceA(pFileName, bDeleteExistingResources);
@@ -75,7 +94,7 @@ BOOL _EndUpdateResource/*A*/(
 	HANDLE hUpdate,
 	BOOL   fDiscard
 ) {
-	if (isWin32NT()) {
+	if (Implements3264ResourceAPI()) {
 		return EndUpdateResourceA(hUpdate, fDiscard);
 
 	} else {
@@ -93,7 +112,7 @@ BOOL _UpdateResource/*A*/(
 	LPVOID lpData,
 	DWORD  cb
 ) {
-	if (isWin32NT()) {
+	if (Implements3264ResourceAPI()) {
 		return UpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 
 
