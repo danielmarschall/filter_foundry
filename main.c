@@ -260,6 +260,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		DoPrepare(pb);
 		init_symtab(predefs); // ready for parser calls
 		init_trigtab();
+		gdata->hWndMainDlg = 0;
 		break;
 	case filterSelectorStart:
 		if (HAS_BIG_DOC(pb)) {
