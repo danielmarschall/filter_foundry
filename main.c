@@ -235,6 +235,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if (!gdata) {
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
+			gdata->hWndMainDlg = ((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
 			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
 			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				if (gdata->obfusc) {
@@ -257,10 +258,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		wantdialog = true;
 		break;
 	case filterSelectorPrepare:
+		gdata->hWndMainDlg = 0;
 		DoPrepare(pb);
 		init_symtab(predefs); // ready for parser calls
 		init_trigtab();
-		gdata->hWndMainDlg = 0;
 		break;
 	case filterSelectorStart:
 		if (HAS_BIG_DOC(pb)) {
