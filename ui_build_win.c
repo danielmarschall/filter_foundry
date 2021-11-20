@@ -59,7 +59,20 @@ INT_PTR CALLBACK builddlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam
 }
 
 Boolean builddialog(FilterRecordPtr pb){
+	INT_PTR res;
 	PlatformData *p = (PlatformData *)pb->platformData;
-	return DialogBoxParam(hDllInstance,MAKEINTRESOURCE(ID_BUILDDLG),
-						  gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,builddlgproc,0) == IDOK;
+
+	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(ID_BUILDDLG),
+	                     gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,builddlgproc,0);
+	if (res == 0) {
+		simplealert("DialogBoxParam in valid parent window handle");
+	}
+	if (res == -1) {
+		char s[100];
+		strcpy(s, "DialogBoxParam failed: ");
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+		dbg(s);
+	}
+
+	return res == IDOK;
 }

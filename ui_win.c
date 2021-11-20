@@ -78,7 +78,7 @@ void DoAbout(AboutRecordPtr pb){
 		               "making a donation.");
 	}
 
-	MessageBox((HWND)p->hwnd, text, title, MB_APPLMODAL|MB_ICONINFORMATION|MB_OK);
+	MessageBox((HWND)p->hwnd, text, title, MB_TASKMODAL|MB_ICONINFORMATION|MB_OK);
 }
 
 Boolean simplealert(char *s){
@@ -301,30 +301,37 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
-	WNDCLASSEX clx;
-	Boolean res;
+	WNDCLASS clx;
+	INT_PTR res;
 
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
-	clx.cbSize = sizeof(WNDCLASSEX);
-	GetClassInfoEx(hDllInstance, "STATIC", &clx);
+	GetClassInfo(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "Preview";
-	RegisterClassEx(&clx);
+	RegisterClass(&clx);
 
 	// For the caution images, we register a class, so that we can assign a mouse cursor to this class.
-	clx.cbSize = sizeof(WNDCLASSEX);
-	GetClassInfoEx(hDllInstance, "STATIC", &clx);
+	GetClassInfo(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "CautionSign";
-	RegisterClassEx(&clx);
+	RegisterClass(&clx);
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
-	                     (HWND)p->hwnd,maindlgproc,0) == IDOK;
+	                     (HWND)p->hwnd,maindlgproc,0);
+	if (res == 0) {
+		simplealert("DialogBoxParam in valid parent window handle");
+	}
+	if (res == -1) {
+		char s[100];
+		strcpy(s, "DialogBoxParam failed: ");
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+		dbg(s);
+	}
 
 	// Clean up after the dialog has been closed
 	UnregisterClass("Preview", hDllInstance);
 	UnregisterClass("CautionSign", hDllInstance);
 
-	return res;
+	return res == IDOK;
 }
 
