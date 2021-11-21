@@ -213,7 +213,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		CreateToolTip(ZOOMINITEM, hDlg, _strdup("Zoom in"));
 		CreateToolTip(ZOOMOUTITEM, hDlg, _strdup("Zoom out"));
-		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Zoom fully in/out"));
+		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Fully zoom in/out"));
 
 		// Note: Actually, the whole class gets the cursor, not just these three controls!!
 		if (hCurHandPoint) {
