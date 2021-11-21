@@ -90,7 +90,7 @@ Boolean simplealert(char *s){
 		title = _strdup("Filter Foundry");
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
-	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
+	return MessageBox(hwnd, s, title, MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
 Boolean simplewarning(char* s) {
@@ -304,15 +304,34 @@ Boolean maindialog(FilterRecordPtr pb){
 	WNDCLASS clx;
 	INT_PTR res;
 
+	// ALL Versions of Windows show the confusing error message "Invalid Cursor Handle" when DialogBoxParamA
+	// tries to open a dialog with a control which class is unknown.
+	// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
+	// there seems no possibility to support this version of Windows at this point.
+	if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) == 0) {
+		simplealert("This plugin requires the Microsoft Trackbar Control (msctls_trackbar32) which is not found on your system.");
+		return false;
+	}
+
 	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
 	GetClassInfo(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "Preview";
-	RegisterClass(&clx);
+	if (RegisterClass(&clx) == 0) {
+		char s[100];
+		strcpy(s, "RegisterClass failed: ");
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+		dbg(s);
+	}
 
 	// For the caution images, we register a class, so that we can assign a mouse cursor to this class.
 	GetClassInfo(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "CautionSign";
-	RegisterClass(&clx);
+	if (RegisterClass(&clx) == 0) {
+		char s[100];
+		strcpy(s, "RegisterClass failed: ");
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+		dbg(s);
+	}
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
