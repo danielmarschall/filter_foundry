@@ -1,5 +1,6 @@
 /*
     32/64 bit "standalone" ASCII Resource Modification methods for Win9x compatibility
+    includes many fixes (marked with "Fix by Daniel Marschall" comment)
     Copyright (C) 2021 Daniel Marschall, ViaThinkSoft
     based on the code of the Wine Project
         Copyright 1993 Robert J. Amstadt
@@ -28,6 +29,8 @@
 TODO / Things that don't work correctly:
 - Resources cannot be deleted correctly: see https://bugs.winehq.org/show_bug.cgi?id=52046
 - Errors, e.g. in EndUpdateResource cannot be retrieved by GetLastError
+- The field "Size of initialized data" of an OpenWatcom compiled image got changed by these procedures.
+  Not sure if this would break something! We should be very careful with that field, since it affects code rather than resources?!
 
 */
 
@@ -1402,6 +1405,26 @@ static IMAGE_SECTION_HEADER* get_resource_section(void* base, DWORD mapping_size
     return &sec[i];
 }
 
+static IMAGE_SECTION_HEADER* get_last_section(void* base, DWORD mapping_size)
+{
+    // Fix by Fix by Daniel Marschall: Added this function which is required by the "SizeOfImage" field calculation
+
+    IMAGE_SECTION_HEADER* sec;
+    IMAGE_NT_HEADERS* nt;
+    DWORD num_sections = 0;
+
+    nt = get_nt_header(base, mapping_size);
+    if (!nt)
+        return NULL;
+
+    sec = get_section_header(base, mapping_size, &num_sections);
+    if (!sec)
+        return NULL;
+
+    /* find the resources section */
+    return &sec[num_sections - 1];
+}
+
 static DWORD get_init_data_size(void* base, DWORD mapping_size)
 {
     DWORD i, sz = 0, num_sections = 0;
@@ -1418,12 +1441,37 @@ static DWORD get_init_data_size(void* base, DWORD mapping_size)
     return sz;
 }
 
+//
+// peRoundUpToAlignment() - rounds dwValue up to nearest dwAlign
+//
+DWORD peRoundUpToAlignment(DWORD dwAlign, DWORD dwVal)
+{
+    // Fix by Fix by Daniel Marschall: Added this function, based on
+    // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+    if (dwAlign)
+    {
+        //do the rounding with bitwise operations...
+
+        //create bit mask of bits to keep
+        //  e.g. if section alignment is 0x1000                        1000000000000
+        //       we want the following bitmask      11111111111111111111000000000000
+        DWORD dwMask = ~(dwAlign - 1);
+
+        //round up by adding full alignment (dwAlign-1 since if already aligned we don't want anything to change),
+        //  then mask off any lower bits
+        dwVal = (dwVal + dwAlign - 1) & dwMask;
+    }
+
+    return(dwVal);
+
+} //peRoundUpToAlignment()
+
 static BOOL write_raw_resources(QUEUEDUPDATES* updates)
 {
     CHAR tempdir[MAX_PATH], tempfile[MAX_PATH];
     DWORD i, section_size;
     BOOL ret = FALSE;
-    IMAGE_SECTION_HEADER* sec;
+    IMAGE_SECTION_HEADER* sec, *lastsec;
     IMAGE_NT_HEADERS32* nt;
     IMAGE_NT_HEADERS64* nt64;
     struct resource_size_info res_size;
@@ -1602,7 +1650,8 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
         sec->SizeOfRawData = section_size;
         sec->Misc.VirtualSize = virtual_section_size;
         if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
-            nt64->OptionalHeader.SizeOfImage += rva_delta;
+            DWORD pEndOfLastSection, pEndOfLastSectionMem, uCalcSizeOfFile;
+
             nt64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].VirtualAddress = sec->VirtualAddress;
             nt64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].Size = res_size.total_size;
             nt64->OptionalHeader.SizeOfInitializedData = get_init_data_size(write_map->base, mapping_size);
@@ -1610,9 +1659,21 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             for (i = 0; i < nt64->OptionalHeader.NumberOfRvaAndSizes; i++)
                 if (nt64->OptionalHeader.DataDirectory[i].VirtualAddress > sec->VirtualAddress)
                     nt64->OptionalHeader.DataDirectory[i].VirtualAddress += rva_delta;
+
+            //nt64->OptionalHeader.SizeOfImage += rva_delta;
+            // Fix by Daniel Marschall: Added this calculation of "SizeOfImage".
+            // With the original implementation, Windows won't load some images!
+            // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+            lastsec = get_last_section(write_map->base, mapping_size);
+            pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt64->OptionalHeader.ImageBase;
+            //NOTE: we are rounding to memory section alignment, not file
+            pEndOfLastSectionMem = peRoundUpToAlignment(nt64->OptionalHeader.SectionAlignment, pEndOfLastSection);
+            uCalcSizeOfFile = pEndOfLastSectionMem - nt64->OptionalHeader.ImageBase;
+            nt64->OptionalHeader.SizeOfImage = uCalcSizeOfFile;
         }
         else {
-            nt->OptionalHeader.SizeOfImage += rva_delta;
+            DWORD pEndOfLastSection, pEndOfLastSectionMem, uCalcSizeOfFile;
+
             nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].VirtualAddress = sec->VirtualAddress;
             nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].Size = res_size.total_size;
             nt->OptionalHeader.SizeOfInitializedData = get_init_data_size(write_map->base, mapping_size);
@@ -1620,6 +1681,17 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             for (i = 0; i < nt->OptionalHeader.NumberOfRvaAndSizes; i++)
                 if (nt->OptionalHeader.DataDirectory[i].VirtualAddress > sec->VirtualAddress)
                     nt->OptionalHeader.DataDirectory[i].VirtualAddress += rva_delta;
+
+            //nt->OptionalHeader.SizeOfImage += rva_delta;
+            // Fix by Daniel Marschall: Added this calculation of "SizeOfImage".
+            // With the original implementation, Windows won't load some images!
+            // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+            lastsec = get_last_section(write_map->base, mapping_size);
+            pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt->OptionalHeader.ImageBase;
+            //NOTE: we are rounding to memory section alignment, not file
+            pEndOfLastSectionMem = peRoundUpToAlignment(nt->OptionalHeader.SectionAlignment, pEndOfLastSection);
+            uCalcSizeOfFile = pEndOfLastSectionMem - nt->OptionalHeader.ImageBase;
+            nt->OptionalHeader.SizeOfImage = uCalcSizeOfFile;
         }
     }
 

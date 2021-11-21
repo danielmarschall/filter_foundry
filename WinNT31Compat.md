@@ -1,6 +1,6 @@
 
-Windows NT 3.1 compatibility problems
--------------------------------------
+Windows NT 3.1 and 3.5x compatibility problems
+----------------------------------------------
 
 Fixed problems:
 ---------------
@@ -16,11 +16,16 @@ Fixed problems:
 
 - `GetVersionEx` not found in WinAPI.
 
-	Fixed in SVN Revision 411 (calling dynamically now).
+	Fixed in SVN Revision 411 and 414 (calling dynamically now).
 
 - `RegisterClassExA` and `GetClassInfoExA` not found in WinAPI.
 
 	Fixed in SVN Revision 412 (replaced by `RegisterClassA` and `GetClassInfoA`).
+
+- Plugins created by the custom implementation of `UpdateResourceA` (for Win9x and WinNT<4.0) could not be loaded on
+  some versions of Windows, because the Optional PE Header `SizeOfImage` was calculated wrong.
+  
+	Fixed in SVN Revision 415.
 
 Open problems:
 --------------
@@ -44,6 +49,7 @@ Open problems:
 
 - Windows NT 3.51 clicking the zoom icons does not work!
 	The click event probably only works for Button classes?
+	=> Ok, changed to pushbutton with ownerdraw. Now works
 
 - Help button does not work
 
@@ -54,8 +60,8 @@ Open problems:
 - Versioninfo is not adjusted, not even for Win 32 standalone plugins
 	In Win NT 3.51, 32 bit is adjusted, 64 bit not
 
-- WinNT351: Made standalone plugins won't load. It says that the image is invalid!
-	It does load with Windows 10. (Check if the mixer has included the correct 32 bit plugin as base)
+- Preview pane cannot be panned, because it seems that anything clickable needs to be a pushbutton in Win NT 3.51
+	TODO: implement area as pushbutton?
 
 Questions:
 ----------
