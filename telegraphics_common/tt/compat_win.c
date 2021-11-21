@@ -40,13 +40,13 @@ Boolean Implements3264ResourceAPI() {
 		osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		res = fGetVersionEx(&osv);
 		FreeLibrary(hLib);
+		// Windows NT 3.51 does implement GetVersionExA() and UpdateResourceA(), but it doesn't know about 64 bit images.
 		// Windows NT 4.0 does implement UpdateResourceA(), and it can handle 64 bit images
 		return res && osv.dwMajorVersion >= 4 && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
 	}
 	else {
-		// Windows NT 3.1 doesn't have GetVersionExA(), and doesn't implement UpdateResourceA and doesn't know about 64 bit images
-		// Therefore, we conclude that if GetVersionExA() is missing, then we are on a system that required manual resource processing
-		// TODO: Windows NT 3.5x not tested
+		// Windows NT 3.1 doesn't have GetVersionExA(), doesn't implement UpdateResourceA(), and doesn't know about 64 bit images
+		// Therefore, we conclude that if GetVersionExA() is missing, then we are on a system that requires manual resource processing
 		FreeLibrary(hLib);
 		return false;
 	}
