@@ -228,10 +228,15 @@ bool addToFile(LPCTSTR pluginfile, LPCTSTR otherfile, LPCTSTR lpType, LPCTSTR lp
 
 int main()
 {
-	LPCTSTR lpType = L"TPLT";
-	LPCTSTR lpName32 = (LPCTSTR)1032;
-	LPCTSTR lpName64 = (LPCTSTR)1064;
-	WORD wLanguage = 1033; // en-US
+	LPCTSTR lpTemplateType = L"TPLT";
+	LPCTSTR lpName32Plugin = (LPCTSTR)1032;
+	LPCTSTR lpName64Plugin = (LPCTSTR)1064;
+	LPCTSTR lpName32Version = (LPCTSTR)3032;
+	LPCTSTR lpName64Version = (LPCTSTR)3064;
+	LPCTSTR lpName32Pipl = (LPCTSTR)16032;
+	LPCTSTR lpName64Pipl = (LPCTSTR)16064;
+	WORD wLanguageEnUs = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US); // 1033 en-US
+	WORD wLanguageNeutral = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL); // 0 Neutral
 
 	LPCTSTR file32in = L"in\\FilterFoundry.8bf";
 	LPCTSTR file64in = L"in\\FilterFoundry64.8bf";
@@ -240,141 +245,254 @@ int main()
 	LPCTSTR file32tmp = L"FilterFoundry.tmp";
 	LPCTSTR file64tmp = L"FilterFoundry64.tmp";
 
-	// 1. Copy "IN" to "TMP"
+	// 1a. Copy 32 "IN" to 32 "TMP", and 64 "IN" to 64 "TMP"
+	{
+		if (!CopyFile(file32in, file32tmp, false)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Copyfile 32in > 32tmp\n");
+			return 1;
+		}
 
-	if (!CopyFile(file32in, file32tmp, false)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Copyfile 32in > 32tmp\n");
-		return 1;
+		if (!CopyFile(file64in, file64tmp, false)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Copyfile 64in > 64tmp\n");
+			return 1;
+		}
 	}
 
-	if (!CopyFile(file64in, file64tmp, false)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Copyfile 64in > 64tmp\n");
-		return 1;
+	// 1b. Copy 32 "IN" to 32 "OUT", and 64 "IN" to 64 "OUT" (will be edited later)
+	{
+		if (!CopyFile(file32in, file32out, false)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Copyfile 32in > 32out\n");
+			return 1;
+		}
+
+		if (!CopyFile(file64in, file64out, false)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Copyfile 64in > 64out\n");
+			return 1;
+		}
 	}
 
-	// 2. Remove any 32/64 residue in "TMP"
+	// 2. Remove any template residues at 32/64 "TMP", since they are only used for building
+	//    "TMP" is our "standalone plugin skelleton"
+	// TODO: Also remove build dialogs, cursors and icons (like done in make_win.c)?
+	{
+		// Remove TPLT 1 (Manifest template)
+		removeFromFile(file32tmp, lpTemplateType, MAKEINTRESOURCE(1), wLanguageNeutral);
+		removeFromFile(file64tmp, lpTemplateType, MAKEINTRESOURCE(1), wLanguageNeutral);
 
-	removeFromFile(file32tmp, lpType, lpName32, wLanguage);
-	removeFromFile(file32tmp, lpType, lpName64, wLanguage);
-	removeFromFile(file64tmp, lpType, lpName32, wLanguage);
-	removeFromFile(file64tmp, lpType, lpName64, wLanguage);
+		// Remove TPLT 1032/1064 (8BF included)
+		removeFromFile(file32tmp, lpTemplateType, lpName32Plugin, wLanguageEnUs);
+		removeFromFile(file32tmp, lpTemplateType, lpName64Plugin, wLanguageEnUs);
+		removeFromFile(file64tmp, lpTemplateType, lpName32Plugin, wLanguageEnUs);
+		removeFromFile(file64tmp, lpTemplateType, lpName64Plugin, wLanguageEnUs);
 
-	// 3. Update timestamp
+		// Remove TPLT 3032/3064 (Versioninfo included)
+		removeFromFile(file32tmp, lpTemplateType, lpName32Version, wLanguageEnUs);
+		removeFromFile(file32tmp, lpTemplateType, lpName64Version, wLanguageEnUs);
+		removeFromFile(file64tmp, lpTemplateType, lpName32Version, wLanguageEnUs);
+		removeFromFile(file64tmp, lpTemplateType, lpName64Version, wLanguageEnUs);
 
-	if (!update_pe_timestamp(file32tmp, time(0))) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Update TMP timestamp 32\n");
-		return 1;
+		// Remove TPLT 16032/16064 (PIPL template)
+		removeFromFile(file32tmp, lpTemplateType, lpName32Pipl, wLanguageNeutral);
+		removeFromFile(file32tmp, lpTemplateType, lpName64Pipl, wLanguageNeutral);
+		removeFromFile(file64tmp, lpTemplateType, lpName32Pipl, wLanguageNeutral);
+		removeFromFile(file64tmp, lpTemplateType, lpName64Pipl, wLanguageNeutral);
 	}
 
-	if (!update_pe_timestamp(file64tmp, time(0))) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Update TMP timestamp 64\n");
-		return 1;
+	// 3. Update timestamp of 32/64 "TMP"
+	{
+		if (!update_pe_timestamp(file32tmp, time(0))) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Update TMP timestamp 32\n");
+			return 1;
+		}
+
+		if (!update_pe_timestamp(file64tmp, time(0))) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Update TMP timestamp 64\n");
+			return 1;
+		}
 	}
 
-	// 4. Repair checksums
-
-	if (!repair_pe_checksum(file32tmp)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Repair TMP checksum 32\n");
-		return 1;
-	}
-	if (!repair_pe_checksum(file64tmp)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Repair TMP checksum 64\n");
-		return 1;
-	}
-
-	// 5. Copy "TMP" to "OUT" (will be edited later)
-
-	if (!CopyFile(file32tmp, file32out, false)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Copyfile 32tmp > 32out\n");
-		return 1;
-	}
-	if (!CopyFile(file64tmp, file64out, false)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Copyfile 64tmp > 64out\n");
-		return 1;
+	// 4. Repair checksums of 32/64 "TMP"
+	{
+		if (!repair_pe_checksum(file32tmp)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Repair TMP checksum 32\n");
+			return 1;
+		}
+		if (!repair_pe_checksum(file64tmp)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Repair TMP checksum 64\n");
+			return 1;
+		}
 	}
 
-	// 6. Add 32/64 "TMP" to 64/32 "OUT"
+	// 6. Add 32/64 "TMP" to 64/32 "OUT" ("criss-cross")
+	{
+		if (!addToFile(file32out, file32tmp, lpTemplateType, lpName32Plugin, wLanguageEnUs)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Add 32 to 32\n");
+			return 1;
+		}
+		if (!addToFile(file32out, file64tmp, lpTemplateType, lpName64Plugin, wLanguageEnUs)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Add 64 to 32\n");
+			return 1;
+		}
 
-	if (!addToFile(file32out, file32tmp, lpType, lpName32, wLanguage)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Add 32 to 32\n");
-		return 1;
-	}
-	if (!addToFile(file32out, file64tmp, lpType, lpName64, wLanguage)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Add 64 to 32\n");
-		return 1;
-	}
+		if (!addToFile(file64out, file32tmp, lpTemplateType, lpName32Plugin, wLanguageEnUs)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Add 32 to 64\n");
+			return 1;
+		}
 
-	if (!addToFile(file64out, file32tmp, lpType, lpName32, wLanguage)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Add 32 to 64\n");
-		return 1;
-	}
-
-	if (!addToFile(file64out, file64tmp, lpType, lpName64, wLanguage)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Add 64 to 64\n");
-		return 1;
-	}
-
-	// 7. Delete "TMP"
-
-	DeleteFile(file32tmp);
-	DeleteFile(file64tmp);
-
-	// 8. Update timestamp
-
-	if (!update_pe_timestamp(file32out, time(0))) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Update OUT timestamp 32\n");
-		return 1;
+		if (!addToFile(file64out, file64tmp, lpTemplateType, lpName64Plugin, wLanguageEnUs)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Add 64 to 64\n");
+			return 1;
+		}
 	}
 
-	if (!update_pe_timestamp(file64out, time(0))) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Update OUT timestamp 64\n");
-		return 1;
+	// 7a. Read Version Info from 32 bit "TMP", and copy it to 32/64 "OUT" template
+	{
+		HMODULE lib = LoadLibraryEx(file32tmp, NULL, LOAD_LIBRARY_AS_DATAFILE);
+		if (!lib) {
+			printf("Loadlib failed at versioninfo TPLT 32");
+			return 1;
+		}
+		HRSRC resinfo = FindResource(lib, MAKEINTRESOURCE(1), RT_VERSION);
+		if (!resinfo) {
+			printf("FindResource failed at versioninfo TPLT 32");
+			return 1;
+		}
+		size_t cbVersionInfo = SizeofResource(lib, resinfo);
+		HGLOBAL hvinfo = LoadResource(lib, resinfo);
+		if (!hvinfo) {
+			printf("LoadResource failed at versioninfo TPLT 32");
+			return 1;
+		}
+		char* vinfo = (char*)LockResource(hvinfo);
+		char* vinfocpy = (char*)malloc(cbVersionInfo);
+		if (vinfocpy == NULL) return 1;
+		memcpy(vinfocpy, vinfo, cbVersionInfo);
+		UnlockResource(hvinfo);
+		FreeLibrary(lib);
+
+		// Write Version info to TPLT Resource of 32 bit "OUT"
+
+		HANDLE hupd = BeginUpdateResource(file32out, false);
+		UpdateResource(hupd, TEXT("TPLT"), lpName32Version, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), vinfocpy, cbVersionInfo);
+		EndUpdateResource(hupd, false);
+
+		// Write Version info to TPLT Resource of 64 bit "OUT"
+
+		hupd = BeginUpdateResource(file64out, false);
+		UpdateResource(hupd, TEXT("TPLT"), lpName32Version, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), vinfocpy, cbVersionInfo);
+		EndUpdateResource(hupd, false);
+
+		// Free memory
+
+		free(vinfocpy);
 	}
 
-	// 9. Repair checksums
+	// 7b. Read Version Info from 64 bit "TMP", and copy it to 32/64 "OUT" template
+	{
+		HMODULE lib = LoadLibraryEx(file64tmp, NULL, LOAD_LIBRARY_AS_DATAFILE);
+		if (!lib) {
+			printf("Loadlib failed at versioninfo TPLT 64");
+			return 1;
+		}
+		HRSRC resinfo = FindResource(lib, MAKEINTRESOURCE(1), RT_VERSION);
+		if (!resinfo) {
+			printf("FindResource failed at versioninfo TPLT 64");
+			return 1;
+		}
+		size_t cbVersionInfo = SizeofResource(lib, resinfo);
+		HGLOBAL hvinfo = LoadResource(lib, resinfo);
+		if (!hvinfo) {
+			printf("LoadResource failed at versioninfo TPLT 64");
+			return 1;
+		}
+		char* vinfo = (char*)LockResource(hvinfo);
+		char* vinfocpy = (char*)malloc(cbVersionInfo);
+		if (vinfocpy == NULL) return 1;
+		memcpy(vinfocpy, vinfo, cbVersionInfo);
+		UnlockResource(hvinfo);
+		FreeLibrary(lib);
 
-	if (!repair_pe_checksum(file32out)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Repair OUT checksum 32\n");
-		return 1;
-	}
-	if (!repair_pe_checksum(file64out)) {
-		DeleteFile(file32out);
-		DeleteFile(file64out);
-		printf("Error: Repair OUT checksum 64\n");
-		return 1;
+		// Write Version info to TPLT Resource of 32 bit "OUT"
+
+		HANDLE hupd = BeginUpdateResource(file32out, false);
+		UpdateResource(hupd, TEXT("TPLT"), lpName64Version, 1033, vinfocpy, cbVersionInfo);
+		EndUpdateResource(hupd, false);
+
+		// Write Version info to TPLT Resource of 64 bit "OUT"
+
+		hupd = BeginUpdateResource(file64out, false);
+		UpdateResource(hupd, TEXT("TPLT"), lpName64Version, 1033, vinfocpy, cbVersionInfo);
+		EndUpdateResource(hupd, false);
+
+		// Free memory
+
+		free(vinfocpy);
 	}
 
-	// 10. All done!
+	// 8. Delete 32/64 "TMP"
+	{
+		DeleteFile(file32tmp);
+		DeleteFile(file64tmp);
+	}
+
+	// 9. Update timestamp of 32/64 "OUT"
+	{
+		if (!update_pe_timestamp(file32out, time(0))) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Update OUT timestamp 32\n");
+			return 1;
+		}
+
+		if (!update_pe_timestamp(file64out, time(0))) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Update OUT timestamp 64\n");
+			return 1;
+		}
+	}
+
+	// 10. Repair checksums of 32/64 "OUT"
+	{
+		if (!repair_pe_checksum(file32out)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Repair OUT checksum 32\n");
+			return 1;
+		}
+		if (!repair_pe_checksum(file64out)) {
+			DeleteFile(file32out);
+			DeleteFile(file64out);
+			printf("Error: Repair OUT checksum 64\n");
+			return 1;
+		}
+	}
+
+	// 11. All done!
 
 	printf("All OK!\n");
 	return 0;

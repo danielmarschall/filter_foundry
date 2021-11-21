@@ -27,6 +27,11 @@ Fixed problems:
   
 	Fixed in SVN Revision 415.
 
+- The version info of a 64 bit plugin cannot be written using Windows NT 3.51, because the resources could not be loaded from the 64 bit image.
+
+	Fixed in SVN Revision 416: The version info template is now inserted into the 32 bit image as `TPLT` resource.
+	Therefore, the 64 bit image does not need to be read.
+
 Open problems:
 --------------
 
@@ -54,11 +59,6 @@ Open problems:
 - Help button does not work
 
 - WinNT311+351: Preview image is not drawn at dialog box opening. You need to enter something first.
-
-- WinNT311+351: Create 64 bit plugin: Error "Not a valid NT image" at `UpdateVersionInfoWithHandle` (probably doesn't support "Load as Datafile")
-
-- Versioninfo is not adjusted, not even for Win 32 standalone plugins
-	In Win NT 3.51, 32 bit is adjusted, 64 bit not
 
 - Preview pane cannot be panned, because it seems that anything clickable needs to be a pushbutton in Win NT 3.51
 	TODO: implement area as pushbutton?

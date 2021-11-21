@@ -26,4 +26,4 @@
 #include "manifest.rc"
 #include "version_win.rc"
 
-// "1032 TPLT" and "1064 TPLT" will be added by the 3264_mixer tool
+// "1032 TPLT", "1064 TPLT", "3032 TPLT", and "3064 TPLT" will be added by the 3264_mixer tool

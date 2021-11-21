@@ -102,9 +102,15 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	}
 }
 
-void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
+ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	char* soleFilename;
 	LPWSTR changeRequestStr, tmp;
+	ULONG dwError = NOERROR;
+	HRSRC hResInfo;
+	HGLOBAL hg;
+	ULONG size;
+	PVOID pv;
+	BOOL fDiscard = TRUE;
 
 	if (soleFilename = strrchr(dstname, '\\')) {
 		++soleFilename;
@@ -168,11 +174,31 @@ void changeVersionInfo(char* dstname, PARM_T* pparm, HGLOBAL hupdate) {
 
 	tmp += mbstowcs(tmp, "", 1);
 
-	if (UpdateVersionInfoWithHandle(dstname, hupdate, changeRequestStr) != NOERROR) {
-		simplealert(_strdup("UpdateVersionInfoWithHandle failed"));
+	if (hResInfo = FindResourceEx(hDllInstance, "TPLT", MAKEINTRESOURCE(3000 + bits), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)))
+	{
+		if (hg = LoadResource(hDllInstance, hResInfo))
+		{
+			if (size = SizeofResource(hDllInstance, hResInfo))
+			{
+				if (pv = LockResource(hg))
+				{
+					if (UpdateVersionRaw(pv, size, &pv, &size, changeRequestStr))
+					{
+						if (_UpdateResource(hUpdate, RT_VERSION, MAKEINTRESOURCE(1), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), pv, size))
+						{
+							fDiscard = FALSE;
+						}
+
+						LocalFree(pv);
+					}
+				}
+			}
+		}
 	}
 
 	free(changeRequestStr);
+
+	return dwError;
 }
 
 Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
@@ -436,7 +462,9 @@ Boolean doresources(char *dstname, int bits){
 
 				// ====== Change version attributes
 
-				changeVersionInfo(dstname, pparm, hupdate);
+				if (changeVersionInfo(dstname, hupdate, pparm, bits) != NOERROR) {
+					simplealert(_strdup("changeVersionInfo failed"));
+				}
 
 				// ====== Obfuscate pparm!
 
@@ -458,10 +486,8 @@ Boolean doresources(char *dstname, int bits){
 				   multiple languages for the same resource. Therefore, the language "Neutral" was
 				   set in the Scripting.rc file for the resource AETE and PIPL.rc for the resources PIPL. */
 
-				if(_UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0)  // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16032), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, "TPLT" /* note: caps!! */, MAKEINTRESOURCE(16064), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
+				if(
+					   _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_ICON, "CAUTION_ICO", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 //					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
@@ -483,33 +509,29 @@ Boolean doresources(char *dstname, int bits){
 				}
 			}
 
-		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
+			// Here, the file will be saved
+			if (_EndUpdateResource(hupdate, discard)) {
+				if (gdata->obfusc) {
+					// We modify the binary code to replace the deobfuscate-seed from <cObfuscSeed> to <obfuscseed>
 
-		// Here, the file will be saved
-		if (!_EndUpdateResource(hupdate, discard)) {
-			dbglasterror(_strdup("EndUpdateResource"));
-		}
-		else {
-
-			if (gdata->obfusc) {
-				// We modify the binary code to replace the deobfuscate-seed from <cObfuscSeed> to <obfuscseed>
-
-				// First try with alignment "4" (this should be the usual case),
-				// and if that failed, try without alignment ("1").
-				// We only need to set maxamount to "1", because "const volatile" makes sure that
-				// the compiler won't place (inline) it at several locations in the code.
-				if ((binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
-					(binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
-				{
-					dbg("binary_replace_file failed");
-					discard = true;
+					// First try with alignment "4" (this should be the usual case),
+					// and if that failed, try without alignment ("1").
+					// We only need to set maxamount to "1", because "const volatile" makes sure that
+					// the compiler won't place (inline) it at several locations in the code.
+					if ((binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
+						(binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
+					{
+						dbg("binary_replace_file failed");
+						discard = true;
+					}
 				}
-			}
 
-			update_pe_timestamp(dstname, time(0));
+				update_pe_timestamp(dstname, time(0));
 
-			repair_pe_checksum(dstname);
-		}
+				repair_pe_checksum(dstname);
+			}else dbglasterror(_strdup("EndUpdateResource"));
+
+		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);

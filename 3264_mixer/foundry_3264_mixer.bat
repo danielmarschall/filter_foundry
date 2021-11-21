@@ -92,6 +92,7 @@ rem Now start the mixer!
 echo.
 echo Now start the mixer!
 foundry_3264_mixer.exe
+if errorlevel 1 exit /b 1
 echo.
 
 rem Copy back 32 bit to original build dir, to enable debugging in IDE

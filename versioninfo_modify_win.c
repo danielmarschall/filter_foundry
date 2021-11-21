@@ -309,6 +309,10 @@ PVOID NodeStore(RsrcNode* node, PVOID buf, ULONG* pcb) {
 	return x.pv;
 }
 
+// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
+// You can CHANGE values for any given name
+// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
+// You cannot (yet) ADD entries.
 BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULONG* cbNewVersion, PCWSTR changes) {
 	BOOL fOk = FALSE;
 	BOOL changesMade = FALSE;
@@ -404,87 +408,6 @@ BOOL CALLBACK EnumResLangProc(HMODULE hModule, PCTSTR lpszType, PCTSTR lpszName,
 	}
 
 	return TRUE;
-}
-
-// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
-// You can CHANGE values for any given name
-// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
-// You cannot (yet) ADD entries.
-ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes) {
-	HMODULE hmod;
-	ULONG dwError;
-	EnumVerData ctx;
-
-	dwError = NOERROR;
-
-	ctx.changes = changes;
-
-	if (ctx.hUpdate = _BeginUpdateResource(FileName, FALSE))
-	{
-		ctx.fDiscard = TRUE;
-
-		// LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE requires at least Windows Vista, so we use
-		// LOAD_LIBRARY_AS_DATAFILE
-		if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE/*_EXCLUSIVE*/))
-		{
-			if (!EnumResourceLanguages(hmod, RT_VERSION,
-				MAKEINTRESOURCE(VS_VERSION_INFO),
-				(ENUMRESLANGPROC)(void*)EnumResLangProc, (LONG_PTR)&ctx))
-			{
-				dwError = GetLastError();
-			}
-
-			FreeLibrary(hmod);
-		}
-		else
-		{
-			dwError = GetLastError();
-		}
-
-		if (!dwError && !_EndUpdateResource(ctx.hUpdate, ctx.fDiscard))
-		{
-			dwError = GetLastError();
-		}
-	}
-	else
-	{
-		dwError = GetLastError();
-	}
-
-	return dwError;
-}
-
-ULONG UpdateVersionInfoWithHandle(PCTSTR FileName, HANDLE hUpdate, PCWSTR changes) {
-	HMODULE hmod;
-	ULONG dwError;
-	EnumVerData ctx;
-
-	dwError = NOERROR;
-
-	ctx.changes = changes;
-	ctx.hUpdate = hUpdate;
-
-	ctx.fDiscard = TRUE;
-
-	// LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE requires at least Windows Vista, so we use
-	// LOAD_LIBRARY_AS_DATAFILE
-	if (hmod = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE/*_EXCLUSIVE*/))
-	{
-		if (!EnumResourceLanguages(hmod, RT_VERSION,
-			MAKEINTRESOURCE(VS_VERSION_INFO),
-			(ENUMRESLANGPROC)(void*)EnumResLangProc, (LONG_PTR)&ctx))
-		{
-			dwError = GetLastError();
-		}
-
-		FreeLibrary(hmod);
-	}
-	else
-	{
-		dwError = GetLastError();
-	}
-
-	return dwError;
 }
 
 /*

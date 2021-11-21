@@ -20,5 +20,4 @@
 
 #include <windows.h>
 
-ULONG UpdateVersionInfo(PCTSTR FileName, PCWSTR changes);
-ULONG UpdateVersionInfoWithHandle(PCTSTR FileName, HANDLE hUpdate, PCWSTR changes);
+BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULONG* cbNewVersion, PCWSTR changes);

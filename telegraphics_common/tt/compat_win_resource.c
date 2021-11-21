@@ -1464,7 +1464,29 @@ DWORD peRoundUpToAlignment(DWORD dwAlign, DWORD dwVal)
 
     return(dwVal);
 
-} //peRoundUpToAlignment()
+}
+
+ULONGLONG peRoundUpToAlignment64(ULONGLONG dwAlign, ULONGLONG dwVal)
+{
+    // Fix by Fix by Daniel Marschall: Added this function, based on
+    // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+    if (dwAlign)
+    {
+        //do the rounding with bitwise operations...
+
+        //create bit mask of bits to keep
+        //  e.g. if section alignment is 0x1000                        1000000000000
+        //       we want the following bitmask      11111111111111111111000000000000
+        ULONGLONG dwMask = ~(dwAlign - 1);
+
+        //round up by adding full alignment (dwAlign-1 since if already aligned we don't want anything to change),
+        //  then mask off any lower bits
+        dwVal = (dwVal + dwAlign - 1) & dwMask;
+    }
+
+    return(dwVal);
+
+}
 
 static BOOL write_raw_resources(QUEUEDUPDATES* updates)
 {
@@ -1650,7 +1672,7 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
         sec->SizeOfRawData = section_size;
         sec->Misc.VirtualSize = virtual_section_size;
         if (nt->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
-            DWORD pEndOfLastSection, pEndOfLastSectionMem, uCalcSizeOfFile;
+            ULONGLONG pEndOfLastSection, pEndOfLastSectionMem, uCalcSizeOfFile;
 
             nt64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].VirtualAddress = sec->VirtualAddress;
             nt64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_RESOURCE].Size = res_size.total_size;
@@ -1667,9 +1689,9 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             lastsec = get_last_section(write_map->base, mapping_size);
             pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt64->OptionalHeader.ImageBase;
             //NOTE: we are rounding to memory section alignment, not file
-            pEndOfLastSectionMem = peRoundUpToAlignment(nt64->OptionalHeader.SectionAlignment, pEndOfLastSection);
+            pEndOfLastSectionMem = peRoundUpToAlignment64(nt64->OptionalHeader.SectionAlignment, pEndOfLastSection);
             uCalcSizeOfFile = pEndOfLastSectionMem - nt64->OptionalHeader.ImageBase;
-            nt64->OptionalHeader.SizeOfImage = uCalcSizeOfFile;
+            nt64->OptionalHeader.SizeOfImage = (DWORD)uCalcSizeOfFile;
         }
         else {
             DWORD pEndOfLastSection, pEndOfLastSectionMem, uCalcSizeOfFile;
