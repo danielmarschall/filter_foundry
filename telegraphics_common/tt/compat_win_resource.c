@@ -532,6 +532,7 @@ static NTSTATUS get_res_nameA(LPCSTR name, UNICODE_STRING* str)
         _RtlCreateUnicodeStringFromAsciiz(str, name);
 
         // Fix by Daniel Marschall: Added RtlUpcaseUnicodeString for get_res_nameA, like it was done for get_res_nameW
+        // Reported in https://bugs.winehq.org/show_bug.cgi?id=52121
         // RtlUpcaseUnicodeString(str, str, FALSE);
         // For our implementation, this simple inplace function works:
         _InplaceRtlUpcaseUnicodeString(str);
@@ -1145,6 +1146,7 @@ static struct mapping_info* create_mapping(LPCSTR filename, BOOL rw)
     mi->read_write = rw;
 
     // Fix by Daniel Marschall: Changed "0" to "FILE_SHARE_READ | (rw ? FILE_SHARE_WRITE : 0)"
+    // Reported in https://bugs.winehq.org/show_bug.cgi?id=52121
     mi->file = CreateFileA(filename, GENERIC_READ | (rw ? GENERIC_WRITE : 0),
         FILE_SHARE_READ | (rw ? FILE_SHARE_WRITE : 0), NULL, OPEN_EXISTING, 0, 0);
 
@@ -1408,6 +1410,7 @@ static IMAGE_SECTION_HEADER* get_resource_section(void* base, DWORD mapping_size
 static IMAGE_SECTION_HEADER* get_last_section(void* base, DWORD mapping_size)
 {
     // Fix by Fix by Daniel Marschall: Added this function which is required by the "SizeOfImage" field calculation
+    // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
 
     IMAGE_SECTION_HEADER* sec;
     IMAGE_NT_HEADERS* nt;
@@ -1448,6 +1451,7 @@ DWORD peRoundUpToAlignment(DWORD dwAlign, DWORD dwVal)
 {
     // Fix by Fix by Daniel Marschall: Added this function, based on
     // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+    // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
     if (dwAlign)
     {
         //do the rounding with bitwise operations...
@@ -1470,6 +1474,7 @@ ULONGLONG peRoundUpToAlignment64(ULONGLONG dwAlign, ULONGLONG dwVal)
 {
     // Fix by Fix by Daniel Marschall: Added this function, based on
     // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+    // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
     if (dwAlign)
     {
         //do the rounding with bitwise operations...
@@ -1686,6 +1691,7 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             // Fix by Daniel Marschall: Added this calculation of "SizeOfImage".
             // With the original implementation, Windows won't load some images!
             // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+            // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
             lastsec = get_last_section(write_map->base, mapping_size);
             pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt64->OptionalHeader.ImageBase;
             //NOTE: we are rounding to memory section alignment, not file
@@ -1708,6 +1714,7 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             // Fix by Daniel Marschall: Added this calculation of "SizeOfImage".
             // With the original implementation, Windows won't load some images!
             // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
+            // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
             lastsec = get_last_section(write_map->base, mapping_size);
             pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt->OptionalHeader.ImageBase;
             //NOTE: we are rounding to memory section alignment, not file
@@ -1763,6 +1770,7 @@ HANDLE WINAPI WineBeginUpdateResourceA(LPCSTR pFileName, BOOL bDeleteExistingRes
             lstrcpyA(updates->pFileName, pFileName);
 
             // Fix by Daniel Marschall: Changed "GENERIC_READ | GENERIC_WRITE, 0" to "GENERIC_READ, FILE_SHARE_READ"
+            // Reported in https://bugs.winehq.org/show_bug.cgi?id=52121
             file = CreateFileA(pFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
 
             /* if resources are deleted, only the file's presence is checked */
