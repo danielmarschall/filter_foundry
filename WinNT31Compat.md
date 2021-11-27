@@ -26,44 +26,47 @@ Fixed problems:
   some versions of Windows, because the Optional PE Header `SizeOfImage` was calculated wrong.
   
 	Fixed in SVN Revision 415.
+	Reported bug in the Wine code here: https://bugs.winehq.org/show_bug.cgi?id=52119
 
 - The version info of a 64 bit plugin cannot be written using Windows NT 3.51, because the resources could not be loaded from the 64 bit image.
 
 	Fixed in SVN Revision 416: The version info template is now inserted into the 32 bit image as `TPLT` resource.
 	Therefore, the 64 bit image does not need to be read.
 
-Open problems:
---------------
+- `LoadImageA` not found in WinAPI of Windows NT 3.1
+
+	Fixed in SVN Revision 419: We removed the "+" and "-" zoom pictures and replaced them with buttons (including the zoom percentage label),
+	because this looks better in Windows 10, and buttons are more likely to be clicked intuitively.
+	The caution icon is now a subclass of "Button" instead of "STATIC", and the icon is drawn using `BS_OWNERDRAW` and `DrawIcon`.
+	Note that Windows 3.51 does not support static controls to be clicked (probably `SS_NOTIFY` and `STM_CLICKED` is not
+	implemented).
+
+- Windows NT 3.51 clicking the zoom icons and caution icons does not work!
+
+	Fixed in SVN Revision 419: Windows 3.51 does not allow static controls to be clicked.
+	Therefore, the zoom icons and the caution icons are now Buttons classes (or subclasses).
+
+Things couldn't solve yet:
+--------------------------
 
 - WinNT311: "msctls_trackbar32" is not supported by Windows NT 3.1. DialogBoxParamA crashes with the confusing error code "Invalid Cursor Handle".
 	Note: msctls_trackbar32 seems to be defined in COMCTL32.DLL, but Win NT 3.1 has no REGSVR32.EXE, so there can't be any controls added??
-	For now, we added an error message if the class can't be found (SVN Revision 413).
+	For now, we simply remove the sliders by subclassing them from a static control, and let the user enter the numbers via keyboard only (SVN Revision 419).
 	Windows NT 3.51 has COMCTL32.DLL and works perfectly with the trackbars!
 
-- WinNT311: `LoadImageA` not found in WinAPI of Windows NT 3.1 (this is the last unresolved import!) ... how should we draw it? Filter Factory uses DrawIcon on a BUTTON control (BS_OWNERDRAW | WS_CHILD | WS_CLIPSIBLINGS).
-	Remove "Hand Question" cursor in order to use the "Static" class instead of the custom class "CautionIcon"?
-	Windows NT 3.51 has `LoadImageA` and works.
-	TODO: Make call dynamic, so that Windows NT 3.1 can show at least an error message instead of failing silently.
-
-- If hand cursor is not existing in Windows, then use a handpointer located in the resources.
-
-- WinNT311: Icons (+, - and exclamation sign) graphics are broken (probably need low colored icons?)
-
-- Icons (+, - and exclamation sign) are drawn too big (Windows NT 3.1, and also Windows NT 3.51)
-	They are STATIC with SS_ICON. It is probably automatically 32x32
-
-- Windows NT 3.51 clicking the zoom icons does not work!
-	The click event probably only works for Button classes?
-	=> Ok, changed to pushbutton with ownerdraw. Now works
-
-- Help button does not work
-
-- WinNT311+351: Preview image is not drawn at dialog box opening. You need to enter something first.
-
 - Preview pane cannot be panned, because it seems that anything clickable needs to be a pushbutton in Win NT 3.51
-	TODO: implement area as pushbutton?
+	It also doesn't work if the control is `STATIC`
+	It looks like `SS_NOTIFY` and `STN_CLICKED` is not implemented in Win NT 3.5x
 
-Questions:
-----------
+- WinNT351: Help button does not work
+	=> Maybe WinExec helps? But can we open an URL there? Unlikely...
 
-Which CPU architecture is required for OpenWatcom settings? Should we do very low settings 80386?
+- WinNT311+WinNT351: The preview image is not drawn at dialog box opening. You need to enter something first.
+	Nothing seems to work. Already tried doing a `recalc_preview` and `drawpreview` in `WM_SHOWWINDOW`,
+	or sending a message `SendMessage(hDlg, WM_USER + 123, 0, 0);` inside `WM_INITDIALOG`, but the code
+	seems to be executed while the dialog is still hidden (you can see this by showing a messagebox).
+
+Open questions:
+---------------
+
+Which CPU architecture is required for OpenWatcom settings? Should/can we lower the CPU code generation settings in OpenWatcom (80386)?

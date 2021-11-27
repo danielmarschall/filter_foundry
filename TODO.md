@@ -17,6 +17,8 @@ Known bugs
 Minor priority stuff or ideas
 -----------------------------
 
+* Right to the sliders you can enter numbers which are outside the range of 0..255 . Prevent that, please.
+
 * Win95 cannot detect a 64 bit obfuscated filter, because it cannot read the resources. Should there be a different mechanism for detecting an obfuscated filter? (e.g. a signature in PiPL which can be found using binary search?)
 
 * compat_win_resource.c (compatibility for Win9x resource generation): Cannot delete resources, see https://bugs.winehq.org/show_bug.cgi?id=52046

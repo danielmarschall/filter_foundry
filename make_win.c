@@ -110,7 +110,7 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 	HGLOBAL hg;
 	ULONG size;
 	PVOID pv;
-	BOOL fDiscard = TRUE;
+	//BOOL fDiscard = TRUE;
 
 	if (soleFilename = strrchr(dstname, '\\')) {
 		++soleFilename;
@@ -186,11 +186,13 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 					{
 						if (_UpdateResource(hUpdate, RT_VERSION, MAKEINTRESOURCE(1), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), pv, size))
 						{
-							fDiscard = FALSE;
+							//fDiscard = FALSE;
 						}
-
-						LocalFree(pv);
+						else {
+							//dwError = GetLastError();
+						}
 					}
+					LocalFree(pv);
 				}
 			}
 		}

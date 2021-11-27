@@ -121,14 +121,14 @@ void updatezoom(DIALOGREF dp){
 	char s[10];
 	sprintf(s, "%d%%", (int)(100./zoomfactor));
 	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
-	if(zoomfactor > 1.)
-		ShowDialogItem(dp,ZOOMINITEM);
+	if (zoomfactor > 1.)
+		ENABLEDLGITEM(dp, ZOOMINITEM);   // ShowDialogItem(dp,ZOOMINITEM);
 	else
-		HideDialogItem(dp,ZOOMINITEM);
+		DISABLEDLGITEM(dp, ZOOMINITEM);  // HideDialogItem(dp, ZOOMINITEM);
 	if(zoomfactor < fitzoom)
-		ShowDialogItem(dp,ZOOMOUTITEM);
+		ENABLEDLGITEM(dp, ZOOMOUTITEM);  // ShowDialogItem(dp,ZOOMOUTITEM);
 	else
-		HideDialogItem(dp,ZOOMOUTITEM);
+		DISABLEDLGITEM(dp, ZOOMOUTITEM); // HideDialogItem(dp,ZOOMOUTITEM);
 }
 
 /* traverse expression tree, looking for constant references to sliders/maps */
@@ -311,9 +311,9 @@ void maindlginit(DIALOGREF dp){
 
 		updatezoom(dp);
 	}else{
-		HideDialogItem(dp,ZOOMINITEM);
-		HideDialogItem(dp,ZOOMOUTITEM);
-		HideDialogItem(dp,ZOOMLEVELITEM);
+		DISABLEDLGITEM(dp, ZOOMINITEM);    // HideDialogItem(dp,ZOOMINITEM);
+		DISABLEDLGITEM(dp, ZOOMOUTITEM);   // HideDialogItem(dp,ZOOMOUTITEM);
+		DISABLEDLGITEM(dp, ZOOMLEVELITEM); // HideDialogItem(dp,ZOOMLEVELITEM);
 	}
 
 	updatedialog(dp);

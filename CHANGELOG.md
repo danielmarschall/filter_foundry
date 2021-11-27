@@ -4,10 +4,15 @@
 - Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.
 - The released 32-bit version is now optimized by the compiler.
 - Updated documentation.
-- Windows 95, 98 and Me can now also build 64-bit modules.
+- Plugin is now compatible with Windows NT 3.5x. (Just a few tiny incompatibilities: Preview image cannot be panned, Help button does not work, and preview image is not drawn directly after dialog opening).
+- Plugin is now compatible with Windows NT 3.1 (But sliders are not available, in addition to the incompatibilities of the Windows NT 3.5x release).
+- Windows NT 3.1, 3.5x, 95, 98, and Me can now also build 64-bit modules.
 - Bugfix: When you saved a AFS or PFF file, you received a wrong information about PluginCommander TXT files.
 - Bugfix: Trying to open a protected filter now correctly displays the message "Filter is protected" again, instead of "No filter detected".
 - If you click "Make" after the make dialog has been opened once, your previous input will be shown again.
+- Zoom in, zoom out and zoom level label are now buttons (in the default OS style) rather than images and text. (*)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
 ## 1.7.0.12 [06-Nov-2021]
 - Added possibility to load and save PluginCommander TXT files.

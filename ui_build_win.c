@@ -65,7 +65,7 @@ Boolean builddialog(FilterRecordPtr pb){
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(ID_BUILDDLG),
 	                     gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,builddlgproc,0);
 	if (res == 0) {
-		simplealert("DialogBoxParam in valid parent window handle");
+		simplealert(_strdup("DialogBoxParam in valid parent window handle"));
 	}
 	if (res == -1) {
 		char s[100];

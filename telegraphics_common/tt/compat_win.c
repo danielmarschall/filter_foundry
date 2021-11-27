@@ -96,7 +96,6 @@ BOOL _EndUpdateResource/*A*/(
 ) {
 	if (Implements3264ResourceAPI()) {
 		return EndUpdateResourceA(hUpdate, fDiscard);
-
 	} else {
 		return WineEndUpdateResourceA(hUpdate, fDiscard);
 	}
@@ -114,8 +113,6 @@ BOOL _UpdateResource/*A*/(
 ) {
 	if (Implements3264ResourceAPI()) {
 		return UpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
-
-
 	} else {
 		return WineUpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 	}

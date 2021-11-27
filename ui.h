@@ -63,8 +63,6 @@
 #define ID_TEXTCTL 16001
 
 #define ID_CAUTIONPICT 16000
-#define ID_ZOOMINPICT 16001
-#define ID_ZOOMOUTPICT 16002
 #define ID_HANDCURSOR 16000
 
 /* --- constants for terminology (scripting) resource */

@@ -34,8 +34,9 @@
 HWND preview_hwnd;
 HCURSOR hCurHandOpen;
 HCURSOR hCurHandGrab;
+
 HCURSOR hCurHandQuestion;
-HCURSOR hCurHandPoint;
+HICON hIconCautionSign;
 
 extern HINSTANCE hDllInstance;
 
@@ -182,7 +183,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
-	switch(wMsg){
+	switch (wMsg) {
 	case WM_INITDIALOG:
 		gdata->hWndMainDlg = hDlg;
 
@@ -196,31 +197,24 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		hCurHandOpen = LoadCursor(hDllInstance, "HAND_OPEN");
 		hCurHandGrab = LoadCursor(hDllInstance, "HAND_GRAB");
 		hCurHandQuestion = LoadCursor(hDllInstance, "HAND_QUESTION");
-		hCurHandPoint = LoadCursor(NULL, IDC_HAND);
 
+		hIconCautionSign = LoadIcon(hDllInstance, "CAUTION_ICO");
+
+		// Note: The whole class "Preview" gets the mouse cursor, not just the single item!
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
 		GetClientRect(preview_hwnd, &preview_rect);
 		SetClassLongPtr(preview_hwnd, GCLP_HCURSOR, (LONG_PTR)hCurHandOpen);
 
+		// Note: The whole class "Caution" gets the mouse cursor, not just the single item!
 		SetClassLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandQuestion);
 
 		for(i = 0; i < 4; ++i){
-			// If Visual Themes are applied, SS_ICON will be ignored for controls which are not exactly "STATIC" class.
-			// Our derivated "CautionSign" class won't work. So we need to set the icon explicitly.
-			SendDlgItemMessage(hDlg, FIRSTICONITEM+i, STM_SETICON, (WPARAM)LoadImage(hDllInstance, "CAUTION_ICO",IMAGE_ICON,16,16, LR_DEFAULTCOLOR), 0);
-			CreateToolTip(FIRSTICONITEM + i, hDlg, _strdup("Syntax error! Click to see details."));
+			CreateToolTip(FIRSTICONITEM + i, hDlg, _strdup("Error in expression! Click to see details."));
 		}
 
 		CreateToolTip(ZOOMINITEM, hDlg, _strdup("Zoom in"));
 		CreateToolTip(ZOOMOUTITEM, hDlg, _strdup("Zoom out"));
 		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Fully zoom in/out"));
-
-		// Note: Actually, the whole class gets the cursor, not just these three controls!!
-		if (hCurHandPoint) {
-			SetClassLongPtr(GetDlgItem(hDlg, ZOOMINITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
-			SetClassLongPtr(GetDlgItem(hDlg, ZOOMOUTITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
-			SetClassLongPtr(GetDlgItem(hDlg, ZOOMLEVELITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandPoint);
-		}
 
 		for(i = 0; i < 8; ++i){
 			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
@@ -240,6 +234,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		DestroyCursor(hCurHandOpen);
 		DestroyCursor(hCurHandGrab);
 		DestroyCursor(hCurHandQuestion);
+		DestroyIcon(hIconCautionSign);
 		break;
 	case WM_DRAWITEM:
 		pdi = (DRAWITEMSTRUCT*)lParam;
@@ -248,6 +243,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			case PREVIEWITEM:
 				drawpreview(hDlg,pdi->hDC,PILOCKHANDLE(preview_handle,false));
 				PIUNLOCKHANDLE(preview_handle);
+				break;
+			case FIRSTICONITEM:
+			case FIRSTICONITEM + 1:
+			case FIRSTICONITEM + 2:
+			case FIRSTICONITEM + 3:
+				DrawIcon(pdi->hDC, 0, 0, hIconCautionSign);
 				break;
 			default:
 				return false;
@@ -258,7 +259,11 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		item = LOWORD(wParam);
 		switch(HIWORD(wParam)){
-		case BN_CLICKED: //case STN_CLICKED:
+		//case BN_CLICKED:
+		case STN_CLICKED:
+			// BN_CLICKED = Button clicked
+			// STN_CLICKED = Static controls with SS_NOTIFY clicked
+			// Both have the same ordinal number
 			if(item==PREVIEWITEM && GetCursorPos(&origpos)){
 				panning = true;
 				origscroll = preview_scroll;
@@ -266,7 +271,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 				SetCapture(hDlg);
 				break;
 			}
-			/* ... falls through ... */
+		/* ... falls through ... */
 		case EN_CHANGE:
 			if(doupdates && !maindlgitem(hDlg,item))
 				EndDialog(hDlg,item);
@@ -309,11 +314,23 @@ Boolean maindialog(FilterRecordPtr pb){
 	// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
 	// there seems no possibility to support this version of Windows at this point.
 	if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) == 0) {
-		simplealert("This plugin requires the Microsoft Trackbar Control (msctls_trackbar32) which is not found on your system.");
-		return false;
+		//simplealert(_strdup("This plugin requires the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
+		//return false;
+
+		// We simply hide the sliders and let the user enter the numeric values in the edit-box.
+		// At least the plugin runs on Windows NT 3.1 !
+		simplewarning(_strdup("Visual sliders are not available because the Microsoft Trackbar Control (msctls_trackbar32) was not found on your system."));
+		GetClassInfo(hDllInstance, "STATIC", &clx);
+		clx.lpszClassName = "msctls_trackbar32";
+		if (RegisterClass(&clx) == 0) {
+			char s[100];
+			strcpy(s, "RegisterClass failed: ");
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+			dbg(s);
+		}
 	}
 
-	// For the preview image, we register a class, so that we can assign a mouse cursor to this class.
+	// For the preview image and caution symbols, we register a class, so that we can assign a mouse cursor to this class.
 	GetClassInfo(hDllInstance, "STATIC", &clx);
 	clx.lpszClassName = "Preview";
 	if (RegisterClass(&clx) == 0) {
@@ -322,10 +339,8 @@ Boolean maindialog(FilterRecordPtr pb){
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
 		dbg(s);
 	}
-
-	// For the caution images, we register a class, so that we can assign a mouse cursor to this class.
-	GetClassInfo(hDllInstance, "STATIC", &clx);
-	clx.lpszClassName = "CautionSign";
+	GetClassInfo(hDllInstance, "Button", &clx);
+	clx.lpszClassName = "Caution";
 	if (RegisterClass(&clx) == 0) {
 		char s[100];
 		strcpy(s, "RegisterClass failed: ");
@@ -335,10 +350,12 @@ Boolean maindialog(FilterRecordPtr pb){
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
+
+	// Note: "Invalid Cursor Handle" is the error when an unrecognized control class is detected
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
-		simplealert("DialogBoxParam in valid parent window handle");
+		simplealert(_strdup("DialogBoxParam in valid parent window handle"));
 	}
 	if (res == -1) {
 		char s[100];
@@ -349,7 +366,7 @@ Boolean maindialog(FilterRecordPtr pb){
 
 	// Clean up after the dialog has been closed
 	UnregisterClass("Preview", hDllInstance);
-	UnregisterClass("CautionSign", hDllInstance);
+	UnregisterClass("Caution", hDllInstance);
 
 	return res == IDOK;
 }

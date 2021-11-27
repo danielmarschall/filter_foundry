@@ -41,6 +41,7 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 Operating systems:
 
 -   Windows 95, 98, Me, NT4, 2000, XP, Vista, 7, 8, 8.1, 10, and 11 are fully compatible (32- and 64-bit)
+-   Windows NT 3.1 (without slider support or preview panning), Windows NT 3.5x (without preview panning)
 -   Linux using the emulator "Wine" is supported
 -   Macintosh is currently not supported
 
@@ -49,15 +50,15 @@ Operating systems:
 
 Filter Foundry support a variety of different file formats:
 
-| File ext. | Description                                                                        |Make  |Save  |Load  |
-|-----------|------------------------------------------------------------------------------------|------|------|------|
-|AFS or TXT |Parameter file created by Filter Foundry or Filter Factory for Adobe Photoshop.     |      |Yes   |Yes   |
-|8BF        |Adobe Photoshop plugin created by Filter Factory or Filter Foundry for Photoshop.   |Yes   |      |Yes(1)|
-|PFF        |Parameter file created by Filter Factory or Transaction Factory for Adobe Premiere. |      |Yes   |Yes   |
-|PRM        |Adobe Premiere plugin created by Filter/Transaction Factory for Adobe Premiere.     |      |      |Yes   |
-|FFX        |"Filters Unlimited" file.                                                           |      |      |Yes(2)|
-|TXT        |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
-|BIN        |Standalone filter created by Filter Factory/Foundry for Mac.                        |      |      |Yes   |
+| File ext.  | Description                                                                        |Make  |Save  |Load  |
+|------------|------------------------------------------------------------------------------------|------|------|------|
+|AFS or TXT  |Parameter file created by Filter Foundry or Filter Factory for Adobe Photoshop.     |      |Yes   |Yes   |
+|8BF         |Adobe Photoshop plugin created by Filter Factory or Filter Foundry for Photoshop.   |Yes   |      |Yes(1)|
+|PFF         |Parameter file created by Filter Factory or Transaction Factory for Adobe Premiere. |      |Yes   |Yes   |
+|PRM         |Adobe Premiere plugin created by Filter/Transaction Factory for Adobe Premiere.     |      |      |Yes   |
+|FFX         |"Filters Unlimited" file.                                                           |      |      |Yes(2)|
+|TXT         |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
+|BIN or RSRC |Standalone filter created by Filter Factory/Foundry for Mac.                        |      |      |Yes   |
 
 (1) Loading is only possible if the 8BF file was created by Filter Factory, or by Filter Foundry without protection.
 
