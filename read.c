@@ -63,7 +63,7 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 		if(c==CR || c==LF){ /* detected end of line */
 
 			/* look ahead to see if we need to skip a line feed (DOS EOL convention) */
-			if(c == CR && *p == LF && p < dataend)
+			if(c == CR && c == LF && p < dataend)
 				++p;
 
 			linebuf[lineptr] = 0; /* add terminating NUL to line buffer */

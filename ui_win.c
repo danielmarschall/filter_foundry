@@ -308,6 +308,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	WNDCLASS clx;
 	INT_PTR res;
+	Boolean fakeTrackbar = 0;
 
 	// ALL Versions of Windows show the confusing error message "Invalid Cursor Handle" when DialogBoxParamA
 	// tries to open a dialog with a control which class is unknown.
@@ -327,6 +328,8 @@ Boolean maindialog(FilterRecordPtr pb){
 			strcpy(s, "RegisterClass failed: ");
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
 			dbg(s);
+		} else {
+			fakeTrackbar = 1;
 		}
 	}
 
@@ -367,6 +370,9 @@ Boolean maindialog(FilterRecordPtr pb){
 	// Clean up after the dialog has been closed
 	UnregisterClass("Preview", hDllInstance);
 	UnregisterClass("Caution", hDllInstance);
+	if (fakeTrackbar) {
+		UnregisterClass("msctls_trackbar32", hDllInstance);
+	}
 
 	return res == IDOK;
 }
