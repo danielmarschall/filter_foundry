@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* Make some parts of the code Unicode aware. Note that Photoshop itself (PIPL etc) doesn't seem to be Unicode aware, and PARM is also not Unicode aware. So the Title/Category/... stays ANSI! But we should allow that filters are loaded/saved from File Dialogs that can read/save Unicode folder names.
 
 
 Known bugs

@@ -78,6 +78,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		// char* debug = malloc(2000);
 		// sprintf(debug, "getAeteKey %c with title %s/%s in STANDALONE PLUGIN", c, parm->szTitle, parm->szCategory);
 		// simplealert(debug);
+		// free(debug);
 
 		// Use random AETE keys, because AppleScript has a global namespace
 		// and therefore requires unique AETE keys
@@ -95,6 +96,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		// char* debug = malloc(2000);
 		// sprintf(debug, "getAeteKey %c in MAIN PLUGIN", c);
 		// simplealert(debug);
+		// free(debug);
 
 		// Attention: AETE keys (xpr#, cTl#) must be equal in scripting.r, scripting.rc and scripting.c(getAeteKey)!
 		if (c == 'R') return 'xprR';
@@ -122,15 +124,19 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 		if (token) {
 			while (PIGetKey(token, &key, &type, &flags)) {
 				if (key == getAeteKey('R', gdata->standalone ? &gdata->parm : NULL)) {
+					if (expr[0]) free(expr[0]);
 					expr[0] = get_cstring(token);
 				}
 				else if (key == getAeteKey('G', gdata->standalone ? &gdata->parm : NULL)) {
+					if (expr[1]) free(expr[1]);
 					expr[1] = get_cstring(token);
 				}
 				else if (key == getAeteKey('B', gdata->standalone ? &gdata->parm : NULL)) {
+					if (expr[2]) free(expr[2]);
 					expr[2] = get_cstring(token);
 				}
 				else if (key == getAeteKey('A', gdata->standalone ? &gdata->parm : NULL)) {
+					if (expr[3]) free(expr[3]);
 					expr[3] = get_cstring(token);
 				}
 				else {

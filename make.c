@@ -169,7 +169,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 	unsigned long hash;
 	size_t realLength;
 	size_t roundedLength;
-	char* scope;
+	char szScope[0x300];
 
 	pipl->count += 3; // 3 more keys in PiPL: name, catg, hstm
 
@@ -206,9 +206,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 
 	hstm = (struct hstm_data*)prop->propertyData;
 
-	scope = (char*)malloc(0x300);
-	if (!scope) return -1;
-	sprintf(scope, "%s %s",
+	sprintf(szScope, "%s %s",
 	    gdata->parm.szCategory,
 	    title);
 
@@ -223,12 +221,12 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 	// Note: In doresources() we malloc'ed 300h additional bytes,
 	// and in the build dialog, title and category are size-limited,
 	// so we can write here without malloc.
-	scopelen = strlen(scope);
-	memcpy(&hstm->scope, scope, scopelen);
+	scopelen = strlen(&szScope);
+	memcpy(&hstm->scope, &szScope, scopelen);
 	#endif
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
-	hash = djb2(scope);
+	hash = djb2(szScope);
 	*event_id = printablehash(hash); /* this is used by aete_generate() later... */
 
 	prop->vendorID = kPhotoshopSignature;

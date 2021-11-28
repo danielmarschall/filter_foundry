@@ -146,6 +146,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	tmp = (char*)malloc(512);
 	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
 	simplealert(tmp);
+	free(tmp);
 	#endif
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
@@ -215,10 +216,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		*data = (intptr_t)malloc(sizeof(globals_t));
 		if (*data == 0) return;
 		gdata = (globals_t*)*data;
-		#ifdef _WIN32
-		gdata->pluginDllSliderMessageId = 0;
-		#endif
-		gdata->standalone = gdata->parmloaded = false; // they will be set later
+		//#ifdef _WIN32
+		//gdata->pluginDllSliderMessageId = 0;
+		//#endif
+		//gdata->standalone = gdata->parmloaded = false; // they will be set later
+		memset(gdata, 0, sizeof(globals_t));
 	}
 	else {
 		// We have data from the previous invocation. Use it instead
