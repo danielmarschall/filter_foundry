@@ -400,7 +400,7 @@ Boolean doresources(char *dstname, int bits){
 	size_t piplsize,aetesize,origsize;
 	char title[256];
 	LPCTSTR parm_type;
-	LPCSTR parm_id;
+	LPCTSTR parm_id;
 	Boolean discard = true;
 	uint64_t obfuscseed = 0;
 	long event_id;
@@ -510,6 +510,8 @@ Boolean doresources(char *dstname, int bits){
 					dbglasterror(_strdup("UpdateResource"));
 				}
 			}
+
+			free(newmanifest);
 
 			// Here, the file will be saved
 			if (_EndUpdateResource(hupdate, discard)) {
