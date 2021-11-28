@@ -66,6 +66,7 @@ typedef struct{
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
+	DWORD pluginDllSliderMessageId;
 	#endif /* _WIN32 */
 } globals_t;
 

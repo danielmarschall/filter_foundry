@@ -41,7 +41,7 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 Operating systems:
 
 -   Windows 95, 98, Me, NT4, 2000, XP, Vista, 7, 8, 8.1, 10, and 11 are fully compatible (32- and 64-bit)
--   Windows NT 3.1 (without slider support or preview panning), Windows NT 3.5x (without preview panning)
+-   Windows NT 3.1 and Windows NT 3.5x (without preview panning and help button does not work)
 -   Linux using the emulator "Wine" is supported
 -   Macintosh is currently not supported
 

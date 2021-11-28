@@ -67,6 +67,11 @@ void updatedialog(DIALOGREF dp){
 /* copy dialog settings to global variables (sliders, expressions) */
 
 void updateglobals(DIALOGREF dp){
+
+	// DM 28 Nov 2021: Removed this function. It makes no sense! The internal state is in the memory
+	// and the dialog is only the view!
+
+	/*
 	int i;
 	char s[MAXEXPR+1];
 
@@ -75,7 +80,7 @@ void updateglobals(DIALOGREF dp){
 
 	if(!gdata->standalone)
 		for(i = 0; i < 4; ++i){
-			/* stash expression strings */
+			// stash expression strings
 			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){
 				if(expr[i])
 					free(expr[i]);
@@ -84,6 +89,7 @@ void updateglobals(DIALOGREF dp){
 			if(!expr[i])
 				expr[i] = _strdup("c");
 		}
+	*/
 }
 
 struct node *updateexpr(DIALOGREF dp,int item){
@@ -201,11 +207,13 @@ void maindlgupdate(DIALOGREF dp){
 
 	for(i = 0; i < 8; i++)
 		if(unknown || ctls[i]){
-			ENABLEDLGITEM(dp,FIRSTCTLITEM+i);
+			ENABLEDLGITEM(dp,FIRSTCTLITEM+i); // TODO: slider is still shown as disabled
+			REPAINTCTL(dp, FIRSTCTLITEM + i); // required for PLUGIN.DLL sliders
 			ENABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			ShowDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}else{
 			DISABLEDLGITEM(dp,FIRSTCTLITEM+i);
+			REPAINTCTL(dp,FIRSTCTLITEM+i); // required for PLUGIN.DLL sliders
 			DISABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			HideDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}

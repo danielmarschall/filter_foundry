@@ -11,8 +11,10 @@ ToDo for the next release
 Known bugs
 ----------
 
-(None)
-
+* SEVERE: After working with Filter Foundry for a short amount of time (working with sliders, applying, opening again, changing sliders, etc.), the file save dialog (Make dialog) will corrupt the memory!!! You notice it by seeing that icons and folder icons are missing! Later, the program might even crash! (Verified with 1.7.0.12, verified with Visual Studio and OpenWatcom) Application Verifier does not report anything bad.
+	You can also corrupt the memory by often applying filters and building and doing stuff. And at some point you get the error that preview cannot be shown because memory is out???
+	Do we have a leak???
+	Smashing Ctrl+F does not cause a leak
 
 Minor priority stuff or ideas
 -----------------------------
@@ -123,8 +125,6 @@ Design/UI Tweaks
 * The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac). Unfortunately, this task is very hard in WIN32 API.
 
 * Should there be more (visual) space for expressions, like in Filter Factory? Also, Filter Factory had more visual space for slider names (e.g. required in Alf's Power Tools).
-
-* Sliders are extremely tiny!
 
 * With some canvas formats, the initial zoom level is not "fully zoomed out"
 

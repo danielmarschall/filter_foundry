@@ -65,6 +65,8 @@
 	#define GETCTLTEXTINT getctltextint
 	#define SETCTLTEXTINT setctltextint
 	#define SELECTCTLTEXT selectctltext
+	// TODO
+	#define REPAINTCTL(d,i)
 
 /*
 	#define ENABLECONTROL(d,i) \
@@ -173,13 +175,17 @@
 	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
 	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
-	#define GETSLIDERVALUE(d,i) (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
-	#define SETSLIDERVALUE(d,i,v) SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
+	extern int SetSliderPos(HWND hWnd, int nPos, int unknown);
+	extern int GetSliderPos(HWND hWnd, int unknown);
+
+	#define GETSLIDERVALUE(d,i) GetSliderPos(GetDlgItem((d),(i)),1) + (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
+	#define SETSLIDERVALUE(d,i,v) SetSliderPos(GetDlgItem((d),(i)),(v),1);SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
 	#define GETCTLTEXT GetDlgItemText
 	#define SETCTLTEXT SetDlgItemText
 	#define SELECTCTLTEXT SELECTDLGITEMTEXT
 	#define GETCTLTEXTINT GetDlgItemInt
 	#define SETCTLTEXTINT SetDlgItemInt
+	#define	REPAINTCTL(d,i) InvalidateRect(GetDlgItem(d, i), NULL, TRUE);UpdateWindow(GetDlgItem(d, i));
 
 	#define SETMENUCURSEL ComboBox_SetCurSel
 	#define GETMENUCURSEL ComboBox_GetCurSel

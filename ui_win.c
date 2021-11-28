@@ -31,12 +31,92 @@
 
 #include "version.h"
 
+//#define force_msctls_trackbar32
+
 HWND preview_hwnd;
 HCURSOR hCurHandOpen;
 HCURSOR hCurHandGrab;
 
 HCURSOR hCurHandQuestion;
 HICON hIconCautionSign;
+
+// Only for Photoshop PLUGIN.DLL
+HMODULE hPluginDllLib = NULL;
+DWORD sliderMsgID = 0;
+
+// This method will register the "slider" class used in dialogs.
+typedef int(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
+int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
+	f_RegisterSlider fRegisterSlider;
+
+	if (!hPluginDllLib) return 0;
+	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(hPluginDllLib, "RegisterSlider");
+	if (fRegisterSlider != 0) {
+		return fRegisterSlider(hInstanceDll, MessageID);
+	}
+	else {
+		return 0;
+	}
+}
+
+// This method will unregister the "slider" class used in dialogs.
+typedef int(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
+int UnregisterSlider(HINSTANCE hInstanceDll) {
+	f_UnregisterSlider fUnregisterSlider;
+
+	if (!hPluginDllLib) return 0;
+	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(hPluginDllLib, "UnregisterSlider");
+	if (fUnregisterSlider != 0) {
+		return fUnregisterSlider(hInstanceDll);
+	}
+	else {
+		return 0;
+	}
+}
+
+typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
+int SetSliderRange(HWND hWnd, int nMin, int nMax) {
+	f_SetSliderRange fSetSliderRange;
+
+	if (!hPluginDllLib) return 0;
+	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(hPluginDllLib, "SetSliderRange");
+	if (fSetSliderRange != 0) {
+		return fSetSliderRange(hWnd, nMin, nMax);
+	}
+	else {
+		return 0;
+	}
+}
+
+typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, int unknown);
+int SetSliderPos(HWND hWnd, int nPos, int unknown) {
+	f_SetSliderPos fSetSliderPos;
+
+	if (!hPluginDllLib) return 0;
+	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(hPluginDllLib, "SetSliderPos");
+	if (fSetSliderPos != 0) {
+		return fSetSliderPos(hWnd, nPos, unknown);
+	}
+	else {
+		return 0;
+	}
+}
+
+typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, int unknown);
+int GetSliderPos(HWND hWnd, int unknown) {
+	f_GetSliderPos fGetSliderPos;
+
+	if (!hPluginDllLib) return 0;
+	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(hPluginDllLib, "GetSliderPos");
+	if (fGetSliderPos != 0) {
+		// TODO: wrong value??? 100 becomes 63!!!
+		int res = fGetSliderPos(hWnd, unknown);
+		return res;
+	}
+	else {
+		return 0;
+	}
+}
 
 extern HINSTANCE hDllInstance;
 
@@ -165,10 +245,6 @@ HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
 	return hwndTip;
 }
 
-#ifndef IDC_HAND
-#define IDC_HAND            MAKEINTRESOURCE(32649)
-#endif
-
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
 	static Point origscroll;
@@ -182,6 +258,21 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	extern Boolean doupdates;
 	extern Handle preview_handle;
+
+	if ((sliderMsgID != 0) && (wMsg == sliderMsgID)) {
+		// This is for the PLUGIN.DLL sliders only
+		if (doupdates) {
+			int sliderNum = wParam - FIRSTCTLITEM;
+			uint8_t sliderVal = (uint8_t)(lParam & 0xFFFF);
+			slider[sliderNum] = sliderVal;
+
+			SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
+			REPAINTCTL(hDlg, FIRSTCTLTEXTITEM + sliderNum);
+
+			recalc_preview(gpb, hDlg);
+		}
+		return true;
+	}
 
 	switch (wMsg) {
 	case WM_INITDIALOG:
@@ -217,9 +308,17 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Fully zoom in/out"));
 
 		for(i = 0; i < 8; ++i){
-			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETRANGE,TRUE,MAKELONG(0,255));
-			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETTICFREQ,SLIDERPAGE,0);
-			SendDlgItemMessage(hDlg,FIRSTCTLITEM+i,		TBM_SETPAGESIZE,0,SLIDERPAGE);
+			if (sliderMsgID == 0) {
+				// Non PLUGIN.DLL sliders
+				SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLITEM + i), GWL_STYLE, TBS_HORZ | TBS_AUTOTICKS | WS_CHILD | WS_VISIBLE);
+				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETRANGE, TRUE, MAKELONG(0, 255));
+				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETTICFREQ, SLIDERPAGE, 0);
+				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETPAGESIZE, 0, SLIDERPAGE);
+			}
+			else {
+				// PLUGIN.DLL sliders
+				SetSliderRange(GetDlgItem(hDlg, FIRSTCTLITEM + i), 0, 255);
+			}
 			SendDlgItemMessage(hDlg,FIRSTCTLTEXTITEM+i,	EM_SETLIMITTEXT,3,0);
 		}
 		for(i = 0; i < 4; ++i){
@@ -268,7 +367,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 				panning = true;
 				origscroll = preview_scroll;
 				SetCursor(hCurHandGrab);
-				SetCapture(hDlg);
+				SetCapture(hDlg);		
 				break;
 			}
 		/* ... falls through ... */
@@ -293,8 +392,9 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		panning = false;
 		break;
 	case WM_HSCROLL:
+		// Only for non-Plugin.dll-sliders
 		item = GetDlgCtrlID((HWND)lParam);
-		if(doupdates && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
+		if(doupdates && sliderMsgID == 0 && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
 			slidermoved(hDlg,item);
 		break;
 	default:
@@ -308,28 +408,62 @@ Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	WNDCLASS clx;
 	INT_PTR res;
-	Boolean fakeTrackbar = 0;
 
-	// ALL Versions of Windows show the confusing error message "Invalid Cursor Handle" when DialogBoxParamA
-	// tries to open a dialog with a control which class is unknown.
-	// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
-	// there seems no possibility to support this version of Windows at this point.
-	if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) == 0) {
-		//simplealert(_strdup("This plugin requires the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
-		//return false;
-
-		// We simply hide the sliders and let the user enter the numeric values in the edit-box.
-		// At least the plugin runs on Windows NT 3.1 !
-		simplewarning(_strdup("Visual sliders are not available because the Microsoft Trackbar Control (msctls_trackbar32) was not found on your system."));
-		GetClassInfo(hDllInstance, "STATIC", &clx);
-		clx.lpszClassName = "msctls_trackbar32";
+	// Register the FoundrySlider control class
+	#ifdef force_msctls_trackbar32
+	hPluginDllLib = 0;
+	#else
+	hPluginDllLib = LoadLibraryA("PLUGIN.DLL");
+	#endif
+	RegisterSlider(hDllInstance, &sliderMsgID); // PLUGIN.DLL (only Photoshop) registers the class "slider"
+	if (sliderMsgID == 0) {
+		// There is some kind of bug: When you re-open the window, the second call of RegisterSlider will not set sliderMsgId!
+		// So we take the one from the last session
+		// TODO: find out why this happens!
+		sliderMsgID = gdata->pluginDllSliderMessageId;
+	}
+	else {
+		gdata->pluginDllSliderMessageId = sliderMsgID;
+	}
+	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
+		clx.lpszClassName = "FoundrySlider";
 		if (RegisterClass(&clx) == 0) {
 			char s[100];
 			strcpy(s, "RegisterClass failed: ");
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
 			dbg(s);
-		} else {
-			fakeTrackbar = 1;
+		}
+	}
+	else if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) != 0) {
+		// We couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop)
+		// Try the Microsoft Trackbar Control instead
+		clx.lpszClassName = "FoundrySlider";
+		if (RegisterClass(&clx) == 0) {
+			char s[100];
+			strcpy(s, "RegisterClass failed: ");
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+			dbg(s);
+		}
+	}
+	else {
+		// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32)
+		// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
+		// there seems no possibility to support this version of Windows at this point.
+		// It is included in Windows NT 3.5x
+
+		//simplealert(_strdup("This plugin requires Photoshop's PLUGIN.DLL or the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
+		//return false;
+
+		// We simply hide the sliders and let the user enter the numeric values in the edit-box.
+		// At least the plugin runs on Windows NT 3.1 !
+		simplewarning(_strdup("Visual sliders are not available because neither PLUGIN.DLL nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
+		GetClassInfo(hDllInstance, "STATIC", &clx);
+		clx.lpszClassName = "FoundrySlider";
+		if (RegisterClass(&clx) == 0) {
+			char s[100];
+			strcpy(s, "RegisterClass failed: ");
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+			dbg(s);
 		}
 	}
 
@@ -370,8 +504,12 @@ Boolean maindialog(FilterRecordPtr pb){
 	// Clean up after the dialog has been closed
 	UnregisterClass("Preview", hDllInstance);
 	UnregisterClass("Caution", hDllInstance);
-	if (fakeTrackbar) {
-		UnregisterClass("msctls_trackbar32", hDllInstance);
+	UnregisterClass("FoundrySlider", hDllInstance);
+	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
+		UnregisterSlider(hDllInstance);
+	}
+	if (hPluginDllLib) {
+		FreeLibrary(hPluginDllLib);
 	}
 
 	return res == IDOK;

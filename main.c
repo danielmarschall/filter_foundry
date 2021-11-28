@@ -215,6 +215,9 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		*data = (intptr_t)malloc(sizeof(globals_t));
 		if (*data == 0) return;
 		gdata = (globals_t*)*data;
+		#ifdef _WIN32
+		gdata->pluginDllSliderMessageId = 0;
+		#endif
 		gdata->standalone = gdata->parmloaded = false; // they will be set later
 	}
 	else {
