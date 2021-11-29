@@ -178,8 +178,8 @@
 	extern int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 	extern int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 
-	#define GETSLIDERVALUE(d,i) GetSliderPos(GetDlgItem((d),(i)),false) + (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
-	#define SETSLIDERVALUE(d,i,v) SetSliderPos(GetDlgItem((d),(i)),(v),true);SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
+	#define GETSLIDERVALUE(d,i) (gdata->pluginDllSliderMessageId == 0 ? (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0) : GetSliderPos(GetDlgItem((d), (i)), false))
+	#define SETSLIDERVALUE(d,i,v) (gdata->pluginDllSliderMessageId == 0 ? SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v)) : SetSliderPos(GetDlgItem((d), (i)), (v), true))
 	#define GETCTLTEXT GetDlgItemText
 	#define SETCTLTEXT SetDlgItemText
 	#define SELECTCTLTEXT SELECTDLGITEMTEXT
