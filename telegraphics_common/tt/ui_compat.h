@@ -175,11 +175,11 @@
 	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
 	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
-	extern int SetSliderPos(HWND hWnd, int nPos, int unknown);
-	extern int GetSliderPos(HWND hWnd, int unknown);
+	extern int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
+	extern int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 
-	#define GETSLIDERVALUE(d,i) GetSliderPos(GetDlgItem((d),(i)),1) + (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
-	#define SETSLIDERVALUE(d,i,v) SetSliderPos(GetDlgItem((d),(i)),(v),1);SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
+	#define GETSLIDERVALUE(d,i) GetSliderPos(GetDlgItem((d),(i)),false) + (int)SendDlgItemMessage(d,i,TBM_GETPOS,0,0)
+	#define SETSLIDERVALUE(d,i,v) SetSliderPos(GetDlgItem((d),(i)),(v),true);SendDlgItemMessage(d,i,TBM_SETPOS,TRUE,v)
 	#define GETCTLTEXT GetDlgItemText
 	#define SETCTLTEXT SetDlgItemText
 	#define SELECTCTLTEXT SELECTDLGITEMTEXT

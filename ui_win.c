@@ -88,29 +88,28 @@ int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	}
 }
 
-typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, int unknown);
-int SetSliderPos(HWND hWnd, int nPos, int unknown) {
+typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
+int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
 
 	if (!hPluginDllLib) return 0;
 	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(hPluginDllLib, "SetSliderPos");
 	if (fSetSliderPos != 0) {
-		return fSetSliderPos(hWnd, nPos, unknown);
+		return fSetSliderPos(hWnd, nPos, bRepaint);
 	}
 	else {
 		return 0;
 	}
 }
 
-typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, int unknown);
-int GetSliderPos(HWND hWnd, int unknown) {
+typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
+int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
 
 	if (!hPluginDllLib) return 0;
 	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(hPluginDllLib, "GetSliderPos");
 	if (fGetSliderPos != 0) {
-		// TODO: wrong value??? 100 becomes 63!!!
-		int res = fGetSliderPos(hWnd, unknown);
+		int res = fGetSliderPos(hWnd, bPixelPosition);
 		return res;
 	}
 	else {
