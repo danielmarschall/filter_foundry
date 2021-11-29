@@ -40,17 +40,13 @@ HCURSOR hCurHandGrab;
 HCURSOR hCurHandQuestion;
 HICON hIconCautionSign;
 
-// Only for Photoshop PLUGIN.DLL
-HMODULE hPluginDllLib = NULL;
-DWORD sliderMsgID = 0;
-
 // This method will register the "slider" class used in dialogs.
 typedef int(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
 int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
 
-	if (!hPluginDllLib) return 0;
-	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(hPluginDllLib, "RegisterSlider");
+	if (!gdata->pluginDllModule) return 0;
+	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "RegisterSlider");
 	if (fRegisterSlider != 0) {
 		return fRegisterSlider(hInstanceDll, MessageID);
 	}
@@ -64,8 +60,8 @@ typedef int(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
 int UnregisterSlider(HINSTANCE hInstanceDll) {
 	f_UnregisterSlider fUnregisterSlider;
 
-	if (!hPluginDllLib) return 0;
-	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(hPluginDllLib, "UnregisterSlider");
+	if (!gdata->pluginDllModule) return 0;
+	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "UnregisterSlider");
 	if (fUnregisterSlider != 0) {
 		return fUnregisterSlider(hInstanceDll);
 	}
@@ -78,8 +74,8 @@ typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
 int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
 
-	if (!hPluginDllLib) return 0;
-	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(hPluginDllLib, "SetSliderRange");
+	if (!gdata->pluginDllModule) return 0;
+	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(gdata->pluginDllModule, "SetSliderRange");
 	if (fSetSliderRange != 0) {
 		return fSetSliderRange(hWnd, nMin, nMax);
 	}
@@ -92,8 +88,8 @@ typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
 
-	if (!hPluginDllLib) return 0;
-	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(hPluginDllLib, "SetSliderPos");
+	if (!gdata->pluginDllModule) return 0;
+	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(gdata->pluginDllModule, "SetSliderPos");
 	if (fSetSliderPos != 0) {
 		return fSetSliderPos(hWnd, nPos, bRepaint);
 	}
@@ -106,8 +102,8 @@ typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
 
-	if (!hPluginDllLib) return 0;
-	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(hPluginDllLib, "GetSliderPos");
+	if (!gdata->pluginDllModule) return 0;
+	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(gdata->pluginDllModule, "GetSliderPos");
 	if (fGetSliderPos != 0) {
 		int res = fGetSliderPos(hWnd, bPixelPosition);
 		return res;
@@ -258,7 +254,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
-	if ((sliderMsgID != 0) && (wMsg == sliderMsgID)) {
+	if ((gdata->pluginDllSliderMessageId != 0) && (wMsg == gdata->pluginDllSliderMessageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
 			int sliderNum = wParam - FIRSTCTLITEM;
@@ -307,7 +303,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Fully zoom in/out"));
 
 		for(i = 0; i < 8; ++i){
-			if (sliderMsgID == 0) {
+			if (gdata->pluginDllSliderMessageId == 0) {
 				// Non PLUGIN.DLL sliders
 				SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLITEM + i), GWL_STYLE, TBS_HORZ | TBS_AUTOTICKS | WS_CHILD | WS_VISIBLE);
 				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETRANGE, TRUE, MAKELONG(0, 255));
@@ -393,7 +389,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 		// Only for non-Plugin.dll-sliders
 		item = GetDlgCtrlID((HWND)lParam);
-		if(doupdates && sliderMsgID == 0 && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
+		if(doupdates && gdata->pluginDllSliderMessageId == 0 && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
 			slidermoved(hDlg,item);
 		break;
 	default:
@@ -407,22 +403,20 @@ Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	WNDCLASS clx;
 	INT_PTR res;
+	DWORD sliderMsgId;
 
 	// Register the FoundrySlider control class
 	#ifdef force_msctls_trackbar32
-	hPluginDllLib = 0;
+	gdata->pluginDllModule = 0;
 	#else
-	hPluginDllLib = LoadLibraryA("PLUGIN.DLL");
+	gdata->pluginDllModule = LoadLibraryA("PLUGIN.DLL");
 	#endif
-	RegisterSlider(hDllInstance, &sliderMsgID); // PLUGIN.DLL (only Photoshop) registers the class "slider"
-	if (sliderMsgID == 0) {
-		// There is some kind of bug: When you re-open the window, the second call of RegisterSlider will not set sliderMsgId!
-		// So we take the one from the last session
-		// TODO: find out why this happens!
-		sliderMsgID = gdata->pluginDllSliderMessageId;
-	}
-	else {
-		gdata->pluginDllSliderMessageId = sliderMsgID;
+	sliderMsgId = 0;
+	RegisterSlider(hDllInstance, &sliderMsgId); // PLUGIN.DLL (only Photoshop) registers the class "slider"
+	if (sliderMsgId != 0) {
+		// RegisterSlider will "remember" if it has gave you a message ID
+		// and it will NOT give it to you again! (instead, the out value stays untouched)
+		gdata->pluginDllSliderMessageId = sliderMsgId;
 	}
 	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
 		clx.lpszClassName = "FoundrySlider";
@@ -507,8 +501,8 @@ Boolean maindialog(FilterRecordPtr pb){
 	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
 		UnregisterSlider(hDllInstance);
 	}
-	if (hPluginDllLib) {
-		FreeLibrary(hPluginDllLib);
+	if (gdata->pluginDllModule) {
+		FreeLibrary(gdata->pluginDllModule);
 	}
 
 	return res == IDOK;

@@ -67,6 +67,7 @@ typedef struct{
 	#ifdef _WIN32
 	HWND hWndMainDlg;
 	DWORD pluginDllSliderMessageId;
+	HMODULE pluginDllModule;
 	#endif /* _WIN32 */
 } globals_t;
 
