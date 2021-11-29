@@ -490,7 +490,7 @@ Boolean Slider_Init_MsTrackbar(LPCSTR targetClass) {
 		FreeLibrary(libComctl32);
 	}
 
-	// Make "FoundrySlider" a subclass of msctls_trackbar32 then
+	// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
 	return MakeSimpleSubclass("FoundrySlider", "msctls_trackbar32");
 }
 

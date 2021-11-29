@@ -11,7 +11,7 @@
 - If you click "Make" after the make dialog has been opened once, your previous input will be shown again.
 - Zoom in, zoom out and zoom level label are now buttons (in the default OS style) rather than images and text. (*)
 - By default, Photoshop's sliders (PLUGIN.DLL) will be used. Only if PLUGIN.DLL is missing, the Microsoft Trackbar Controls are used.
-- Fixed severe crash when sliders were created and moved, then the filter was applied and re-opened!!!
+- Fixed severe crash when sliders were created and moved, then the filter was applied and re-opened!
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
