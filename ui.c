@@ -339,7 +339,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
 	char *reason;
 	HINSTANCE hShellRes;
-	struct InternalState bakState;
+	InternalState bakState;
 
 	switch(item){
 #ifdef MAC_ENV

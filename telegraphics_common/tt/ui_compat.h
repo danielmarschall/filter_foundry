@@ -175,6 +175,7 @@
 	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
 	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
+	// from PLUGIN.DLL
 	extern int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 	extern int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 

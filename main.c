@@ -731,8 +731,8 @@ void DoFinish(FilterRecordPtr pb){
 	}
 }
 
-struct InternalState saveInternalState() {
-	struct InternalState ret;
+InternalState saveInternalState() {
+	InternalState ret;
 	int i;
 
 	ret.bak_obfusc = gdata->obfusc;
@@ -745,7 +745,7 @@ struct InternalState saveInternalState() {
 	return ret;
 }
 
-void restoreInternalState(struct InternalState state) {
+void restoreInternalState(InternalState state) {
 	int i;
 	gdata->obfusc = state.bak_obfusc;
 	gdata->standalone = state.bak_standalone;

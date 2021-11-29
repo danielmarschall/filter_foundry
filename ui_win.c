@@ -40,7 +40,38 @@ HCURSOR hCurHandGrab;
 HCURSOR hCurHandQuestion;
 HICON hIconCautionSign;
 
-// This method will register the "slider" class used in dialogs.
+typedef void(__stdcall* f_InitCommonControls)();
+typedef BOOL(__stdcall* f_InitCommonControlsEx)(const INITCOMMONCONTROLSEX* picce);
+void RegisterMsTrackbar() {
+	f_InitCommonControls fInitCommonControls;
+	f_InitCommonControlsEx fInitCommonControlsEx;
+	HMODULE libComctl32;
+
+	libComctl32 = LoadLibraryA("Comctl32.dll");
+	if (!libComctl32) return;
+	fInitCommonControlsEx = (f_InitCommonControlsEx)(void*)GetProcAddress(libComctl32, "InitCommonControlsEx");
+	if (fInitCommonControlsEx != 0) {
+		INITCOMMONCONTROLSEX icce;
+		icce.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icce.dwICC = ICC_BAR_CLASSES;
+		fInitCommonControlsEx(&icce);
+		FreeLibrary(libComctl32);
+		return;
+	}
+	else {
+		fInitCommonControls = (f_InitCommonControls)(void*)GetProcAddress(libComctl32, "InitCommonControls");
+		if (fInitCommonControls != 0) {
+			fInitCommonControls();
+			FreeLibrary(libComctl32);
+			return;
+		}
+		else {
+			return;
+		}
+	}
+}
+
+// PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
 typedef int(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
 int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
@@ -55,7 +86,7 @@ int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	}
 }
 
-// This method will unregister the "slider" class used in dialogs.
+// PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
 typedef int(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
 int UnregisterSlider(HINSTANCE hInstanceDll) {
 	f_UnregisterSlider fUnregisterSlider;
@@ -70,6 +101,7 @@ int UnregisterSlider(HINSTANCE hInstanceDll) {
 	}
 }
 
+// PLUGIN.DLL Sliders: Set slider range (min/max)
 typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
 int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
@@ -84,6 +116,7 @@ int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	}
 }
 
+// PLUGIN.DLL Sliders : Sets slider position
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
@@ -98,6 +131,7 @@ int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	}
 }
 
+// PLUGIN.DLL Sliders : Get slider position
 typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
@@ -427,36 +461,40 @@ Boolean maindialog(FilterRecordPtr pb){
 			dbg(s);
 		}
 	}
-	else if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) != 0) {
-		// We couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop)
-		// Try the Microsoft Trackbar Control instead
-		clx.lpszClassName = "FoundrySlider";
-		if (RegisterClass(&clx) == 0) {
-			char s[100];
-			strcpy(s, "RegisterClass failed: ");
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-			dbg(s);
-		}
-	}
 	else {
-		// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32)
-		// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
-		// there seems no possibility to support this version of Windows at this point.
-		// It is included in Windows NT 3.5x
+		RegisterMsTrackbar();
 
-		//simplealert(_strdup("This plugin requires Photoshop's PLUGIN.DLL or the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
-		//return false;
+		if (GetClassInfo(hDllInstance, "msctls_trackbar32", &clx) != 0) {
+			// We couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop)
+			// Try the Microsoft Trackbar Control instead
+			clx.lpszClassName = "FoundrySlider";
+			if (RegisterClass(&clx) == 0) {
+				char s[100];
+				strcpy(s, "RegisterClass failed: ");
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+				dbg(s);
+			}
+		}
+		else {
+			// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32)
+			// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32,
+			// there seems no possibility to support this version of Windows at this point.
+			// It is included in Windows NT 3.5x
 
-		// We simply hide the sliders and let the user enter the numeric values in the edit-box.
-		// At least the plugin runs on Windows NT 3.1 !
-		simplewarning(_strdup("Visual sliders are not available because neither PLUGIN.DLL nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
-		GetClassInfo(hDllInstance, "STATIC", &clx);
-		clx.lpszClassName = "FoundrySlider";
-		if (RegisterClass(&clx) == 0) {
-			char s[100];
-			strcpy(s, "RegisterClass failed: ");
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-			dbg(s);
+			//simplealert(_strdup("This plugin requires Photoshop's PLUGIN.DLL or the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
+			//return false;
+
+			// We simply hide the sliders and let the user enter the numeric values in the edit-box.
+			// At least the plugin runs on Windows NT 3.1 !
+			simplewarning(_strdup("Visual sliders are not available because neither PLUGIN.DLL nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
+			GetClassInfo(hDllInstance, "STATIC", &clx);
+			clx.lpszClassName = "FoundrySlider";
+			if (RegisterClass(&clx) == 0) {
+				char s[100];
+				strcpy(s, "RegisterClass failed: ");
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
+				dbg(s);
+			}
 		}
 	}
 

@@ -66,8 +66,8 @@ typedef struct{
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
-	DWORD pluginDllSliderMessageId;
 	HMODULE pluginDllModule;
+	DWORD pluginDllSliderMessageId;
 	#endif /* _WIN32 */
 } globals_t;
 
@@ -89,14 +89,14 @@ extern char *errstr;
 #define DBG(x) {}
 //#define DEBUG
 
-struct InternalState {
+typedef struct InternalState_ {
 	Boolean bak_obfusc;
 	Boolean bak_standalone;
 	Boolean bak_parmloaded;
 	char* bak_expr[4];
 	uint8_t bak_slider[8];
 	PARM_T bak_parm;
-};
+} InternalState;
 
 // from main.c
 unsigned long get_parm_hash(PARM_T *parm);
@@ -106,8 +106,8 @@ void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
 void DoFinish (FilterRecordPtr epb);
 void RequestNext (FilterRecordPtr epb,long);
-struct InternalState saveInternalState();
-void restoreInternalState(struct InternalState state);
+InternalState saveInternalState();
+void restoreInternalState(InternalState state);
 
 // from read.c
 Boolean readparams_afs_pff(Handle h,char **reason);
