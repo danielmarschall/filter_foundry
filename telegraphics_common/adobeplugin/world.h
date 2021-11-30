@@ -109,10 +109,13 @@
 	#define ATTRIBUTE_PACKED __attribute__ (( packed ))
 #else
 	#define ATTRIBUTE_PACKED
-#endif
+#endif /* __GNUC__ */
+
+#ifdef __WATCOMC__ 
+	#define strcasecmp _stricmp
+#endif /* __WATCOMC__  */
 
 #ifdef _MSC_VER
-	// Microsoft dumbassery
 	#define strcasecmp _stricmp
 	#define snprintf _snprintf
 #endif /* _MSC_VER */
