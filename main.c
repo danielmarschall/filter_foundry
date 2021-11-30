@@ -723,6 +723,8 @@ OSErr DoContinue(FilterRecordPtr pb){
 void DoFinish(FilterRecordPtr pb){
 	int i;
 
+	UNREFERENCED_PARAMETER(pb);
+
 	WriteScriptParamsOnRead();
 
 	for(i = 4; i--;){

@@ -496,6 +496,8 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 	VRect srcRect;
 	UIRECT imagebounds;
 
+	UNREFERENCED_PARAMETER(dp);
+
 	if(preview_handle && preview_complete){
 
 		srcRect = preview_pmap.bounds;

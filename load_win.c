@@ -29,6 +29,10 @@ static UINT16 parm_id;
 static BOOL CALLBACK enumnames(HMODULE hModule, LPCTSTR lpszType,
 	LPTSTR lpszName, LONG_PTR lParam)
 {
+	UNREFERENCED_PARAMETER(lParam); // TODO: Pass parm_id as pointer in lParam
+	UNREFERENCED_PARAMETER(hModule);
+	UNREFERENCED_PARAMETER(lpszType);
+
 	if (IS_INTRESOURCE(lpszName)) {
 		parm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
 		return false; // we only want the first one

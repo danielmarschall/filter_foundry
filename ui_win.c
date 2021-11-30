@@ -365,7 +365,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 				panning = true;
 				origscroll = preview_scroll;
 				SetCursor(hCurHandGrab);
-				SetCapture(hDlg);		
+				SetCapture(hDlg);
 				break;
 			}
 		/* ... falls through ... */
@@ -461,7 +461,7 @@ Boolean Slider_Init_PluginDll(LPCSTR targetClass) {
 	}
 
 	// Make "FoundrySlider" a subclass of "slider" then
-	return MakeSimpleSubclass("FoundrySlider", "slider");
+	return MakeSimpleSubclass(targetClass, "slider");
 }
 
 typedef void(__stdcall* f_InitCommonControls)();
@@ -491,12 +491,12 @@ Boolean Slider_Init_MsTrackbar(LPCSTR targetClass) {
 	}
 
 	// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
-	return MakeSimpleSubclass("FoundrySlider", "msctls_trackbar32");
+	return MakeSimpleSubclass(targetClass, "msctls_trackbar32");
 }
 
 Boolean Slider_Init_None(LPCSTR targetClass) {
 	// Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
-	return MakeSimpleSubclass("FoundrySlider", "STATIC");
+	return MakeSimpleSubclass(targetClass, "STATIC");
 }
 
 Boolean maindialog(FilterRecordPtr pb){

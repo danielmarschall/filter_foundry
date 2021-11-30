@@ -200,6 +200,8 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 	int format_version = -1;
 	int i;
 
+	UNREFERENCED_PARAMETER(reason);
+
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
 			char* q = (char*)PILOCKHANDLE(h, false);
@@ -695,6 +697,8 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
+
+	UNREFERENCED_PARAMETER(reason);
 
 	if (!fileHasExtension(sfr, ".txt")) return false;
 

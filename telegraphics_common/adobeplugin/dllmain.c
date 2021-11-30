@@ -23,7 +23,9 @@ HINSTANCE hDllInstance = NULL;  /* DLL instance handle */
 
 BOOL APIENTRY DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved);
 
-BOOL APIENTRY DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved){
+BOOL APIENTRY DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved)
+{
+	UNREFERENCED_PARAMETER(lpReserved);
 
 	if (fdwReason == DLL_PROCESS_ATTACH)
 		hDllInstance = hInstance;

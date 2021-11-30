@@ -68,6 +68,8 @@ void updatedialog(DIALOGREF dp){
 
 void updateglobals(DIALOGREF dp){
 
+	UNREFERENCED_PARAMETER(dp);
+
 	// DM 28 Nov 2021: Removed this function. It makes no sense! The internal state is in the memory
 	// and the dialog is only the view!
 

@@ -37,6 +37,8 @@ INT_PTR CALLBACK builddlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam
 INT_PTR CALLBACK builddlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	int item;
 
+	UNREFERENCED_PARAMETER(lParam);
+
 	switch(wMsg){
 	case WM_INITDIALOG:
 		centre_window(hDlg);

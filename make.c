@@ -300,6 +300,8 @@ void _aete_align_word(void** aeteptr) {
 	unsigned char* tmp = *((unsigned char**)aeteptr);
 	tmp += (intptr_t)tmp & 1;
 	*aeteptr = (void*)tmp;
+	#else
+	UNREFERENCED_PARAMETER(aeteptr);
 	#endif
 }
 #define AETE_ALIGN_WORD() _aete_align_word(&aeteptr);

@@ -65,6 +65,10 @@ OSErr FSpCreate(const FSSpec *spec, OSType creator, OSType fileType, ScriptCode 
 	HANDLE h;
 	char name[MAX_PATH+1];
 
+	UNREFERENCED_PARAMETER(creator);
+	UNREFERENCED_PARAMETER(scriptTag);
+	UNREFERENCED_PARAMETER(fileType);
+
 	h = CreateFile(myp2cstrcpy(name,spec->name),0,0,0,CREATE_NEW,0,0);
 //	sprintf(s,"FSpCreate(\"%s\"):%#x",spec->name,h); dbg(s);
 	if( h == INVALID_HANDLE_VALUE )

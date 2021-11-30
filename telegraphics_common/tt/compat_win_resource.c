@@ -883,6 +883,8 @@ static BOOL check_pe_exe(HANDLE file, QUEUEDUPDATES* updates)
     DWORD mapping_size, num_sections = 0;
     void* base = NULL;
 
+    UNREFERENCED_PARAMETER(updates);
+
     mapping_size = GetFileSize(file, NULL);
 
     mapping = CreateFileMappingA(file, NULL, PAGE_READONLY, 0, 0, NULL);

@@ -34,11 +34,13 @@
 
 Boolean fileHasExtension(StandardFileReply* sfr, const char* extension) {
 	char name[MAX_PATH + 1];
+	// TODO: strcasecmp not defined in OpenWatcom 2.0 ?
 	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name, sfr->sfFile.name) + sfr->nFileExtension - 1, extension);
 }
 
 Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
                         OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){
+	UNREFERENCED_PARAMETER(ntypes);
 	return choosefile(prompt,sfr,reply,types[0],lpstrFilter,hwndOwner);
 }
 
@@ -46,6 +48,9 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 	OPENFILENAME ofn;
 	char file[MAX_PATH]={0};
 	char title[0x100];
+
+	UNREFERENCED_PARAMETER(type);
+	UNREFERENCED_PARAMETER(reply);
 
 	ZeroMemory(&ofn, sizeof(ofn));
 
@@ -82,6 +87,10 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 	char file[MAX_PATH];
 	char title[0x100];
 
+	UNREFERENCED_PARAMETER(fileCreator);
+	UNREFERENCED_PARAMETER(reply);
+	UNREFERENCED_PARAMETER(fileType);
+
 	ZeroMemory(&ofn, sizeof(ofn));
 
 	ofn.lStructSize = sizeof(ofn);
@@ -110,5 +119,6 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 }
 
 OSErr completesave(NavReplyRecord *reply){
+	UNREFERENCED_PARAMETER(reply);
 	return noErr;
 }
