@@ -427,7 +427,7 @@ void Slider_Uninit_PluginDll() {
 	WNDCLASS clx;
 
 	#ifndef use_plugin_dll_sliders
-	return false;
+	return;
 	#endif
 
 	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
@@ -487,7 +487,12 @@ Boolean Slider_Init_MsTrackbar(LPCSTR targetClass) {
 				fInitCommonControls();
 			}
 		}
-		FreeLibrary(libComctl32);
+		// There seems to be a bug in Windows NT 3.11 (if PLUGIN.DLL does not exist):
+		// If we call FreeLibrary, and then open Filter Foundry again,
+		// then you get an error message "BRUSHES" cannot initialize Comctl32.dll ...
+		// I am not sure if it is OK to do a FreeLibrary after you have called InitCommonControls.
+		// Isn't that a contradiction?
+		//FreeLibrary(libComctl32);
 	}
 
 	// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
