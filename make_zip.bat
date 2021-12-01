@@ -2,6 +2,12 @@
 
 cd /d "%~dp0"
 
+if not exist "c:\Program Files\7-Zip\7z.exe" (
+    echo Please install 7-zip!
+    pause.
+    exit /b 1
+)
+
 if exist release.zip del release.zip
 
 copy README.md README.txt
