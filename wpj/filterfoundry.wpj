@@ -4,32 +4,20 @@ projectIdent
 VpeMain
 1
 WRect
-1077
-711
+10704
+436
 7392
-8722
+8704
 2
 MProject
 3
 MCommand
-367
+87
 set PSSDK=..\photoshop_sdk\pluginsdk
 set PSAPI=..\photoshop_sdk\pluginsdk\photoshopapi
-cd ..
-if exist y_tab.c del y_tab.c 
-if exist lex_yy.c del lex_yy.c
-win_flex_bison\win_bison.exe parser.y -d -y
-win_flex_bison\win_flex.exe --never-interactive lexer.l y.tab.c
-rem IDE doesnt like multiple dots in filenames
-ren y.tab.c y_tab.c
-ren lex.yy.c lex_yy.c
-cd wpj
 4
 MCommand
-56
-cd ..\3264_mixer
-call foundry_3264_mixer.bat
-cd ..\wpj
+0
 1
 5
 WFileName
@@ -42,10 +30,10 @@ WVList
 VComponent
 8
 WRect
-69
-142
-6661
-6722
+64
+113
+6656
+6693
 0
 0
 9

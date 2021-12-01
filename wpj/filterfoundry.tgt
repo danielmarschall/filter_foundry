@@ -18,15 +18,12 @@ n_2dn
 1
 4
 MCommand
-17
-cd ..
-
-cd wpj
-
+15
+call before.bat
 5
 MCommand
-42
-copy filterfoundry.dll FilterFoundry.8bf
+16
+call after.bat
 
 6
 MItem

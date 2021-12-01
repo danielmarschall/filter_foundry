@@ -2,7 +2,7 @@
 Building FilterFoundry with OpenWatcom
 ======================================
 
-Most recently tested with OpenWatcom 1.9 and Adobe Photoshop SDK 2021.
+Tested with OpenWatcom 1.9 and OpenWatcom 2.0 together with Adobe Photoshop SDK 2021.
 
 
 Prerequisites
@@ -26,7 +26,9 @@ Build setup
 -----------
 
 There is no special build setup required.
-Just open wpj\filterfoundry.wpj in Watcom's IDE and click "Make target".
+Just open **wpj\filterfoundry.wpj** in Watcom's IDE and click "Make target".
+
+Alternatively, run **wpj\make_watcom.bat** which should do the same.
 
 IMPORTANT: Your path must not contain whitespaces!
 For example, you must not use "C:\Users\John Doe\SVN\Filter Foundry\".
@@ -47,6 +49,7 @@ Troubleshooting
     The error message has the error code E062.
     Creating an empty sdkddkver.h does not work anymore.
     You need to comment out the line in PITypes.h.
+    (Bug will be fixed: https://github.com/open-watcom/open-watcom-v2/issues/770 )
 
 - It is important that the correct calling convention is used.
   The calling convention needs to be set in
@@ -61,16 +64,29 @@ Troubleshooting
 
 - The path to the Photoshop SDK and to Win Flex/Bison (PreBuild event)
   is already set in the project file. Please note that changing these
-  paths is a bit complicated. There are several bugs in OpenWatcom
+  paths is a bit complicated. There are several bugs in older versions of OpenWatcom
   where you can only make the pre-build-events shorter, but not longer).
   You have to edit the WPJ file with a text editor.
   Remember how many characters you have added or deleted,
-  and subtract or add them to the number written above the before-instructions
-  (currently 367). This is the number of bytes of the commands.
+  and subtract or add them to the number written above the before-instructions.
+  This is the number of bytes of the commands.
 
 - In the code, it is important that all variables are declared at the
   top of the scope (curly brackets) and that there is no executable code or
   assignments in between.
+
+Wrong:
+
+    int a;
+    int b = GetXYZ();
+    int c;
+
+Correct:
+
+    int a;
+    int b;
+    int c;
+    b = GetXYZ();
 
 
 Attention! Some optimizations break the code

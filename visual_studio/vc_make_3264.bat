@@ -42,6 +42,7 @@ cd ..\3264_mixer
 call foundry_3264_mixer.bat
 
 cd /d "%~dp0"
+rem dir *.8bf
 
 echo Finished. Please check console output.
 pause.
