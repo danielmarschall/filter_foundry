@@ -24,17 +24,15 @@
 
 #include <string.h>
 
-static UINT16 parm_id;
-
-static BOOL CALLBACK enumnames(HMODULE hModule, LPCTSTR lpszType,
+static BOOL CALLBACK enum_find_resname(HMODULE hModule, LPCTSTR lpszType,
 	LPTSTR lpszName, LONG_PTR lParam)
 {
-	UNREFERENCED_PARAMETER(lParam); // TODO: Pass parm_id as pointer in lParam
 	UNREFERENCED_PARAMETER(hModule);
 	UNREFERENCED_PARAMETER(lpszType);
 
 	if (IS_INTRESOURCE(lpszName)) {
-		parm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
+		UINT16* pparm_id = (UINT16*)lParam;
+		*pparm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
 		return false; // we only want the first one
 	}
 	else return true;
@@ -45,8 +43,8 @@ Boolean readPARMresource(HMODULE hm, char** reason, int readobfusc) {
 	HANDLE h;
 	Ptr pparm;
 
-	parm_id = 1;
-	EnumResourceNames(hm, PARM_TYPE, enumnames, 0); // callback function enumnames() will find the actual found parm_id
+	UINT16 parm_id = 1;
+	EnumResourceNames(hm, PARM_TYPE, enum_find_resname, (LONG_PTR)&parm_id); // callback function enum_find_resname() will find the actual found parm_id
 
 	// load first PARM resource
 	if ((resinfo = FindResource(hm, MAKEINTRESOURCE(parm_id), PARM_TYPE))) {
