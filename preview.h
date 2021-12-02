@@ -51,4 +51,4 @@ void recalc_preview(FilterRecordPtr pb,DIALOGREF dp);
 void dispose_preview();
 OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr);
 
-#endif /*PREVIEW_H_*/
+#endif

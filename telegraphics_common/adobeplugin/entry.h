@@ -17,6 +17,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef ENTRY_H_
+#define ENTRY_H_
+
 // AI CS2 SDK must be compiled with C++
 // but we still require C linkage on entry point.
 
@@ -45,4 +48,6 @@
 #else
   //typedef SPErr PluginReturn_t;
   #define PLUGINRETURN SPErr
+#endif
+
 #endif

@@ -18,6 +18,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef VERSIONINFO_MODIFY_WIN_H_
+#define VERSIONINFO_MODIFY_WIN_H_
+
 #include <windows.h>
 
 BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULONG* cbNewVersion, PCWSTR changes);
+
+#endif

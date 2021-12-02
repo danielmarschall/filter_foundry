@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef UI_H_
+#define UI_H_
+
 /* Main dialog */
 #define OPENITEM 3
 #define PARAMAUTHORITEM 3
@@ -115,4 +118,6 @@
 	Boolean builddlgitem(DIALOGREF dp,int item);
 
 #endif
+#endif
+
 #endif

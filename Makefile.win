@@ -54,7 +54,7 @@ SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_W32 = dbg_win.c manifest.c ui_win.c make_win.c versioninfo_modify_win.c load_win.c ui_compat_win.c \
 	choosefile_win.c ui_build_win.c compat_string.c compat_win.c compat_win_resource.c \
-	file_compat_win.c dllmain.c
+	file_compat_win.c dllmain.c slider_win.c
 
 # derive lists of object files, separate for each platform
 OBJ_W32 := $(patsubst %.c, obj_w32\\%.o, $(SRC_COMMON) $(SRC_W32)) obj_w32\\res.o
@@ -92,6 +92,7 @@ obj_w32\load_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\main.o : ff.h funcs.h symtab.h ui.h PARM.h node.h scripting.h y.tab.h 
 obj_w32\make.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\obfusc.o : ff.h funcs.h symtab.h ui.h PARM.h
+obj_w32\slider_win.c : ff.h
 obj_w32\make_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\versioninfo_modify_win.o : ff.h funcs.h symtab.h ui.h PARM.h
 obj_w32\node.o : node.h y.tab.h funcs.h symtab.h ui.h PARM.h

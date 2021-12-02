@@ -17,6 +17,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef STR_H_
+#define STR_H_
+
 unsigned char *myc2pstr(char *s);
 char *myp2cstr(unsigned char *s);
 char *myp2cstrcpy(char *dst,const unsigned char *src);
@@ -30,3 +33,5 @@ unsigned char *PLcstrcpy(unsigned char *s1,const char *s2);
 
 /* in-place conversion from Pascal to C string */
 #define INPLACEP2CSTR(s) ((s)[*(s)+1] = 0,(char*)(s)+1)
+
+#endif

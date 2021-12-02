@@ -18,8 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef SYMTAB_H
-#define SYMTAB_H
+#ifndef SYMTAB_H_
+#define SYMTAB_H_
 
 #include <stdlib.h>
 

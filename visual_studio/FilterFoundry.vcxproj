@@ -259,6 +259,7 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\PARM.h" />
     <ClInclude Include="..\preview.h" />
     <ClInclude Include="..\scripting.h" />
+    <ClInclude Include="..\slider_win.h" />
     <ClInclude Include="..\symtab.h" />
     <ClInclude Include="..\telegraphics_common\adobeplugin\entry.h" />
     <ClInclude Include="..\telegraphics_common\adobeplugin\world.h" />
@@ -278,6 +279,7 @@ foundry_3264_mixer.bat
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\obfusc.c" />
+    <ClCompile Include="..\slider_win.c" />
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />
     <ClCompile Include="..\telegraphics_common\tt\choosefile_win.c" />
     <ClCompile Include="..\telegraphics_common\tt\compat_string.c" />

@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef FF_H_
+#define FF_H_
+
 #include "world.h"
 
 #include "PIFilter.h"
@@ -31,9 +34,6 @@
 #include "PARM.h"
 #include "preview.h"
 #include "ff_misc.h"
-
-#ifndef INCLUDED_FF_H
-#define INCLUDED_FF_H
 
 #define HOSTSIG_GIMP 'PMIG' // sic: NOT 'GIMP'
 #define HOSTSIG_IRFANVIEW 'UP20'
@@ -182,4 +182,4 @@ void factory_initialize_rnd_variables();
 #define BIGDOC_WHOLE_SIZE(x) ((x)->bigDocumentData->wholeSize32)
 #define WHOLE_SIZE(x) ((x)->wholeSize)
 
-#endif /* INCLUDED_FF_H */
+#endif

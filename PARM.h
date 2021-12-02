@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef PARM_H_
+#define PARM_H_
+
 // Reverse-Engineering of Filter Factory for Photoshop by Alex Hunter (7/1999)
 // Reverse-Engineering of Filter/Transition Factory for Premiere by Daniel Marschall (1/2019)
 
@@ -120,5 +123,7 @@ typedef struct {             // structure of Premiere FF/TF PARM resource
 	char szCtl[8][256];      // 8 control labels
 	char szFormula[4][1024]; // 4 channel formulas; in Premiere: (b,g,r,a) or (-,-,-,r=g=b=a) in single-expression-mode
 } PARM_T_PREMIERE;
+
+#endif
 
 #endif

@@ -17,6 +17,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef COMPAT_STRING_H_
+#define COMPAT_STRING_H_
+
 #if macintosh
 
 #include <plstringfuncs.h>
@@ -33,3 +36,4 @@ void NumToString(long n, unsigned char *dst);
 
 #endif
 
+#endif

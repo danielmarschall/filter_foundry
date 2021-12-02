@@ -17,8 +17,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef COMPAT_RES_H
-#define COMPAT_RES_H
+#ifndef COMPAT_WIN_RESOURCE_H_
+#define COMPAT_WIN_RESOURCE_H_
 
 #include <windows.h>
 
@@ -47,4 +47,4 @@ BOOL WINAPI WineEndUpdateResourceA(HANDLE hUpdate, BOOL fDiscard);
 BOOL WINAPI WineUpdateResourceA(HANDLE hUpdate, LPCSTR lpType, LPCSTR lpName,
     WORD wLanguage, LPVOID lpData, DWORD cbData);
 
-#endif // COMPAT_RES_H
+#endif

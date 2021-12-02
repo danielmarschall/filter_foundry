@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef MANIFEST_H_
+#define MANIFEST_H_
+
 #include <windows.h>
 
 #ifndef ACTCTX_FLAG_RESOURCE_NAME_VALID
@@ -54,3 +57,5 @@ typedef struct _tagManifestActivationCtx {
 extern BOOL ActivateManifest(HMODULE hModule, int manifestResourceID, PManifestActivationCtx vars);
 
 extern BOOL DeactivateManifest(PManifestActivationCtx vars);
+
+#endif

@@ -17,8 +17,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CHOOSEFILE_H
-#define CHOOSEFILE_H
+#ifndef CHOOSEFILE_H_
+#define CHOOSEFILE_H_
 
 #ifdef macintosh
 	#ifdef __GNUC__ // FIXME: this isn't the right define

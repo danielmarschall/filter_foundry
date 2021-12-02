@@ -17,6 +17,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef SPRINTF_TINY_H_
+#define SPRINTF_TINY_H_
+
 /*
 #ifdef __MWERKS__
 	#define __MSL_C9X__ // needed for CWPro1, to get double_t
@@ -41,3 +44,5 @@ char *int_strpad(char *dst,unsigned long x,int n,int base);
 
 int vsprintf_tiny(char *s,char *fmt,va_list v);
 int sprintf_tiny(char *s,char *fmt,...);
+
+#endif

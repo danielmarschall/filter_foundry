@@ -17,8 +17,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef FILE_COMPAT_H
-#define FILE_COMPAT_H
+#ifndef FILE_COMPAT_H_
+#define FILE_COMPAT_H_
 
 #ifdef macintosh
 

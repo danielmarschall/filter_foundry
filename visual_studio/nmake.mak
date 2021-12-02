@@ -63,7 +63,7 @@ FLEX = win_flex_bison\win_flex
 BISON = win_flex_bison\win_bison
 
 OBJ = ..\main.obj ..\funcs.obj ..\process.obj ..\node.obj ..\symtab.obj \
-	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj ..\obfusc.obj \
+	..\ui.obj ..\ui_build.obj ..\preview.obj ..\read.obj ..\save.obj ..\make.obj ..\obfusc.obj ..\slider_win.obj \
 	..\scripting.obj ..\lex.yy.obj ..\manifest.obj ..\ui_win.obj ..\make_win.obj ..\versioninfo_modify_win.obj ..\load_win.obj \
 	..\telegraphics_common\tt\dbg_win.obj ..\telegraphics_common\tt\ui_compat_win.obj \
 	..\telegraphics_common\tt\choosefile_win.obj ..\ui_build_win.obj \

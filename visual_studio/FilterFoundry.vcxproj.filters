@@ -90,6 +90,9 @@
     <ClInclude Include="..\telegraphics_common\tt\compat_win_resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\slider_win.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c">
@@ -177,6 +180,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\telegraphics_common\tt\compat_win_resource.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\slider_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

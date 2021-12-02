@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef SCRIPTING_H_
+#define SCRIPTING_H_
+
 /* Portions Copyright 1993 - 1999 Adobe Systems Incorporated */
 /* All Rights Reserved.                                      */
 
@@ -199,3 +202,5 @@ OSType getAeteKey(char c, PARM_T *parm);
 	
 #define PIPutStr(token, key, value) \
 	Writer->putStringProc(token, key, value)
+
+#endif

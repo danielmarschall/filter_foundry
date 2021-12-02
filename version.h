@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef VERSION_H_
+#define VERSION_H_
+
 /*
 
 Note: Changelog has been moved into the file CHANGELOG.md
@@ -48,3 +51,5 @@ For a NEW VERSION, please change:
 #define VI_COMPANY_NAME	"ViaThinkSoft, Telegraphics Pty Ltd\0"
 /* wildcard signature in resources */
 #define ANY '    '
+
+#endif

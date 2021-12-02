@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef FUNCS_H_
+#define FUNCS_H_
+
 #include <math.h>
 
 // Strict compatibility to Filter Factory by using an alternative
@@ -139,3 +142,5 @@ extern value_type val_D;
 extern value_type val_I;
 extern value_type val_U;
 extern value_type val_V;
+
+#endif

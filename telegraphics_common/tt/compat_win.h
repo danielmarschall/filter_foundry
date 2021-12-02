@@ -17,8 +17,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef COMPAT_H
-#define COMPAT_H
+#ifndef COMPAT_WIN_H_
+#define COMPAT_WIN_H_
 
 #ifndef _MSC_VER
 	// probably MinGW gcc
