@@ -53,10 +53,7 @@ enum{
 
 	TEXT_FILETYPE = 'TEXT',
 	SIG_SIMPLETEXT = 'ttxt',
-	PS_FILTER_FILETYPE = '8BFM',
-
-	// Obfuscated data will be read, but it will not be read if it is additionally protected
-	READ_OBFUSC = 1
+	PS_FILTER_FILETYPE = '8BFM'
 };
 
 typedef struct{
@@ -145,7 +142,7 @@ void deobfusc(PARM_T* pparm);
 
 // from loadfile_*.c
 Boolean loadfile(StandardFileReply *sfr,char **reason);
-Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc);
+Boolean readPARMresource(HMODULE hm,char **reason);
 
 // from main.c
 int64_t maxspace();

@@ -38,7 +38,7 @@ static BOOL CALLBACK enum_find_resname(HMODULE hModule, LPCTSTR lpszType,
 	else return true;
 }
 
-Boolean readPARMresource(HMODULE hm, char** reason, int readobfusc) {
+Boolean readPARMresource(HMODULE hm, char** reason) {
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
@@ -54,7 +54,7 @@ Boolean readPARMresource(HMODULE hm, char** reason, int readobfusc) {
 			return res;
 		}
 	}
-	else if (readobfusc &&
+	else if (
 		((resinfo = FindResource(hm, OBFUSCDATA_ID_NEW, OBFUSCDATA_TYPE_NEW)) ||
 			(resinfo = FindResource(hm, OBFUSCDATA_ID_OLD, OBFUSCDATA_TYPE_OLD)))) {
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
@@ -106,7 +106,7 @@ Boolean loadfile(StandardFileReply* sfr, char** reason) {
 	if (*reason == NULL) {
 		char name[MAX_PATH + 1];
 		if (hm = LoadLibraryEx(myp2cstrcpy(name, sfr->sfFile.name), NULL, LOAD_LIBRARY_AS_DATAFILE)) {
-			if (readPARMresource(hm, reason, READ_OBFUSC)) {
+			if (readPARMresource(hm, reason)) {
 				if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");
 					//gdata->parmloaded = false;

@@ -83,6 +83,8 @@ char *my_strdup(char *s){
 	return p;
 }
 
+// DM 03.12.2021 removed, because it is not used in Filter Foundry
+/*
 unsigned char *PLcstrcpy(unsigned char *s1,const char *s2){
 	size_t n = strlen(s2);
 	if(n>255)
@@ -91,7 +93,10 @@ unsigned char *PLcstrcpy(unsigned char *s1,const char *s2){
 	*s1 = (unsigned char)n;
 	return s1;
 }
+*/
 
+// DM 03.12.2021 removed, because it is not used in Filter Foundry
+/*
 unsigned char *PLcstrcat(unsigned char * str1,const char * s2){
 	size_t n = strlen(s2);
 	if(str1[0]+n > 255)
@@ -100,3 +105,4 @@ unsigned char *PLcstrcat(unsigned char * str1,const char * s2){
 	str1[0] += (unsigned char)n;
 	return str1;
 }
+*/

@@ -28,10 +28,12 @@ char *cat(char *d,char *s); // returns pointer after last character copied
 //void *my_memset(void *dst, int val, size_t len);
 char *my_strdup(char *s); // my_strdup() is like _strdup(), with the difference that it accepts "char*" instead of "const char*" as argument
 
-unsigned char *PLcstrcat(unsigned char * str1,const char * s2);
-unsigned char *PLcstrcpy(unsigned char *s1,const char *s2);
+// DM 03.12.2021 removed, because it is not used in Filter Foundry
+//unsigned char *PLcstrcat(unsigned char * str1,const char * s2);
+//unsigned char *PLcstrcpy(unsigned char *s1,const char *s2);
 
+// DM 03.12.2021 removed, because it is not used in Filter Foundry
 /* in-place conversion from Pascal to C string */
-#define INPLACEP2CSTR(s) ((s)[*(s)+1] = 0,(char*)(s)+1)
+//#define INPLACEP2CSTR(s) ((s)[*(s)+1] = 0,(char*)(s)+1)
 
 #endif

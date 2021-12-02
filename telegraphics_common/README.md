@@ -4,4 +4,4 @@ https://www.telegraphics.com.au/svn/common/
 
 A modified version of SVN revision 84 (dated 9 October 2019) is included in
 the Filter Foundry source repository to simplify the build process.
-Files which are not used by Filter Foundry have been removed.
+There were several improvements and files which are not used by Filter Foundry have been removed.

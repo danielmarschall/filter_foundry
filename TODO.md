@@ -5,8 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* Make some parts of the code Unicode aware. Note that Photoshop itself (PIPL etc) doesn't seem to be Unicode aware, and PARM is also not Unicode aware. So the Title/Category/... stays ANSI! But we should allow that filters are loaded/saved from File Dialogs that can read/save Unicode folder names.
-
+(None)
 
 Known bugs
 ----------
@@ -14,10 +13,13 @@ Known bugs
 * SEVERE: After working with Filter Foundry for a short amount of time (working with sliders, applying, opening again, changing sliders, etc.), the file save dialog (Make dialog) will corrupt the memory!!! You notice it by seeing that icons and folder icons are missing! Later, the program might even crash! (Verified with 1.7.0.12, verified with Visual Studio and OpenWatcom) Application Verifier does not report anything bad.
 	You can also corrupt the memory by often applying filters and building and doing stuff. And at some point you get the error that preview cannot be shown because memory is out???
 	Do we have a leak???
-	Smashing Ctrl+F does not cause a leak
+	Smashing Ctrl+F does NOT cause a leak.
+	"Deleaker" tool only showed small leaks, nothing very big and no leaks with high hit-count!
 
 Minor priority stuff or ideas
 -----------------------------
+
+* Should we completely remove all Apple code? It will make things much easier, and newer Apple ports need completely remake anyway. On the other hand, we lose a potential back port to ancient Mac.
 
 * Right to the sliders you can enter numbers which are outside the range of 0..255 . Prevent that, please.
 
@@ -35,7 +37,7 @@ Minor priority stuff or ideas
 
 * Memory leak: `strdup()` and `my_strdup()` need `free()` !
 
-* Why can't we edit *.rc files in Visual Studio?
+* Why can't we edit *.rc files in Visual Studio? (As text) Visual Studio 2022 crashes if you try to edit the code of win_res.rc
 
 * `host_preserves_parameters` (enabled with GIMP/PSPI) should somehow delete the temporary AFS file at each restart of GIMP. Otherwise, the user would always see the previous session when they re-open GIMP.
 
@@ -45,7 +47,7 @@ Minor priority stuff or ideas
   
 * CMYK mode is possible (although a bit misleading to have r=c, g=m, b=y, a=k), but then it is impossible to control the alpha channel.
 
-* I have found following in the source code... Do we need to do something here?
+* I have found the following in the source code... Do we need to do something here?
 
         strcpy(gdata->parm.formula[i],expr[i] ? expr[i] : "bug! see builddlgitem");
 
@@ -54,8 +56,6 @@ Minor priority stuff or ideas
 * There is no warning if a formula contains a number that exceeds 32 bits.
 
 * Minor bug: Testcase testcases/rst_3.afs applied to a 1000x1000 canvas: When the preview is zoomed in to 29% or 59%, and the preview is panned, the bars change during panning. It does not look "smooth" like in 100%, 50%, or 25% zoom. The problem is that the offset of the preview area is always different, and if the zoom level is not a multiple of two, you will always "pick" other bars.
-
-* Fast (double) click in [+]/[-] scroll buttons is not accepted as 2 clicks / zoom-requests
 
 * Support more colors modes and 16bit. Why is Lab color not accepted, although doesSupportLABColor is set?
 
@@ -74,7 +74,10 @@ Minor priority stuff or ideas
 
 * Make Filter Foundry ready for translations? In Windows, put all strings in string lists (resources, `LoadStringA`), as well as in Mac resources.
 
-* Should the compiler flags in `funcs.h` placed as resource (binary bits), so that the behavior can be changed if required?
+* Should the compiler flags in `funcs.h` as well as settings like `use_plugin_dll_sliders` be placed as resource (binary bits), so that the behavior can be changed if required?
+
+* Make some parts of the code Unicode aware. Note that Photoshop itself (PIPL etc) doesn't seem to be Unicode aware, and PARM is also not Unicode aware. So the Title/Category/... stays ANSI! But we should allow that filters are loaded/saved from File Dialogs that can read/save Unicode folder names.
+	=> Cancelled, because it is extremely heavy work!
 
 
 Big ideas

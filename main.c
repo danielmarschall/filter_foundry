@@ -241,7 +241,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
-			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
+			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				if (gdata->obfusc) {
 					simplealert(_strdup("Incompatible obfuscation."));
@@ -387,7 +387,7 @@ int checkandinitparams(Handle params){
 		// We need to set gdata->standalone after loadfile(), but we must call readPARMresource() before loadfile()
 		// Reason: readPARMresource() reads parameters from the DLL while loadfile() reads parameters from the AFS file
 		// But loadfile() will reset gdata->standalone ...
-		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason, READ_OBFUSC);
+		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason);
 		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
 				simplealert(_strdup("Incompatible obfuscation."));
@@ -433,7 +433,7 @@ int checkandinitparams(Handle params){
 		   or the parameter data couldn't be read; set default values */
 
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason,READ_OBFUSC);
+		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
 				simplealert(_strdup("Incompatible obfuscation."));

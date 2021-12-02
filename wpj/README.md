@@ -45,11 +45,8 @@ Troubleshooting
     pluginsdk\photoshopapi\photoshop\PITypes.h in your Adobe Photoshop SDK and
     comment out the line "#include <sdkddkver.h> // for WINVER".
     Alternatively, you can create an empty sdkddkver.h file in your wpj folder.
-  * In Open Watcom 2.0:
-    The error message has the error code E062.
-    Creating an empty sdkddkver.h does not work anymore.
-    You need to comment out the line in PITypes.h.
-    (Bug will be fixed: https://github.com/open-watcom/open-watcom-v2/issues/770 )
+  * Take care that the directory "." is added to the include path of the C-compiler
+    and the RC-compiler!
 
 - It is important that the correct calling convention is used.
   The calling convention needs to be set in

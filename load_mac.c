@@ -24,31 +24,40 @@
 
 #include "file_compat.h"
 
-Boolean readPARMresource(HMODULE hm,char **reason,int readobfusc){
+Boolean readPARMresource(HMODULE hm,char **reason){
 	Boolean res = false;
 	Handle h;
 
-	if(  !(h = Get1Resource(PARM_TYPE,PARM_ID_NEW))
-	  && !(h = Get1Resource(PARM_TYPE,PARM_ID_OLD))
-	  && readobfusc
-	  && ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
-	      (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) ){
+	if( (h = Get1Resource(PARM_TYPE,PARM_ID_NEW)) ||
+	    (h = Get1Resource(PARM_TYPE,PARM_ID_OLD)) )
+	{
+		HLock(h);
+		if(GetHandleSize(h) == sizeof(PARM_T)) {
+			res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
+			gdata->obfusc = false;
+			ReleaseResource(h);
+		} else {
+			// PARM has wrong size. Should not happen
+			gdata->obfusc = false;
+			ReleaseResource(h);
+			return false;
+		}
+	}
+	else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
+	          (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) )
+	{
 		HLock(h);
 		if(GetHandleSize(h) == sizeof(PARM_T)) {
 			deobfusc((PARM_T*)*h);
+			res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
 			gdata->obfusc = true;
+			ReleaseResource(h);
 		} else {
 			// Obfuscated PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
 			return false;
 		}
-	}
-	if(h){
-		HLock(h);
-		res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
-		ReleaseResource(h);
-		gdata->obfusc = false;
 	}
 	if (!res) {
 		gdata->obfusc = false;
@@ -61,7 +70,7 @@ static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 
 	if(rrn != -1){
-		if(readPARMresource(NULL,reason,0))
+		if(readPARMresource(NULL,reason))
 			res = true;
 		CloseResFile(rrn);
 	}else
@@ -87,7 +96,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				return true;
 			}
 		}
-		
+
 		// then try "Filters Unlimited" file (FFX)
 		if (*reason == NULL) {
 			if (readfile_ffx(sfr,reason)) {
@@ -96,7 +105,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				return true;
 			}
 		}
-		
+
 		// then try "PluginCommander TXT" file (TXT)
 		if (*reason == NULL) {
 			if (readfile_picotxt(sfr,reason)) {
@@ -105,7 +114,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				return true;
 			}
 		}
-		
+
 		// Try Mac plugin resource
 		if (*reason == NULL) {
 			if (readmacplugin(sfr,reason)) {
@@ -117,7 +126,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 				}
 			}
 		}
-		
+
 		// Try Windows resources (we need to do a binary scan)
 		// Note that we cannot detect obfuscated filters here!
 		if (*reason == NULL) {
@@ -133,7 +142,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 
 		// We didn't had success. If we have a clear reason, return false and the reason.
 		// If we don't have a clear reason, set a generic reason and return false.
-		if (*reason == NULL) {		
+		if (*reason == NULL) {
 			*reason = "It is not a text parameter file, nor a standalone Mac/PC filter created by Filter Factory/Filter Foundry.";
 		}
 		return false;
