@@ -70,7 +70,7 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 		return sfr->sfGood = true;
 	}else{
 		#ifdef DEBUG
-		char s[0x10];
+		char s[100];
 		sprintf(s,"GetOpenFileName(): error %d",CommDlgExtendedError());
 		dbg(s);
 		#endif
@@ -109,7 +109,7 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 		return sfr->sfGood = true;
 	}else{
 		#ifdef DEBUG
-		char s[0x10];
+		char s[100];
 		sprintf(s,"GetSaveFileName(): error %d",CommDlgExtendedError());
 		dbg(s);
 		#endif

@@ -4,6 +4,7 @@ y.tab.h
 y.tab.c
 y_tab.c
 *.8bf
+release.zip
 
 obj/*.*
 

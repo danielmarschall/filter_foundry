@@ -27,7 +27,7 @@ Defined in **ff.h**, implemented in **obfusc.c**:
 
 Introduced in **Filter Foundry 1.7.0.10**
 
-First, the fields `unknown1,2,3` are set to 0.
+First, the fields `unknown1`, `unknown2`, aned `unknown3` are set to 0.
 
 A 64 bit seed will be generated.
 On Windows, the seed is the ECMA 182 CRC64 checksum of the PARM.
