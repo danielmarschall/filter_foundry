@@ -19,6 +19,7 @@
 */
 
 #include "ff.h"
+#include "slider_win.h"
 
 // PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
 typedef int(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
