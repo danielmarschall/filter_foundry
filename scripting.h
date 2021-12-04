@@ -24,14 +24,14 @@
 /* Portions Copyright 1993 - 1999 Adobe Systems Incorporated */
 /* All Rights Reserved.                                      */
 
-#include <stddef.h>                     // Standard definitions.
+//#include <stddef.h>                     // Standard definitions.
 //#include <Types.h>                    // Standard types.
 
-#include "PITypes.h"                    // Photoshop types.
-#include "PIGeneral.h"                  // Photoshop general routines.
-#include "PIActions.h"                  // Photoshop scripting.
-#include "PIAbout.h"                    // AboutRecord structure.
-#include "PIFormat.h"                   // AboutRecord structure.
+//#include "PITypes.h"                    // Photoshop types.
+//#include "PIGeneral.h"                  // Photoshop general routines.
+//#include "PIActions.h"                  // Photoshop scripting.
+//#include "PIAbout.h"                    // AboutRecord structure.
+//#include "PIFormat.h"                   // AboutRecord structure.
 //#include "PIDefines.h"                // Plug-in definitions.
 //#include "FileUtilities.h"            // Simple file utilities.
 

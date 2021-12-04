@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.13 [Work-In-Progress]
+## 1.7.0.13 [04-Dec-2021]
 - Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.
 - The released 32-bit version is now optimized by the compiler.
 - Updated documentation.

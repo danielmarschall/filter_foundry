@@ -34,7 +34,6 @@
 
 Boolean fileHasExtension(StandardFileReply* sfr, const char* extension) {
 	char name[MAX_PATH + 1];
-	// TODO: strcasecmp not defined in OpenWatcom 2.0 ?
 	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name, sfr->sfFile.name) + sfr->nFileExtension - 1, extension);
 }
 
