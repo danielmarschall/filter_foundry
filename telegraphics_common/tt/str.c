@@ -20,8 +20,47 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef WIN_ENV
+#include <windows.h>
+#endif
+
 #include "str.h"
 #include "sprintf_tiny.h"
+
+#ifdef UNICODE
+size_t xstrlen(wchar_t* s) {
+	return lstrlen(s);
+}
+wchar_t* xstrcpy(wchar_t* dst, wchar_t* src) {
+	return lstrcpy(dst, src);
+}
+wchar_t* xstrcat(wchar_t* dst, const wchar_t* src) {
+	return lstrcat(dst, src);
+}
+wchar_t* xstrrchr(wchar_t* const _Str, const int _Ch) {
+	return wcsrchr(_Str, _Ch);
+}
+int xstrcasecmp(const wchar_t* a, const wchar_t* b) {
+	return _wcsicmp(a, b);
+}
+#else
+size_t xstrlen(char* s) {
+	return strlen(s);
+}
+char* xstrcpy(char* dst, char* src) {
+	return strcpy(dst, src);
+}
+char* xstrcat(char* dst, const char* src) {
+	return strcat(dst, src);
+}
+char* xstrrchr(char* const _Str, const int _Ch) {
+	return strrchr(_Str, _Ch);
+}
+int xstrcasecmp(const char* a, const char* b) {
+	//return strcasecmp(a, b);
+	return _stricmp(a, b);
+}
+#endif
 
 // convert C (null-terminated) to Pascal (length byte) string
 // no bounds checking

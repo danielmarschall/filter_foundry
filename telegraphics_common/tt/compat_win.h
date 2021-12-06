@@ -25,6 +25,13 @@
 	#include <stdint.h> // for intptr_t req'd by CS4 SDK
 #endif
 
+// Avoid loading FSSpec in PITypes.h !
+#define _FSSPEC_        1
+typedef struct
+{
+	TCHAR szName[MAX_PATH+1];
+} FSSpec;
+
 #include "PITypes.h"
 
 typedef int16 ScriptCode;
@@ -66,20 +73,20 @@ enum{ ok = 1,cancel = 2 };
 
 ULONGLONG _GetTickCount64();
 
-HANDLE _BeginUpdateResource/*A*/(
-	LPCSTR pFileName,
+HANDLE _BeginUpdateResource(
+	LPCTSTR pFileName,
 	BOOL   bDeleteExistingResources
 );
 
-BOOL _EndUpdateResource/*A*/(
+BOOL _EndUpdateResource(
 	HANDLE hUpdate,
 	BOOL   fDiscard
 );
 
-BOOL _UpdateResource/*A*/(
+BOOL _UpdateResource(
 	HANDLE hUpdate,
-	LPCSTR lpType,
-	LPCSTR lpName,
+	LPCTSTR lpType,
+	LPCTSTR lpName,
 	WORD   wLanguage,
 	LPVOID lpData,
 	DWORD  cb

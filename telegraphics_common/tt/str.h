@@ -1,24 +1,38 @@
 /*
-    This file is part of a common library
-    Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
+	This file is part of a common library
+	Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #ifndef STR_H_
 #define STR_H_
+
+#ifdef UNICODE
+size_t xstrlen(wchar_t* s);
+wchar_t* xstrcpy(wchar_t* dst, wchar_t* src);
+wchar_t* xstrcat(wchar_t* dst, const wchar_t* src);
+wchar_t* xstrrchr(wchar_t* const _Str, const int _Ch);
+int xstrcasecmp(const wchar_t* a, const wchar_t* b);
+#else
+size_t xstrlen(char* s);
+char* xstrcpy(char* dst, char* src);
+char* xstrcat(char* dst, const char* src);
+char* xstrrchr(char* const _Str, const int _Ch);
+int xstrcasecmp(const char* a, const char* b);
+#endif
 
 unsigned char *myc2pstr(char *s);
 char *myp2cstr(unsigned char *s);

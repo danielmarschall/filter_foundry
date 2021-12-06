@@ -43,7 +43,7 @@ extern OSErr process_scaled_olddoc(FilterRecordPtr pb, Boolean progress,
 extern OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
                                    VRect filterRect, VRect outRect,
                                    void* outData, long outRowBytes, double zoom);
-extern Boolean alertuser(char *err,char *more);
+extern Boolean alertuser(TCHAR *err,TCHAR *more);
 extern void evalinit();
 
 Boolean setup_preview(FilterRecordPtr pb,int nplanes);

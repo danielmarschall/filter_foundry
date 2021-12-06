@@ -5,7 +5,9 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* Test UNICODE very intense.
+
+* Non-Windows source files: Don't use TCHAR. Instead typedef a type we can use independently of the WinAPI library!
 
 
 Known bugs
@@ -36,7 +38,7 @@ Minor priority stuff or ideas
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 
-* Memory leak: `strdup()` and `my_strdup()` need `free()` !
+* Verify if there are memory leaks: `strdup()` and `my_strdup()` need `free()` !
 
 * Why can't we edit *.rc files in Visual Studio? (As text) Visual Studio 2022 crashes if you try to edit the code of win_res.rc
 
@@ -60,8 +62,6 @@ Minor priority stuff or ideas
 
 * Support more colors modes and 16bit. Why is Lab color not accepted, although doesSupportLABColor is set?
 
-* Add Unicode support? (Does PiPL support Unicode at all?)
-
 * Picture with 78x63 in grayscale mode: In preview on the left side there is a black bar
 
 * With the change in 1.7 in re "*preview evaluates whole picture if state changing functions rst,put,rnd are used*": Is there anything we can do to make it more performant when the user changes sliders? Especially with large pictures, the process becomes a bit laggy! => This feature was removed in 1.7.0.9, because it was extremely slow for some filters!
@@ -76,9 +76,6 @@ Minor priority stuff or ideas
 * Make Filter Foundry ready for translations? In Windows, put all strings in string lists (resources, `LoadStringA`), as well as in Mac resources.
 
 * Should the compiler flags in `funcs.h` as well as settings like `use_plugin_dll_sliders` be placed as resource (binary bits), so that the behavior can be changed if required?
-
-* Make some parts of the code Unicode aware. Note that Photoshop itself (PIPL etc) doesn't seem to be Unicode aware, and PARM is also not Unicode aware. So the Title/Category/... stays ANSI! But we should allow that filters are loaded/saved from File Dialogs that can read/save Unicode folder names.
-	=> Cancelled, because it is extremely heavy work!
 
 
 Big ideas

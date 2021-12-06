@@ -225,7 +225,7 @@ void maindlgupdate(DIALOGREF dp){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
 			if(gdata->standalone){
-				alertuser(_strdup("Can't run this filter (there is a problem with the saved expressions)."),_strdup(""));
+				alertuser((TCHAR*)TEXT("Can't run this filter (there is a problem with the saved expressions)."), (TCHAR*)TEXT(""));
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
@@ -259,8 +259,8 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
-		SetDlgItemText(dp,PARAMAUTHORITEM,gdata->parm.szAuthor);
-		SetDlgItemText(dp,PARAMCOPYITEM,gdata->parm.szCopyright);
+		SetDlgItemTextA(dp,PARAMAUTHORITEM,gdata->parm.szAuthor);
+		SetDlgItemTextA(dp,PARAMCOPYITEM,gdata->parm.szCopyright);
 
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
@@ -268,13 +268,13 @@ void maindlginit(DIALOGREF dp){
 				if((i&1) == 0){
 					// even (0, 2, 4, 6)
 					strcpy(s,gdata->parm.szMap[i/2]);
-					SetDlgItemText(dp, FIRSTMAPLABELITEM+(i/2),s);
+					SetDlgItemTextA(dp, FIRSTMAPLABELITEM+(i/2),s);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i + 1);
 				}
 			} else if(gdata->parm.ctl_used[i]){
 				strcpy(s,gdata->parm.szCtl[i]);
-				SetDlgItemText(dp, FIRSTCTLLABELITEM+i,s);
+				SetDlgItemTextA(dp, FIRSTCTLLABELITEM+i,s);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}else{
 				HideDialogItem(dp, FIRSTCTLITEM+i);
@@ -293,7 +293,7 @@ void maindlginit(DIALOGREF dp){
 			HideDialogItem(dp,FIRSTLABELITEM+i);
 		}else{
 			s[0] = channelsuffixes[gpb->imageMode][i];
-			SetDlgItemText(dp,FIRSTLABELITEM+i,s);
+			SetDlgItemTextA(dp,FIRSTLABELITEM+i,s);
 		}
 	}
 
@@ -357,14 +357,14 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if(!gdata->standalone && choosefiletypes(
 			#ifdef MAC_ENV
 			(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string"
-			#else
-			(StringPtr)_strdup("\026Choose filter settings"),
-			#endif
-			&sfr,&reply,types,2,
+			& sfr, & reply, types, 2,
 			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander or FFDecomp TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin, *.rsrc)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0"
-			#ifdef _WIN32
+			#else
+			TEXT("Choose filter settings"),
+			& sfr, & reply, types, 2,
+			TEXT("All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander or FFDecomp TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin, *.rsrc)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0")
 			,gdata->hWndMainDlg
-			#endif /* _WIN32 */
+			#endif
 		)){
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
@@ -374,7 +374,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				maindlgupdate(dp);
 			}
 			else {
-				alertuser(_strdup("Cannot load settings."), reason);
+				#ifdef UNICODE
+				TCHAR reasonW[0x300];
+				mbstowcs(reasonW, reason, 0x300);
+				alertuser((TCHAR*)TEXT("Could not load settings."), reasonW);
+				#else
+				alertuser((TCHAR*)TEXT("Could not load settings."), reason);
+				#endif
 
 				// Restore
 				restoreInternalState(bakState);
@@ -385,33 +391,33 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if(!gdata->standalone && putfile(
 			#ifdef MAC_ENV
 			(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string"
-			#else
-			(StringPtr)_strdup("\024Save filter settings"),
-			#endif
 			(StringPtr)_strdup("\0"),
-			TEXT_FILETYPE,SIG_SIMPLETEXT,&reply,&sfr,
-			"afs","All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0",1
-			#ifdef _WIN32
+			TEXT_FILETYPE, SIG_SIMPLETEXT, & reply, & sfr,
+			"afs",
+			"All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0", 1
+			#else
+			TEXT("Save filter settings"),
+			TEXT("\0"),
+			TEXT_FILETYPE, SIG_SIMPLETEXT, & reply, & sfr,
+			TEXT("afs"),
+			TEXT("All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0"), 1
 			,gdata->hWndMainDlg
-			#endif /* _WIN32 */
+			#endif
 		)){
 			if(savefile_afs_pff_picotxt(&sfr)) {
 				completesave(&reply);
 
-				if (fileHasExtension(&sfr, ".txt")) {
-					char filename[MAX_PATH];
-
-					showmessage(_strdup("The file was successfully saved in the \"PluginCommander\" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, Slider/Map names."));
+				if (fileHasExtension(&sfr, TEXT(".txt"))) {
+					showmessage((TCHAR*)TEXT("The file was successfully saved in the \"PluginCommander\" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, Slider/Map names."));
 
 					#ifdef MAC_ENV
 					// TODO: Open text file instead
-					showmessage(_strdup("Please edit the file manually to enter the title, category, authorname, copyright, slidernames etc."));
+					showmessage((TCHAR*)TEXT("Please edit the file manually to enter the title, category, authorname, copyright, slidernames etc."));
 					#else
-					myp2cstrcpy(filename, sfr.sfFile.name);
-					hShellRes = ShellExecuteA(
+					hShellRes = ShellExecute(
 						gdata->hWndMainDlg,
-						"open",
-						filename,
+						TEXT("open"),
+						&sfr.sfFile.szName[0],
 						NULL,
 						NULL,
 						SW_SHOWNORMAL
@@ -419,12 +425,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 					if (hShellRes <= (HINSTANCE)32) {
 						// MSDN states: "If the function succeeds, it returns a value greater than 32."
 
-						char s[100];
-						strcpy(s, "ShellExecuteA failed: ");
-						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-						dbg(s);
+						TCHAR s[0x300];
+						xstrcpy(s, (TCHAR*)TEXT("ShellExecuteA failed: "));
+						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+						dbg(&s[0]);
 
-						showmessage(_strdup("Please edit the file manually to enter the title, category, author, copyright, filename, slidernames etc."));
+						showmessage((TCHAR*)TEXT("Please edit the file manually to enter the title, category, author, copyright, filename, slidernames etc."));
 					}
 					#endif
 				}
@@ -441,12 +447,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case HELPITEM:
 		#ifdef MAC_ENV
 		// TODO: Open web-browser instead
-		showmessage(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
+		showmessage((TCHAR*)TEXT("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		#else
-		hShellRes = ShellExecuteA(
+		hShellRes = ShellExecute(
 			gdata->hWndMainDlg,
-			"open",
-			"https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf",
+			TEXT("open"),
+			TEXT("https://github.com/danielmarschall/filter_foundry/blob/master/doc/The%20Filter%20Foundry.pdf"),
 			NULL,
 			NULL,
 			SW_SHOWNORMAL
@@ -458,12 +464,12 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		else if (hShellRes <= (HINSTANCE)32) {
 			// MSDN states: "If the function succeeds, it returns a value greater than 32."
 
-			char s[100];
-			strcpy(s, "ShellExecuteA failed: ");
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-			dbg(s);
+			TCHAR s[0x300];
+			xstrcpy(s, (TCHAR*)TEXT("ShellExecute failed: "));
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+			dbg(&s[0]);
 
-			showmessage(_strdup("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
+			showmessage((TCHAR*)TEXT("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		}
 		#endif
 		break;
@@ -514,7 +520,15 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case FIRSTICONITEM+2:
 	case FIRSTICONITEM+3:
 		item -= FIRSTICONITEM;
-		alertuser(err[item],_strdup(""));
+		{
+			#ifdef UNICODE
+			TCHAR errW[0x300];
+			mbstowcs(errW, err[item], 0x300);
+			alertuser(errW, (TCHAR*)TEXT(""));
+			#else
+			alertuser(err[item], (TCHAR*)TEXT(""));
+			#endif
+		}
 		SELECTCTLTEXT(dp,FIRSTEXPRITEM+item,errstart[item],errpos[item]);
 		break;
 	case FIRSTEXPRITEM:
@@ -531,13 +545,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	return true; // keep going
 }
 
-Boolean alertuser(char *err,char *more){
-	char *s = (char*)malloc(strlen(err)+strlen(more)+2),*q;
+Boolean alertuser(TCHAR *err,TCHAR *more){
+	TCHAR *s = (TCHAR*)malloc((xstrlen(err)+xstrlen(more)+2)*sizeof(TCHAR)), *q;
 	Boolean res;
 
-	q = cat(s,err);
+	q = xstrcat(s,err);
 	*q++ = LF;
-	q = cat(q,more);
+	q = xstrcat(q,more);
 	*q = 0;
 	res = simplealert(s);
 	free(s);

@@ -79,40 +79,54 @@ void DoAbout(AboutRecordPtr pb){
 		               "making a donation.");
 	}
 
-	MessageBox((HWND)p->hwnd, text, title, MB_TASKMODAL|MB_ICONINFORMATION|MB_OK);
+	MessageBoxA((HWND)p->hwnd, text, title, MB_TASKMODAL|MB_ICONINFORMATION|MB_OK);
 }
 
-Boolean simplealert(char *s){
+Boolean simplealert(TCHAR* s){
 	HWND hwnd;
-	char* title;
+	TCHAR title[256];
 	if (gdata && gdata->standalone) {
-		title = gdata->parm.szTitle;
-	} else {
-		title = _strdup("Filter Foundry");
+		#ifdef UNICODE
+		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
+		#else
+		strcpy(&title[0], gdata->parm.szTitle);
+		#endif
+	}
+	else {
+		xstrcpy(&title[0], (TCHAR*)TEXT("Filter Foundry"));
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
 	return MessageBox(hwnd, s, title, MB_TASKMODAL|MB_ICONERROR|MB_OK) == IDOK;
 }
 
-Boolean simplewarning(char* s) {
+Boolean simplewarning(TCHAR* s) {
 	HWND hwnd;
-	char* title;
+	TCHAR title[256];
 	if (gdata && gdata->standalone) {
-		title = gdata->parm.szTitle;
+		#ifdef UNICODE
+		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
+		#else
+		strcpy(&title[0], gdata->parm.szTitle);
+		#endif
 	} else {
-		title = _strdup("Filter Foundry");
+		xstrcpy(&title[0], (TCHAR*)TEXT("Filter Foundry"));
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
 	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONEXCLAMATION|MB_OK) == IDOK;
 }
 
-Boolean showmessage(char *s) {
+Boolean showmessage(TCHAR *s) {
 	HWND hwnd;
-	char* title;
+	TCHAR title[256];
 	if (gdata && gdata->standalone) {
-		title = gdata->parm.szTitle;
-	} else {
-		title = _strdup("Filter Foundry");
+		#ifdef UNICODE
+		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
+		#else
+		strcpy(&title[0], gdata->parm.szTitle);
+		#endif
+	}
+	else {
+		xstrcpy(&title[0], (TCHAR*)TEXT("Filter Foundry"));
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
 	return MessageBox(hwnd,s,title,MB_TASKMODAL|MB_ICONINFORMATION|MB_OK) == IDOK;
@@ -129,7 +143,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 // Returns:
 //   The handle to the tooltip.
 //
-HWND CreateToolTip(int toolID, HWND hDlg, PTSTR pszText) {
+HWND CreateToolTip(int toolID, HWND hDlg, LPTSTR pszText) {
 	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control (modified)
 
 	HWND hwndTool, hwndTip;
@@ -182,7 +196,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	if ((gdata->pluginDllSliderMessageId != 0) && (wMsg == gdata->pluginDllSliderMessageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
-			int sliderNum = wParam - FIRSTCTLITEM;
+			int sliderNum = (int)wParam - FIRSTCTLITEM;
 			uint8_t sliderVal = (uint8_t)(lParam & 0xFFFF);
 			slider[sliderNum] = sliderVal;
 
@@ -199,17 +213,17 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		gdata->hWndMainDlg = hDlg;
 
 		if(gdata->standalone){
-			SetWindowText(hDlg,gdata->parm.szTitle); // window title bar
+			SetWindowTextA(hDlg,gdata->parm.szTitle); // window title bar
 		}
 		centre_window(hDlg);
 
 		hfnt = GetStockObject(ANSI_FIXED_FONT);
 
-		hCurHandOpen = LoadCursor(hDllInstance, "HAND_OPEN");
-		hCurHandGrab = LoadCursor(hDllInstance, "HAND_GRAB");
-		hCurHandQuestion = LoadCursor(hDllInstance, "HAND_QUESTION");
+		hCurHandOpen = LoadCursorA(hDllInstance, "HAND_OPEN");
+		hCurHandGrab = LoadCursorA(hDllInstance, "HAND_GRAB");
+		hCurHandQuestion = LoadCursorA(hDllInstance, "HAND_QUESTION");
 
-		hIconCautionSign = LoadIcon(hDllInstance, "CAUTION_ICO");
+		hIconCautionSign = LoadIconA(hDllInstance, "CAUTION_ICO");
 
 		// Note: The whole class "Preview" gets the mouse cursor, not just the single item!
 		preview_hwnd = GetDlgItem(hDlg, PREVIEWITEM);
@@ -220,12 +234,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		SetClassLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandQuestion);
 
 		for(i = 0; i < 4; ++i){
-			CreateToolTip(FIRSTICONITEM + i, hDlg, _strdup("Error in expression! Click to see details."));
+			CreateToolTip(FIRSTICONITEM + i, hDlg, (TCHAR*)TEXT("Error in expression! Click to see details."));
 		}
 
-		CreateToolTip(ZOOMINITEM, hDlg, _strdup("Zoom in"));
-		CreateToolTip(ZOOMOUTITEM, hDlg, _strdup("Zoom out"));
-		CreateToolTip(ZOOMLEVELITEM, hDlg, _strdup("Fully zoom in/out"));
+		CreateToolTip(ZOOMINITEM, hDlg, (TCHAR*)TEXT("Zoom in"));
+		CreateToolTip(ZOOMOUTITEM, hDlg, (TCHAR*)TEXT("Zoom out"));
+		CreateToolTip(ZOOMLEVELITEM, hDlg, (TCHAR*)TEXT("Fully zoom in/out"));
 
 		for(i = 0; i < 8; ++i){
 			if (gdata->pluginDllSliderMessageId == 0) {
@@ -329,26 +343,26 @@ Boolean maindialog(FilterRecordPtr pb){
 	INT_PTR res;
 
 	// First try to use the sliders from PLUGIN.DLL (only Photoshop)
-	if (!Slider_Init_PluginDll("FoundrySlider")) {
+	if (!Slider_Init_PluginDll(TEXT("FoundrySlider"))) {
 		// If we couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop),
 		// then try the Microsoft Trackbar Control instead
-		if (!Slider_Init_MsTrackbar("FoundrySlider")) {
+		if (!Slider_Init_MsTrackbar(TEXT("FoundrySlider"))) {
 			// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32).
 			// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32.
 			// It is included in Windows NT 3.5x.
 
-			//simplealert(_strdup("This plugin requires Photoshop's PLUGIN.DLL or the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
+			//simplealert((TCHAR*)TEXT("This plugin requires Photoshop's PLUGIN.DLL or the Microsoft Trackbar Control (msctls_trackbar32) which was not found on your system."));
 			//return false;
 
 			// We simply hide the sliders and let the user enter the numeric values in the edit-box.
-			simplewarning(_strdup("Visual sliders are not available because neither PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
-			Slider_Init_None("FoundrySlider");
+			simplewarning((TCHAR*)TEXT("Visual sliders are not available because neither PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
+			Slider_Init_None(TEXT("FoundrySlider"));
 		}
 	}
 
 	// For the preview image and caution symbols, we register subclasses, so that we can assign a mouse cursor to this class.
-	MakeSimpleSubclass("Preview", "STATIC");
-	MakeSimpleSubclass("Caution", "Button");
+	MakeSimpleSubclass(TEXT("Preview"), TEXT("STATIC"));
+	MakeSimpleSubclass(TEXT("Caution"), TEXT("Button"));
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
@@ -357,19 +371,19 @@ Boolean maindialog(FilterRecordPtr pb){
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
-		simplealert(_strdup("DialogBoxParam in valid parent window handle"));
+		simplealert((TCHAR*)TEXT("DialogBoxParam in valid parent window handle"));
 	}
 	if (res == -1) {
-		char s[100];
-		strcpy(s, "DialogBoxParam failed: ");
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-		dbg(s);
+		TCHAR s[0x300];
+		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: "));
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+		dbg(&s[0]);
 	}
 
 	// Clean up after the dialog has been closed
-	UnregisterClass("Preview", hDllInstance);
-	UnregisterClass("Caution", hDllInstance);
-	UnregisterClass("FoundrySlider", hDllInstance);
+	UnregisterClass(TEXT("Preview"), hDllInstance);
+	UnregisterClass(TEXT("Caution"), hDllInstance);
+	UnregisterClass(TEXT("FoundrySlider"), hDllInstance);
 	Slider_Uninit_PluginDll();
 
 	return res == IDOK;

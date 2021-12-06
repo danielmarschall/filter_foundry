@@ -33,12 +33,12 @@ int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 
 // Misc utilities
-Boolean MakeSimpleSubclass(LPCSTR targetClass, LPCSTR sourceClass);
+Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass);
 
 // Init and uninit
 void Slider_Uninit_PluginDll();
-Boolean Slider_Init_PluginDll(LPCSTR targetClass);
-Boolean Slider_Init_MsTrackbar(LPCSTR targetClass);
-Boolean Slider_Init_None(LPCSTR targetClass);
+Boolean Slider_Init_PluginDll(LPCTSTR targetClass);
+Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass);
+Boolean Slider_Init_None(LPCTSTR targetClass);
 
 #endif

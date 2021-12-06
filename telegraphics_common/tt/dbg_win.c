@@ -22,14 +22,6 @@
 #include "dbg.h"
 #include "str.h"
 
-void dbg(const char *s){
-	MessageBox(NULL,s,"plugin debug",0);
+void dbg(TCHAR *s){
+	MessageBox(NULL,s,TEXT("plugin debug"),0);
 }
-
-#define DebugStr dbg(INPLACEP2CSTR(s))
-/*
-void DebugStr(StringPtr s){
-	dbg(myp2cstr(s));
-	myc2pstr((char*)s);
-}
-*/

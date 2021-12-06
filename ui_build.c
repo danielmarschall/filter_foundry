@@ -33,32 +33,32 @@ void builddlginit(DIALOGREF dp){
 	char s[0x100];
 
 	if(gdata->parmloaded){
-		SetDlgItemText(dp,CATEGORYITEM,	gdata->parm.szCategory);
-		SetDlgItemText(dp,TITLEITEM,	gdata->parm.szTitle);
-		SetDlgItemText(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
-		SetDlgItemText(dp,AUTHORITEM,	gdata->parm.szAuthor);
+		SetDlgItemTextA(dp,CATEGORYITEM, gdata->parm.szCategory);
+		SetDlgItemTextA(dp,TITLEITEM,    gdata->parm.szTitle);
+		SetDlgItemTextA(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
+		SetDlgItemTextA(dp,AUTHORITEM,   gdata->parm.szAuthor);
 		for(i=0;i<4;++i){
-			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
+			SetDlgItemTextA(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
 		}
 		for(i=0;i<8;++i){
-			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
+			SetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
 		}
 	}else{
 		/* strictly speaking this is not needed on the Mac,
 		   we can set initial values statically in the rez description */
-		SetDlgItemText(dp,CATEGORYITEM,	"Filter Foundry");
-		SetDlgItemText(dp,TITLEITEM,	"Untitled");
-		SetDlgItemText(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
-		SetDlgItemText(dp,AUTHORITEM,	"Anonymous");
+		SetDlgItemTextA(dp,CATEGORYITEM, "Filter Foundry");
+		SetDlgItemTextA(dp,TITLEITEM,    "Untitled");
+		SetDlgItemTextA(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
+		SetDlgItemTextA(dp,AUTHORITEM,   "Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){
 			s[4] = '0'+i;
-			SetDlgItemText(dp,FIRSTMAPNAMEITEM+i,s);
+			SetDlgItemTextA(dp,FIRSTMAPNAMEITEM+i,s);
 		}
 		strcpy(s,"ctl(X)");
 		for(i = 0; i < 8; ++i){
 			s[4] = '0'+i;
-			SetDlgItemText(dp,FIRSTCTLNAMEITEM+i,s);
+			SetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i,s);
 		}
 	}
 
@@ -88,6 +88,37 @@ void builddlginit(DIALOGREF dp){
 	SELECTDLGITEMTEXT(dp,TITLEITEM,0,-1);
 }
 
+Boolean containsUnicodeInput(DIALOGREF dp, int item) {
+	enum { MAXFIELD = 0x100 };
+	char s[MAXFIELD + 1];
+	wchar_t sw[MAXFIELD + 1];
+	size_t i;
+
+	GetDlgItemTextA(dp, item, s, MAXFIELD);
+	GetDlgItemTextW(dp, item, sw, MAXFIELD);
+	for (i = 0; i < strlen(s); i++) {
+		if (((wchar_t)s[i] != sw[i]) && (s[i] == '?')) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Boolean containsExtCharset(DIALOGREF dp, int item) {
+	enum { MAXFIELD = 0x100 };
+	char s[MAXFIELD + 1];
+	size_t i;
+
+	GetDlgItemTextA(dp, item, s, MAXFIELD);
+	for (i = 0; i < strlen(s); i++) {
+		if ((unsigned char)s[i] > (unsigned char)0x7F) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /* process an item hit. return false if the dialog is finished; otherwise return true. */
 
@@ -95,9 +126,13 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	enum{MAXFIELD=0x100};
 	char s[MAXFIELD+1];
 	int i,needui;
-	char fname[256];
+	TCHAR fname[MAX_PATH + 1];
 	StandardFileReply sfr;
 	NavReplyRecord reply;
+	#ifdef UNICODE
+	Boolean unicode;
+	#endif
+	Boolean extCharset;
 
 	switch(item){
 #ifdef MAC_ENV
@@ -106,23 +141,65 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	case IDOK:
 #endif
 		// Do a few checks first
-		GetDlgItemText(dp, CATEGORYITEM, s, MAXFIELD);
+		GetDlgItemTextA(dp, CATEGORYITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert(_strdup("Category must not be empty!"));
+			simplealert((TCHAR*)TEXT("Category must not be empty!"));
 			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
 		}
-		GetDlgItemText(dp, TITLEITEM, s, MAXFIELD);
+		GetDlgItemTextA(dp, TITLEITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert(_strdup("Title must not be empty!"));
+			simplealert((TCHAR*)TEXT("Title must not be empty!"));
 			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
+		}
+
+		// The PiPL and PARM structure does only define single byte charsets
+		#ifdef UNICODE
+		unicode =
+			containsUnicodeInput(dp, CATEGORYITEM) ||
+			containsUnicodeInput(dp, TITLEITEM) ||
+			containsUnicodeInput(dp, COPYRIGHTITEM) ||
+			containsUnicodeInput(dp, AUTHORITEM);
+		#endif
+		extCharset =
+			containsExtCharset(dp, CATEGORYITEM) ||
+			containsExtCharset(dp, TITLEITEM) ||
+			containsExtCharset(dp, COPYRIGHTITEM) ||
+			containsExtCharset(dp, AUTHORITEM);
+
+		// The AETE structure does only define single byte charsets
+		for (i = 0; i < 8; ++i) {
+			if (ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) {
+				#ifdef UNICODE
+				unicode |= containsUnicodeInput(dp, FIRSTCTLNAMEITEM + i);
+				#endif
+				extCharset |= containsExtCharset(dp, FIRSTCTLNAMEITEM + i);
+			}
+		}
+		for (i = 0; i < 4; ++i) {
+			if (maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS)) {
+				#ifdef UNICODE
+				unicode |= containsUnicodeInput(dp, FIRSTMAPNAMEITEM + i);
+				#endif
+				extCharset |= containsExtCharset(dp, FIRSTMAPNAMEITEM + i);
+			}
+		}
+
+		#ifdef UNICODE
+		if (unicode) {
+			simplewarning((TCHAR*)TEXT("The internal structures of Photoshop and Filter Factory are not compatible with Unicode characters. It is highly recommended that you only use characters of your current charset. Unicode characters will be converted into question mark symbols."));
+		}
+		else
+		#endif
+		if (extCharset) {
+			simplewarning((TCHAR*)TEXT("You were using characters of an extended charset. The characters might look correct on your machine, but on a machine in a different country, the characters might look wrong. Please consider using the ASCII character set only (i.e. Latin characters without accent marks)."));
 		}
 
 		// Now begin
 		memset(&gdata->parm,0,sizeof(PARM_T));
-		GetDlgItemText(dp,CATEGORYITEM,gdata->parm.szCategory,MAXFIELD-4/*ProtectFlag*/);
-		GetDlgItemText(dp,TITLEITEM,gdata->parm.szTitle,MAXFIELD);
-		GetDlgItemText(dp,COPYRIGHTITEM,gdata->parm.szCopyright,MAXFIELD);
-		GetDlgItemText(dp,AUTHORITEM,gdata->parm.szAuthor,MAXFIELD);
+		GetDlgItemTextA(dp,CATEGORYITEM,gdata->parm.szCategory,MAXFIELD-4/*ProtectFlag*/);
+		GetDlgItemTextA(dp,TITLEITEM,gdata->parm.szTitle,MAXFIELD);
+		GetDlgItemTextA(dp,COPYRIGHTITEM,gdata->parm.szCopyright,MAXFIELD);
+		GetDlgItemTextA(dp,AUTHORITEM,gdata->parm.szAuthor,MAXFIELD);
 		gdata->parm.cbSize = PARM_SIZE;
 		gdata->parm.standalone = 1;  //0=original FF, 1=standalone filter
 		needui = 0;
@@ -131,32 +208,32 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			gdata->parm.val[i] = slider[i];
 			gdata->parm.ctl_used[i] = ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
 			needui |= gdata->parm.ctl_used[i];
-			GetDlgItemText(dp,FIRSTCTLNAMEITEM+i, gdata->parm.szCtl[i],MAXFIELD);
+			GetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i, gdata->parm.szCtl[i],MAXFIELD);
 		}
 		// Maps
 		for (i = 0; i < 4; ++i) {
 			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
 			needui |= gdata->parm.map_used[i];
-			GetDlgItemText(dp, FIRSTMAPNAMEITEM + i, gdata->parm.szMap[i], MAXFIELD);
+			GetDlgItemTextA(dp, FIRSTMAPNAMEITEM + i, gdata->parm.szMap[i], MAXFIELD);
 		}
 		// Expressions
 		for (i = 0; i < 4; ++i) {
 			if (!expr[i]) {
-				simplealert(_strdup("Bug! see builddlgitem"));
+				simplealert((TCHAR*)TEXT("Bug! see builddlgitem"));
 				return true; // keep going. Let the user try again
 			}
 			if (strlen(expr[i]) >= sizeof(gdata->parm.szFormula[i])) {
 				if (i == 0) {
-					simplealert(_strdup("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));
+					simplealert((TCHAR*)TEXT("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 1) {
-					simplealert(_strdup("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
+					simplealert((TCHAR*)TEXT("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 2) {
-					simplealert(_strdup("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
+					simplealert((TCHAR*)TEXT("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
 				}
 				else if (i == 3) {
-					simplealert(_strdup("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
+					simplealert((TCHAR*)TEXT("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
 				}
 				expr[i][sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 			}
@@ -167,22 +244,33 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = ISDLGBUTTONCHECKED(dp,PROTECTITEM);
 
-		strcpy(fname, gdata->parm.szTitle);
+		// TODO: Unicode!
+		//xstrcpy(fname, gdata->parm.szTitle);
+		/*
+		for (i = 0; i < (int)strlen(gdata->parm.szTitle); i++) {
+			fname[i] = gdata->parm.szTitle[i];
+			fname[i + 1] = 0;
+		}
+		*/
+		GetDlgItemText(dp, TITLEITEM, fname, MAXFIELD);
+
 		#ifdef MACMACHO
 		strcat(fname, ".plugin");
 		#endif
 		if (putfile(
 			#ifdef MAC_ENV
 			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"
-			#else
-			(StringPtr)_strdup("\026Make standalone filter"),
-			#endif
 			(StringPtr)myc2pstr(_strdup(fname)),
-			PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
+			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
 			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1
-			#ifdef _WIN32
+			#else
+			TEXT("Make standalone filter"),
+			fname,
+			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
+			TEXT("8bf"),
+			TEXT("Filter plugin file (.8bf)\0*.8bf\0\0"), 1
 			, (HWND)dp
-			#endif /* _WIN32 */
+			#endif
 		)) {
 			make_standalone(&sfr);
 		}

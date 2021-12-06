@@ -35,7 +35,7 @@ HBITMAP _CreateDIBSection(HDC hdc, CONST BITMAPINFO* pbmi, UINT usage, VOID** pp
 	f_CreateDIBSection fCreateDIBSection;
 	HBITMAP res;
 
-	hLib = LoadLibraryA("GDI32.DLL");
+	hLib = LoadLibrary(TEXT("GDI32.DLL"));
 	if (!hLib) return 0;
 	fCreateDIBSection = (f_CreateDIBSection)(void*)GetProcAddress(hLib, "CreateDIBSection");
 	if (fCreateDIBSection != 0) {
@@ -86,7 +86,7 @@ Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 
 			return true;
 		}else
-			dbg("CreateDIBSection FAILED");
+			dbg((TCHAR*)TEXT("CreateDIBSection FAILED"));
 	}
 	return false;
 }
@@ -115,7 +115,7 @@ BOOL _GetMonitorInfoA(_HMONITOR hMonitor, _LPMONITORINFO lpmi) {
 	f_GetMonitorInfoA fGetMonitorInfoA;
 	BOOL res;
 
-	hLib = LoadLibraryA("USER32.DLL");
+	hLib = LoadLibrary(TEXT("USER32.DLL"));
 	if (!hLib) return 0;
 	fGetMonitorInfoA = (f_GetMonitorInfoA)(void*)GetProcAddress(hLib, "GetMonitorInfoA");
 	if (fGetMonitorInfoA != 0) {
@@ -135,7 +135,7 @@ _HMONITOR _MonitorFromRect(LPCRECT lprc, DWORD dwFlags) {
 	f_MonitorFromRect fMonitorFromRect;
 	_HMONITOR res;
 
-	hLib = LoadLibraryA("USER32.DLL");
+	hLib = LoadLibrary(TEXT("USER32.DLL"));
 	if (!hLib) return 0;
 	fMonitorFromRect = (f_MonitorFromRect)(void*)GetProcAddress(hLib, "MonitorFromRect");
 	if (fMonitorFromRect != 0) {

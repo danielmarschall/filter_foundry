@@ -102,12 +102,12 @@
 	void DoAbout(AboutRecordPtr prec);
 	Boolean maindialog(FilterRecordPtr pb);
 	Boolean builddialog(FilterRecordPtr pb);
-	Boolean simplealert(char* s);
-	Boolean simplewarning(char* s);
-	Boolean showmessage(char *s);
+	Boolean simplealert(TCHAR* s);
+	Boolean simplewarning(TCHAR* s);
+	Boolean showmessage(TCHAR *s);
 
 	// platform independent
-	Boolean alertuser(char *err,char *more);
+	Boolean alertuser(TCHAR *err, TCHAR*more);
 	void maindlginit(DIALOGREF dp);
 	Boolean maindlgitem(DIALOGREF dp,int item);
 	void maindlgupdate(DIALOGREF dp);

@@ -33,7 +33,7 @@
 	#define PARM_ID_OLD 16000
 	#define PARM_ID_NEW 16 // Filter Factory compatibility
 #else
-	#define PARM_TYPE "PARM"
+	#define PARM_TYPE TEXT("PARM")
 	#define PARM_ID_OLD MAKEINTRESOURCE(16000)
 	#define PARM_ID_NEW MAKEINTRESOURCE(16) // Filter Factory compatibility
 #endif
@@ -45,7 +45,7 @@
 	#define OBFUSCDATA_ID_NEW 16
 #else
 	#define OBFUSCDATA_TYPE_OLD RT_RCDATA
-	#define OBFUSCDATA_TYPE_NEW "OBFS"
+	#define OBFUSCDATA_TYPE_NEW TEXT("OBFS")
 	#define OBFUSCDATA_ID_OLD MAKEINTRESOURCE(16001)
 	#define OBFUSCDATA_ID_NEW MAKEINTRESOURCE(16)
 #endif

@@ -67,13 +67,13 @@ Boolean builddialog(FilterRecordPtr pb){
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(ID_BUILDDLG),
 	                     gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,builddlgproc,0);
 	if (res == 0) {
-		simplealert(_strdup("DialogBoxParam in valid parent window handle"));
+		simplealert((TCHAR*)TEXT("DialogBoxParam in valid parent window handle"));
 	}
 	if (res == -1) {
-		char s[100];
-		strcpy(s, "DialogBoxParam failed: ");
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-		dbg(s);
+		TCHAR s[0x300];
+		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: "));
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+		dbg(&s[0]);
 	}
 
 	return res == IDOK;

@@ -97,16 +97,16 @@ int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	}
 }
 
-Boolean MakeSimpleSubclass(LPCSTR targetClass, LPCSTR sourceClass) {
+Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 	WNDCLASS clx;
 
-	if (GetClassInfoA(hDllInstance, sourceClass, &clx) != 0) {
+	if (GetClassInfo(hDllInstance, sourceClass, &clx) != 0) {
 		clx.lpszClassName = targetClass;
 		if (RegisterClass(&clx) == 0) {
-			char s[100];
-			strcpy(s, "RegisterClass failed: ");
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + strlen(s), 0x100, NULL);
-			dbg(s);
+			TCHAR s[0x300];
+			xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: "));
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+			dbg(&s[0]);
 			return false;
 		}
 		else {
@@ -125,7 +125,7 @@ void Slider_Uninit_PluginDll() {
 #else
 	WNDCLASS clx;
 
-	if (GetClassInfo(hDllInstance, "slider", &clx) != 0) {
+	if (GetClassInfo(hDllInstance, TEXT("slider"), &clx) != 0) {
 		UnregisterSlider(hDllInstance);
 	}
 	if (gdata->pluginDllModule) {
@@ -136,7 +136,7 @@ void Slider_Uninit_PluginDll() {
 
 }
 
-Boolean Slider_Init_PluginDll(LPCSTR targetClass) {
+Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 
 #ifndef use_plugin_dll_sliders
 	return false;
@@ -144,7 +144,7 @@ Boolean Slider_Init_PluginDll(LPCSTR targetClass) {
 	DWORD sliderMsgId;
 
 	// Try loading PLUGIN.DLL (only Photoshop) in order to register the class "slider"
-	gdata->pluginDllModule = LoadLibraryA("PLUGIN.DLL");
+	gdata->pluginDllModule = LoadLibrary(TEXT("PLUGIN.DLL"));
 	if (!gdata->pluginDllModule) return false;
 	sliderMsgId = 0; // important
 	RegisterSlider(hDllInstance, &sliderMsgId);
@@ -158,20 +158,20 @@ Boolean Slider_Init_PluginDll(LPCSTR targetClass) {
 	}
 
 	// Make "FoundrySlider" a subclass of "slider" then
-	return MakeSimpleSubclass(targetClass, "slider");
+	return MakeSimpleSubclass(targetClass, TEXT("slider"));
 #endif
 
 }
 
 typedef void(__stdcall* f_InitCommonControls)();
 typedef BOOL(__stdcall* f_InitCommonControlsEx)(const INITCOMMONCONTROLSEX* picce);
-Boolean Slider_Init_MsTrackbar(LPCSTR targetClass) {
+Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 	f_InitCommonControls fInitCommonControls;
 	f_InitCommonControlsEx fInitCommonControlsEx;
 	HMODULE libComctl32;
 
 	// Make sure that Comctl32 is loaded
-	libComctl32 = LoadLibraryA("Comctl32.dll");
+	libComctl32 = LoadLibrary(TEXT("Comctl32.dll"));
 	if (libComctl32) {
 		fInitCommonControlsEx = (f_InitCommonControlsEx)(void*)GetProcAddress(libComctl32, "InitCommonControlsEx");
 		if (fInitCommonControlsEx != 0) {
@@ -195,10 +195,10 @@ Boolean Slider_Init_MsTrackbar(LPCSTR targetClass) {
 	}
 
 	// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
-	return MakeSimpleSubclass(targetClass, "msctls_trackbar32");
+	return MakeSimpleSubclass(targetClass, TEXT("msctls_trackbar32"));
 }
 
-Boolean Slider_Init_None(LPCSTR targetClass) {
+Boolean Slider_Init_None(LPCTSTR targetClass) {
 	// Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
-	return MakeSimpleSubclass(targetClass, "STATIC");
+	return MakeSimpleSubclass(targetClass, TEXT("STATIC"));
 }

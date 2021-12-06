@@ -20,7 +20,9 @@
 #ifndef DBG_H_
 #define DBG_H_
 
-void dbg(const char *s);
+#include <windows.h>
+
+void dbg(TCHAR *s);
 int dprintf (const char *fmt, ...);
 
 #endif

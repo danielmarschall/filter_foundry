@@ -97,7 +97,6 @@ typedef struct InternalState_ {
 
 // from main.c
 unsigned long get_parm_hash(PARM_T *parm);
-void get_temp_afs(char* outfilename, Boolean isStandalone, PARM_T* parm);
 void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);

@@ -123,9 +123,9 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 						break;
 					case '\\': break;
 					//default:
-					//	if(alerts) alertuser(_strdup("Warning:"),_strdup("Unknown escape sequence in input."));
+					//	if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("Unknown escape sequence in input."));
 					}
-				}//else if(alerts) alertuser(_strdup("Warning:"),_strdup("truncated escape sequence ends input"));
+				}//else if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("truncated escape sequence ends input"));
 			}
 
 			if(lineptr < MAXLINE)
@@ -214,7 +214,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
 				if (format_version > 0) {
-					simplewarning(_strdup("Attention! You are loading a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
+					simplewarning((TCHAR*)TEXT("Attention! You are loading a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
 
 					val = _ffx_read_str(&q);
 					strcpy(gdata->parm.szTitle, val);
@@ -256,16 +256,16 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						}
 						if (strlen(val) >= sizeof(gdata->parm.szFormula[i])) {
 							if (i == 0) {
-								simplealert(_strdup("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."));
+								simplealert((TCHAR*)TEXT("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 1) {
-								simplealert(_strdup("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
+								simplealert((TCHAR*)TEXT("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 2) {
-								simplealert(_strdup("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
+								simplealert((TCHAR*)TEXT("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
 							}
 							else if (i == 3) {
-								simplealert(_strdup("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
+								simplealert((TCHAR*)TEXT("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
 							}
 							// C++ wrong warning: Buffer overflow (C6386)
 							#pragma warning(suppress : 6386)
@@ -649,7 +649,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 
 		if (strlen(svalue) > 0) {
 			if (outputwork + strlen(svalue) + (isFormula ? 3/*CRLF+NUL*/ : 2/*space+NUL*/) > outputFile + maxOutput) {
-				int remaining = maxOutput - (outputwork - outputFile) - 1;
+				size_t remaining = maxOutput - (outputwork - outputFile) - 1;
 				//printf("BUFFER FULL (remaining = %d)\n", remaining);
 				memcpy(outputwork, svalue, remaining);
 				outputwork += remaining;
@@ -700,7 +700,7 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 
 	UNREFERENCED_PARAMETER(reason);
 
-	if (!fileHasExtension(sfr, ".txt")) return false;
+	if (!fileHasExtension(sfr, TEXT(".txt"))) return false;
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
@@ -786,7 +786,7 @@ Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 			if( (res = readparams_afs_pff(h,reason)) ) {
 				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
 
-				if (fileHasExtension(sfr, ".pff")) {
+				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					// We just swap the pointers!
 					char* tmp;

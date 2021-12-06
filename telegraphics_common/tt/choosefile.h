@@ -44,20 +44,26 @@
 	} NavReplyRecord;
 #endif
 
-Boolean fileHasExtension(StandardFileReply* sfr, const char* extension);
+#ifdef macintosh
+    typedef StringPtr PString;
+#else
+    typedef LPCTSTR PString;
+#endif
+
+Boolean fileHasExtension(StandardFileReply* sfr, const TCHAR* extension);
     
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
-                             OSType tlist[], StringPtr extlist[],Boolean *premult);
+                             OSType tlist[], PString extlist[],Boolean *premult);
 
-Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-                        OSType types[],int ntypes,const char *lpstrFilter
+Boolean choosefiletypes(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,
+                        OSType types[],int ntypes,const TCHAR *lpstrFilter
                         #ifdef _WIN32
                         ,HWND hwndOwner
                         #endif /* _WIN32 */
 );
 
-Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,
-                   NavReplyRecord *reply,OSType type,const char *lpstrFilter
+Boolean choosefile(PString prompt,StandardFileReply *sfr,
+                   NavReplyRecord *reply,OSType type,const TCHAR *lpstrFilter
                    #ifdef _WIN32
                    ,HWND hwndOwner
                    #endif /* _WIN32 */
@@ -75,9 +81,9 @@ A pattern string can be a combination of valid file name characters
 and the asterisk (*) wildcard character. Do not include spaces in the pattern string.
 */
 
-Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
+Boolean putfile(PString prompt, PString fname,OSType fileType,OSType fileCreator,
                 NavReplyRecord *reply,StandardFileReply *sfr,
-                const char *lpstrDefExt, const char *lpstrFilter,int nFilterIndex
+                const TCHAR *lpstrDefExt, const TCHAR *lpstrFilter,int nFilterIndex
                 #ifdef _WIN32
                 ,HWND hwndOwner
                 #endif /* _WIN32 */
@@ -85,22 +91,22 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 
 OSErr completesave(NavReplyRecord *reply);
 
-Boolean choosefile_sf(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-                      OSType type,const char *lpstrFilter);
+Boolean choosefile_sf(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,
+                      OSType type,const TCHAR *lpstrFilter);
 
-Boolean putfile_sf(StringPtr prompt,StringPtr fname,
+Boolean putfile_sf(PString prompt, PString fname,
                    OSType fileType,OSType fileCreator,
                    NavReplyRecord *reply,StandardFileReply *sfr);
 
 OSErr completesave_sf(NavReplyRecord *reply);
 
 Boolean customchoosefile_nav(FSSpec *fss,ScriptCode *script,
-                             OSType tlist[], StringPtr extlist[],Boolean *premult);
+                             OSType tlist[], PString extlist[],Boolean *premult);
 
-Boolean choosefile_nav(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-                       OSType type,const char *lpstrFilter);
+Boolean choosefile_nav(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,
+                       OSType type,const TCHAR *lpstrFilter);
 
-Boolean putfile_nav(StringPtr prompt,StringPtr fname,
+Boolean putfile_nav(PString prompt, PString fname,
                     OSType fileType,OSType fileCreator,
                     NavReplyRecord *reply,StandardFileReply *sfr);
 

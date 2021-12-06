@@ -30,15 +30,15 @@
 
 extern HINSTANCE hDllInstance;
 
-Boolean doresources(char *dstname, int bits);
+Boolean doresources(FSSpec* dst, int bits);
 
-void dbglasterror(char *func){
-	char s[0x100];
+void dbglasterror(TCHAR *func){
+	TCHAR s[0x300];
 
-	strcpy(s,func);
-	strcat(s," failed: ");
-	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM,NULL,GetLastError(),0,s+strlen(s),0x100,NULL );
-	dbg(s);
+	xstrcpy(&s[0],func);
+	xstrcat(&s[0],TEXT(" failed: "));
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+	dbg(&s[0]);
 }
 
 /*
@@ -102,9 +102,9 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	}
 }
 
-ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) {
-	char* soleFilename;
-	LPWSTR changeRequestStr, tmp;
+ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
+	LPTSTR soleFilename;
+	LPWSTR changeRequestStrW, tmp;
 	ULONG dwError = NOERROR;
 	HRSRC hResInfo;
 	HGLOBAL hg;
@@ -112,20 +112,22 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 	PVOID pv;
 	//BOOL fDiscard = TRUE;
 
-	if (soleFilename = strrchr(dstname, '\\')) {
+	if (soleFilename = xstrrchr(&dst->szName[0], '\\')) {
 		++soleFilename;
 	}
 	else {
-		soleFilename = dstname;
+		soleFilename = &dst->szName[0];
 	}
 
 	// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
 	// You can CHANGE values for any given name
 	// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
 	// You cannot (yet) ADD entries.
-	changeRequestStr = (LPWSTR)malloc(6 * 2 * 100 + 1);
+	changeRequestStrW = (LPWSTR)malloc((6 * 2 * 100 + 1) * sizeof(WCHAR));
+	if (changeRequestStrW == 0) return E_OUTOFMEMORY;
+	memset((char*)changeRequestStrW, 0, sizeof(changeRequestStrW));
 
-	tmp = changeRequestStr;
+	tmp = changeRequestStrW;
 
 	tmp += mbstowcs(tmp, "Comments", 100);
 	tmp++;
@@ -164,7 +166,12 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 
 	tmp += mbstowcs(tmp, "OriginalFilename", 100);
 	tmp++;
+	#ifdef UNICODE
+	xstrcpy(tmp, soleFilename);
+	tmp += xstrlen(soleFilename);
+	#else
 	tmp += mbstowcs(tmp, soleFilename, 100);
+	#endif
 	tmp++;
 
 	tmp += mbstowcs(tmp, "License", 100);
@@ -174,7 +181,7 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 
 	tmp += mbstowcs(tmp, "", 1);
 
-	if (hResInfo = FindResourceEx(hDllInstance, "TPLT", MAKEINTRESOURCE(3000 + bits), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)))
+	if (hResInfo = FindResourceEx(hDllInstance, TEXT("TPLT"), MAKEINTRESOURCE(3000 + bits), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)))
 	{
 		if (hg = LoadResource(hDllInstance, hResInfo))
 		{
@@ -182,7 +189,7 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 			{
 				if (pv = LockResource(hg))
 				{
-					if (UpdateVersionRaw(pv, size, &pv, &size, changeRequestStr))
+					if (UpdateVersionRaw(pv, size, &pv, &size, changeRequestStrW))
 					{
 						if (_UpdateResource(hUpdate, RT_VERSION, MAKEINTRESOURCE(1), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), pv, size))
 						{
@@ -198,53 +205,59 @@ ULONG changeVersionInfo(char* dstname, HANDLE hUpdate, PARM_T* pparm, int bits) 
 		}
 	}
 
-	free(changeRequestStr);
+	free(changeRequestStrW);
 
 	return dwError;
 }
 
-Boolean update_pe_timestamp(const char* filename, time_t timestamp) {
+Boolean update_pe_timestamp(const FSSpec* dst, time_t timestamp) {
 	size_t peoffset;
-	FILE* fptr;
+	FILEREF fptr;
+	Boolean res;
+	FILECOUNT cnt;
 
-	fptr = fopen(filename, "rb+");
-	if (fptr == NULL) return false;
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return false;
 
-	fseek(fptr, 0x3C, SEEK_SET);
-	fread(&peoffset, sizeof(peoffset), 1, fptr);
+	res =
+		SetFPos(fptr, fsFromStart, 0x3C) ||
+		(cnt = sizeof(peoffset), noErr) ||
+		FSRead(fptr, &cnt, &peoffset) ||
+		SetFPos(fptr, fsFromStart, (long)peoffset + 8) ||
+		(cnt = sizeof(time_t), noErr) ||
+		FSWrite(fptr, &cnt, &timestamp);
 
-	fseek(fptr, (long)peoffset + 8, SEEK_SET);
-	fwrite(&timestamp, sizeof(time_t), 1, fptr);
+	FSClose(fptr);
 
-	fclose(fptr);
-
-	return true;
+	return res == noErr; // res=0 means everything was noErr, res=1 means something was !=noErr
 }
 
-int binary_replace_file(const char* filename, uint64_t search, uint64_t replace, Boolean align, int maxamount) {
+int binary_replace_file(FSSpec* dst, uint64_t search, uint64_t replace, Boolean align, int maxamount) {
 	uint64_t srecord = 0;
 	int found = 0;
+	FILEREF fptr;
+	FILECOUNT cnt;
 
-	FILE* fptr = fopen(filename, "rb+");
-	if (fptr == NULL) return -1;
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return -1;
 
-	while ((fread(&srecord, sizeof(srecord), 1, fptr) == 1))
+	cnt = sizeof(srecord);
+	while (FSRead(fptr, &cnt, &srecord) == noErr)
 	{
 		if (srecord == search) {
 			srecord = replace;
-			fseek(fptr, -1*(long)sizeof(srecord), SEEK_CUR);
-			fwrite(&srecord, (int)sizeof(srecord), 1, fptr);
-			fseek(fptr, 0, SEEK_CUR); // important!
+			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
+			cnt = (int)sizeof(srecord);
+			FSWrite(fptr, &cnt, &srecord);
+			SetFPos(fptr, fsFromStart, 0); // important for fseek
 			found++;
 			if (found == maxamount) break;
 		}
 		else {
 			if (!align) {
-				fseek(fptr, -1*(long)(sizeof(srecord) - 1), SEEK_CUR);
+				SetFPos(fptr, fsFromMark, -1 * (long)(sizeof(srecord) - 1));
 			}
 		}
 	}
-	fclose(fptr);
+	FSClose(fptr);
 
 	return found;
 }
@@ -284,30 +297,30 @@ struct image_file_header
 	uint16_t Characteristics;
 };
 
-uint32_t calculate_checksum(const char* filename) {
+uint32_t calculate_checksum(FSSpec* dst) {
 	//Calculate checksum of image
 	// Taken from "PE Bliss" Cross-Platform Portable Executable C++ Library
 	// https://github.com/mrexodia/portable-executable-library/blob/master/pe_lib/pe_checksum.cpp
 	// Converted from C++ to C by Daniel Marschall
 
-	FILE* fptr;
+	FILEREF fptr;
 	unsigned long long checksum = 0;
 	struct image_dos_header header;
-	size_t filesize;
+	FILEPOS filesize, i;
 	unsigned long long top;
 	unsigned long pe_checksum_pos;
 	static const unsigned long checksum_pos_in_optional_headers = 64;
-	size_t i;
+	FILECOUNT cnt;
 
-	fptr = fopen(filename, "rb");
-	if (fptr == NULL) return 0x00000000;
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return 0x00000000;
 
 	//Read DOS header
-	fseek(fptr, 0, SEEK_SET);
-	fread(&header, sizeof(struct image_dos_header), 1, fptr);
+	SetFPos(fptr, fsFromStart, 0);
+	cnt = sizeof(struct image_dos_header);
+	FSRead(fptr, &cnt, &header);
 
 	//Calculate PE checksum
-	fseek(fptr, 0, SEEK_SET);
+	SetFPos(fptr, fsFromStart, 0);
 	top = 0xFFFFFFFF;
 	top++;
 
@@ -317,15 +330,16 @@ uint32_t calculate_checksum(const char* filename) {
 	pe_checksum_pos = header.e_lfanew + sizeof(struct image_file_header) + sizeof(uint32_t) + checksum_pos_in_optional_headers;
 
 	//Calculate checksum for each byte of file
-	fseek(fptr, 0L, SEEK_END);
-	filesize = ftell(fptr);
-	fseek(fptr, 0L, SEEK_SET);
+	filesize = 0;
+	GetEOF(fptr, &filesize);
+	SetFPos(fptr, fsFromStart, 0);
 	for (i = 0; i < filesize; i += 4)
 	{
 		unsigned long dw = 0;
 
 		//Read DWORD from file
-		fread(&dw, sizeof(dw), 1, fptr);
+		cnt = sizeof(dw);
+		FSRead(fptr, &cnt, &dw);
 		//Skip "CheckSum" DWORD
 		if (i == pe_checksum_pos)
 			continue;
@@ -343,31 +357,34 @@ uint32_t calculate_checksum(const char* filename) {
 
 	checksum += (unsigned long)(filesize);
 
-	fclose(fptr);
+	FSClose(fptr);
 
 	//Return checksum
 	return (uint32_t)checksum;
 }
 
-Boolean repair_pe_checksum(const char* filename) {
+Boolean repair_pe_checksum(FSSpec* dst) {
 	size_t peoffset;
-	FILE* fptr;
+	FILEREF fptr;
+	FILECOUNT cnt;
+	Boolean res;
 
-	uint32_t checksum = calculate_checksum(filename);
+	uint32_t checksum = calculate_checksum(dst);
 	//if (checksum == 0x00000000) return false;
 
-	fptr = fopen(filename, "rb+");
-	if (fptr == NULL) return false;
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return false;
 
-	fseek(fptr, 0x3C, SEEK_SET);
-	fread(&peoffset, sizeof(peoffset), 1, fptr);
+	res = 
+		SetFPos(fptr, fsFromStart, 0x3C) ||
+		(cnt = sizeof(peoffset), noErr) ||
+		FSRead(fptr, &cnt, &peoffset) ||
+		SetFPos(fptr, fsFromStart, (long)peoffset + 88) ||
+		(cnt = sizeof(uint32_t), noErr) ||
+		FSWrite(fptr, &cnt, &checksum);
 
-	fseek(fptr, (long)peoffset + 88, SEEK_SET);
-	fwrite(&checksum, sizeof(uint32_t), 1, fptr);
+	FSClose(fptr);
 
-	fclose(fptr);
-
-	return true;
+	return res == noErr; // res=0 means everything was noErr, res=1 means something was !=noErr
 }
 
 typedef struct {
@@ -385,7 +402,7 @@ typedef struct {
 	char referencename[8];
 } symndef_t;
 
-Boolean doresources(char *dstname, int bits){
+Boolean doresources(FSSpec* dst, int bits){
 	HRSRC datarsrc,aetersrc,manifestsrc;
 	HGLOBAL datah,aeteh,hupdate,manifesth;
 
@@ -409,15 +426,15 @@ Boolean doresources(char *dstname, int bits){
 	memset(&dummy_func, 0, sizeof(funcdef_t));
 	memset(&dummy_symn, 0, sizeof(symndef_t));
 
-	if( (hupdate = _BeginUpdateResource(dstname,false)) ){
+	if( (hupdate = _BeginUpdateResource(&dst->szName[0],false)) ){
 		DBG("BeginUpdateResource OK");
-		if( (datarsrc = FindResource(hDllInstance,MAKEINTRESOURCE(16000 + bits), "TPLT"))
+		if( (datarsrc = FindResource(hDllInstance,MAKEINTRESOURCE(16000 + bits), TEXT("TPLT")))
 			&& (datah = LoadResource(hDllInstance,datarsrc))
 			&& (datap = (Ptr)LockResource(datah))
-			&& (aetersrc = FindResource(hDllInstance, MAKEINTRESOURCE(16000), "AETE"))
+			&& (aetersrc = FindResource(hDllInstance, MAKEINTRESOURCE(16000), TEXT("AETE")))
 			&& (aeteh = LoadResource(hDllInstance, aetersrc))
 			&& (aetep = (Ptr)LockResource(aeteh))
-			&& (manifestsrc = FindResource(hDllInstance, MAKEINTRESOURCE(1), "TPLT"))
+			&& (manifestsrc = FindResource(hDllInstance, MAKEINTRESOURCE(1), TEXT("TPLT")))
 			&& (manifesth = LoadResource(hDllInstance, manifestsrc))
 			&& (manifestp = (Ptr)LockResource(manifesth)) )
 		{
@@ -464,8 +481,8 @@ Boolean doresources(char *dstname, int bits){
 
 				// ====== Change version attributes
 
-				if (changeVersionInfo(dstname, hupdate, pparm, bits) != NOERROR) {
-					simplealert(_strdup("changeVersionInfo failed"));
+				if (changeVersionInfo(dst, hupdate, pparm, bits) != NOERROR) {
+					simplewarning((TCHAR*)TEXT("changeVersionInfo failed"));
 				}
 
 				// ====== Obfuscate pparm!
@@ -491,23 +508,23 @@ Boolean doresources(char *dstname, int bits){
 				if(
 					   _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_BUILDDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_DIALOG, MAKEINTRESOURCE(ID_MAINDLG), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_GROUP_ICON, "CAUTION_ICO", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_GROUP_ICON, TEXT("CAUTION_ICO"), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 //					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, "HAND_QUESTION", MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
+					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, TEXT("HAND_QUESTION"), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					// TODO: Removing the single resources don't work correctly. Sometimes the cursors are numbered 4,5,6 and sometimes 1,2,3 . Probably conflicts with icons
 //					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(3)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					&& _UpdateResource(hupdate, "PIPL" /* note: caps!! */,MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
-					&& _UpdateResource(hupdate, "AETE" /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
+					&& _UpdateResource(hupdate, TEXT("PIPL") /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
+					&& _UpdateResource(hupdate, TEXT("AETE") /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
 					// OPER and FUNC are written so that "Plugin Manager 2.1" thinks that this plugin is a Filter Factory plugin! SYNM is not important, though.
-					&& (gdata->obfusc || _UpdateResource(hupdate, "OPER", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_oper, sizeof(dummy_oper)))
-					&& (gdata->obfusc || _UpdateResource(hupdate, "FUNC", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_func, sizeof(dummy_func)))
-					&& (gdata->obfusc || _UpdateResource(hupdate, "SYNM", MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_symn, sizeof(dummy_symn)))
+					&& (gdata->obfusc || _UpdateResource(hupdate, TEXT("OPER"), MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_oper, sizeof(dummy_oper)))
+					&& (gdata->obfusc || _UpdateResource(hupdate, TEXT("FUNC"), MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_func, sizeof(dummy_func)))
+					&& (gdata->obfusc || _UpdateResource(hupdate, TEXT("SYNM"), MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_symn, sizeof(dummy_symn)))
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
 					&& _UpdateResource(hupdate, parm_type,parm_id, MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 				{
 					discard = false;
 				} else {
-					dbglasterror(_strdup("UpdateResource"));
+					dbglasterror((TCHAR*)TEXT("UpdateResource"));
 				}
 			}
 
@@ -522,38 +539,42 @@ Boolean doresources(char *dstname, int bits){
 					// and if that failed, try without alignment ("1").
 					// We only need to set maxamount to "1", because "const volatile" makes sure that
 					// the compiler won't place (inline) it at several locations in the code.
-					if ((binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
-						(binary_replace_file(dstname, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
+					if ((binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
+						(binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
 					{
-						dbg("binary_replace_file failed");
+						dbg((TCHAR*)TEXT("binary_replace_file failed"));
 						discard = true;
 					}
 				}
 
-				update_pe_timestamp(dstname, time(0));
+				if (!update_pe_timestamp(dst, time(0))) {
+					simplewarning((TCHAR*)TEXT("update_pe_timestamp failed"));
+				}
 
-				repair_pe_checksum(dstname);
-			}else dbglasterror(_strdup("EndUpdateResource"));
+				if (!repair_pe_checksum(dst)) {
+					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed"));
+				}
+			}else dbglasterror((TCHAR*)TEXT("EndUpdateResource"));
 
-		}else dbglasterror(_strdup("Find-, Load- or LockResource"));
+		}else dbglasterror((TCHAR*)TEXT("Find-, Load- or LockResource"));
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
 	}else
-		dbglasterror(_strdup("BeginUpdateResource"));
+		dbglasterror((TCHAR*)TEXT("BeginUpdateResource"));
 	return !discard;
 }
 
-Boolean remove_64_filename_prefix(char* dstname) {
+Boolean remove_64_filename_prefix(LPTSTR dstname) {
 	// foobar.8bf => foobar.8bf
 	// foobar64.8bf => foobar.8bf
 	size_t i;
-	for (i = strlen(dstname); i > 2; i--) {
+	for (i = xstrlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {
 			if ((dstname[i - 2] == '6') && (dstname[i - 1] == '4')) {
-				size_t tmp = strlen(dstname);
-				memcpy(&dstname[i - 2], &dstname[i], strlen(dstname) - i + 1);
+				size_t tmp = xstrlen(dstname);
+				memcpy(&dstname[i - 2], &dstname[i], (xstrlen(dstname) - i + 1) * sizeof(TCHAR));
 				dstname[tmp - 2] = 0;
 				return true;
 			}
@@ -562,13 +583,13 @@ Boolean remove_64_filename_prefix(char* dstname) {
 	return false;
 }
 
-Boolean add_64_filename_prefix(char* dstname) {
+Boolean add_64_filename_prefix(LPTSTR dstname) {
 	// foobar.8bf => foobar64.8bf
 	size_t i;
-	for (i = strlen(dstname); i > 2; i--) {
+	for (i = xstrlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {
-			size_t tmp = strlen(dstname);
-			memcpy(&dstname[i + 2], &dstname[i], strlen(dstname) - i + 1);
+			size_t tmp = xstrlen(dstname);
+			memcpy(&dstname[i + 2], &dstname[i], (xstrlen(dstname) - i + 1) * sizeof(TCHAR));
 			dstname[i] = '6';
 			dstname[i + 1] = '4';
 			dstname[tmp + 2] = 0;
@@ -584,31 +605,37 @@ BOOL FileExists(LPCTSTR szPath) {
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, const char* outName) {
+Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, FSSpec* dst) {
 	HGLOBAL datah;
 	LPVOID datap;
 	HRSRC datarsrc;
-	size_t datalen;
+	FILECOUNT datalen;
+	FILEREF fptr;
+	OSErr res;
 
 	if ((datarsrc = FindResource((HMODULE)hDllInstance, lpName, lpType))
 		&& (datah = LoadResource((HMODULE)hDllInstance, datarsrc))
-		&& (datalen = SizeofResource((HMODULE)hDllInstance, datarsrc))
+		&& (datalen = (FILECOUNT)SizeofResource((HMODULE)hDllInstance, datarsrc))
 		&& (datap = (Ptr)LockResource(datah))) {
 
-		FILE* fp = fopen(outName, "wb+");
-		if (fp == NULL) return false;
-		if (fwrite(datap, 1, datalen, fp) != datalen) return false;
-		if (fclose(fp)) return false;
+		FSpDelete(dst);
+		if (FSpCreate(dst, kPhotoshopSignature, PS_FILTER_FILETYPE, 0/*sfr->sfScript*/) != noErr) return false;
 
-		return true;
+		if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return false;
+
+		res = FSWrite(fptr, &datalen, datap);
+
+		FSClose(fptr);
+
+		return res == noErr;
 	}
 	else {
 		return false;
 	}
 }
 
-BOOL StripAuthenticode(const char* pszFileName) {
-	HANDLE hFile = CreateFile(pszFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
+BOOL StripAuthenticode(FSSpec* dst) {
+	HANDLE hFile = CreateFile(&dst->szName[0], GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		CloseHandle(hFile);
 		return FALSE;
@@ -621,31 +648,46 @@ BOOL StripAuthenticode(const char* pszFileName) {
 	return TRUE;
 }
 
-OSErr do_make_standalone(char* dstname, int bits) {
+OSErr do_make_standalone(FSSpec* dst, int bits) {
+	char errA[MAX_PATH + 200];
+	#ifdef UNICODE
+	TCHAR errW[MAX_PATH + 200];
+	#endif
 	Boolean res;
-	char err[MAX_PATH + 200];
 
 	//DeleteFile(dstname);
-	if (extract_file("TPLT", MAKEINTRESOURCE(1000 + bits), dstname)) {
+	if (extract_file(TEXT("TPLT"), MAKEINTRESOURCE(1000 + bits), dst)) {
 		// In case we did digitally sign the FilterFoundry plugin (which is currently not the case though),
 		// we must now remove the signature, because the embedding of parameter data has invalidated it.
 		// Do it before we manipulate anything, in order to avoid that there is an invalid binary (which might annoy AntiVirus software)
-		StripAuthenticode(dstname);
+		StripAuthenticode(dst);
 
 		// Now do the resources
-		res = doresources(dstname, bits);
+		res = doresources(dst, bits);
 		if (!res) {
-			DeleteFile(dstname);
-			sprintf(err, "Could not create %d bit standalone plugin (doresources failed).", bits);
-			alertuser(_strdup(&err[0]), _strdup(""));
+			DeleteFile(&dst->szName[0]);
+
+			sprintf(errA, "Could not create %d bit standalone plugin (doresources failed).", bits);
+			#ifdef UNICODE
+			mbstowcs(errW, errA, MAX_PATH + 200);
+			alertuser(&errW[0], (TCHAR*)TEXT(""));
+			#else
+			alertuser(&errA[0], (TCHAR*)TEXT(""));
+			#endif
 		}
 	}
 	else {
 		// If you see this error, please make sure that you have called foundry_3264_mixer to include the 32/64 plugins as resource!
 		res = false;
 		//DeleteFile(dstname);
-		sprintf(err, "Could not create %d bit standalone plugin (File extraction failed).", bits);
-		alertuser(_strdup(&err[0]), _strdup(""));
+
+		sprintf(errA, "Could not create %d bit standalone plugin (File extraction failed).", bits);
+		#ifdef UNICODE
+		mbstowcs(errW, errA, MAX_PATH + 200);
+		alertuser(&errW[0], (TCHAR*)TEXT(""));
+		#else
+		alertuser(&errA[0], (TCHAR*)TEXT(""));
+		#endif
 	}
 
 	return res ? noErr : ioErr;
@@ -653,30 +695,30 @@ OSErr do_make_standalone(char* dstname, int bits) {
 
 OSErr make_standalone(StandardFileReply *sfr){
 	OSErr tmpErr, outErr;
-	char dstname[MAX_PATH+1];
+	FSSpec dst;
 
 	outErr = noErr;
 
 	// Make 32 bit:
 	// Destfile = no64_or_32(chosenname)
-	myp2cstrcpy(dstname, sfr->sfFile.name);
-	remove_64_filename_prefix(dstname);
-	tmpErr = do_make_standalone(&dstname[0], 32);
+	xstrcpy(dst.szName, sfr->sfFile.szName);
+	remove_64_filename_prefix(&dst.szName[0]);
+	tmpErr = do_make_standalone(&dst, 32);
 	if (tmpErr != noErr)
 		outErr = tmpErr;
 	else
-		showmessage(_strdup("32 bit standalone filter was successfully created"));
+		showmessage((TCHAR*)TEXT("32 bit standalone filter was successfully created"));
 
 	// Make 64 bit:
 	// Destfile = no64_or_32(chosenname) + 64
-	myp2cstrcpy(dstname, sfr->sfFile.name);
-	remove_64_filename_prefix(dstname);
-	add_64_filename_prefix(dstname);
-	tmpErr = do_make_standalone(&dstname[0], 64);
+	xstrcpy(dst.szName, sfr->sfFile.szName);
+	remove_64_filename_prefix(&dst.szName[0]);
+	add_64_filename_prefix(&dst.szName[0]);
+	tmpErr = do_make_standalone(&dst, 64);
 	if (tmpErr != noErr)
 		outErr = tmpErr;
 	else
-		showmessage(_strdup("64 bit standalone filter was successfully created"));
+		showmessage((TCHAR*)TEXT("64 bit standalone filter was successfully created"));
 
 	return outErr;
 }

@@ -75,7 +75,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 	if (parm != NULL) {
 		unsigned long hash;
 		char* data;
-		// char* debug = malloc(2000);
+		// char* debug = (char*)malloc(2000);
 		// sprintf(debug, "getAeteKey %c with title %s/%s in STANDALONE PLUGIN", c, parm->szTitle, parm->szCategory);
 		// simplealert(debug);
 		// free(debug);
@@ -93,7 +93,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		return hash;
 	}
 	else {
-		// char* debug = malloc(2000);
+		// char* debug = (char*)malloc(2000);
 		// sprintf(debug, "getAeteKey %c in MAIN PLUGIN", c);
 		// simplealert(debug);
 		// free(debug);

@@ -181,8 +181,8 @@
 
 	#define GETSLIDERVALUE(d,i) (gdata->pluginDllSliderMessageId == 0 ? (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0) : GetSliderPos(GetDlgItem((d), (i)), false))
 	#define SETSLIDERVALUE(d,i,v) (gdata->pluginDllSliderMessageId == 0 ? SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v)) : SetSliderPos(GetDlgItem((d), (i)), (v), true))
-	#define GETCTLTEXT GetDlgItemText
-	#define SETCTLTEXT SetDlgItemText
+	#define GETCTLTEXT GetDlgItemTextA
+	#define SETCTLTEXT SetDlgItemTextA
 	#define SELECTCTLTEXT SELECTDLGITEMTEXT
 	#define GETCTLTEXTINT GetDlgItemInt
 	#define SETCTLTEXTINT SetDlgItemInt
@@ -199,7 +199,6 @@
 	#define SYSBEEP(x) MessageBeep(MB_ICONEXCLAMATION)
 
 	void centre_window(HWND hwnd);
-	void DebugStr(StringPtr s);
 #endif
 
 

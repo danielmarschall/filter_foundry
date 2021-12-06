@@ -25,7 +25,7 @@ BOOL ActivateManifest(HMODULE hModule, int manifestResourceID, PManifestActivati
 	f_ActivateActCtx fActivateActCtx;
 	f_CreateActCtxA fCreateActCtxA;
 
-	if (!(vars->hKernel32 = LoadLibraryA("KERNEL32.DLL"))) return FALSE;
+	if (!(vars->hKernel32 = LoadLibrary(TEXT("KERNEL32.DLL")))) return FALSE;
 
 	if (!(fActivateActCtx = (f_ActivateActCtx)(void*)GetProcAddress(vars->hKernel32, "ActivateActCtx"))) { FreeLibrary(vars->hKernel32); return FALSE; }
 	if (!(fCreateActCtxA = (f_CreateActCtxA)(void*)GetProcAddress(vars->hKernel32, "CreateActCtxA"))) { FreeLibrary(vars->hKernel32); return FALSE; }

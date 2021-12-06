@@ -104,8 +104,7 @@ Boolean loadfile(StandardFileReply* sfr, char** reason) {
 
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
 	if (*reason == NULL) {
-		char name[MAX_PATH + 1];
-		if (hm = LoadLibraryEx(myp2cstrcpy(name, sfr->sfFile.name), NULL, LOAD_LIBRARY_AS_DATAFILE)) {
+		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm, reason)) {
 				if (gdata->parm.iProtected) {
 					*reason = _strdup("The filter is protected.");

@@ -209,7 +209,7 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
 		if(FSpOpenDF(&sfr->sfFile,fsWrPerm,&r) == noErr){
 
-			if (fileHasExtension(sfr, ".txt")) {
+			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 					res = !(saveparams_picotxt(h,false) || savehandleintofile(h, r));
@@ -217,8 +217,8 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 				}
 			}
 
-			if ((fileHasExtension(sfr, ".afs")) || (fileHasExtension(sfr, ".pff"))) {
-				if (fileHasExtension(sfr, ".pff")) {
+			if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
+				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					// We just swap the pointers!
 					char* tmp;
@@ -232,7 +232,7 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 					PIDISPOSEHANDLE(h);
 				}
 
-				if (fileHasExtension(sfr, ".pff")) {
+				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// Swap back so that the other program stuff will work normally again
 					char* tmp;
 					tmp = expr[0];
@@ -242,11 +242,18 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = (_strdup("Could not open the file."));
-	else reasonstr = (_strdup("Could not create the file."));
+		}else reasonstr = _strdup("Could not open the file.");
+	else reasonstr = _strdup("Could not create the file.");
 
-	if(!res)
-		alertuser(_strdup("Could not save settings."),reasonstr);
+	if (!res) {
+		#ifdef UNICODE
+		TCHAR reasonstrW[0x300];
+		mbstowcs(reasonstrW, reasonstr, 0x300);
+		alertuser((TCHAR*)TEXT("Could not save settings."), reasonstrW);
+		#else
+		alertuser((TCHAR*)TEXT("Could not save settings."), reasonstr);
+		#endif
+	}
 
 	return res;
 }

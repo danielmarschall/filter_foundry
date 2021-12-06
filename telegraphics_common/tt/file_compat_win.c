@@ -54,22 +54,20 @@ OSErr FSpOpenDF(const FSSpec *spec, int permission, FILEREF *refNum){
 		/* 2: fsWrPerm   */ GENERIC_WRITE,
 		/* 3: fsRdWrPerm */ GENERIC_READ | GENERIC_WRITE
 	};
-	char name[MAX_PATH+1];
 
-	*refNum = CreateFile(myp2cstrcpy(name,spec->name),perm[permission],0,0,OPEN_EXISTING,0,0);
+	*refNum = CreateFile(spec->szName,perm[permission],0,0,OPEN_EXISTING,0,0);
 //	sprintf(s,"FSpOpenDF(\"%s\",\"%s\"):%#x",spec->name,perm[permission],*refNum); dbg(s);
 	return *refNum == INVALID_HANDLE_VALUE ? ioErr : noErr;
 }
 
 OSErr FSpCreate(const FSSpec *spec, OSType creator, OSType fileType, ScriptCode scriptTag){
 	HANDLE h;
-	char name[MAX_PATH+1];
 
 	UNREFERENCED_PARAMETER(creator);
 	UNREFERENCED_PARAMETER(scriptTag);
 	UNREFERENCED_PARAMETER(fileType);
 
-	h = CreateFile(myp2cstrcpy(name,spec->name),0,0,0,CREATE_NEW,0,0);
+	h = CreateFile(spec->szName,0,0,0,CREATE_NEW,0,0);
 //	sprintf(s,"FSpCreate(\"%s\"):%#x",spec->name,h); dbg(s);
 	if( h == INVALID_HANDLE_VALUE )
 		return ioErr;
@@ -81,9 +79,8 @@ OSErr FSpCreate(const FSSpec *spec, OSType creator, OSType fileType, ScriptCode 
 
 OSErr FSpDelete(const FSSpec *spec){
 	BOOL f;
-	char name[MAX_PATH+1];
 
-	f = DeleteFile(myp2cstrcpy(name,spec->name));
+	f = DeleteFile(spec->szName);
 	return f ? noErr : ioErr;
 }
 

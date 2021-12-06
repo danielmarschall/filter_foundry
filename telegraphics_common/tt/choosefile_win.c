@@ -32,21 +32,19 @@
 #include "compat_string.h"
 
 
-Boolean fileHasExtension(StandardFileReply* sfr, const char* extension) {
-	char name[MAX_PATH + 1];
-	return sfr->nFileExtension && !strcasecmp(myp2cstrcpy(name, sfr->sfFile.name) + sfr->nFileExtension - 1, extension);
+Boolean fileHasExtension(StandardFileReply* sfr, const TCHAR* extension) {
+	return sfr->nFileExtension && !xstrcasecmp(sfr->sfFile.szName + sfr->nFileExtension - 1, extension);
 }
 
-Boolean choosefiletypes(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,
-                        OSType types[],int ntypes,const char *lpstrFilter,HWND hwndOwner){
+Boolean choosefiletypes(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,
+                        OSType types[],int ntypes,const TCHAR *lpstrFilter,HWND hwndOwner){
 	UNREFERENCED_PARAMETER(ntypes);
 	return choosefile(prompt,sfr,reply,types[0],lpstrFilter,hwndOwner);
 }
 
-Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply,OSType type,const char *lpstrFilter,HWND hwndOwner){
+Boolean choosefile(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,OSType type,const TCHAR *lpstrFilter,HWND hwndOwner){
 	OPENFILENAME ofn;
-	char file[MAX_PATH]={0};
-	char title[0x100];
+	TCHAR file[MAX_PATH+1]={0};
 
 	UNREFERENCED_PARAMETER(type);
 	UNREFERENCED_PARAMETER(reply);
@@ -59,12 +57,12 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 //	ofn.nFilterIndex = 1;
 	ofn.lpstrFile = file;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrTitle = myp2cstrcpy(title,prompt);
+	ofn.lpstrTitle = prompt;
 	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 //	ofn.lpstrDefExt = lpstrDefExt;
 
 	if(GetOpenFileName(&ofn)){
-		myc2pstrcpy(sfr->sfFile.name,file);
+		xstrcpy(sfr->sfFile.szName, file);
 		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
 	}else{
@@ -78,13 +76,12 @@ Boolean choosefile(StringPtr prompt,StandardFileReply *sfr,NavReplyRecord *reply
 	return sfr->sfGood = false;
 }
 
-Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCreator,
+Boolean putfile(PString prompt, PString fname,OSType fileType,OSType fileCreator,
                 NavReplyRecord *reply,StandardFileReply *sfr,
-                const char *lpstrDefExt,const char *lpstrFilter,int nFilterIndex,
+                const TCHAR*lpstrDefExt,const TCHAR *lpstrFilter,int nFilterIndex,
                 HWND hwndOwner){
 	OPENFILENAME ofn;
-	char file[MAX_PATH];
-	char title[0x100];
+	TCHAR file[MAX_PATH+1]={0};
 
 	UNREFERENCED_PARAMETER(fileCreator);
 	UNREFERENCED_PARAMETER(reply);
@@ -92,18 +89,20 @@ Boolean putfile(StringPtr prompt,StringPtr fname,OSType fileType,OSType fileCrea
 
 	ZeroMemory(&ofn, sizeof(ofn));
 
+	xstrcpy(file, (LPTSTR)fname);
+
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwndOwner;
 	ofn.lpstrFilter = lpstrFilter;
 	ofn.nFilterIndex = nFilterIndex;
-	ofn.lpstrFile = myp2cstrcpy(file,fname);
+	ofn.lpstrFile = file;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrTitle = myp2cstrcpy(title,prompt);
+	ofn.lpstrTitle = prompt;
 	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 	ofn.lpstrDefExt = lpstrDefExt;
 
 	if(GetSaveFileName(&ofn)){
-		myc2pstrcpy(sfr->sfFile.name,file);
+		xstrcpy(sfr->sfFile.szName, file);
 		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
 	}else{

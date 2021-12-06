@@ -1695,7 +1695,7 @@ static BOOL write_raw_resources(QUEUEDUPDATES* updates)
             // https://stackoverflow.com/questions/39022853/how-is-sizeofimage-in-the-pe-optional-header-computed
             // Reported Wine bug here: https://bugs.winehq.org/show_bug.cgi?id=52119
             lastsec = get_last_section(write_map->base, mapping_size);
-            pEndOfLastSection = lastsec->VirtualAddress + lastsec->Misc.VirtualSize + nt64->OptionalHeader.ImageBase;
+            pEndOfLastSection = (ULONGLONG)lastsec->VirtualAddress + (ULONGLONG)lastsec->Misc.VirtualSize + nt64->OptionalHeader.ImageBase;
             //NOTE: we are rounding to memory section alignment, not file
             pEndOfLastSectionMem = peRoundUpToAlignment64(nt64->OptionalHeader.SectionAlignment, pEndOfLastSection);
             uCalcSizeOfFile = pEndOfLastSectionMem - nt64->OptionalHeader.ImageBase;

@@ -379,7 +379,8 @@ BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULO
 	return fOk;
 }
 
-BOOL CALLBACK EnumResLangProc(HMODULE hModule, PCTSTR lpszType, PCTSTR lpszName, WORD wIDLanguage, EnumVerData* Ctx) {
+/*
+BOOL CALLBACK EnumResLangProc(HMODULE hModule, LPCTSTR lpszType, LPCTSTR lpszName, WORD wIDLanguage, EnumVerData* Ctx) {
 	HRSRC hResInfo;
 	HGLOBAL hg;
 	ULONG size;
@@ -409,6 +410,7 @@ BOOL CALLBACK EnumResLangProc(HMODULE hModule, PCTSTR lpszType, PCTSTR lpszName,
 
 	return TRUE;
 }
+*/
 
 /*
 Usage example:

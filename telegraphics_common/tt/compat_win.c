@@ -32,12 +32,12 @@ Boolean Implements3264ResourceAPI() {
 	f_GetVersionEx fGetVersionEx;
 	BOOL res;
 
-	hLib = LoadLibraryA("KERNEL32.DLL");
+	hLib = LoadLibrary(TEXT("KERNEL32.DLL"));
 	if (!hLib) return 0;
 	fGetVersionEx = (f_GetVersionEx)(void*)GetProcAddress(hLib, "GetVersionExA");
 	if (fGetVersionEx != 0) {
-		OSVERSIONINFO osv;
-		osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		OSVERSIONINFOA osv;
+		osv.dwOSVersionInfoSize = sizeof(osv);
 		res = fGetVersionEx(&osv);
 		FreeLibrary(hLib);
 		// Windows NT 3.51 does implement GetVersionExA() and UpdateResourceA(), but it doesn't know about 64 bit images.
@@ -61,7 +61,7 @@ ULONGLONG _GetTickCount64() {
 	f_GetTickCount64 fGetTickCount64;
 	ULONGLONG res;
 
-	hLib = LoadLibraryA("KERNEL32.DLL");
+	hLib = LoadLibrary(TEXT("KERNEL32.DLL"));
 	if (!hLib) return 0;
 	fGetTickCount64 = (f_GetTickCount64)(void*)GetProcAddress(hLib, "GetTickCount64");
 	if (fGetTickCount64 != 0) {
@@ -77,45 +77,57 @@ ULONGLONG _GetTickCount64() {
 
 // ---------------------------------
 
-HANDLE _BeginUpdateResource/*A*/(
-	LPCSTR pFileName,
-	BOOL   bDeleteExistingResources
+HANDLE _BeginUpdateResource(
+	LPCTSTR pFileName,
+	BOOL    bDeleteExistingResources
 ) {
+	#ifdef UNICODE
+	return BeginUpdateResource(pFileName, bDeleteExistingResources);
+	#else
 	if (Implements3264ResourceAPI()) {
 		return BeginUpdateResourceA(pFileName, bDeleteExistingResources);
 	} else {
 		return WineBeginUpdateResourceA(pFileName, bDeleteExistingResources);
 	}
+	#endif
 }
 
 // ---------------------------------
 
-BOOL _EndUpdateResource/*A*/(
+BOOL _EndUpdateResource(
 	HANDLE hUpdate,
 	BOOL   fDiscard
 ) {
+	#ifdef UNICODE
+	return EndUpdateResource(hUpdate, fDiscard);
+	#else
 	if (Implements3264ResourceAPI()) {
 		return EndUpdateResourceA(hUpdate, fDiscard);
 	} else {
 		return WineEndUpdateResourceA(hUpdate, fDiscard);
 	}
+	#endif
 }
 
 // ---------------------------------
 
-BOOL _UpdateResource/*A*/(
-	HANDLE hUpdate,
-	LPCSTR lpType,
-	LPCSTR lpName,
-	WORD   wLanguage,
-	LPVOID lpData,
-	DWORD  cb
+BOOL _UpdateResource(
+	HANDLE  hUpdate,
+	LPCTSTR lpType,
+	LPCTSTR lpName,
+	WORD    wLanguage,
+	LPVOID  lpData,
+	DWORD   cb
 ) {
+	#ifdef UNICODE
+	return UpdateResource(hUpdate, lpType, lpName, wLanguage, lpData, cb);
+	#else
 	if (Implements3264ResourceAPI()) {
 		return UpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 	} else {
 		return WineUpdateResourceA(hUpdate, lpType, lpName, wLanguage, lpData, cb);
 	}
+	#endif
 }
 
 typedef void(__stdcall* f_GetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);
@@ -123,7 +135,7 @@ void _GetNativeSystemInfo(LPSYSTEM_INFO lpSystemInfo) {
 	HMODULE hLib;
 	f_GetNativeSystemInfo fGetNativeSystemInfo;
 
-	hLib = LoadLibraryA("KERNEL32.DLL");
+	hLib = LoadLibrary(TEXT("KERNEL32.DLL"));
 	if (!hLib) return;
 	fGetNativeSystemInfo = (f_GetNativeSystemInfo)(void*)GetProcAddress(hLib, "GetNativeSystemInfo");
 	if (fGetNativeSystemInfo != 0) {
@@ -141,7 +153,7 @@ BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
 	f_ImageRemoveCertificate fImageRemoveCertificate;
 	BOOL res = FALSE;
 
-	hLib = LoadLibraryA("IMAGEHLP.DLL");
+	hLib = LoadLibrary(TEXT("IMAGEHLP.DLL"));
 	if (!hLib) return FALSE;
 	fImageRemoveCertificate = (f_ImageRemoveCertificate)(void*)GetProcAddress(hLib, "ImageRemoveCertificate");
 	if (fImageRemoveCertificate != 0) {

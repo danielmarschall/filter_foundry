@@ -23,6 +23,7 @@
 
 #include "ff.h"
 
+#include "str.h"
 #include "node.h"
 #include "funcs.h"
 #include "y.tab.h"
@@ -80,19 +81,41 @@ unsigned long get_parm_hash(PARM_T *parm) {
 	return hash;
 }
 
-void get_temp_afs(char *outfilename, Boolean isStandalone, PARM_T *parm) {
-	char* tempdir;
+size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
+	char* atempdir;
 	int hash;
+	size_t i, j;
+	TCHAR out[MAX_PATH + 1];
+	char ahash[20];
 
-	tempdir = getenv("TMP");
+	// out = getenv("TMP")
+	atempdir = getenv("TMP");
+	for (i = 0; i < strlen(atempdir); i++) {
+		out[i] = (TCHAR)atempdir[i];
+		out[i + 1] = 0;
+	}
+
 	#ifdef WIN_ENV
-	if (strlen(tempdir) > 0) strcat(tempdir, "\\");
+	if (xstrlen(out) > 0) xstrcat(out, TEXT("\\"));
 	#else
-	if (strlen(tempdir) > 0) strcat(tempdir, "/");
+	if (xstrlen(out) > 0) xstrcat(out, TEXT("/"));
 	#endif
 
 	hash = (isStandalone) ? get_parm_hash(parm) : 0;
-	sprintf(outfilename, "%sFilterFoundry%d.afs", tempdir, hash);
+
+	// sprintf(outfilename, "%sFilterFoundry%d.afs", atempdir, hash);
+	xstrcat(out, TEXT("FilterFoundry"));
+	_itoa(hash, &ahash[0], 10);
+	for (i = 0; i < strlen(ahash); i++) {
+		j = xstrlen(out);
+		out[j] = (TCHAR)ahash[i];
+		out[j + 1] = 0;
+	}
+	xstrcat(out, TEXT(".afs"));
+	if (outfilename != NULL) {
+		xstrcpy(outfilename, out);
+	}
+	return xstrlen(out);
 }
 
 DLLEXPORT MACPASCAL
@@ -155,7 +178,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// but it crashes in evalpixel() where there is write-access to the "outp".
 		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
 		if (!premiereWarnedOnce) {
-			simplealert(_strdup("This version of Filter Foundry is not compatible with Adobe Premiere!"));
+			simplealert((TCHAR*)TEXT("This version of Filter Foundry is not compatible with Adobe Premiere!"));
 		}
 		premiereWarnedOnce = true;
 		*result = errPlugInHostInsufficient;
@@ -244,10 +267,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				if (gdata->obfusc) {
-					simplealert(_strdup("Incompatible obfuscation."));
+					simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
 				}
 				else {
-					simplealert(_strdup("Invalid parameter data."));
+					simplealert((TCHAR*)TEXT("Invalid parameter data."));
 				}
 			}
 			else {
@@ -293,7 +316,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
 					   when the window is opened again. */
 					// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
-					char outfilename[255];
+					TCHAR outfilename[MAX_PATH+1];
 					StandardFileReply sfr;
 					char* bakexpr[4];
 					int i;
@@ -304,9 +327,9 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 					get_temp_afs(&outfilename[0], gdata->standalone, &gdata->parm);
 
-					myc2pstrcpy(sfr.sfFile.name, outfilename);
+					xstrcpy(sfr.sfFile.szName, outfilename);
 					#ifdef WIN_ENV
-					sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs") + 1);
+					sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
 					#endif
 					sfr.sfScript = 0; // FIXME: is that ok?
 
@@ -375,7 +398,7 @@ int checkandinitparams(Handle params){
 
 	if (!host_preserves_parameters()) {
 		// Workaround: Load settings in "FilterFoundryXX.afs" if host does not preserve pb->parameters
-		char outfilename[255];
+		TCHAR outfilename[MAX_PATH + 1];
 		Boolean isStandalone;
 		StandardFileReply sfr;
 		char* bakexpr[4];
@@ -390,10 +413,10 @@ int checkandinitparams(Handle params){
 		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason);
 		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
-				simplealert(_strdup("Incompatible obfuscation."));
+				simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
 			}
 			else {
-				simplealert(_strdup("Invalid parameter data."));
+				simplealert((TCHAR*)TEXT("Invalid parameter data."));
 			}
 			gdata->parmloaded = false;
 			return false;
@@ -401,9 +424,9 @@ int checkandinitparams(Handle params){
 
 		get_temp_afs(&outfilename[0], isStandalone, &gdata->parm);
 
-		myc2pstrcpy(sfr.sfFile.name, outfilename);
+		xstrcpy(sfr.sfFile.szName, outfilename);
 		#ifdef WIN_ENV
-		sfr.nFileExtension = (WORD)(strlen(outfilename) - strlen(".afs") + 1);
+		sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
 		#endif
 		sfr.sfScript = 0; // FIXME: is that ok?
 
@@ -436,10 +459,10 @@ int checkandinitparams(Handle params){
 		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
-				simplealert(_strdup("Incompatible obfuscation."));
+				simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
 			}
 			else {
-				simplealert(_strdup("Invalid parameter data."));
+				simplealert((TCHAR*)TEXT("Invalid parameter data."));
 			}
 			gdata->parmloaded = false;
 			return false;
