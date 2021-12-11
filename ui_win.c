@@ -215,8 +215,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case IDT_TIMER_INITPREVIEW_DRAW:
+			KillTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW);
 			recalc_preview(gpb, hDlg);
-			KillTimer(hDlg, 123);
 			return 0;
 		}
 		break;
@@ -274,9 +274,10 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		maindlginit(hDlg);
 
 		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
-		// So we need to put it in a timer. For some reasons, 1ms is enough. We do 100, just to be sure
+		// So we need to put it in a timer.
+		// Note that 1 millisecond is enough, even if the window needs longer than 1 millisecond to load.
 		//recalc_preview(gpb, hDlg);
-		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 100, (TIMERPROC)NULL);
+		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 1, (TIMERPROC)NULL);
 
 		break;
 	case WM_DESTROY:
