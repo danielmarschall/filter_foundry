@@ -135,6 +135,8 @@ Design/UI Tweaks
 Regarding Macintosh
 -------------------
 
+* Please make a port to the latest Apple versions (and possible builds for older MacOS versions, too?)
+
 * Unsure regarding AppleScript !
 	https://developer.apple.com/library/archive/documentation/mac/pdf/Interapplication_Communication/AE_Term_Resources.pdf
 	1. Do we need an 'auet' resource?

@@ -225,7 +225,7 @@ void maindlgupdate(DIALOGREF dp){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
 			if(gdata->standalone){
-				alertuser((TCHAR*)TEXT("Can't run this filter (there is a problem with the saved expressions)."), (TCHAR*)TEXT(""));
+				simplealert((TCHAR*)TEXT("Can't run this filter (there is a problem with the saved expressions)."));
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
@@ -524,9 +524,9 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			#ifdef UNICODE
 			TCHAR errW[0x300];
 			mbstowcs(errW, err[item], 0x300);
-			alertuser(errW, (TCHAR*)TEXT(""));
+			simplealert(errW);
 			#else
-			alertuser(err[item], (TCHAR*)TEXT(""));
+			simplealert(err[item]);
 			#endif
 		}
 		SELECTCTLTEXT(dp,FIRSTEXPRITEM+item,errstart[item],errpos[item]);

@@ -47,6 +47,7 @@ Fixed problems:
 	Therefore, the zoom icons and the caution icons are now Buttons classes (or subclasses).
 
 - WinNT311: "msctls_trackbar32" is not supported by Windows NT 3.1. `DialogBoxParamA` crashes with the confusing error code "Invalid Cursor Handle".
+
 	Note: msctls_trackbar32 seems to be defined in COMCTL32.DLL, but Win NT 3.1 has no REGSVR32.EXE, so there can't be any controls added??
 	Windows NT 3.51 has COMCTL32.DLL and works perfectly with the trackbars!
 	Fixed in SVN Revision 422: We are now using the sliders of Photoshop using PLUGIN.DLL (like Filter Factory 3.0.4 does).
@@ -54,6 +55,13 @@ Fixed problems:
 	then we will simply remove the sliders completely by subclassing them from a static control,
 	and let the user enter the control values via keyboard only (SVN Revision 419).
 	Note that you can copy PLUGIN.DLL to any host application. It is not bound to Photoshop. However, it is copyrighted by Adobe!
+
+- WinNT311+WinNT351: The preview image is not drawn at dialog box opening. You need to enter something first.
+
+	Nothing seems to work. Already tried doing a `recalc_preview` and `drawpreview` in `WM_SHOWWINDOW` or
+	`WM_ACTIVATE` or `WM_WINDOWPOSCHANGES`, or sending a message `SendMessage(hDlg, WM_USER + 123, 0, 0);` inside `WM_INITDIALOG`,
+	but the code seems to be executed while the dialog is still hidden (you can see this by showing a messagebox).
+	So, I have finally solved it with a `WM_TIMER` in SVN Revision445.
 
 Things couldn't solve yet:
 --------------------------
@@ -64,11 +72,6 @@ Things couldn't solve yet:
 
 - WinNT351: Help button does not work
 	=> Maybe WinExec helps? But can we open an URL there? Unlikely...
-
-- WinNT311+WinNT351: The preview image is not drawn at dialog box opening. You need to enter something first.
-	Nothing seems to work. Already tried doing a `recalc_preview` and `drawpreview` in `WM_SHOWWINDOW`,
-	or sending a message `SendMessage(hDlg, WM_USER + 123, 0, 0);` inside `WM_INITDIALOG`, but the code
-	seems to be executed while the dialog is still hidden (you can see this by showing a messagebox).
 
 Open questions:
 ---------------

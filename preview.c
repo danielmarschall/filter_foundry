@@ -482,6 +482,16 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 }
 
 void recalc_preview(FilterRecordPtr pb, DIALOGREF dp) {
+	// TODO? When a formula has an error, the preview should not be changeable
+	// (This code does not work because you can still try to zoom)
+	/*
+	if (!gdata->standalone) {
+		int i;
+		for (i = 0; i < 4; i++)
+			if (!parseexpr(expr[i])) return;
+	}
+	*/
+
 	if (HAS_BIG_DOC(pb)) {
 		recalc_preview_bigdoc(pb, dp);
 	}

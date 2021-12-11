@@ -670,9 +670,9 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 			sprintf(errA, "Could not create %d bit standalone plugin (doresources failed).", bits);
 			#ifdef UNICODE
 			mbstowcs(errW, errA, MAX_PATH + 200);
-			alertuser(&errW[0], (TCHAR*)TEXT(""));
+			simplealert(&errW[0]);
 			#else
-			alertuser(&errA[0], (TCHAR*)TEXT(""));
+			simplealert(&errA[0]);
 			#endif
 		}
 	}
@@ -684,9 +684,9 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 		sprintf(errA, "Could not create %d bit standalone plugin (File extraction failed).", bits);
 		#ifdef UNICODE
 		mbstowcs(errW, errA, MAX_PATH + 200);
-		alertuser(&errW[0], (TCHAR*)TEXT(""));
+		simplealert(&errW[0]);
 		#else
-		alertuser(&errA[0], (TCHAR*)TEXT(""));
+		simplealert(&errA[0]);
 		#endif
 	}
 

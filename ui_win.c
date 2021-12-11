@@ -179,6 +179,8 @@ HWND CreateToolTip(int toolID, HWND hDlg, LPTSTR pszText) {
 	return hwndTip;
 }
 
+#define IDT_TIMER_INITPREVIEW_DRAW 1111
+
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
 	static Point origscroll;
@@ -209,6 +211,15 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	switch (wMsg) {
+	case WM_TIMER:
+		switch (wParam)
+		{
+		case IDT_TIMER_INITPREVIEW_DRAW:
+			recalc_preview(gpb, hDlg);
+			KillTimer(hDlg, 123);
+			return 0;
+		}
+		break;
 	case WM_INITDIALOG:
 		gdata->hWndMainDlg = hDlg;
 
@@ -261,6 +272,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		maindlginit(hDlg);
+
+		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
+		// So we need to put it in a timer. For some reasons, 1ms is enough. We do 100, just to be sure
+		//recalc_preview(gpb, hDlg);
+		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 100, (TIMERPROC)NULL);
+
 		break;
 	case WM_DESTROY:
 		gdata->hWndMainDlg = 0;

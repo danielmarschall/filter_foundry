@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0.14 [Work-In-Progress]
+- Made an Unicode variant of Filter Foundry which is able to read and write files with Unicode directory names. Note that the Plugin and Parameter structure of Photoshop/FilterFactory is not Unicode ready, so please use ANSI or better ASCII for them.
+- Windows NT 3.x: Preview is now showed when the dialog is opened.
+
 ## 1.7.0.13 [04-Dec-2021]
 - Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.
 - The released 32-bit version is now optimized by the compiler.
