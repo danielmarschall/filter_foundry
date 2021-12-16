@@ -426,7 +426,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 						// MSDN states: "If the function succeeds, it returns a value greater than 32."
 
 						TCHAR s[0x300];
-						xstrcpy(s, (TCHAR*)TEXT("ShellExecuteA failed: "));
+						xstrcpy(s, (TCHAR*)TEXT("ShellExecute failed: "));
 						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
 						dbg(&s[0]);
 
@@ -546,13 +546,29 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 }
 
 Boolean alertuser(TCHAR *err,TCHAR *more){
-	TCHAR *s = (TCHAR*)malloc((xstrlen(err)+xstrlen(more)+2)*sizeof(TCHAR)), *q;
+	TCHAR *s = (TCHAR*)malloc((xstrlen(err)+xstrlen(more)+3)*sizeof(TCHAR)), *q; // 3=CR+LF+NUL
 	Boolean res;
+	int i;
 
-	q = xstrcat(s,err);
+	if (s == NULL) return false;
+	
+	q = s;
+
+	for (i = 0; i < xstrlen(err); i++) {
+		*q++ = err[i];
+	}
+
+	#ifdef WIN_ENV
+	*q++ = CR;
+	#endif
 	*q++ = LF;
-	q = xstrcat(q,more);
-	*q = 0;
+
+	for (i = 0; i < xstrlen(more); i++) {
+		*q++ = more[i];
+	}
+
+	*q++ = 0;
+
 	res = simplealert(s);
 	free(s);
 	return res;

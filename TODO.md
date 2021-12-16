@@ -13,11 +13,7 @@ ToDo for the next release
 Known bugs
 ----------
 
-* SEVERE: After working with Filter Foundry for a short amount of time (working with sliders, applying, opening again, changing sliders, etc.), the file save dialog (Make dialog) will corrupt the memory!!! You notice it by seeing that icons and folder icons are missing! Later, the program might even crash! (Verified with 1.7.0.12, verified with Visual Studio and OpenWatcom) Application Verifier does not report anything bad.
-	You can also corrupt the memory by often applying filters and building and doing stuff. And at some point you get the error that preview cannot be shown because memory is out???
-	Do we have a leak???
-	Smashing Ctrl+F does NOT cause a leak.
-	"Deleaker" tool only showed small leaks, nothing very big and no leaks with high hit-count!
+* The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area!
 
 Minor priority stuff or ideas
 -----------------------------
