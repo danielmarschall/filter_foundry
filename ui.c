@@ -546,10 +546,11 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 }
 
 Boolean alertuser(TCHAR *err,TCHAR *more){
-	TCHAR *s = (TCHAR*)malloc((xstrlen(err)+xstrlen(more)+3)*sizeof(TCHAR)), *q; // 3=CR+LF+NUL
+	TCHAR *s, *q;
 	Boolean res;
-	int i;
+	size_t i;
 
+	s = (TCHAR*)malloc((xstrlen(err) + xstrlen(more) + 3) * sizeof(TCHAR)); // 3=CR+LF+NUL
 	if (s == NULL) return false;
 	
 	q = s;
