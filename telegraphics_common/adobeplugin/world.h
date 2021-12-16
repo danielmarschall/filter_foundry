@@ -120,4 +120,12 @@
 	#define snprintf _snprintf
 #endif /* _MSC_VER */
 
+#ifndef WIN_ENV
+#ifdef UNICODE
+typedef wchar_t TCHAR;
+#else
+typedef char TCHAR;
+#endif
+#endif
+
 #endif

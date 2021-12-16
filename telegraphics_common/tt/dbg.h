@@ -20,7 +20,11 @@
 #ifndef DBG_H_
 #define DBG_H_
 
+#ifdef WIN_ENV
 #include <windows.h>
+#else
+#include "world.h" // TCHAR definition
+#endif
 
 void dbg(TCHAR *s);
 int dprintf (const char *fmt, ...);

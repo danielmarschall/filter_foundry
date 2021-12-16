@@ -7,8 +7,6 @@ ToDo for the next release
 
 * Test UNICODE very intense.
 
-* Non-Windows source files: Don't use TCHAR. Instead typedef a type we can use independently of the WinAPI library!
-
 
 Known bugs
 ----------

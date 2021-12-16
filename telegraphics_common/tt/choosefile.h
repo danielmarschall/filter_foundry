@@ -20,6 +20,8 @@
 #ifndef CHOOSEFILE_H_
 #define CHOOSEFILE_H_
 
+#include "world.h"
+
 #ifdef macintosh
 	#ifdef __GNUC__ // FIXME: this isn't the right define
 		typedef struct StandardFileReply {

@@ -90,6 +90,8 @@
 #ifndef RC_INVOKED
 #ifndef Rez
 
+	#include "world.h" // TCHAR definition
+
 	#include "PIAbout.h"
 	#include "PIFilter.h"
 
