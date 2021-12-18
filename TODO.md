@@ -5,13 +5,35 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* Test UNICODE very intense.
+(None)
 
 
-Known bugs
-----------
+Known problems
+--------------
 
 * The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area!
+	see wishlist\bug_rectangle.png
+
+* In Comparison to Filter Factory, our filter is super super super slow!!!!
+
+	Example:
+	
+	Picture 5412x3962 pixels RGBA without transparency
+	R: put(rnd(i,255),0),get(0)>255-i+val(0,-128,128)?255:0
+	G: get(0)>255-i+val(0,-128,128)?255:0
+	B: get(0)>255-i+val(0,-128,128)?255:0
+	A: a
+	Filter Factory:          1,8 seconds
+	Foundry VC++ Debug:      20 seconds
+	Foundry WPJ  Optimized:  18 seconds
+	Foundry Vc++ Release:    2,8 seconds
+	Foundry WingW Release:   2,8 seconds
+	
+	MSVC++ 32 bit needs at least Windows XP (tested with SP3)
+	MingW 32 bit build needs a newer version of the MSVCRT
+	
+	=> We probably need to publish the MSVC++ 32 bit version. It is faster and has Unicode. But this means, we cannot be compatible with Win95..2000 again
+
 
 Minor priority stuff or ideas
 -----------------------------
@@ -25,8 +47,6 @@ Minor priority stuff or ideas
 * compat_win_resource.c (compatibility for Win9x resource generation): Cannot delete resources, see https://bugs.winehq.org/show_bug.cgi?id=52046
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
-
-* Filter Factory is much faster than Filter Foundry (example rad.afs). Why?! Test if it is also the case if optimized with "-O2" (release configuration).
 
 * When a filter is created obfuscated and you click "Make" again, or if you loaded an old obfuscated filter (without protection), should then be the "obfuscate" checkbox be checked again?
 
@@ -84,17 +104,6 @@ Questions
 * What is the exact purpose of the variable `needinput`?
   It is set if we use rgbaiuvc or `cnv()`
   But why isn't it set if we use `src()` or `rad()`. Is that OK???
-
-* Why does everybody write that the Filter Factory `tan(x)` function is bounded?
-  The Filter Factory manual writes that it is bounded, and the Filter Factory Programming Guide
-  does also mention it (including a graphic).
-  Is it a bug that it goes infinity? Do we need to fix it in Filter Foundry???
-  
-  Following examples of Filter Factory show that it is going off-bound! (Also tested with PS 3.0.5)
-  
-    tan(255)  ==  167761 ? 255 : 0
-    tan(256)  == -167772 ? 255 : 0
-    tan(-768) ==  167772 ? 255 : 0
 
 * Is `D` is supposed to be a synonym `dmax` (then `D` should stay 512),
   or is `D` supposed to be `dmax-dmin` (then `D` should be 1024 and `dmin` should be 512)?

@@ -47,6 +47,7 @@ PSAPI = ..\photoshop_sdk\pluginsdk\photoshopapi
 
 # C compiler flags
 CPPFLAGS = -DWIN32 -DWIN_ENV -DYY_SKIP_YYWRAP \
+           -DUNICODE -D_UNICODE \
            -I$(PSAPI)\Pica_sp -I$(PSAPI)\Photoshop -I$(PSAPI)\General \
            -I..\telegraphics_common\adobeplugin -I..\telegraphics_common\tt -I..
 # /O2 = Max optimization (prefer performance). /O2 implies /Ot
@@ -56,7 +57,7 @@ CFLAGS = -O2 $(CPPFLAGS)
 LDFLAGS = /LD /MT user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # resource compiler flags
-RFLAGS = -i$(PSAPI)\Photoshop -d_WIN32 -d_X86_
+RFLAGS = -i$(PSAPI)\Photoshop -d_WIN32 -d_X86_ -dUNICODE -d_UNICODE
 
 # Path to flex and bison (you can download them at https://sourceforge.net/projects/winflexbison/ )
 FLEX = win_flex_bison\win_flex

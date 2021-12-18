@@ -39,6 +39,7 @@ PSAPI = photoshop_sdk\pluginsdk\photoshopapi
 
 CFLAGS += -O2 -W -Wall -Wno-main -Wno-unused-parameter -Wno-multichar -Wno-parentheses -Wno-unknown-pragmas -Wno-unused-function
 CPPFLAGS += -DYY_SKIP_YYWRAP -DWIN_ENV \
+            -DUNICODE -D_UNICODE \
             -I$(PSAPI)\pica_sp -I$(PSAPI)\photoshop -I$(PSAPI)\general \
             -Itelegraphics_common\adobeplugin -Itelegraphics_common\tt
 
