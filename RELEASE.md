@@ -11,6 +11,7 @@ ViaThinkSoft release procedure
 	- Compile with Visual C++ by running **visual_studio\vc_make_3264.bat** . This creates a 32-bit DLL and a 64-bit DLL and mixes them together (required for 32/64 bit creating of standalone filters).
 	- Compile with OpenWatcom 2.0 by running **wpj\make_watcom.bat** . This creates a 32-bit DLL only, and then mix Watcom-32-bit and VisualC-64-bit together.
 	  (This step is done because we want Win9x compatibility and therefore, the 32-bit 8BF must be built with OpenWatcom 2.0.
+	  MSVC++ 32bit needs at least Windows XP (tested with SP3). MingW 32bit build needs a newer version of the MSVCRT which implements `___mb_cur_max_func`.
 	  To build for Windows NT 3.1, we need OpenWatcom 2.0, becauase OpenWatcom 1.9 is not compatible with it)
 	- Build a zip with following contents by running **make_zip.bat** :
 		- wpj/FilterFoundry.8bf             => FilterFoundry.8bf

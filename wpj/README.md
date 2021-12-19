@@ -86,16 +86,30 @@ Correct:
     b = GetXYZ();
 
 
-Attention! Some optimizations break the code
---------------------------------------------
+Performance
+-----------
 
-Don't choose "Fastest possible code (-otexan)" for optimization!
+### In Comparison to Filter Factory, the WPJ build without "-s" (Disable stack depth checking) is super slow!
 
-As soon as "Disable stack depth checking" is enabled, the code crashes
-on some combinations of machines and Photoshop versions.
+Example:
 
-Win98 VM + Photoshop 3.0.x: Clicking any button (Make, Load, Cancel) will cause SegFault.
-Win10 PC + Photoshop 3.0.x: No problem.
+Picture 5412x3962 pixels RGBA without transparency
+
+    R: put(rnd(i,255),0),get(0)>255-i+val(0,-128,128)?255:0
+    G: get(0)>255-i+val(0,-128,128)?255:0
+    B: get(0)>255-i+val(0,-128,128)?255:0
+    A: a
+
+Approximate measurements:
+
+    Filter Factory:          1,8 seconds
+    Foundry VC++ Debug:      20 seconds
+    Foundry WPJ Optimized:   18 seconds
+    Foundry WPJ "-s" opt.:   3,2 seconds
+    Foundry Vc++ Release:    2,8 seconds
+    Foundry WingW Release:   2,8 seconds
+
+### What does "Fastest possible code (-otexan)" mean?
 
 "otexan" contains "s" (because "ox" is equal to "obmiler" and "s").
 
@@ -109,18 +123,14 @@ So, "-otexan" means:
 - Expand function in-line (-oe)
 - Disable stack depth checking (-s)
 
-The program works if "-ot" is enabled and all other optimizations (except "s") are enabled.
+### Attention! Some optimizations break the code:
 
-However, for now we just use the optimizations which "-otaxan" contains, except "s",
-so we enabled:
+As soon as "Disable stack depth checking" is enabled, the code crashes
+on some combinations of machines and Photoshop versions.
 
-- Time optimizations (-ot)
-- Branch prediction (-ob)
-- Loop optimizations (-ol)
-- In-line intrinsic functions (-oi)
-- Instruction scheduling (-or)
-- Math optimizations (-om)
-- Expand function in-line (-oe)
+Win98 VM + Photoshop 3.0.x: Clicking any button (Make, Load, Cancel) will cause SegFault.
+Win98 VM + Photoshop 7.0 : No problem
+Win10 PC + Photoshop 3.0.x: No problem.
 
 I haven't been able to detect why/where the stack is overloaded.
 If anyone has an idea, please contact me.
@@ -129,6 +139,8 @@ Because the code should be OK - Application Verifier has not detected anything w
 
 https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html
 http://www.azillionmonkeys.com/qed/watfaq.shtml (Q19)
+
+However, if we add `-sg` (generate calls to grow the stack), it seems to work.
 
 
 Remarks
@@ -140,3 +152,8 @@ The IDE fails to build the project when filenames contain more than one dot.
 Therefore the output files of bison and lex are renamed.
 There is no error checking done.
 Probably it would be better to write a small wmake file for this purpose.
+
+C-switches which are not recognized by the OpenWatcom IDE:
+
+    -aq  turn off qualifier mismatch warning for const/volatile
+    -sg  generate calls to grow the stack

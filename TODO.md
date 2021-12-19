@@ -14,26 +14,6 @@ Known problems
 * The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area!
 	see wishlist\bug_rectangle.png
 
-* In Comparison to Filter Factory, our filter is super super super slow!!!!
-
-	Example:
-	
-	Picture 5412x3962 pixels RGBA without transparency
-	R: put(rnd(i,255),0),get(0)>255-i+val(0,-128,128)?255:0
-	G: get(0)>255-i+val(0,-128,128)?255:0
-	B: get(0)>255-i+val(0,-128,128)?255:0
-	A: a
-	Filter Factory:          1,8 seconds
-	Foundry VC++ Debug:      20 seconds
-	Foundry WPJ  Optimized:  18 seconds
-	Foundry Vc++ Release:    2,8 seconds
-	Foundry WingW Release:   2,8 seconds
-	
-	MSVC++ 32 bit needs at least Windows XP (tested with SP3)
-	MingW 32 bit build needs a newer version of the MSVCRT
-	
-	=> We probably need to publish the MSVC++ 32 bit version. It is faster and has Unicode. But this means, we cannot be compatible with Win95..2000 again
-
 
 Minor priority stuff or ideas
 -----------------------------
