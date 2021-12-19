@@ -104,6 +104,8 @@ Questions
 Design/UI Tweaks
 ----------------
 
+* ctl(i) edit controls: Use a spinedit control so you can +1 and -1 with the mouse. Maybe `ControlTextWndProc` isn't neccessary anymore?
+
 * Should it be possible to zoom more than 100%?
 
 * The vertical scrollbar should auto-hide when the expression formula is short. (Also for Mac). Unfortunately, this task is very hard in WIN32 API.

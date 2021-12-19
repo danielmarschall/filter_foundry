@@ -75,7 +75,11 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 					break;
 				}
 			}else if(linecnt<=8){
-				slider[linecnt-1] = atoi(linebuf);
+				int v;
+				v = atoi(linebuf);
+				if (v < 0) v = 0;
+				if (v > 255) v = 255;
+				slider[linecnt-1] = v;
 			}else{
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
@@ -280,6 +284,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 					// Sliders
 					for (i = 0; i < 8; i++) {
 						char* sliderName;
+						int v;
 						val = _ffx_read_str(&q);
 						sliderName = val;
 						if (format_version >= 12) {
@@ -292,7 +297,10 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						gdata->parm.ctl_used[i] = (bool32_t)*((byte*)q);
 						q += sizeof(byte);
 						gdata->parm.val[i] = *((uint32_t*)q);
-						slider[i] = *((uint32_t*)q);
+						v = *((uint32_t*)q);
+						if (v < 0) v = 0;
+						if (v > 255) v = 255;
+						slider[i] = v;
 						q += sizeof(uint32_t);
 					}
 
@@ -742,6 +750,7 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 				// Slider values
 				for (i = 0; i < 8; i++) {
 					char keyname[7], tmp[5];
+					int v;
 					sprintf(keyname, "val[%d]", i);
 					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
 						sprintf(keyname, "def[%d]", i);
@@ -749,7 +758,10 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 							strcpy(tmp,"0");
 						}
 					}
-					gdata->parm.val[i] = slider[i] = atoi(tmp);
+					v = atoi(tmp);
+					if (v < 0) v = 0;
+					if (v > 255) v = 255;
+					gdata->parm.val[i] = slider[i] = v;
 				}
 
 				// Map names

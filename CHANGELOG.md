@@ -1,8 +1,13 @@
 # Changelog
 
 ## 1.7.0.14 [Work-In-Progress]
-- Made a Unicode variant of Filter Foundry which is able to read and write files with Unicode directory names. Note that the Plugin and Parameter structure of Photoshop/FilterFactory is not Unicode ready, so please use ANSI or better ASCII for them.
+- 32 bit: Increased performance (OpenWatcom build).
+- 64 bit: Made a Unicode variant of Filter Foundry which is able to read and write files with Unicode directory names. Note that the Plugin and Parameter structure of Photoshop/FilterFactory is not Unicode ready, so please use ANSI or better ASCII for them.
 - Windows NT 3.x: Preview is now showing instantly when the dialog is opened.
+- Control text edit: The "up" and "down" keys can now be used to increase and decrease the value by 1. (*)
+- Control text edit: Internal overflow check fixed. Inputs like "500" will now be evaluated as "255" (max value) rather than "244" (modulo 256).
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
 ## 1.7.0.13 [04-Dec-2021]
 - Internal change: PARM resource inside memory works now with C-Strings instead of Pascal-Strings.

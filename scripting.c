@@ -144,6 +144,8 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 					for (i = 0; i <= 7; ++i) {
 						if (key == getAeteKey('0' + i, gdata->standalone ? &gdata->parm : NULL)) {
 							PIGetInt(token, &v);
+							if (v < 0) v = 0;
+							if (v > 255) v = 255;
 							slider[i] = v;
 						}
 					}

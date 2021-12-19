@@ -181,6 +181,43 @@ HWND CreateToolTip(int toolID, HWND hDlg, LPTSTR pszText) {
 
 #define IDT_TIMER_INITPREVIEW_DRAW 1111
 
+WNDPROC lpControlEditWndProc[8];
+
+LRESULT CALLBACK ControlTextWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	extern Boolean doupdates;
+	int sliderNum;
+	for (sliderNum = 0; sliderNum < 8; sliderNum++) {
+		if (hWnd == GetDlgItem(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum)) {
+			if ((uMsg == WM_KEYDOWN) && (wParam == VK_UP) && doupdates)
+			{
+				uint8_t sliderVal = slider[sliderNum] < 255 ? slider[sliderNum] + 1 : slider[sliderNum];
+				slider[sliderNum] = sliderVal;
+
+				SETCTLTEXTINT(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
+				REPAINTCTL(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum);
+
+				recalc_preview(gpb, gdata->hWndMainDlg);
+
+				return 0;
+			}
+			if ((uMsg == WM_KEYDOWN) && (wParam == VK_DOWN) && doupdates)
+			{
+				uint8_t sliderVal = slider[sliderNum] > 0 ? slider[sliderNum] - 1 : slider[sliderNum];
+				slider[sliderNum] = sliderVal;
+
+				SETCTLTEXTINT(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
+				REPAINTCTL(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum);
+
+				recalc_preview(gpb, gdata->hWndMainDlg);
+
+				return 0;
+			}
+			return CallWindowProc(lpControlEditWndProc[sliderNum], hWnd, uMsg, wParam, lParam);
+		}
+	}
+	return 0; // should not happen
+}
+
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
 	static Point origscroll;
@@ -200,6 +237,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		if (doupdates) {
 			int sliderNum = (int)wParam - FIRSTCTLITEM;
 			uint8_t sliderVal = (uint8_t)(lParam & 0xFFFF);
+			if (sliderVal < 0) sliderVal = 0;
+			if (sliderVal > 255) sliderVal = 255;
 			slider[sliderNum] = sliderVal;
 
 			SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
@@ -278,6 +317,12 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		// Note that 1 millisecond is enough, even if the window needs longer than 1 millisecond to load.
 		//recalc_preview(gpb, hDlg);
 		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 1, (TIMERPROC)NULL);
+
+		// Implement "up" and "down" keys for the edit controls
+		// TODO: Better use a spin-edit?
+		for (i = 0; i < 8; ++i) {
+			lpControlEditWndProc[i] = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLTEXTITEM + i), GWL_WNDPROC, (LONG_PTR)&ControlTextWndProc);
+		}
 
 		break;
 	case WM_DESTROY:
