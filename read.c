@@ -40,7 +40,9 @@ enum{
 
 Boolean readparams_afs_pff(Handle h,char **reason){
 	Boolean res = false;
-	char linebuf[MAXLINE+1],curexpr[MAXEXPR+1],*p,*dataend,*q;
+	char linebuf[MAXLINE + 1] = { 0 };
+	char curexpr[MAXEXPR + 1] = { 0 };
+	char *p, *dataend, *q;
 	char c;
 	int linecnt, lineptr, exprcnt;
 
@@ -186,7 +188,7 @@ char* _ffx_read_str(char** q) {
 
 	len = *((uint32_t*)*q);
 	*q += sizeof(uint32_t);
-	val = (char*)malloc(len + 1);
+	val = (char*)malloc((size_t)len + 1);
 	if (val != NULL) {
 		memcpy(val, (char*)*q, len);
 		val[len] = 0;
@@ -418,7 +420,7 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 		size_t i;
 
 		// Convert copyright CRLF to CR (actually, just removing LF)
-		char copyrightCRLF[256];
+		char copyrightCRLF[256] = { 0 };
 		char* p = &copyrightCRLF[0];
 		for (i = 0; i < strlen(pparm->szCopyright); i++) {
 			if (pparm->szCopyright[i] != LF) {
@@ -446,7 +448,7 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 		size_t i;
 
 		// Convert CR in the copyright field to CRLF.
-		char copyrightCRLF[256];
+		char copyrightCRLF[256] = { 0 };
 		char* p = &copyrightCRLF[0];
 		for (i = 0; i < strlen(pparm->szCopyright); i++) {
 			*p++ = pparm->szCopyright[i];
@@ -561,7 +563,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	if (inputFile == 0) return false;
 	// Let input memory be read-only, +1 for terminal zero
 	//char* inputwork = inputFile;
-	inputwork = (char*)malloc(maxInput + 1);
+	inputwork = (char*)malloc((size_t)maxInput + 1);
 	inputworkinitial = inputwork;
 	if (inputwork == 0) return false;
 	memcpy(inputwork, inputFile, maxInput);

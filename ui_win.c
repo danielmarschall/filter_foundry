@@ -236,7 +236,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
 			int sliderNum = (int)wParam - FIRSTCTLITEM;
-			uint8_t sliderVal = (uint8_t)(lParam & 0xFFFF);
+			int sliderVal = (lParam & 0xFFFF);
 			if (sliderVal < 0) sliderVal = 0;
 			if (sliderVal > 255) sliderVal = 255;
 			slider[sliderNum] = sliderVal;
@@ -321,7 +321,11 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		// Implement "up" and "down" keys for the edit controls
 		// TODO: Better use a spin-edit?
 		for (i = 0; i < 8; ++i) {
+			#ifdef _WIN64
+			lpControlEditWndProc[i] = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLTEXTITEM + i), GWLP_WNDPROC, (LONG_PTR)&ControlTextWndProc);
+			#else
 			lpControlEditWndProc[i] = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLTEXTITEM + i), GWL_WNDPROC, (LONG_PTR)&ControlTextWndProc);
+			#endif
 		}
 
 		break;
@@ -439,7 +443,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	if (res == -1) {
 		TCHAR s[0x300];
 		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: "));
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 		dbg(&s[0]);
 	}
 

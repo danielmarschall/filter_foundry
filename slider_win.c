@@ -105,7 +105,7 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 		if (RegisterClass(&clx) == 0) {
 			TCHAR s[0x300];
 			xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: "));
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 			dbg(&s[0]);
 			return false;
 		}

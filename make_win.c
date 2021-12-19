@@ -33,11 +33,11 @@ extern HINSTANCE hDllInstance;
 Boolean doresources(FSSpec* dst, int bits);
 
 void dbglasterror(TCHAR *func){
-	TCHAR s[0x300];
+	TCHAR s[0x300] = {0};
 
 	xstrcpy(&s[0],func);
 	xstrcat(&s[0],TEXT(" failed: "));
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - xstrlen(s), NULL);
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 	dbg(&s[0]);
 }
 
@@ -52,8 +52,8 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 */
 
 int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
-	char name[1024];
-	char description[1024];
+	char name[1024] = { 0 };
+	char description[1024] = { 0 };
 	size_t i;
 	size_t iname = 0;
 	int idescription = 0;
@@ -441,7 +441,7 @@ Boolean doresources(FSSpec* dst, int bits){
 			char* newmanifest;
 			int manifestsize = SizeofResource(hDllInstance, manifestsrc);
 
-			newmanifest = (char*)malloc(manifestsize + 4096/*+4KiB for name,description,etc.*/);
+			newmanifest = (char*)malloc((size_t)manifestsize + 4096/*+4KiB for name,description,etc.*/);
 
 			DBG("loaded DATA, PiPL");
 
@@ -471,7 +471,7 @@ Boolean doresources(FSSpec* dst, int bits){
 
 				// ====== Create fitting manifest for the activation context
 
-				manifestp_copy = (char*)malloc(manifestsize + 1/*sz*/);
+				manifestp_copy = (char*)malloc((size_t)manifestsize + 1/*sz*/);
 				if (manifestp_copy != 0) {
 					memcpy(manifestp_copy, manifestp, manifestsize); // copy manifestp to manifestp_copy, because manifestp is readonly
 					manifestp_copy[manifestsize] = '\0'; // and add the null-terminating char, because domanifest() uses sprintf() on it
@@ -695,7 +695,7 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 
 OSErr make_standalone(StandardFileReply *sfr){
 	OSErr tmpErr, outErr;
-	FSSpec dst;
+	FSSpec dst = { 0 };
 
 	outErr = noErr;
 

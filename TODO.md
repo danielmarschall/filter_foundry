@@ -18,6 +18,8 @@ Known problems
 Minor priority stuff or ideas
 -----------------------------
 
+* Can we still improve the speed? Filter Factory still seems to be faster!
+
 * Should we completely remove all Apple code? It will make things much easier, and newer Apple ports need completely remake anyway. On the other hand, we lose a potential back port to ancient Mac.
 
 * Right to the sliders you can enter numbers which are outside the range of 0..255 . Prevent that, please.
