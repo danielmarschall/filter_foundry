@@ -33,7 +33,7 @@ unsigned char *PLstrcat(unsigned char * str1,const unsigned char * str2){
 	if(str1[0]+n > 255)
 		n = 255 - str1[0];
 	memcpy(str1+1+str1[0],str2+1,n);
-	str1[0] += n;
+	str1[0] += (unsigned char)n;
 	return str1;
 }
 const unsigned char *PLstrrchr(const unsigned char *str1, int ch1){

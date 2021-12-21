@@ -84,7 +84,7 @@ void DoAbout(AboutRecordPtr pb){
 
 Boolean simplealert(TCHAR* s){
 	HWND hwnd;
-	TCHAR title[256];
+	TCHAR title[256] = { 0 };
 	if (gdata && gdata->standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
@@ -101,7 +101,7 @@ Boolean simplealert(TCHAR* s){
 
 Boolean simplewarning(TCHAR* s) {
 	HWND hwnd;
-	TCHAR title[256];
+	TCHAR title[256] = { 0 };
 	if (gdata && gdata->standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
@@ -117,7 +117,7 @@ Boolean simplewarning(TCHAR* s) {
 
 Boolean showmessage(TCHAR *s) {
 	HWND hwnd;
-	TCHAR title[256];
+	TCHAR title[256] = { 0 };
 	if (gdata && gdata->standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
@@ -226,7 +226,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	int item,i;
 	POINT newpos;
 	DRAWITEMSTRUCT *pdi;
-	Point newscroll;
+	Point newscroll = { 0, 0 };
 	HGDIOBJ hfnt;
 
 	extern Boolean doupdates;
@@ -238,8 +238,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			int sliderNum = (int)wParam - FIRSTCTLITEM;
 			int sliderVal = (lParam & 0xFFFF);
 			if (sliderVal < 0) sliderVal = 0;
-			if (sliderVal > 255) sliderVal = 255;
-			slider[sliderNum] = sliderVal;
+			else if (sliderVal > 255) sliderVal = 255;
+			slider[sliderNum] = (uint8_t)sliderVal;
 
 			SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
 			REPAINTCTL(hDlg, FIRSTCTLTEXTITEM + sliderNum);
@@ -310,14 +310,6 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hDlg,FIRSTEXPRITEM+i,	WM_SETFONT,(WPARAM)hfnt,false);
 		}
 
-		maindlginit(hDlg);
-
-		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
-		// So we need to put it in a timer.
-		// Note that 1 millisecond is enough, even if the window needs longer than 1 millisecond to load.
-		//recalc_preview(gpb, hDlg);
-		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 1, (TIMERPROC)NULL);
-
 		// Implement "up" and "down" keys for the edit controls
 		// TODO: Better use a spin-edit?
 		for (i = 0; i < 8; ++i) {
@@ -327,6 +319,14 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			lpControlEditWndProc[i] = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLTEXTITEM + i), GWL_WNDPROC, (LONG_PTR)&ControlTextWndProc);
 			#endif
 		}
+
+		maindlginit(hDlg);
+
+		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
+		// So we need to put it in a timer.
+		// Note that 1 millisecond is enough, even if the window needs longer than 1 millisecond to load.
+		//recalc_preview(gpb, hDlg);
+		SetTimer(hDlg, IDT_TIMER_INITPREVIEW_DRAW, 1, (TIMERPROC)NULL);
 
 		break;
 	case WM_DESTROY:

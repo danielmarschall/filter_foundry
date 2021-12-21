@@ -191,19 +191,19 @@ int checksliders(int exprs,int ctlflags[],int mapflags[]){
 void slidermoved(DIALOGREF dp,int i){
 	int v = GETSLIDERVALUE(dp,i);
 	if (v < 0) v = 0;
-	if (v > 255) v = 255;
+	else if (v > 255) v = 255;
 	i -= FIRSTCTLITEM;
-	slider[i] = v;
+	slider[i] = (uint8_t)v;
 	SETCTLTEXTINT(dp,i+FIRSTCTLTEXTITEM,v,false);
 }
 
 void slidertextchanged(DIALOGREF dp,int i){
 	int v = GETCTLTEXTINT(dp,i,NULL,false);
 	if (v < 0) v = 0;
-	if (v > 255) v = 255;
+	else if (v > 255) v = 255;
 	i -= FIRSTCTLTEXTITEM;
 	SETSLIDERVALUE(dp,i+FIRSTCTLITEM,v);
-	slider[i] = v;
+	slider[i] = (uint8_t)v;
 }
 
 void maindlgupdate(DIALOGREF dp){

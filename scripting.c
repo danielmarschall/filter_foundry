@@ -142,11 +142,11 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 				else {
 					int i;
 					for (i = 0; i <= 7; ++i) {
-						if (key == getAeteKey('0' + i, gdata->standalone ? &gdata->parm : NULL)) {
+						if (key == getAeteKey((char)('0'+i), gdata->standalone ? &gdata->parm : NULL)) {
 							PIGetInt(token, &v);
 							if (v < 0) v = 0;
-							if (v > 255) v = 255;
-							slider[i] = v;
+							else if (v > 255) v = 255;
+							slider[i] = (uint8_t)v;
 						}
 					}
 				}
@@ -190,7 +190,7 @@ OSErr WriteScriptParamsOnRead(void)
 			allctls = checksliders(4, ctls, maps);
 			for (i = 0; i <= 7; ++i) {
 				if (allctls || ctls[i]) {
-					PIPutInt(token, getAeteKey('0' + i, gdata->standalone ? &gdata->parm : NULL), slider[i]);
+					PIPutInt(token, getAeteKey((char)('0'+i), gdata->standalone ? &gdata->parm : NULL), slider[i]);
 				}
 			}
 

@@ -75,7 +75,7 @@ unsigned long printablehash(unsigned long hash) {
 
 	uplim = 0;
 	for (k=1; k<4; k++) {
-		int mask;
+		int mask = 0;
 		if (k == 1) mask = 1;//0b1;
 		if (k == 2) mask = 2;//0b11;
 		if (k == 3) mask = 4;//0b111;

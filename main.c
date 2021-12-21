@@ -393,7 +393,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 int checkandinitparams(Handle params){
 	char *reasonstr,*reason;
-	int i,bUninitializedParams;
+	int i;
+	Boolean bUninitializedParams;
 	Boolean showdialog;
 
 	if (!host_preserves_parameters()) {
@@ -471,7 +472,7 @@ int checkandinitparams(Handle params){
 		if(!gdata->standalone){
 			// no saved settings (not standalone)
 			for(i = 0; i < 8; ++i)
-				slider[i] = i*10+100;
+				slider[i] = (uint8_t)(i*10+100);
 			for(i = 0; i < 4; ++i)
 				if(expr[i])
 					free(expr[i]);
@@ -582,7 +583,7 @@ void DoPrepare(FilterRecordPtr pb){
 	}
 }
 
-void RequestNext(FilterRecordPtr pb,long toprow){
+void RequestNext(FilterRecordPtr pb){
 	/* Request next block of the image */
 
 	pb->inLoPlane = pb->outLoPlane = 0;
@@ -672,7 +673,7 @@ void DoStart(FilterRecordPtr pb){
 		chunksize = needall ? (FILTER_RECT(pb).bottom - FILTER_RECT(pb).top) : CHUNK_ROWS;
 		toprow = FILTER_RECT(pb).top;
 	}
-	RequestNext(pb, toprow);
+	RequestNext(pb);
 }
 
 OSErr DoContinue(FilterRecordPtr pb){
@@ -703,7 +704,7 @@ OSErr DoContinue(FilterRecordPtr pb){
 		{
 			toprow += chunksize;
 			if (toprow < BIGDOC_FILTER_RECT(pb).bottom)
-				RequestNext(pb, toprow);
+				RequestNext(pb);
 			else {
 				SETRECT(BIGDOC_IN_RECT(pb), 0, 0, 0, 0);
 				BIGDOC_OUT_RECT(pb) = BIGDOC_MASK_RECT(pb) = BIGDOC_IN_RECT(pb);
@@ -733,7 +734,7 @@ OSErr DoContinue(FilterRecordPtr pb){
 		{
 			toprow += chunksize;
 			if(toprow < FILTER_RECT(pb).bottom)
-				RequestNext(pb,toprow);
+				RequestNext(pb);
 			else{
 				SETRECT(IN_RECT(pb),0,0,0,0);
 				OUT_RECT(pb) = MASK_RECT(pb) = IN_RECT(pb);

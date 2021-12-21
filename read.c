@@ -80,8 +80,8 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 				int v;
 				v = atoi(linebuf);
 				if (v < 0) v = 0;
-				if (v > 255) v = 255;
-				slider[linecnt-1] = v;
+				else if (v > 255) v = 255;
+				slider[linecnt-1] = (uint8_t)v;
 			}else{
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
@@ -301,8 +301,8 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						gdata->parm.val[i] = *((uint32_t*)q);
 						v = *((uint32_t*)q);
 						if (v < 0) v = 0;
-						if (v > 255) v = 255;
-						slider[i] = v;
+						else if (v > 255) v = 255;
+						slider[i] = (uint8_t)v;
 						q += sizeof(uint32_t);
 					}
 
@@ -360,7 +360,6 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 }
 
 Boolean readPARM(PARM_T* pparm, Ptr p){
-	int i;
 	Boolean towin, tomac, fromwin, frommac;
 	unsigned int signature = *((unsigned int*)p);
 	unsigned int standalone = *((unsigned int*)p+1);
@@ -404,6 +403,8 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 
 	// Do we need to do string conversion?
 	if (frommac) {
+		int i;
+
 		/* Mac PARM resource stores Pascal strings - convert to C strings, since this is what we work internally with (regardles of OS) */
 		myp2cstr((unsigned char*)pparm->szCategory);
 		myp2cstr((unsigned char*)pparm->szTitle);
@@ -421,13 +422,13 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 
 		// Convert copyright CRLF to CR (actually, just removing LF)
 		char copyrightCRLF[256] = { 0 };
-		char* p = &copyrightCRLF[0];
+		char* pCopyright = &copyrightCRLF[0];
 		for (i = 0; i < strlen(pparm->szCopyright); i++) {
 			if (pparm->szCopyright[i] != LF) {
-				*p++ = pparm->szCopyright[i];
+				*pCopyright++ = pparm->szCopyright[i];
 			}
 		}
-		*p++ = '\0';
+		*pCopyright++ = '\0';
 		strcpy(pparm->szCopyright, copyrightCRLF);
 
 		// these are the only numeric fields we *have* to swap
@@ -449,14 +450,14 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 
 		// Convert CR in the copyright field to CRLF.
 		char copyrightCRLF[256] = { 0 };
-		char* p = &copyrightCRLF[0];
+		char* pCopyright = &copyrightCRLF[0];
 		for (i = 0; i < strlen(pparm->szCopyright); i++) {
-			*p++ = pparm->szCopyright[i];
+			*pCopyright++ = pparm->szCopyright[i];
 			if (pparm->szCopyright[i] == CR) {
-				*p++ = LF;
+				*pCopyright++ = LF;
 			}
 		}
-		*p++ = '\0';
+		*pCopyright++ = '\0';
 		strcpy(pparm->szCopyright, copyrightCRLF);
 
 		// these are the only numeric fields we *have* to swap
@@ -466,21 +467,23 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 	}
 
 	// Now set the values in pparm into the working variables expr[] and slider[], so that they are visible in the GUI
-
-	for(i = 0; i < 4; ++i){
-		if(expr[i]) free(expr[i]);
-		expr[i] = my_strdup(pparm->szFormula[i]);
-	}
-
-	for (i = 0; i < 8; ++i) {
-		slider[i] = (uint8_t)pparm->val[i];
-		/*
-		if (slider[i] > 0xFF) {
-			// Wrong endianess (e.g. reading a Mac rsrc on Windows)
-			// Should not happen since we did the stuff above
-			slider[i] = (uint8_t)EndianS32_LtoN(slider[i]);
+	{
+		int i;
+		for (i = 0; i < 4; ++i) {
+			if (expr[i]) free(expr[i]);
+			expr[i] = my_strdup(pparm->szFormula[i]);
 		}
-		*/
+
+		for (i = 0; i < 8; ++i) {
+			slider[i] = (uint8_t)pparm->val[i];
+			/*
+			if (slider[i] > 0xFF) {
+				// Wrong endianess (e.g. reading a Mac rsrc on Windows)
+				// Should not happen since we did the stuff above
+				slider[i] = (uint8_t)EndianS32_LtoN(slider[i]);
+			}
+			*/
+		}
 	}
 
 	return true;
@@ -762,8 +765,8 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 					}
 					v = atoi(tmp);
 					if (v < 0) v = 0;
-					if (v > 255) v = 255;
-					gdata->parm.val[i] = slider[i] = v;
+					else if (v > 255) v = 255;
+					gdata->parm.val[i] = slider[i] = (uint8_t)v;
 				}
 
 				// Map names

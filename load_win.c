@@ -49,7 +49,7 @@ Boolean readPARMresource(HMODULE hm, char** reason) {
 	// load first PARM resource
 	if ((resinfo = FindResource(hm, MAKEINTRESOURCE(parm_id), PARM_TYPE))) {
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
-			int res = readPARM(&gdata->parm, pparm);
+			Boolean res = readPARM(&gdata->parm, pparm);
 			gdata->obfusc = false;
 			return res;
 		}
@@ -62,7 +62,7 @@ Boolean readPARMresource(HMODULE hm, char** reason) {
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm, resinfo);
 			if (resSize == sizeof(PARM_T)) {
-				int res;
+				Boolean res;
 				PARM_T* copy = (PARM_T*)malloc(resSize);
 				if (!copy) return false;
 				memcpy(copy, pparm, resSize);

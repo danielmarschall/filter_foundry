@@ -30,6 +30,12 @@
 
 extern HINSTANCE hDllInstance;
 
+typedef struct _PE32 {
+	uint32_t magic; // 0x50450000
+	IMAGE_FILE_HEADER fileHeader; // COFF Header without Signature
+	IMAGE_OPTIONAL_HEADER32 optHeader; // Standard COFF fields, Windows Specific Fields, Data Directories
+} PE32;
+
 Boolean doresources(FSSpec* dst, int bits);
 
 void dbglasterror(TCHAR *func){
@@ -210,7 +216,9 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	return dwError;
 }
 
-Boolean update_pe_timestamp(const FSSpec* dst, time_t timestamp) {
+typedef long                          __time32_t;
+
+Boolean update_pe_timestamp(const FSSpec* dst, __time32_t timestamp) {
 	size_t peoffset;
 	FILEREF fptr;
 	Boolean res;
@@ -222,8 +230,8 @@ Boolean update_pe_timestamp(const FSSpec* dst, time_t timestamp) {
 		SetFPos(fptr, fsFromStart, 0x3C) ||
 		(cnt = sizeof(peoffset), noErr) ||
 		FSRead(fptr, &cnt, &peoffset) ||
-		SetFPos(fptr, fsFromStart, (long)peoffset + 8) ||
-		(cnt = sizeof(time_t), noErr) ||
+		SetFPos(fptr, fsFromStart, (long)peoffset + /*0x0008*/offsetof(PE32, fileHeader.TimeDateStamp)) ||
+		(cnt = sizeof(__time32_t), noErr) ||
 		FSWrite(fptr, &cnt, &timestamp);
 
 	FSClose(fptr);
@@ -262,41 +270,6 @@ int binary_replace_file(FSSpec* dst, uint64_t search, uint64_t replace, Boolean 
 	return found;
 }
 
-//DOS .EXE header
-struct image_dos_header
-{
-	uint16_t e_magic;                     // Magic number
-	uint16_t e_cblp;                      // Bytes on last page of file
-	uint16_t e_cp;                        // Pages in file
-	uint16_t e_crlc;                      // Relocations
-	uint16_t e_cparhdr;                   // Size of header in paragraphs
-	uint16_t e_minalloc;                  // Minimum extra paragraphs needed
-	uint16_t e_maxalloc;                  // Maximum extra paragraphs needed
-	uint16_t e_ss;                        // Initial (relative) SS value
-	uint16_t e_sp;                        // Initial SP value
-	uint16_t e_csum;                      // Checksum
-	uint16_t e_ip;                        // Initial IP value
-	uint16_t e_cs;                        // Initial (relative) CS value
-	uint16_t e_lfarlc;                    // File address of relocation table
-	uint16_t e_ovno;                      // Overlay number
-	uint16_t e_res[4];                    // Reserved words
-	uint16_t e_oemid;                     // OEM identifier (for e_oeminfo)
-	uint16_t e_oeminfo;                   // OEM information; e_oemid specific
-	uint16_t e_res2[10];                  // Reserved words
-	int32_t  e_lfanew;                    // File address of new exe header
-};
-
-struct image_file_header
-{
-	uint16_t Machine;
-	uint16_t NumberOfSections;
-	uint32_t TimeDateStamp;
-	uint32_t PointerToSymbolTable;
-	uint32_t NumberOfSymbols;
-	uint16_t SizeOfOptionalHeader;
-	uint16_t Characteristics;
-};
-
 uint32_t calculate_checksum(FSSpec* dst) {
 	//Calculate checksum of image
 	// Taken from "PE Bliss" Cross-Platform Portable Executable C++ Library
@@ -305,7 +278,7 @@ uint32_t calculate_checksum(FSSpec* dst) {
 
 	FILEREF fptr;
 	unsigned long long checksum = 0;
-	struct image_dos_header header;
+	IMAGE_DOS_HEADER header;
 	FILEPOS filesize, i;
 	unsigned long long top;
 	unsigned long pe_checksum_pos;
@@ -316,7 +289,7 @@ uint32_t calculate_checksum(FSSpec* dst) {
 
 	//Read DOS header
 	SetFPos(fptr, fsFromStart, 0);
-	cnt = sizeof(struct image_dos_header);
+	cnt = sizeof(IMAGE_DOS_HEADER);
 	FSRead(fptr, &cnt, &header);
 
 	//Calculate PE checksum
@@ -327,7 +300,7 @@ uint32_t calculate_checksum(FSSpec* dst) {
 	//"CheckSum" field position in optional PE headers - it's always 64 for PE and PE+
 	//Calculate real PE headers "CheckSum" field position
 	//Sum is safe here
-	pe_checksum_pos = header.e_lfanew + sizeof(struct image_file_header) + sizeof(uint32_t) + checksum_pos_in_optional_headers;
+	pe_checksum_pos = header.e_lfanew + sizeof(IMAGE_FILE_HEADER) + sizeof(uint32_t) + checksum_pos_in_optional_headers;
 
 	//Calculate checksum for each byte of file
 	filesize = 0;
@@ -378,7 +351,7 @@ Boolean repair_pe_checksum(FSSpec* dst) {
 		SetFPos(fptr, fsFromStart, 0x3C) ||
 		(cnt = sizeof(peoffset), noErr) ||
 		FSRead(fptr, &cnt, &peoffset) ||
-		SetFPos(fptr, fsFromStart, (long)peoffset + 88) ||
+		SetFPos(fptr, fsFromStart, (long)peoffset + /*0x0058*/offsetof(PE32, optHeader.CheckSum)) ||
 		(cnt = sizeof(uint32_t), noErr) ||
 		FSWrite(fptr, &cnt, &checksum);
 
@@ -547,7 +520,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					}
 				}
 
-				if (!update_pe_timestamp(dst, time(0))) {
+				if (!update_pe_timestamp(dst, (__time32_t)time(0))) {
 					simplewarning((TCHAR*)TEXT("update_pe_timestamp failed"));
 				}
 

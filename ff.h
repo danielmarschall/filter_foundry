@@ -56,7 +56,7 @@ enum{
 	PS_FILTER_FILETYPE = '8BFM'
 };
 
-typedef struct{
+typedef struct globals_t_ {
 	Boolean standalone;
 	Boolean parmloaded; // this means that the filter is loaded, but without PARM (title, author, etc.)
 	Boolean obfusc;
@@ -101,7 +101,7 @@ void DoPrepare (FilterRecordPtr epb);
 void DoStart (FilterRecordPtr epb);
 OSErr DoContinue (FilterRecordPtr epb);
 void DoFinish (FilterRecordPtr epb);
-void RequestNext (FilterRecordPtr epb,long);
+void RequestNext (FilterRecordPtr epb);
 InternalState saveInternalState();
 void restoreInternalState(InternalState state);
 

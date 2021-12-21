@@ -52,12 +52,12 @@ void builddlginit(DIALOGREF dp){
 		SetDlgItemTextA(dp,AUTHORITEM,   "Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){
-			s[4] = '0'+i;
+			s[4] = (char)('0' + i);
 			SetDlgItemTextA(dp,FIRSTMAPNAMEITEM+i,s);
 		}
 		strcpy(s,"ctl(X)");
 		for(i = 0; i < 8; ++i){
-			s[4] = '0'+i;
+			s[4] = (char)('0' + i);
 			SetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i,s);
 		}
 	}
@@ -242,7 +242,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.popDialog = needui; //true if need to pop a parameter dialog
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
-		gdata->obfusc = ISDLGBUTTONCHECKED(dp,PROTECTITEM);
+		gdata->obfusc = (Boolean)ISDLGBUTTONCHECKED(dp,PROTECTITEM);
 
 		// TODO: Unicode!
 		//xstrcpy(fname, gdata->parm.szTitle);
