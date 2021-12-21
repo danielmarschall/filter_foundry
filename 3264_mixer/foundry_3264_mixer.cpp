@@ -24,6 +24,9 @@
 
 #include <iostream>
 #include <windows.h>
+#include <string>
+#include <fstream>
+#include <vector>
 
 bool update_pe_timestamp(LPCTSTR filename, time_t timestamp) {
 	size_t peoffset;
@@ -42,6 +45,49 @@ bool update_pe_timestamp(LPCTSTR filename, time_t timestamp) {
 
 	return true;
 }
+
+bool update_pe_stackSizeCommit(LPCTSTR filename, size_t stackReserve, size_t stackCommit) {
+	size_t peoffset;
+	FILE* fptr;
+
+	fptr = _wfopen(filename, L"rb+");
+	if (fptr == NULL) return false;
+
+	fseek(fptr, 0x3C, SEEK_SET);
+	fread(&peoffset, sizeof(peoffset), 1, fptr);
+
+	fseek(fptr, (long)peoffset + 12 * 8, SEEK_SET);
+	fwrite(&stackReserve, sizeof(size_t), 1, fptr);
+
+	fseek(fptr, (long)peoffset + 12 * 8 + 4, SEEK_SET);
+	fwrite(&stackCommit, sizeof(size_t), 1, fptr);
+
+	fclose(fptr);
+
+	return true;
+}
+
+bool update_pe_heapSizeCommit(LPCTSTR filename, size_t heapReserve, size_t heapCommit) {
+	size_t peoffset;
+	FILE* fptr;
+
+	fptr = _wfopen(filename, L"rb+");
+	if (fptr == NULL) return false;
+
+	fseek(fptr, 0x3C, SEEK_SET);
+	fread(&peoffset, sizeof(peoffset), 1, fptr);
+
+	fseek(fptr, (long)peoffset + 13 * 8, SEEK_SET);
+	fwrite(&heapReserve, sizeof(size_t), 1, fptr);
+
+	fseek(fptr, (long)peoffset + 13 * 8 + 4, SEEK_SET);
+	fwrite(&heapCommit, sizeof(size_t), 1, fptr);
+
+	fclose(fptr);
+
+	return true;
+}
+
 
 //DOS .EXE header
 struct image_dos_header
@@ -226,6 +272,51 @@ bool addToFile(LPCTSTR pluginfile, LPCTSTR otherfile, LPCTSTR lpType, LPCTSTR lp
 	return bSuccessful;
 }
 
+#ifdef UNICODE
+int binary_file_string_replace(std::wstring file_name, const char* asearch, const char* areplace) {
+#else
+int binary_file_string_replace(std::string file_name, const char* asearch, const char* areplace) {
+#endif
+	std::ifstream input(file_name, std::ios::binary);
+
+	std::vector<char> buffer((std::istreambuf_iterator<char>(input)), (std::istreambuf_iterator<char>()));
+	std::vector<char>::iterator itbegin = buffer.begin();
+	std::vector<char>::iterator itend = buffer.end();
+
+	if (strlen(asearch) != strlen(areplace)) {
+		printf("Replace value length greater than original!\n");
+		return -1;
+	}
+	int MAX_BUFFER = strlen(asearch);
+
+	char* needed_str = (char*)malloc(MAX_BUFFER);
+	if (needed_str == 0) return -1;
+	char* replace_str = (char*)malloc(MAX_BUFFER);
+	if (replace_str == 0) return -1;
+	
+	memcpy(needed_str, asearch, MAX_BUFFER);
+	memcpy(replace_str, areplace, MAX_BUFFER);
+
+	int ifound = 0;
+
+	for (auto it = itbegin; it < itend ; it++) {
+		if (memcmp(it._Ptr, needed_str, MAX_BUFFER) == 0) {
+			strncpy(it._Ptr, replace_str, MAX_BUFFER);
+			it += MAX_BUFFER - 1; // -1 because it++ will be set on the next loop
+			ifound++;
+		}
+	}
+
+	if (ifound > 0) {
+		std::ofstream ofile(file_name, std::ios::out | std::ios::binary);
+		ofile.write((char*)&buffer[0], buffer.size() * sizeof(char));
+		ofile.close();
+	}
+
+	return ifound;
+}
+
+
 int main()
 {
 	LPCTSTR lpTemplateType = L"TPLT";
@@ -305,6 +396,20 @@ int main()
 		removeFromFile(file64tmp, lpTemplateType, lpName32Pipl, wLanguageNeutral);
 		removeFromFile(file64tmp, lpTemplateType, lpName64Pipl, wLanguageNeutral);
 	}
+
+	// 32 bit (OpenWatcom cosmetics): Export table name "filterfoundry.dll" => "FilterFoundry.8bf"
+	// since OpenWatcom cannot link a 8BF file natively.
+	binary_file_string_replace(file32tmp, "filterfoundry.dll", "FilterFoundry.8bf");
+	binary_file_string_replace(file32out, "filterfoundry.dll", "FilterFoundry.8bf");
+
+	// More OpenWatcom cosmetics! https://github.com/open-watcom/open-watcom-v2/issues/780 (Rejected)
+	// Stack reserved cannot be changed with linker option "OPTION STACK=1m" (Rejected)
+	// It is not required for DLLs, but everybody does it, and I think it is cosmetics to fill these fields, even if not required.
+	update_pe_stackSizeCommit(file32tmp, 1024 * 1024, 4096);
+	update_pe_stackSizeCommit(file32out, 1024 * 1024, 4096);
+	// Heap reserved can be changed with linker option "OPTION HEAP=1m"
+	update_pe_heapSizeCommit(file32tmp, 1024 * 1024, 4096);
+	update_pe_heapSizeCommit(file32out, 1024 * 1024, 4096);
 
 	// 3. Update timestamp of 32/64 "TMP"
 	{
