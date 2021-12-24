@@ -6,7 +6,7 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory.
 Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
-### Windows version 1.7.0.13
+### Windows version 1.7.0.14
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
 
@@ -64,7 +64,7 @@ Filter Foundry support a variety of different file formats:
 
 (2) Note that Filter Foundry only implements the basic Filter Factory commands. Therefore, most "Filters Unlimited" filters will not work with Filter Foundry.
 
-(3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added with a text editor.
+(3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added using a text editor.
 
 
 ### Donation
