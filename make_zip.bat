@@ -16,9 +16,7 @@ copy CHANGELOG.md CHANGELOG.txt
 del README.txt
 del CHANGELOG.txt
 
-cd doc
-"c:\Program Files\7-Zip\7z.exe" a -tzip "..\release.zip" *.pdf
-cd ..
+"c:\Program Files\7-Zip\7z.exe" a -tzip "release.zip" doc\*.pdf
 
 cd wpj
 "c:\Program Files\7-Zip\7z.exe" a -tzip "..\release.zip" FilterFoundry.8bf
