@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* Win32s/Win3.1 compatibility?
 
 
 Known problems

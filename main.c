@@ -161,13 +161,15 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		//
 		// TODO: Not 100% sure if the calling convention is correct...
 		//       are we corrupting the stack? At least WER isn't triggered...
-		return;
+// Commented out DM 27.12.2021: For Win32s at Win3.1, the variable IS less than 0xFFFF ?!
+// TODO: Do we have another way to detect rundll32 abuse?
+// return;
 	}
 	#endif
 
 	#ifdef SHOW_HOST_DEBUG
 	tmp = (char*)malloc(512);
-	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs->numBufferProcs);
+	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs == 0 ? -999/*About has no BufferProcs*/ : pb->bufferProcs->numBufferProcs);
 	simplealert(tmp);
 	free(tmp);
 	#endif

@@ -435,10 +435,11 @@ Boolean maindialog(FilterRecordPtr pb){
 	p = (PlatformData*)pb->platformData;
 
 	// Note: "Invalid Cursor Handle" is the error when an unrecognized control class is detected
+	// TODO: Win 3.1 mit Win32s: "The parameter is incorrect"
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
-		simplealert((TCHAR*)TEXT("DialogBoxParam in valid parent window handle"));
+		simplealert((TCHAR*)TEXT("DialogBoxParam invalid parent window handle"));
 	}
 	if (res == -1) {
 		TCHAR s[0x300];
