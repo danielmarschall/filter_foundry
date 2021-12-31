@@ -101,6 +101,28 @@ LRESULT CALLBACK DummyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+void Win32sFixSuperclassing(HWND hDlg, int destItem, int sourceItem) {
+	// Win32s (Win3.11) compatibility fix: Since GetClassInfo(WC_BUTTON) and GetClassInfo(WC_STATIC) won't work,
+	// we had replaced the WndProc by a dummy. Now, we find out the real Button and Static WndProcs and give them
+	// to our classes, making them the intended superclasses. Messages which have been sent in between were lost,
+	// though...
+
+	WNDPROC wndProc;
+#ifdef _WIN64
+	wndProc = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, destItem), GWLP_WNDPROC);
+	if (wndProc == DummyWndProc) {
+		wndProc = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, sourceItem), GWLP_WNDPROC);
+		SetWindowLongPtr(GetDlgItem(hDlg, destItem), GWLP_WNDPROC, (LONG_PTR)wndProc);
+	}
+#else
+	wndProc = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, destItem), GWL_WNDPROC);
+	if (wndProc == DummyWndProc) {
+		wndProc = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, sourceItem), GWL_WNDPROC);
+		SetWindowLongPtr(GetDlgItem(hDlg, destItem), GWL_WNDPROC, (LONG_PTR)wndProc);
+	}
+#endif
+}
+
 Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 	WNDCLASS clx;
 

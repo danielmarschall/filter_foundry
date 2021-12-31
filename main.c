@@ -118,7 +118,22 @@ size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
 	return xstrlen(out);
 }
 
-DLLEXPORT MACPASCAL
+void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
+	char* tmp;
+
+	simplealert(TEXT("You tried to execute this method with RunDLL32. This is a Photoshop plugin!"));
+
+	tmp = (char*)malloc(512);
+	if (tmp != 0) {
+		sprintf(tmp, "hwnd: %p\nhinst: %p\nlpszCmdLine: %s\nCmdShow: %d", (void*)(hwnd), (void*)(hinst), lpszCmdLine, nCmdShow);
+		MessageBoxA(0, tmp, 0, 0);
+		free(tmp);
+	}
+
+	return;
+}
+
+DLLEXPORT MACPASCAL 
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
@@ -142,13 +157,18 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	EnterCodeResource();
 
 	#ifdef WIN_ENV
-	// The first 64KB of address space is always invalid
-	if ((intptr_t)result <= 0xffff) {
+	if ((intptr_t)result == SW_SHOWDEFAULT) {
 		// When the 8BF file is analyzed with VirusTotal.com, it will invoke each
 		// exported function by calling
-		//    C:\Windows\System32\rundll32.exe rundll32.exe FilterFoundry.8bf,PluginMain
+		// loaddll64.exe 'C:\Users\user\Desktop\attachment.dll'
+		//	  ==>  rundll32.exe C:\Users\user\Desktop\attachment.dll,PluginMain
+		//	     ==> C:\Windows\system32\WerFault.exe -u -p 6612 -s 480
+		//
 		// But RunDLL32 requires following signature:
-		//    void CALLBACK EntryPoint(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow);
+		//    void __stdcall EntryPoint(HWND hwnd,      HINSTANCE hinst,    LPSTR lpszCmdLine, int nCmdShow);
+		// Our signature is:
+		//    void           PluginMain(short selector, FilterRecordPtr pb, intptr_t *data,    short *result);
+		// 
 		// Obviously, this will cause an Exception. (It crashes at *result=e because result is 0xA)
 		// Here is the problem: The crash will be handled by WerFault.exe inside the
 		// VirusTotal virtual machine. WerFault connects to various servers (9 DNS resolutions!) and does
@@ -159,11 +179,12 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// actions, although they have nothing to do with us!
 		// See https://www.virustotal.com/gui/file/1f1012c567208186be455b81afc1ee407ae6476c197d633c70cc70929113223a/behavior
 		//
-		// TODO: Not 100% sure if the calling convention is correct...
-		//       are we corrupting the stack? At least WER isn't triggered...
-// Commented out DM 27.12.2021: For Win32s at Win3.1, the variable IS less than 0xFFFF ?!
-// TODO: Do we have another way to detect rundll32 abuse?
-// return;
+		// TODO: Usually, The first 64KB of address space are always invalid. However, in Win32s (Windows 3.11), the
+		//       variable "result" is <=0xFFFF ! Let's just hope that it is never 0x000A (SW_SHOWDEFAULT),
+		//       otherwise we have a problem here!
+		// I don't understand why this works! Aren't we __cdecl and rundll expected __stdcall? But why is the parameter order correct and not reversed?
+		FakeRundll32((HWND)selector, (HINSTANCE)pb, (LPSTR)data, (int)(intptr_t)result);
+		return;
 	}
 	#endif
 

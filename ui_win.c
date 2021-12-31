@@ -232,8 +232,6 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
-	WNDPROC wndProcStatic, wndProcButton;
-
 	if ((gdata->pluginDllSliderMessageId != 0) && (wMsg == gdata->pluginDllSliderMessageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
@@ -324,19 +322,9 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		maindlginit(hDlg);
 
-		// Win32s (Win3.11) compatibility fix: Since GetClassInfo("Button") and GetClassInfo("Static") won't work,
-		// we had replaced the WndProc by a dummy. Now, we find out the real Button and Static WndProcs and give them
-		// to our classes, making them the intended superclasses. Messages which have been sent in between were lost,
-		// though...
-
-		wndProcStatic = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLLABELITEM), GWLP_WNDPROC);
-		SetWindowLongPtr(GetDlgItem(hDlg, PREVIEWITEM), GWLP_WNDPROC, (LONG)wndProcStatic);
-
-		wndProcButton = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, OPENITEM), GWLP_WNDPROC);
-		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GWLP_WNDPROC, (LONG)wndProcButton);
-		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 1), GWLP_WNDPROC, (LONG)wndProcButton);
-		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 2), GWLP_WNDPROC, (LONG)wndProcButton);
-		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 3), GWLP_WNDPROC, (LONG)wndProcButton);
+		// Win32s (Windows 3.11) compatibility
+		Win32sFixSuperclassing(hDlg, PREVIEWITEM, FIRSTCTLLABELITEM);
+		for (i=0; i<4; i++) Win32sFixSuperclassing(hDlg, FIRSTICONITEM + i, OPENITEM);
 
 		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
 		// So we need to put it in a timer.

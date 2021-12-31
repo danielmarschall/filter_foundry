@@ -34,6 +34,7 @@ int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 
 // Misc utilities
 Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass);
+void Win32sFixSuperclassing(HWND hDlg, int destItem, int sourceItem);
 
 // Init and uninit
 void Slider_Uninit_PluginDll();
