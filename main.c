@@ -119,16 +119,18 @@ size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
 }
 
 void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
-	char* tmp;
+	//char* tmp;
 
 	simplealert(TEXT("You tried to execute this method with RunDLL32. This is a Photoshop plugin!"));
 
+	/*
 	tmp = (char*)malloc(512);
 	if (tmp != 0) {
 		sprintf(tmp, "hwnd: %p\nhinst: %p\nlpszCmdLine: %s\nCmdShow: %d", (void*)(hwnd), (void*)(hinst), lpszCmdLine, nCmdShow);
 		MessageBoxA(0, tmp, 0, 0);
 		free(tmp);
 	}
+	*/
 
 	return;
 }

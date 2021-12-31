@@ -153,6 +153,18 @@ BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
 	f_ImageRemoveCertificate fImageRemoveCertificate;
 	BOOL res = FALSE;
 
+	#ifndef _WIN64
+	// Win32s (Windows 3.11) compatibility: LoadLibrary() will output a visual message if IMAGEHLP.DLL is not existing!
+	char sys_path[MAX_PATH], dllfile[MAX_PATH];
+	if (GetSystemDirectoryA(sys_path, MAX_PATH)) {
+		sprintf(dllfile, "%s\\IMAGEHLP.DLL", sys_path);
+		if (GetFileAttributesA(dllfile) == INVALID_FILE_ATTRIBUTES) {
+			// File does not exist
+			return true;
+		}
+	}
+	#endif
+
 	hLib = LoadLibrary(TEXT("IMAGEHLP.DLL"));
 	if (!hLib) return FALSE;
 	fImageRemoveCertificate = (f_ImageRemoveCertificate)(void*)GetProcAddress(hLib, "ImageRemoveCertificate");
