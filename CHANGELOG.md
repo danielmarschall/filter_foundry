@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.15 [Work-In-Progress]
+- Now compatible with Windows 3.11 using Win32s and Photoshop 3.0. Some functionalities might be unstable, though.
+
 ## 1.7.0.14 [24-Dec-2021]
 - 32 bit: Increased performance (OpenWatcom build).
 - 64 bit: Made a Unicode variant of Filter Foundry which is able to read and write files with Unicode directory names. Note that the Plugin and Parameter structure of Photoshop/FilterFactory is not Unicode ready, so please use ANSI or better ASCII for them.
