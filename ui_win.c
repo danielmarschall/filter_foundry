@@ -232,6 +232,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
+	WNDPROC wndProcStatic, wndProcButton;
+
 	if ((gdata->pluginDllSliderMessageId != 0) && (wMsg == gdata->pluginDllSliderMessageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
@@ -321,6 +323,20 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		maindlginit(hDlg);
+
+		// Win32s (Win3.11) compatibility fix: Since GetClassInfo("Button") and GetClassInfo("Static") won't work,
+		// we had replaced the WndProc by a dummy. Now, we find out the real Button and Static WndProcs and give them
+		// to our classes, making them the intended superclasses. Messages which have been sent in between were lost,
+		// though...
+
+		wndProcStatic = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLLABELITEM), GWLP_WNDPROC);
+		SetWindowLongPtr(GetDlgItem(hDlg, PREVIEWITEM), GWLP_WNDPROC, (LONG)wndProcStatic);
+
+		wndProcButton = (WNDPROC)GetWindowLongPtr(GetDlgItem(hDlg, OPENITEM), GWLP_WNDPROC);
+		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GWLP_WNDPROC, (LONG)wndProcButton);
+		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 1), GWLP_WNDPROC, (LONG)wndProcButton);
+		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 2), GWLP_WNDPROC, (LONG)wndProcButton);
+		SetWindowLongPtr(GetDlgItem(hDlg, FIRSTICONITEM + 3), GWLP_WNDPROC, (LONG)wndProcButton);
 
 		// Some versions of Windows (NT 3.x) won't show the preview if it is calculated here.
 		// So we need to put it in a timer.
@@ -428,14 +444,13 @@ Boolean maindialog(FilterRecordPtr pb){
 	}
 
 	// For the preview image and caution symbols, we register subclasses, so that we can assign a mouse cursor to this class.
-	MakeSimpleSubclass(TEXT("Preview"), TEXT("STATIC"));
-	MakeSimpleSubclass(TEXT("Caution"), TEXT("Button"));
+	MakeSimpleSubclass(TEXT("Preview"), WC_STATIC);
+	MakeSimpleSubclass(TEXT("Caution"), WC_BUTTON);
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
 
 	// Note: "Invalid Cursor Handle" is the error when an unrecognized control class is detected
-	// TODO: Win 3.1 mit Win32s: "The parameter is incorrect"
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {

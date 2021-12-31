@@ -97,6 +97,10 @@ int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	}
 }
 
+LRESULT CALLBACK DummyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
 Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 	WNDCLASS clx;
 
@@ -114,6 +118,34 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 		}
 	}
 	else {
+		if ((xstrcmp(sourceClass, WC_BUTTON) == 0) || (xstrcmp(sourceClass, WC_STATIC) == 0)) {
+			// GetClassInfo(WC_STATIC) and GetClassInfo(WC_BUTTON) fail on Win32s (Windows 3.11)
+			// So we create a fake-class now. It will be replaced with the real Button/Static WndProc later!
+			clx.style = 0;
+			clx.lpfnWndProc = DummyWndProc;
+			clx.cbClsExtra = 0;
+			clx.cbWndExtra = 0;
+			clx.hInstance = hDllInstance;
+			clx.hIcon = 0;
+			clx.hCursor = 0;
+			clx.hbrBackground = 0;
+			clx.lpszMenuName = 0;
+			clx.lpszClassName = targetClass;
+
+			if (RegisterClass(&clx) == 0) {
+				TCHAR s[0x300];
+				xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: "));
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
+				dbg(&s[0]);
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
+			simplealert(TEXT("GetClassInfo failed"));
+		}
 		return false;
 	}
 }
@@ -200,5 +232,5 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 
 Boolean Slider_Init_None(LPCTSTR targetClass) {
 	// Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
-	return MakeSimpleSubclass(targetClass, TEXT("STATIC"));
+	return MakeSimpleSubclass(targetClass, WC_STATIC);
 }

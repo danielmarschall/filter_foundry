@@ -43,6 +43,9 @@ wchar_t* xstrrchr(wchar_t* const _Str, const int _Ch) {
 int xstrcasecmp(const wchar_t* a, const wchar_t* b) {
 	return _wcsicmp(a, b);
 }
+int xstrcmp(const wchar_t* a, const wchar_t* b) {
+	return lstrcmpW(a, b);
+}
 #else
 size_t xstrlen(char* s) {
 	return strlen(s);
@@ -59,6 +62,9 @@ char* xstrrchr(char* const _Str, const int _Ch) {
 int xstrcasecmp(const char* a, const char* b) {
 	//return strcasecmp(a, b);
 	return _stricmp(a, b);
+}
+int xstrcmp(const char* a, const char* b) {
+	return strcmp(a, b);
 }
 #endif
 

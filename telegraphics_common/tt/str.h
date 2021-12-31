@@ -26,12 +26,14 @@ wchar_t* xstrcpy(wchar_t* dst, wchar_t* src);
 wchar_t* xstrcat(wchar_t* dst, const wchar_t* src);
 wchar_t* xstrrchr(wchar_t* const _Str, const int _Ch);
 int xstrcasecmp(const wchar_t* a, const wchar_t* b);
+int xstrcmp(const wchar_t* a, const wchar_t* b);
 #else
 size_t xstrlen(char* s);
 char* xstrcpy(char* dst, char* src);
 char* xstrcat(char* dst, const char* src);
 char* xstrrchr(char* const _Str, const int _Ch);
 int xstrcasecmp(const char* a, const char* b);
+int xstrcmp(const char* a, const char* b);
 #endif
 
 unsigned char *myc2pstr(char *s);
