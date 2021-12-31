@@ -166,7 +166,7 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 			}
 		}
 		else {
-			simplealert(TEXT("GetClassInfo failed"));
+			simplealert((TCHAR*)TEXT("GetClassInfo failed"));
 		}
 		return false;
 	}

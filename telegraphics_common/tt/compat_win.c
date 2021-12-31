@@ -18,6 +18,7 @@
 */
 
 #include <windows.h>
+#include <stdio.h>
 
 #include "compat_win.h"
 #include "compat_win_resource.h"
@@ -155,14 +156,24 @@ BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
 
 	#ifndef _WIN64
 	// Win32s (Windows 3.11) compatibility: LoadLibrary() will output a visual message if IMAGEHLP.DLL is not existing!
-	char sys_path[MAX_PATH], dllfile[MAX_PATH];
+	char* sys_path;
+	sys_path = (char*)malloc(MAX_PATH);
 	if (GetSystemDirectoryA(sys_path, MAX_PATH)) {
-		sprintf(dllfile, "%s\\IMAGEHLP.DLL", sys_path);
-		if (GetFileAttributesA(dllfile) == INVALID_FILE_ATTRIBUTES) {
-			// File does not exist
-			return true;
+		char* dllfile;
+		dllfile = (char*)malloc(MAX_PATH);
+		if (dllfile) {
+			sprintf(dllfile, "%s\\IMAGEHLP.DLL", sys_path);
+			if (GetFileAttributesA(dllfile) == INVALID_FILE_ATTRIBUTES) {
+				// File does not exist
+				free(dllfile);
+				return true;
+			}
+			else {
+				free(dllfile);
+			}
 		}
 	}
+	free(sys_path);
 	#endif
 
 	hLib = LoadLibrary(TEXT("IMAGEHLP.DLL"));

@@ -119,12 +119,13 @@ size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
 }
 
 void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
-	//char* tmp;
-
-	simplealert(TEXT("You tried to execute this method with RunDLL32. This is a Photoshop plugin!"));
+	UNREFERENCED_PARAMETER(hwnd);
+	UNREFERENCED_PARAMETER(hinst);
+	UNREFERENCED_PARAMETER(lpszCmdLine);
+	UNREFERENCED_PARAMETER(nCmdShow);
 
 	/*
-	tmp = (char*)malloc(512);
+	char* tmp = (char*)malloc(512);
 	if (tmp != 0) {
 		sprintf(tmp, "hwnd: %p\nhinst: %p\nlpszCmdLine: %s\nCmdShow: %d", (void*)(hwnd), (void*)(hinst), lpszCmdLine, nCmdShow);
 		MessageBoxA(0, tmp, 0, 0);
@@ -132,6 +133,7 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	}
 	*/
 
+	simplealert((TCHAR*)TEXT("You tried to execute this method with RunDLL32. This is a Photoshop plugin!"));
 	return;
 }
 
@@ -185,7 +187,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		//       variable "result" is <=0xFFFF ! Let's just hope that it is never 0x000A (SW_SHOWDEFAULT),
 		//       otherwise we have a problem here!
 		// I don't understand why this works! Aren't we __cdecl and rundll expected __stdcall? But why is the parameter order correct and not reversed?
-		FakeRundll32((HWND)selector, (HINSTANCE)pb, (LPSTR)data, (int)(intptr_t)result);
+		FakeRundll32((HWND)(intptr_t)selector, (HINSTANCE)pb, (LPSTR)data, (int)(intptr_t)result);
 		return;
 	}
 	#endif
