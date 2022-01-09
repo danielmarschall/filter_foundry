@@ -118,7 +118,7 @@ function ostype_info($type, $desc, $vendor) {
 	$dec = 0;
 	for ($i=0;$i<4;$i++) $dec = ($dec<<8) + ord($type[$i]);
 	$hex = "0x".str_pad(dechex($dec), 8, "0", STR_PAD_LEFT);
-	$dec = str_pad($dec, strlen(hexdec('ffffffff')), " ", STR_PAD_LEFT);
+	$dec = str_pad((string)$dec, strlen((string)hexdec('ffffffff')), " ", STR_PAD_LEFT);
 	$desc = str_pad($desc, DESC_WIDTH, " ", STR_PAD_RIGHT);
 
 	$illegal = false;
@@ -159,12 +159,12 @@ function pipl_property_info($ven, $type, $desc, $vendor) {
 	$vdec = 0;
 	for ($i=0;$i<4;$i++) $vdec = ($vdec<<8) + ord($ven[$i]);
 	$vhex = "0x".str_pad(dechex($vdec), 8, "0", STR_PAD_LEFT);
-	$vdec = str_pad($vdec, strlen(hexdec('ffffffff')), " ", STR_PAD_LEFT);
+	$vdec = str_pad((string)$vdec, strlen((string)hexdec('ffffffff')), " ", STR_PAD_LEFT);
 
 	$dec = 0;
 	for ($i=0;$i<4;$i++) $dec = ($dec<<8) + ord($type[$i]);
 	$hex = "0x".str_pad(dechex($dec), 8, "0", STR_PAD_LEFT);
-	$dec = str_pad($dec, strlen(hexdec('ffffffff')), " ", STR_PAD_LEFT);
+	$dec = str_pad((string)$dec, strlen((string)hexdec('ffffffff')), " ", STR_PAD_LEFT);
 
 	$desc = str_pad($desc, DESC_WIDTH, " ", STR_PAD_RIGHT);
 
