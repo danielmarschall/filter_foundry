@@ -6,7 +6,7 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory.
 Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
-### Windows version 1.7.0.14
+### Windows version 1.7.0.15
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
 
@@ -36,12 +36,12 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   Serif PhotoPlus 6
 -   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
--   I.C.NET Plugin-Manager 2.x, Filters Unlimited, and Plugin Galaxy can load standalone filters created by Filter Foundry in order to emulate the Filter Factory code.
+-   I.C.NET Plugin-Manager 2.x, Filters Unlimited, and Plugin Galaxy can load standalone filters created by Filter Foundry to emulate the Filter Factory code.
 
 Operating systems:
 
--   Windows 3.11 (using Win32s), 95, 98, Me, NT4, 2000, XP, Vista, 7, 8, 8.1, 10, and 11 are fully compatible (32- and 64-bit)
--   Windows NT 3.1 and Windows NT 3.5x are compatible (but without preview panning and help button does not work)
+-   Windows 95, 98, Me, NT4, 2000, XP, Vista, 7, 8, 8.1, 10, and 11 are fully compatible (32- and 64-bit)
+-   Windows 3.11 (using Win32s), Windows NT 3.1 and Windows NT 3.5x are compatible (but without preview panning and help button does not work)
 -   Linux using the emulator "Wine" is supported
 -   Macintosh is currently not supported
 

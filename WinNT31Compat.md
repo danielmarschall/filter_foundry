@@ -1,6 +1,6 @@
 
-Windows NT 3.1 and 3.5x compatibility problems
-----------------------------------------------
+Windows 3.11 (via Win32s), Windows NT 3.1 and NT 3.5x compatibility problems
+----------------------------------------------------------------------------
 
 Fixed problems:
 ---------------
@@ -63,6 +63,7 @@ Fixed problems:
 	but the code seems to be executed while the dialog is still hidden (you can see this by showing a messagebox).
 	So, I have finally solved it with a `WM_TIMER` in SVN Revision445.
 
+
 Things couldn't solve yet:
 --------------------------
 
@@ -70,8 +71,17 @@ Things couldn't solve yet:
 	It also doesn't work if the control is `STATIC`
 	It looks like `SS_NOTIFY` and `STN_CLICKED` is not implemented in Win NT 3.5x
 
-- WinNT351: Help button does not work
+- Windows 3.11, NT 3.1, NT 3.51: The PREVIEW control loses its contents when the window is dragged out of the screen region.
+	The WM_REPAINT message is not sent by the OS?
+
+- Help button does not work
 	=> Maybe WinExec helps? But can we open an URL there? Unlikely...
+
+- Windows NT 3.51: Window is gray instead of white. Why? Is the "OS Subsystem 4.0" detected?!
+	It doesn't look good, because the PLUGIN.DLL sliders as well as all other Photoshop 3.0 windows are white.
+
+- Win32s seems to be unstable, since some actions crash the system and/or Photoshop. I am not sure if we do anything wrong, though.
+
 
 Open questions:
 ---------------

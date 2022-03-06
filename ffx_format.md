@@ -1,48 +1,24 @@
 FFX (Filters Unlimited) file format
 ===================================
     
-    FFXFile_V10 = {
-        String         fileVersion        // "FFX1.0"
+    FFXFile = {
+        String         fileVersion        // "FFX1.0" or "FFX1.1" or "FFX1.2"
         String         title
         String         category
         String         author
         String         copyright
-        String[5]      channels           // I (Intro), R, G, B, A
+        String[5]      channels           // I (Intro), R (Red), G (Green), B (Blue), A (Alpha)
         SliderInfo[8]  sliders
         int32_t        gradientIndex
-    }
-    
-    FFXFile_V11 = {
-        String         fileVersion        // "FFX1.1"
-        String         title
-        String         category
-        String         author
-        String         copyright
-        String[5]      channels           // I (Intro), R, G, B, A
-        SliderInfo[8]  sliders
-        int32_t        gradientIndex
-        int32_t        numPresets         // new in FFX 1.1
-        Preset[]       presets            // new in FFX 1.1
-    }
-    
-    FFXFile_V12 = {
-        String         fileVersion        // "FFX1.2"
-        String         title
-        String         category
-        String         author
-        String         copyright
-        String[5]      channels           // I (Intro), R, G, B, A
-        SliderInfo[8]  sliders            // Slider names prefix: {C} = Checkbox, {S} or none = Slider
-        int32_t        gradientIndex
-        int32_t        bitmapInfoSize     // new in FFX 1.2
-        BitmapInfo     bitmapInfo         // new in FFX 1.2
-        int32_t        numPresets         // new in FFX 1.1
-        Preset[]       presets            // new in FFX 1.1
+        int32_t        bitmapInfoSize     // only in FFX >= 1.2, otherwise not present
+        BitmapInfo     bitmapInfo         // only in FFX >= 1.2, otherwise not present
+        int32_t        numPresets         // only in FFX >= 1.1, otherwise not present
+        Preset[]       presets            // only in FFX >= 1.1, otherwise not present
     }
     
     BitmapInfo = {
         char[]         szFilesize         // human readable file size (numeric string) with NUL terminator
-        char[]         szUnknown          // Always 1 NUL character?
+        char[]         szUnknown          // TODO: ??? Always 1 NUL character?
         char[]         jpgData
     }
     
@@ -53,7 +29,9 @@ FFX (Filters Unlimited) file format
     
     SliderInfo = {
         int32_t        nameLength
-        char[]         name
+        char[]         name               // In FFX >= 1.2: Slider can have names prefixes:
+                                          // {C} = Checkbox
+                                          // {S} or none = Slider
         byte           enabled
         int32_t        initialValue
     }

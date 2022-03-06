@@ -30,7 +30,7 @@ Minor priority stuff or ideas
 
 * Add functionality to save to FFX (Filters Unlimited) filters. But we must use the "Make" dialog, because it contains title/category/author/copyright?
 
-* When a filter is created obfuscated and you click "Make" again, or if you loaded an old obfuscated filter (without protection), should then be the "obfuscate" checkbox be checked again?
+* When a filter is created protected and you click "Make" again, should then be the "protection" checkbox be checked again?
 
 * The filter `r*(y&1)` looks horrible when you zoom out!
 

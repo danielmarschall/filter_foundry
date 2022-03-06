@@ -1,0 +1,38 @@
+
+* FF 1.6 works with 10.000x10.000 picture and is fast.  FF 1.7 shows not enough RAM, and if maxspace_availabe() is disabled, then it shows with 4 channels "Could not build preview at chosen zoom level." (e == memFullErr , needall=1). Also it is slow if it works with 3 channels.
+	R	put(255-(min(min(r,g),b)),0),(c+get(0)-255)*255/get(0)
+	G	(c+get(0)-255)*255/get(0)
+	B	(c+get(0)-255)*255/get(0)
+	A	get(0)
+	==> Speed is OK if built with Visual Studio optimization
+		- todo: check if watcom is also fast
+		- todo: check if visual studio cli ist also fast
+		- do also need needall=0 (state changing functions)?
+	==> RAM problem persists
+		abbruch bei (e = pb->advanceState() , OHNE dass dabei irgendwas aufgerufen wird. scheinbar beim ersten advancestate, danach keine breakpoints!
+		maxspace = 845934385 = 806 MB
+	==> simple r,g,b,a Filter mit 4 channels
+		SVN rev 236 no mem problem
+		269 no mem problem
+		346 no mem problem
+		384 am 1.11 no mem problem
+		392 no mem problem!!!
+		==> Grund: wenn ich maxspace() verwende, dann ist es in der tat BESSER, denn ich gebe wahrscheinlich mehr speicher als photoshop selbst geben würde!
+	==> Peel of white filter
+		FF 1.6	zoomed in preview ist ok, ganze verarbeitung no ram
+			===> jetzt geht's plötzlich doch??? und ganz schnell!
+		FF 1.7	zoomed out preview no ram, ganze verarbeitung no ram
+				selbst zoom auf 100% bringt nix
+				=> weil needall=1 aufgrund von statechanging_vars_used=1?
+				auch ändern auf r,g,b,a bringt nix
+				=> wenn er einmal im fehlerzustand ist, geht nix mehr weiter. RAM dann voll??? rauszoomen bringt dann auch nix!
+		mit state_changing_vars_used=0 geht es!
+		===> danach plötzlich wieder doch nicht!!!!!
+	==> RAM und geschwindigkeit mit 1.7.0.12 win64 photoshop cc nicht problematisch
+
+* After working with Filter Foundry for a short amount of time (working with sliders, applying, opening again, changing sliders, etc.), the file save dialog (Make dialog) will corrupt the memory!!! You notice it by seeing that icons and folder icons are missing! Later, the program might even crash! (Verified with 1.7.0.12, verified with Visual Studio and OpenWatcom) Application Verifier does not report anything bad.
+	You can also corrupt the memory by often applying filters and building and doing stuff. And at some point you get the error that preview cannot be shown because memory is out???
+	Do we have a leak???
+	Smashing Ctrl+F does NOT cause a leak.
+	"Deleaker" tool only showed small leaks, nothing very big and no leaks with high hit-count!
+	==> nein! ist eine unverträglichkeit mit application verifier! out of memory kommt auch ohne ffac
