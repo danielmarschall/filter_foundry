@@ -2,7 +2,7 @@ FFX (Filters Unlimited) file format
 ===================================
     
     FFXFile = {
-        String         fileVersion        // "FFX1.0" or "FFX1.1" or "FFX1.2"
+        String         fileVersion        // "FFX1.0", or "FFX1.1", or "FFX1.2"
         String         title
         String         category
         String         author
@@ -17,8 +17,7 @@ FFX (Filters Unlimited) file format
     }
     
     BitmapInfo = {
-        char[]         szFilesize         // human readable file size (numeric string) with NUL terminator
-        char[]         szUnknown          // TODO: ??? Always 1 NUL character?
+        char[7]        szFilesize         // human-readable filesize in decimal notation (numeric string) with NUL terminator(s)
         char[]         jpgData
     }
     
@@ -40,8 +39,8 @@ FFX (Filters Unlimited) file format
         String         name
         int32_t[8]     sliderPosition
         int32_t        gradientIndex
-        int32_t        unknown1           // TODO: ??? Is usually 0x0000006e (110) for FFX 1.1 and 0x0000006b (107) for FFX 1.2
-        int32_t        unknown2           // TODO: ??? Is usually 0x00000053 (94)
+        int32_t        jpegThumbnailWidth
+        int32_t        jpegThumbnailHeight
         int32_t        jpegThumbnailLength
         byte[]         jpegThumbnailData
     }
