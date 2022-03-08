@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.15 [Work-In-Progress]
+## 1.7.0.15 [06-Mar-2022]
 - Now compatible with Windows 3.11 using Win32s and Photoshop 3.0. Some functionalities might be unstable, though.
 
 ## 1.7.0.14 [24-Dec-2021]
