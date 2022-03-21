@@ -22,32 +22,32 @@
 #include "slider_win.h"
 
 // PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
-typedef int(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
-int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
+typedef BOOL(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
+BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
 
-	if (!gdata->pluginDllModule) return 0;
+	if (!gdata->pluginDllModule) return false;
 	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "RegisterSlider");
 	if (fRegisterSlider != 0) {
 		return fRegisterSlider(hInstanceDll, MessageID);
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
 // PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
-typedef int(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
-int UnregisterSlider(HINSTANCE hInstanceDll) {
+typedef BOOL(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
+BOOL UnregisterSlider(HINSTANCE hInstanceDll) {
 	f_UnregisterSlider fUnregisterSlider;
 
-	if (!gdata->pluginDllModule) return 0;
+	if (!gdata->pluginDllModule) return false;
 	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "UnregisterSlider");
 	if (fUnregisterSlider != 0) {
 		return fUnregisterSlider(hInstanceDll);
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
@@ -198,11 +198,12 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 	DWORD sliderMsgId;
 
 	// Try loading PLUGIN.DLL (only Photoshop) in order to register the class "slider"
-	gdata->pluginDllModule = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!gdata->pluginDllModule) return false;
-	sliderMsgId = 0; // important
-	RegisterSlider(hDllInstance, &sliderMsgId);
-	if (sliderMsgId != 0) {
+	if (!gdata->pluginDllModule) {
+		gdata->pluginDllModule = LoadLibrary(TEXT("PLUGIN.DLL"));
+		if (!gdata->pluginDllModule) return false;
+	}
+
+	if (RegisterSlider(hDllInstance, &sliderMsgId)) {
 		// RegisterSlider will "remember" if it gave you a message ID before,
 		// and it will NOT give it to you again! (instead, the output variable stays untouched).
 		// The problem: PLUGIN.DLL stays loaded the whole time, so it keeps remembering, while Filter Foundry
@@ -210,6 +211,18 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 		// So, we keep the message ID in the global (persistant) data, so we remember it.
 		gdata->pluginDllSliderMessageId = sliderMsgId;
 	}
+
+	/*
+	if (gdata->pluginDllSliderMessageId != RegisterWindowMessage(TEXT("PSSlCmd"))) {
+		simplealert(TEXT("pluginDllSliderMessageId has an unexpected value!"));
+	}
+	*/
+
+	// Something failed! Either RegisterSlider() failed on the first run, or
+	// the information in gdata has been somehow lost/overwritten?!
+	// Something like this happened in 1.7.0.15, but I can't reproduce it.
+	// Now, we will fall-back to the other sliders if this fails.
+	if (gdata->pluginDllSliderMessageId == 0) return false;
 
 	// Make "FoundrySlider" a subclass of "slider" then
 	return MakeSimpleSubclass(targetClass, TEXT("slider"));

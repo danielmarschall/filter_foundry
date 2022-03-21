@@ -262,14 +262,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// - The deprecated buffer suite (pb->bufferProcs), works fine
 		// - The recommended buffer suite (kPSBufferSuite), does NOT work (causes memory corruption?) and is not available on some hosts!
 		//   Either I do something wrong, or maybe it cannot be used to store data between invocations?
-		// - Using malloc(), which works also fine and is more independent from the host and easier
+		// - Using malloc(), which works also fine and is more independent from the host. It is also easier.
 		*data = (intptr_t)malloc(sizeof(globals_t));
 		if (*data == 0) return;
 		gdata = (globals_t*)*data;
-		//#ifdef _WIN32
-		//gdata->pluginDllSliderMessageId = 0;
-		//#endif
-		//gdata->standalone = gdata->parmloaded = false; // they will be set later
+		// Note: gdata->standalone and gdata->parmloaded will be set later
 		memset(gdata, 0, sizeof(globals_t));
 	}
 	else {
