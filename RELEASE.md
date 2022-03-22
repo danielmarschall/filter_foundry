@@ -24,4 +24,4 @@ ViaThinkSoft release procedure
 		- LICENSE_GPLv3.html                => LICENSE_GPLv3.html
 3. Commit to SVN with commit message `=== RELEASE 1.7.0.x ===`
 4. Sync SVN with GitHub
-5. Release a ZIP to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)
+5. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)

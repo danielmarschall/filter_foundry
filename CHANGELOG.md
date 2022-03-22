@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.16 [22-Mar-2022]
+- Fixed bug that caused PLUGIN.DLL sliders not working if the filter was called multiple times. You can hotfix existing standalone plugins by replacing "UnregisterSlider" with "UnRegisterSlider" using a hex-editor. Affected are plugins built using 1.7.0.13/14/15.
+
 ## 1.7.0.15 [06-Mar-2022]
 - Now compatible with Windows 3.11 using Win32s and Photoshop 3.0. Some functionalities might be unstable, though.
 

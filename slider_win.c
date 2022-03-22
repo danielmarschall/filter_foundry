@@ -21,80 +21,82 @@
 #include "ff.h"
 #include "slider_win.h"
 
+// More information about the PLUGIN.DLL sliders:
+// https://misc.daniel-marschall.de/projects/filter_factory/sliders.html
+
 // PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
 typedef BOOL(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
 BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
+	HMODULE hPlugin;
+	BOOL res;
 
-	if (!gdata->pluginDllModule) return false;
-	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "RegisterSlider");
-	if (fRegisterSlider != 0) {
-		return fRegisterSlider(hInstanceDll, MessageID);
-	}
-	else {
-		return false;
-	}
+	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
+	if (!hPlugin) return false;
+	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(hPlugin, "RegisterSlider");
+	res = (fRegisterSlider != 0) ? fRegisterSlider(hInstanceDll, MessageID) : false;
+	FreeLibrary(hPlugin);
+	return res;
 }
 
 // PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
 typedef BOOL(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
 BOOL UnregisterSlider(HINSTANCE hInstanceDll) {
 	f_UnregisterSlider fUnregisterSlider;
+	HMODULE hPlugin;
+	BOOL res;
 
-	if (!gdata->pluginDllModule) return false;
-	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(gdata->pluginDllModule, "UnregisterSlider");
-	if (fUnregisterSlider != 0) {
-		return fUnregisterSlider(hInstanceDll);
-	}
-	else {
-		return false;
-	}
+	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
+	if (!hPlugin) return false;
+	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(hPlugin, "UnRegisterSlider");
+	res = (fUnregisterSlider != 0) ? fUnregisterSlider(hInstanceDll) : false;
+	FreeLibrary(hPlugin);
+	return res;
 }
 
 // PLUGIN.DLL Sliders: Set slider range (min/max)
 typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
 int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
+	HMODULE hPlugin;
+	int res;
 
-	if (!gdata->pluginDllModule) return 0;
-	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(gdata->pluginDllModule, "SetSliderRange");
-	if (fSetSliderRange != 0) {
-		return fSetSliderRange(hWnd, nMin, nMax);
-	}
-	else {
-		return 0;
-	}
+	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
+	if (!hPlugin) return 0;
+	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(hPlugin, "SetSliderRange");
+	res = (fSetSliderRange != 0) ? fSetSliderRange(hWnd, nMin, nMax) : 0;
+	FreeLibrary(hPlugin);
+	return res;
 }
 
 // PLUGIN.DLL Sliders : Sets slider position
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
+	HMODULE hPlugin;
+	int res;
 
-	if (!gdata->pluginDllModule) return 0;
-	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(gdata->pluginDllModule, "SetSliderPos");
-	if (fSetSliderPos != 0) {
-		return fSetSliderPos(hWnd, nPos, bRepaint);
-	}
-	else {
-		return 0;
-	}
+	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
+	if (!hPlugin) return 0;
+	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(hPlugin, "SetSliderPos");
+	res = (fSetSliderPos != 0) ? fSetSliderPos(hWnd, nPos, bRepaint) : 0;
+	FreeLibrary(hPlugin);
+	return res;
 }
 
 // PLUGIN.DLL Sliders : Get slider position
 typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
+	HMODULE hPlugin;
+	int res;
 
-	if (!gdata->pluginDllModule) return 0;
-	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(gdata->pluginDllModule, "GetSliderPos");
-	if (fGetSliderPos != 0) {
-		int res = fGetSliderPos(hWnd, bPixelPosition);
-		return res;
-	}
-	else {
-		return 0;
-	}
+	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
+	if (!hPlugin) return 0;
+	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(hPlugin, "GetSliderPos");
+	res = (fGetSliderPos != 0) ? fGetSliderPos(hWnd, bPixelPosition) : 0;
+	FreeLibrary(hPlugin);
+	return res;
 }
 
 LRESULT CALLBACK DummyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -173,18 +175,15 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 }
 
 void Slider_Uninit_PluginDll() {
-
 #ifndef use_plugin_dll_sliders
 	return;
 #else
-	WNDCLASS clx;
-
-	if (GetClassInfo(hDllInstance, TEXT("slider"), &clx) != 0) {
-		UnregisterSlider(hDllInstance);
-	}
-	if (gdata->pluginDllModule) {
-		FreeLibrary(gdata->pluginDllModule);
-		gdata->pluginDllModule = 0;
+	if (gdata->pluginDllSliderInitialized) {
+		if (UnregisterSlider(hDllInstance)) {
+			gdata->pluginDllSliderInitialized = false;
+		} else {
+			simplealert(TEXT("UnRegisterSlider failed"));
+		}
 	}
 #endif
 
@@ -195,34 +194,13 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 #ifndef use_plugin_dll_sliders
 	return false;
 #else
-	DWORD sliderMsgId;
-
-	// Try loading PLUGIN.DLL (only Photoshop) in order to register the class "slider"
-	if (!gdata->pluginDllModule) {
-		gdata->pluginDllModule = LoadLibrary(TEXT("PLUGIN.DLL"));
-		if (!gdata->pluginDllModule) return false;
+	if (RegisterSlider(hDllInstance, &gdata->pluginDllSliderMessageId)) {
+		gdata->pluginDllSliderInitialized = true;
+	} else {
+		// This can happen if PLUGIN.DLL is not existing
+		// It will also happen if a previous uninitialization failed (or was forgotten)
+		return false; // Fall back to Windows sliders
 	}
-
-	if (RegisterSlider(hDllInstance, &sliderMsgId)) {
-		// RegisterSlider will "remember" if it gave you a message ID before,
-		// and it will NOT give it to you again! (instead, the output variable stays untouched).
-		// The problem: PLUGIN.DLL stays loaded the whole time, so it keeps remembering, while Filter Foundry
-		// loses its internal state every time the window is closed.
-		// So, we keep the message ID in the global (persistant) data, so we remember it.
-		gdata->pluginDllSliderMessageId = sliderMsgId;
-	}
-
-	/*
-	if (gdata->pluginDllSliderMessageId != RegisterWindowMessage(TEXT("PSSlCmd"))) {
-		simplealert(TEXT("pluginDllSliderMessageId has an unexpected value!"));
-	}
-	*/
-
-	// Something failed! Either RegisterSlider() failed on the first run, or
-	// the information in gdata has been somehow lost/overwritten?!
-	// Something like this happened in 1.7.0.15, but I can't reproduce it.
-	// Now, we will fall-back to the other sliders if this fails.
-	if (gdata->pluginDllSliderMessageId == 0) return false;
 
 	// Make "FoundrySlider" a subclass of "slider" then
 	return MakeSimpleSubclass(targetClass, TEXT("slider"));

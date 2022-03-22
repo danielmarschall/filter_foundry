@@ -63,7 +63,7 @@ typedef struct globals_t_ {
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
-	HMODULE pluginDllModule;
+	BOOL pluginDllSliderInitialized;
 	DWORD pluginDllSliderMessageId;
 	#endif /* _WIN32 */
 } globals_t;
