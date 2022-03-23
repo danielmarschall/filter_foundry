@@ -26,8 +26,8 @@
 #define use_plugin_dll_sliders
 
 // PLUGIN.DLL Sliders
-int RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
-int UnregisterSlider(HINSTANCE hInstanceDll);
+BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
+BOOL UnRegisterSlider(HINSTANCE hInstanceDll);
 int SetSliderRange(HWND hWnd, int nMin, int nMax);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition);

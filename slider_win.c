@@ -40,16 +40,16 @@ BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 }
 
 // PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
-typedef BOOL(__cdecl* f_UnregisterSlider)(HINSTANCE hInstanceDll);
-BOOL UnregisterSlider(HINSTANCE hInstanceDll) {
-	f_UnregisterSlider fUnregisterSlider;
+typedef BOOL(__cdecl* f_UnRegisterSlider)(HINSTANCE hInstanceDll);
+BOOL UnRegisterSlider(HINSTANCE hInstanceDll) {
+	f_UnRegisterSlider fUnRegisterSlider;
 	HMODULE hPlugin;
 	BOOL res;
 
 	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
 	if (!hPlugin) return false;
-	fUnregisterSlider = (f_UnregisterSlider)(void*)GetProcAddress(hPlugin, "UnRegisterSlider");
-	res = (fUnregisterSlider != 0) ? fUnregisterSlider(hInstanceDll) : false;
+	fUnRegisterSlider = (f_UnRegisterSlider)(void*)GetProcAddress(hPlugin, "UnRegisterSlider");
+	res = (fUnRegisterSlider != 0) ? fUnRegisterSlider(hInstanceDll) : false;
 	FreeLibrary(hPlugin);
 	return res;
 }
@@ -179,7 +179,7 @@ void Slider_Uninit_PluginDll() {
 	return;
 #else
 	if (gdata->pluginDllSliderInitialized) {
-		if (UnregisterSlider(hDllInstance)) {
+		if (UnRegisterSlider(hDllInstance)) {
 			gdata->pluginDllSliderInitialized = false;
 		} else {
 			simplealert(TEXT("UnRegisterSlider failed"));
@@ -194,12 +194,15 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 #ifndef use_plugin_dll_sliders
 	return false;
 #else
-	if (RegisterSlider(hDllInstance, &gdata->pluginDllSliderMessageId)) {
-		gdata->pluginDllSliderInitialized = true;
-	} else {
-		// This can happen if PLUGIN.DLL is not existing
-		// It will also happen if a previous uninitialization failed (or was forgotten)
-		return false; // Fall back to Windows sliders
+	if (!gdata->pluginDllSliderInitialized) {
+		if (RegisterSlider(hDllInstance, &gdata->pluginDllSliderMessageId)) {
+			gdata->pluginDllSliderInitialized = true;
+		}
+		else {
+			// This can happen if PLUGIN.DLL is not existing
+			// It will also happen if a previous uninitialization failed (or was forgotten)
+			return false; // Fall back to Windows sliders
+		}
 	}
 
 	// Make "FoundrySlider" a subclass of "slider" then
