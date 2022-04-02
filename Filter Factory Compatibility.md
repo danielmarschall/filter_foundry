@@ -130,10 +130,10 @@ Filter Factory:
 Note: The result "x" was most likely not intended but a result of an undefined behavior
 
 
-r, g, b at empty canvas (Testcase emptycanvas.afs)
------------------------
+r, g, b of fully transparent pixels (Testcase emptycanvas.afs)
+-----------------------------------
 
-In Filter Factory, an empty (transparent) canvas of a new file is initialized as `r=g=b=0`
+In Filter Factory (Windows and Mac implementation), a fully transparent pixel is initialized (`r`,`g`,`b` variables) with the current background color.
 
 Filter Foundry initializes it as `r=g=b=255`
 

@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ VENDORID, LC(m,o,d,e), NULLID, 4L, /* first 2 bytes:  */ flagSupportsGrayScale|f
 /* We need this to enable the plugin for BigDocuments */
 VENDORID, LC(m,s,3,2), 0L, 8L, 2000000L, 2000000L,
 
+
 /* FilterCaseInfo - in all cases:
 	   inStraightData,
 	   outStraightData,
@@ -43,78 +44,71 @@ VENDORID, LC(m,s,3,2), 0L, 8L, 2000000L, 2000000L,
 VENDORID, LC(f,i,c,i), NULLID, 28L,
 
 	/* Filter Case 1: filterCaseFlatImageNoSelection [A background layer or a flat image] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 00h)
+	        //       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+	        //       2 PIFilterWorksWithBlankDataBit     = true (in Filter Factory: false)
+	        //       4 PIFilterFiltersLayerMaskBit       = false
+	        //       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 2: filterCaseFlatImageWithSelection [No transparency data, but a selection may be present] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 00h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true (in Filter Factory: false)
+			//       4 PIFilterFiltersLayerMaskBit       = false
+			//       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 3: filterCaseFloatingSelection [Image data with an accompanying mask] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 0Ah filterDataHandlingBackgroundZap)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 00h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true (in Filter Factory: false)
+			//       4 PIFilterFiltersLayerMaskBit       = false
+			//       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 4: filterCaseEditableTransparencyNoSelection [Layer with transparency editing enabled and no selection] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 0Ah filterDataHandlingBackgroundZap)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 02h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true
+			//       4 PIFilterFiltersLayerMaskBit       = false
+			//       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 5: filterCaseEditableTransparencyWithSelection [Layer with transparency editing enabled and a selection] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 0Ah filterDataHandlingBackgroundZap)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 02h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true
+			//       4 PIFilterFiltersLayerMaskBit       = false
+			//       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 6: filterCaseProtectedTransparencyNoSelection [Layer with transparency editing disabled and no selection] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 00h filterDataHandlingCantFilter)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 00h filterDataHandlingCantFilter)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 00h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true (in Filter Factory: false)
+			//       4 PIFilterFiltersLayerMaskBit       = false
+			//       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
 
 	/* Filter Case 7: filterCaseProtectedTransparencyWithSelection [Layer with transparency editing disabled and a selection] */
-	// inputHandling [Preprocessing actions on the image data] = 01h
-	// outputHandling [Postprocessing actions on the image data] = 01h
-	// flags1 [Flags for how the filter case information should be treated] = 03h
-	//       PIFilterDontCopyToDestinationBit  = true
-	//       PIFilterWorksWithBlankDataBit     = true
-	//       PIFilterFiltersLayerMaskBit       = false
-	//       PIFilterWritesOutsideSelectionBit = false
-	// flags2 [Reserved] = 00h
-	"\001\001\003\000",
+	"\001", // inputHandling [Preprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 00h filterDataHandlingCantFilter)
+	"\001", // outputHandling [Postprocessing actions on the image data] = 01h (filterDataHandlingNone, in Filter Factory: 00h filterDataHandlingCantFilter)
+	"\003", // flags1 [Flags for how the filter case information should be treated] = 03h (in Filter Factory: 00h)
+			//       1 PIFilterDontCopyToDestinationBit  = true (in Filter Factory: false)
+			//       2 PIFilterWorksWithBlankDataBit     = true (in Filter Factory: false)
+			//       4 PIFilterFiltersLayerMaskBit       = false
+	        //       8 PIFilterWritesOutsideSelectionBit = false
+	"\000", // flags2 [Reserved] = 00h
