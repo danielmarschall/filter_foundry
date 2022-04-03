@@ -18,6 +18,8 @@ Known problems
 Minor priority stuff or ideas
 -----------------------------
 
+* When you open a file, e.g. "Test.8bf" and you want to save it again, it would be good, if the default output filename is "Test".
+
 * Can we still improve the speed? Filter Factory still seems to be faster!
 
 * Should we completely remove all Apple code? It will make things much easier, and newer Apple ports need completely remake anyway. On the other hand, we lose a potential back port to ancient Mac.
