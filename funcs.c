@@ -1116,7 +1116,7 @@ value_type factory_c2m(value_type x, value_type y) {
 	ebx = y < 0 ? -y : y;
 	eax = x < 0 ? -x : x;
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(1)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1
 	}
 	else {
 		if (eax > ebx) {
@@ -1253,7 +1253,7 @@ value_type factory_M() {
 	eax = (var['X'] - xmin) >> 1;
 	ebx = (var['Y'] - ymin) >> 1;
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(1)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1
 	}
 	else {
 		if (eax > ebx) {
@@ -1306,7 +1306,7 @@ value_type factory_m() {
 	ebx = ebx < 0 ? -ebx : ebx;
 
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(1)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1
 	}
 	else {
 		if (eax > ebx) {
