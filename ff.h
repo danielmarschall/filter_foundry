@@ -63,9 +63,11 @@ typedef struct globals_t_ {
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
+	HMODULE libComctl32;
+	HMODULE libPluginDll;
 	BOOL pluginDllSliderInitialized;
 	DWORD pluginDllSliderMessageId;
-	#endif /* _WIN32 */
+#endif /* _WIN32 */
 } globals_t;
 
 extern globals_t *gdata;

@@ -456,6 +456,8 @@ Boolean maindialog(FilterRecordPtr pb){
 	UnregisterClass(TEXT("Caution"), hDllInstance);
 	UnregisterClass(TEXT("FoundrySlider"), hDllInstance);
 	Slider_Uninit_PluginDll();
+	Slider_Uninit_MsTrackbar();
+	Slider_Uninit_None();
 
 	return res == IDOK;
 }

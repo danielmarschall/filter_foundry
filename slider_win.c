@@ -28,14 +28,11 @@
 typedef BOOL(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
 BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
-	HMODULE hPlugin;
 	BOOL res;
 
-	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!hPlugin) return false;
-	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(hPlugin, "RegisterSlider");
+	if (!gdata->libPluginDll) return false;
+	fRegisterSlider = (f_RegisterSlider)(void*)GetProcAddress(gdata->libPluginDll, "RegisterSlider");
 	res = (fRegisterSlider != 0) ? fRegisterSlider(hInstanceDll, MessageID) : false;
-	FreeLibrary(hPlugin);
 	return res;
 }
 
@@ -43,14 +40,11 @@ BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 typedef BOOL(__cdecl* f_UnRegisterSlider)(HINSTANCE hInstanceDll);
 BOOL UnRegisterSlider(HINSTANCE hInstanceDll) {
 	f_UnRegisterSlider fUnRegisterSlider;
-	HMODULE hPlugin;
 	BOOL res;
 
-	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!hPlugin) return false;
-	fUnRegisterSlider = (f_UnRegisterSlider)(void*)GetProcAddress(hPlugin, "UnRegisterSlider");
+	if (!gdata->libPluginDll) return false;
+	fUnRegisterSlider = (f_UnRegisterSlider)(void*)GetProcAddress(gdata->libPluginDll, "UnRegisterSlider");
 	res = (fUnRegisterSlider != 0) ? fUnRegisterSlider(hInstanceDll) : false;
-	FreeLibrary(hPlugin);
 	return res;
 }
 
@@ -58,14 +52,11 @@ BOOL UnRegisterSlider(HINSTANCE hInstanceDll) {
 typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
 int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
-	HMODULE hPlugin;
 	int res;
 
-	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!hPlugin) return 0;
-	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(hPlugin, "SetSliderRange");
+	if (!gdata->libPluginDll) return 0;
+	fSetSliderRange = (f_SetSliderRange)(void*)GetProcAddress(gdata->libPluginDll, "SetSliderRange");
 	res = (fSetSliderRange != 0) ? fSetSliderRange(hWnd, nMin, nMax) : 0;
-	FreeLibrary(hPlugin);
 	return res;
 }
 
@@ -73,14 +64,11 @@ int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
-	HMODULE hPlugin;
 	int res;
 
-	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!hPlugin) return 0;
-	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(hPlugin, "SetSliderPos");
+	if (!gdata->libPluginDll) return 0;
+	fSetSliderPos = (f_SetSliderPos)(void*)GetProcAddress(gdata->libPluginDll, "SetSliderPos");
 	res = (fSetSliderPos != 0) ? fSetSliderPos(hWnd, nPos, bRepaint) : 0;
-	FreeLibrary(hPlugin);
 	return res;
 }
 
@@ -88,14 +76,11 @@ int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
-	HMODULE hPlugin;
 	int res;
 
-	hPlugin = LoadLibrary(TEXT("PLUGIN.DLL"));
-	if (!hPlugin) return 0;
-	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(hPlugin, "GetSliderPos");
+	if (!gdata->libPluginDll) return 0;
+	fGetSliderPos = (f_GetSliderPos)(void*)GetProcAddress(gdata->libPluginDll, "GetSliderPos");
 	res = (fGetSliderPos != 0) ? fGetSliderPos(hWnd, bPixelPosition) : 0;
-	FreeLibrary(hPlugin);
 	return res;
 }
 
@@ -174,6 +159,35 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 	}
 }
 
+Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
+
+#ifndef use_plugin_dll_sliders
+	return false;
+#else
+	if (gdata->pluginDllSliderInitialized) return true;
+
+	if (!gdata->libPluginDll) {
+		// DM 16.04.2022 : It is important that PLUGIN.DLL stays loaded, otherwise
+		// DialogBoxParamA crashes. Can be reproduced if all 8BX modules are disabled in Photoshop 7
+		// (they keep PLUGIN.DLL loaded).
+		gdata->libPluginDll = LoadLibrary(TEXT("Plugin.dll"));
+	}
+
+	if (gdata->libPluginDll && RegisterSlider(hDllInstance, &gdata->pluginDllSliderMessageId)) {
+		gdata->pluginDllSliderInitialized = true;
+
+		// Make "FoundrySlider" a subclass of "slider" then
+		return MakeSimpleSubclass(targetClass, TEXT("slider"));
+	}
+	else {
+		// This can happen if PLUGIN.DLL is not existing
+		// It will also happen if a previous uninitialization failed (or was forgotten)
+		return false; // Fall back to Windows sliders
+	}
+#endif
+
+}
+
 void Slider_Uninit_PluginDll() {
 #ifndef use_plugin_dll_sliders
 	return;
@@ -181,32 +195,16 @@ void Slider_Uninit_PluginDll() {
 	if (gdata->pluginDllSliderInitialized) {
 		if (UnRegisterSlider(hDllInstance)) {
 			gdata->pluginDllSliderInitialized = false;
-		} else {
-			simplealert(TEXT("UnRegisterSlider failed"));
-		}
-	}
-#endif
 
-}
-
-Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
-
-#ifndef use_plugin_dll_sliders
-	return false;
-#else
-	if (!gdata->pluginDllSliderInitialized) {
-		if (RegisterSlider(hDllInstance, &gdata->pluginDllSliderMessageId)) {
-			gdata->pluginDllSliderInitialized = true;
+			if (gdata->libPluginDll) {
+				FreeLibrary(gdata->libPluginDll);
+				gdata->libPluginDll = 0;
+			}
 		}
 		else {
-			// This can happen if PLUGIN.DLL is not existing
-			// It will also happen if a previous uninitialization failed (or was forgotten)
-			return false; // Fall back to Windows sliders
+			simplealert((TCHAR*)TEXT("UnRegisterSlider failed"));
 		}
 	}
-
-	// Make "FoundrySlider" a subclass of "slider" then
-	return MakeSimpleSubclass(targetClass, TEXT("slider"));
 #endif
 
 }
@@ -216,12 +214,13 @@ typedef BOOL(__stdcall* f_InitCommonControlsEx)(const INITCOMMONCONTROLSEX* picc
 Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 	f_InitCommonControls fInitCommonControls;
 	f_InitCommonControlsEx fInitCommonControlsEx;
-	HMODULE libComctl32;
 
 	// Make sure that Comctl32 is loaded
-	libComctl32 = LoadLibrary(TEXT("Comctl32.dll"));
-	if (libComctl32) {
-		fInitCommonControlsEx = (f_InitCommonControlsEx)(void*)GetProcAddress(libComctl32, "InitCommonControlsEx");
+	if (!gdata->libComctl32) {
+		gdata->libComctl32 = LoadLibrary(TEXT("Comctl32.dll"));
+	}
+	if (gdata->libComctl32) {
+		fInitCommonControlsEx = (f_InitCommonControlsEx)(void*)GetProcAddress(gdata->libComctl32, "InitCommonControlsEx");
 		if (fInitCommonControlsEx != 0) {
 			INITCOMMONCONTROLSEX icce;
 			icce.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -229,24 +228,32 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 			fInitCommonControlsEx(&icce);
 		}
 		else {
-			fInitCommonControls = (f_InitCommonControls)(void*)GetProcAddress(libComctl32, "InitCommonControls");
+			fInitCommonControls = (f_InitCommonControls)(void*)GetProcAddress(gdata->libComctl32, "InitCommonControls");
 			if (fInitCommonControls != 0) {
 				fInitCommonControls();
 			}
 		}
-		// There seems to be a bug in Windows NT 3.11 (if PLUGIN.DLL does not exist):
-		// If we call FreeLibrary, and then open Filter Foundry again,
-		// then you get an error message "BRUSHES" cannot initialize Comctl32.dll ...
-		// I am not sure if it is OK to do a FreeLibrary after you have called InitCommonControls.
-		// Isn't that a contradiction?
-		//FreeLibrary(libComctl32);
-	}
 
-	// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
-	return MakeSimpleSubclass(targetClass, TEXT("msctls_trackbar32"));
+		// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
+		return MakeSimpleSubclass(targetClass, TEXT("msctls_trackbar32"));
+	}
+	else {
+		return false;
+	}
+}
+
+void Slider_Uninit_MsTrackbar() {
+	if (gdata->libComctl32 != 0) {
+		FreeLibrary(gdata->libComctl32);
+		gdata->libComctl32 = 0;
+	}
 }
 
 Boolean Slider_Init_None(LPCTSTR targetClass) {
 	// Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
 	return MakeSimpleSubclass(targetClass, WC_STATIC);
+}
+
+void Slider_Uninit_None() {
+	// Nothing here
 }

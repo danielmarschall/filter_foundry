@@ -37,9 +37,11 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass);
 void Win32sFixSuperclassing(HWND hDlg, int destItem, int sourceItem);
 
 // Init and uninit
-void Slider_Uninit_PluginDll();
 Boolean Slider_Init_PluginDll(LPCTSTR targetClass);
+void Slider_Uninit_PluginDll();
 Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass);
+void Slider_Uninit_MsTrackbar();
 Boolean Slider_Init_None(LPCTSTR targetClass);
+void Slider_Uninit_None();
 
 #endif

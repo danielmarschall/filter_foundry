@@ -408,6 +408,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	*result = e;
 
+	// TODO: Question: Is that OK to call this every invocation, or should it be only around UI stuff?
 	#ifdef WIN_ENV
 	if (activationContextUsed) DeactivateManifest(&manifestVars);
 	#endif

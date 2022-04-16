@@ -18,6 +18,8 @@ Known problems
 Minor priority stuff or ideas
 -----------------------------
 
+* If controls are ambigous e.g. ctl(3+c), then you should be able to disable control in the "Make" dialog. Like in Filter Factory.
+
 * When you open a file, e.g. "Test.8bf" and you want to save it again, it would be good, if the default output filename is "Test".
 
 * Can we still improve the speed? Filter Factory still seems to be faster!
@@ -103,6 +105,8 @@ Questions
 	* pluginsdk/documentation/html/struct_p_i_property.html writes the same thing
 
   Is there really a defect in these documentations?
+
+* Do we need "#define ISOLATION_AWARE_ENABLED 1" ???
 
 
 Design/UI Tweaks
