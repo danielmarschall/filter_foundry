@@ -232,7 +232,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	extern Boolean doupdates;
 	extern Handle preview_handle;
 
-	if ((gdata->pluginDllSliderMessageId != 0) && (wMsg == gdata->pluginDllSliderMessageId)) {
+	if ((gdata->pluginDllSliderInfo.initialized) && (wMsg == gdata->pluginDllSliderInfo.messageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
 			int sliderNum = (int)wParam - FIRSTCTLITEM;
@@ -292,7 +292,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(ZOOMLEVELITEM, hDlg, (TCHAR*)TEXT("Fully zoom in/out"));
 
 		for(i = 0; i < 8; ++i){
-			if (gdata->pluginDllSliderMessageId == 0) {
+			if (!gdata->pluginDllSliderInfo.initialized) {
 				// Non PLUGIN.DLL sliders
 				SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLITEM + i), GWL_STYLE, TBS_HORZ | TBS_AUTOTICKS | WS_CHILD | WS_VISIBLE);
 				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETRANGE, TRUE, MAKELONG(0, 255));
@@ -301,7 +301,9 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			}
 			else {
 				// PLUGIN.DLL sliders
+				#ifdef use_plugin_dll_sliders
 				SetSliderRange(GetDlgItem(hDlg, FIRSTCTLITEM + i), 0, 255);
+				#endif
 			}
 			SendDlgItemMessage(hDlg,FIRSTCTLTEXTITEM+i,	EM_SETLIMITTEXT,3,0);
 		}
@@ -399,7 +401,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 		// Only for non-Plugin.dll-sliders
 		item = GetDlgCtrlID((HWND)lParam);
-		if(doupdates && gdata->pluginDllSliderMessageId == 0 && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
+		if(doupdates && !gdata->pluginDllSliderInfo.initialized && item>=FIRSTCTLITEM && item<=FIRSTCTLITEM+7)
 			slidermoved(hDlg,item);
 		break;
 	default:

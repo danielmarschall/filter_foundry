@@ -56,6 +56,21 @@ enum{
 	PS_FILTER_FILETYPE = '8BFM'
 };
 
+typedef struct none_slider_info_ {
+	BOOL initialized;
+} none_slider_info;
+
+typedef struct comctl_slider_info_ {
+	BOOL initialized;
+	HMODULE hLib;
+} comctl_slider_info;
+
+typedef struct plugin_dll_slider_info_ {
+	BOOL initialized;
+	HMODULE hLib;
+	DWORD messageId;
+} plugin_dll_slider_info;
+
 typedef struct globals_t_ {
 	Boolean standalone;
 	Boolean parmloaded; // this means that the filter is loaded, but without PARM (title, author, etc.)
@@ -63,10 +78,9 @@ typedef struct globals_t_ {
 	PARM_T parm;
 	#ifdef _WIN32
 	HWND hWndMainDlg;
-	HMODULE libComctl32;
-	HMODULE libPluginDll;
-	BOOL pluginDllSliderInitialized;
-	DWORD pluginDllSliderMessageId;
+	none_slider_info noneSliderInfo;
+	comctl_slider_info comctlSliderInfo;
+	plugin_dll_slider_info pluginDllSliderInfo;
 #endif /* _WIN32 */
 } globals_t;
 

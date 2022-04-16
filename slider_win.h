@@ -25,12 +25,18 @@
 
 #define use_plugin_dll_sliders
 
+#ifdef use_plugin_dll_sliders
 // PLUGIN.DLL Sliders
 BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
 BOOL UnRegisterSlider(HINSTANCE hInstanceDll);
 int SetSliderRange(HWND hWnd, int nMin, int nMax);
 int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
+#else
+// This dummy is required, otherwise ui_compat.h won't compile
+int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
+int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
+#endif
 
 // Misc utilities
 Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass);

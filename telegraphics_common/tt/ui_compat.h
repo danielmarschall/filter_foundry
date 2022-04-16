@@ -175,12 +175,14 @@
 	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
 	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
-	// from PLUGIN.DLL
+	// from PLUGIN.DLL, defined in "slider_win.c"
 	extern int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
 	extern int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 
-	#define GETSLIDERVALUE(d,i) (gdata->pluginDllSliderMessageId == 0 ? (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0) : GetSliderPos(GetDlgItem((d), (i)), false))
-	#define SETSLIDERVALUE(d,i,v) (gdata->pluginDllSliderMessageId == 0 ? SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v)) : SetSliderPos(GetDlgItem((d), (i)), (v), true))
+	// TODO: It is very bad that we required "gdata" here, because this is library should NOT be FilterFoundry dependant!
+	#define GETSLIDERVALUE(d,i) (!gdata->pluginDllSliderInfo.initialized ? (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0) : GetSliderPos(GetDlgItem((d), (i)), false))
+	#define SETSLIDERVALUE(d,i,v) (!gdata->pluginDllSliderInfo.initialized ? SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v)) : SetSliderPos(GetDlgItem((d), (i)), (v), true))
+
 	#define GETCTLTEXT GetDlgItemTextA
 	#define SETCTLTEXT SetDlgItemTextA
 	#define SELECTCTLTEXT SELECTDLGITEMTEXT
