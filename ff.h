@@ -97,7 +97,6 @@ extern int errpos[4],errstart[4];//,nplanes;
 extern uint8_t slider[8];
 extern value_type cell[NUM_CELLS];
 extern char *expr[4];
-// extern long maxSpace;
 
 extern int tokpos,tokstart,varused[];
 extern char *errstr;

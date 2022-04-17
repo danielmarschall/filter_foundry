@@ -45,7 +45,6 @@ int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
 uint8_t slider[8]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 char* expr[4]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 value_type cell[NUM_CELLS];
-// long maxSpace;
 
 // this is the only memory area that keeps preserved by Photoshop:
 globals_t *gdata;
@@ -151,7 +150,7 @@ Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
 		(pSBufferSuite64 != (PSBufferSuite2*)gpb->bufferProcs /*Implementation mistake in old Photoshop versions! (see note below)*/)
 		)
 	{
-		// New Buffer Suite 2.0 (64 bit)
+		// PICA Buffer Suite 2.0 (64 bit)
 		// 
 		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested.) accept
 		// kPSBufferSuiteVersion2, but doesn't correctly implement it:
@@ -174,7 +173,7 @@ Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
 		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
 		(pSBufferSuite32 != NULL))
 	{
-		// New Buffer Suite 1.0 (32 bit)
+		// PICA Buffer Suite 1.0 (32 bit)
 		unsigned32 siz = nBytes;
 		data = (void*)pSBufferSuite32->New(&siz, siz);
 		if (siz < nBytes) data = NULL;
@@ -182,11 +181,11 @@ Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
 	}
 	else
 	{
-		// Old buffer procs (deprecated)
+		// Standard Buffer Suite (deprecated)
 		BufferID tempId;
 		if ((/* *result = */ gpb->bufferProcs->allocateProc(nBytes, &tempId))) {
 			data = NULL;
-			return data;
+			return (Ptr)data;
 		}
 		data = (void*)gpb->bufferProcs->lockProc(tempId, true);
 	}
@@ -205,7 +204,7 @@ void CreateDataPointer(intptr_t* data) {
 	// We have at least 5 options to allocate memory:
 
 	// (Method 1)
-	// 1. The deprecated buffer suite (pb->bufferProcs), works fine
+	// 1. The deprecated Standard Buffer Suite (pb->bufferProcs) - works fine!
 	//BufferID tempId;
 	//if ((/* *result = */ gpb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) {
 	//	*data = NULL;
@@ -666,8 +665,14 @@ void DoPrepare(FilterRecordPtr pb){
 
 	// New variant:
 	if (maxspace_available()) {
-		pb->maxSpace = (int32)ceil((maxspace()/10.)*9); // don't ask for more than 90% of available memory
-		// FIXME: Also maxSpace64
+		// don't ask for more than 90% of available memory
+		int64 ninetyPercent = (int64)ceil((maxspace() / 10.) * 9);
+		if ((gpb->bufferProcs->numBufferProcs >= 8) && (gpb->maxSpace64 > 0)) {
+			pb->maxSpace64 = ninetyPercent;
+		}
+		if (ninetyPercent <= 0x7FFFFFFF) {
+			pb->maxSpace = (int32)ninetyPercent;
+		}
 	}
 }
 
