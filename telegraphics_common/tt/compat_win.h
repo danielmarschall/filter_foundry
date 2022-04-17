@@ -64,14 +64,14 @@ void NumToString(long n,StringPtr s);
 Ptr GetPixBaseAddr(PixMapHandle);
 PixMapHandle GetGWorldPixMap(GWorldPtr);
 
-void* NewPtrClear(size_t size);
+Ptr NewPtrClear(size_t size);
 	
 //#define NewPtr malloc
-void* NewPtr(size_t size);
+Ptr NewPtr(size_t size);
 
 #define DisposPtr DisposePtr
 //#define DisposePtr free
-void DisposePtr(void* ptr);
+void DisposePtr(Ptr ptr);
 
 #define MemError() memFullErr /* FIXME */
 #define BlockMoveData(src,dst,len) memcpy(dst,src,len)

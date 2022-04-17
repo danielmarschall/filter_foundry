@@ -187,21 +187,21 @@ BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
 	return res;
 }
 
-void* NewPtr(size_t size) {
+Ptr NewPtr(size_t size) {
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, size);
 	if (!hMem)
 		return NULL;
-	return (void*)GlobalLock(hMem);
+	return (Ptr)GlobalLock(hMem);
 }
 
-void* NewPtrClear(size_t size) {
+Ptr NewPtrClear(size_t size) {
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, size);
 	if (!hMem)
 		return NULL;
-	return (void*)GlobalLock(hMem);
+	return (Ptr)GlobalLock(hMem);
 }
 
-void DisposePtr(void* ptr) {
+void DisposePtr(Ptr ptr) {
 	HGLOBAL hMem = GlobalHandle((LPCVOID)ptr);
 	if (!hMem)
 		return;

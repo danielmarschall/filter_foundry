@@ -38,6 +38,7 @@
 // Used to find out which host signatures and memory settings a plugin host has
 //#define SHOW_HOST_DEBUG
 
+// Here are working variables:
 struct node *tree[4];
 char *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
@@ -45,6 +46,8 @@ uint8_t slider[8]; // this is the "working data". We cannot always use gdata->pa
 char* expr[4]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 value_type cell[NUM_CELLS];
 // long maxSpace;
+
+// this is the only memory area that keeps preserved by Photoshop:
 globals_t *gdata;
 FilterRecordPtr gpb;
 
@@ -137,6 +140,61 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	return;
 }
 
+Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
+	PSBufferSuite1* pSBufferSuite32 = NULL;
+	PSBufferSuite2* pSBufferSuite64 = NULL;
+	void* data;
+
+	if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
+		(pSBufferSuite64 != NULL) &&
+		(pSBufferSuite64 != (PSBufferSuite2*)gpb->bufferProcs /*Implementation mistake in old Photoshop versions! (see note below)*/)
+		)
+	{
+		// New Buffer Suite 2.0 (64 bit)
+		// 
+		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested.) accept
+		// kPSBufferSuiteVersion2, but doesn't correctly implement it:
+		// Instead of returning a pointer to a PSBufferSuite2 structure,
+		// it returns the pointer RecordPtr->bufferProcs (structure BufferProcs)!
+		// 
+		// 64-bit support for Windows was established in Photoshop CS 4,
+		// and PSBufferSuite2 was first documented in SDK CS 6.
+		//
+		// So, kPSBufferSuiteVersion2 probably was partially implemented as hidden "Work in progress" version
+		// before it was publicly documented.
+		// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
+		//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
+		unsigned32 siz = nBytes;
+		data = (void*)pSBufferSuite64->New(&siz, siz);
+		if (siz < nBytes) data = NULL;
+		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
+	}
+	else if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
+		(pSBufferSuite32 != NULL))
+	{
+		// New Buffer Suite 1.0 (32 bit)
+		unsigned32 siz = nBytes;
+		data = (void*)pSBufferSuite32->New(&siz, siz);
+		if (siz < nBytes) data = NULL;
+		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
+	}
+	else
+	{
+		// Old buffer procs (deprecated)
+		BufferID tempId;
+		if ((/* *result = */ gpb->bufferProcs->allocateProc(nBytes, &tempId))) {
+			data = NULL;
+			return data;
+		}
+		data = (void*)gpb->bufferProcs->lockProc(tempId, true);
+	}
+
+	if (data) memset(data, 0, nBytes);
+	return (Ptr)data;
+}
+
 void CreateDataPointer(intptr_t* data) {
 	// Register "gdata" that contains the PARM information and other things which need to be persistant
 	// and preserve them in *data
@@ -145,63 +203,43 @@ void CreateDataPointer(intptr_t* data) {
 	// freed together with the application termination.
 
 	// We have at least 5 options to allocate memory:
+
+	// (Method 1)
 	// 1. The deprecated buffer suite (pb->bufferProcs), works fine
-	// 2. The recommended buffer suite (kPSBufferSuite), does NOT work (causes memory corruption?) and is not available on some hosts!
-	//    Either I do something wrong, or maybe it cannot be used to store data between invocations?
+	//BufferID tempId;
+	//if ((/* *result = */ gpb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) {
+	//	*data = NULL;
+	//	return *data;
+	//}
+	//*data = (void*)gpb->bufferProcs->lockProc(tempId, true);
+
+	// (Method 2) *DOES NOT WORK*
+	// 2. The recommended buffer suite (kPSBufferSuite),
+	//    It does not work, since it causes memory corruption when the filter is invoked a second time.
+	//    Probably the BufferSuite cannot be used to share data between filter invocations?
+	//    Also, the buffer suite is only available in a Adobe Photoshop host.
+	//*data = (intptr_t)NewPtrClearUsingBufferSuite(sizeof(globals_t));
+
+	// (Method 3)
 	// 3. Using malloc(), which works also fine and is more independent from the host. It is also easier.
 	//    However, we do not know how malloc() is implemented, and it might cause problems if the
 	//    DLL is unloaded between invocations.
+	//*data = (intptr_t)malloc(sizeof(globals_t));
+	//if (*data) memset(*data, 0, sizeof(globals_t));
+
+	// (Method 4)
 	// 4. Using PLUGIN.DLL:NewPtr(). This does FilterFactory 3.0.4, but requires an Adobe host.
-	//    In Photoshop 7.0 Plugin.dll, the function NewPtr() and NewPtrClear() are implemented as GlobalAlloc/GlobalLock.
+	//    In Plugin.dll, the function NewPtr() and NewPtrClear() are implemented as GlobalAlloc/GlobalLock.
+	//    Nothing special.
+
+	// (Method 5)
 	// 5. Using GlobalAlloc/GlobalLock. This does FilterFactory 3.00 (Flags GHND = GMEM_MOVEABLE and GMEM_ZEROINIT).
 	//    This is Windows dependant. (However, on Mac we will just call NewPtr.)
 	//    GlobalAlloc and LocalAlloc are equal in 32-bit windows. The memory allocation is NOT global anymore,
 	//    instead it is on the private heap of the application. (Therefore we do not cause a leak when
 	//    Photoshop is closed).
-
-	// In Filter Foundry 1.7.0.17 we will use method #5 (GlobalAlloc/GlobalLock) for Windows hosts, like FilterFactory 3.00 did.
-	// On Mac we use simply NewPtr. To make code easier, we will define a method that is called NewPtr, that will call GlobalAlloc/GlobalLock.
-
-	// (Method 1+2)
-	/*
-	PSBufferSuite1* pSBufferSuite32 = NULL;
-
-	if ((pb->sSPBasic == 0) ||
-		(pb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32)) ||
-		(pSBufferSuite32 == NULL))
-	{
-			// Old deprecated buffer suite
-			BufferID tempId;
-			if ((*result = pb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) return;
-			*data = (intptr_t)pb->bufferProcs->lockProc(tempId, true);
-	}
-	else
-	{
-			// New buffer suite (but only 32-bit version 1, because version 2 has problems with old Photoshop versions)
-			// Windows Photoshop 7 and CS 2 accepts kPSBufferSuiteVersion2, but doesn't correctly implement it:
-			// The symbols "New" and "GetSpace64" point to memory memory addresses outside the Photoshop.exe address range.
-			// (Other Photoshop versions were not tested.)
-			// 64-bit support for Windows was established in Photoshop CS 4,
-			// and PSBufferSuite2 was first documented in SDK CS 6.
-			// So, kPSBufferSuiteVersion2 probably was partically implemented as hidden "Work in progress" version
-			// before it was publicly documented.
-			// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
-			//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
-			unsigned32 siz = sizeof(globals_t);
-			*data = (intptr_t)pSBufferSuite32->New(&siz, siz);
-			if (siz < sizeof(globals_t)) *data = NULL;
-			pb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
-	}
-	if (*data) memset(*data, 0, sizeof(globals_t));
-	*/
-
-	// (Method 3)
-	/*
-	*data = (intptr_t)malloc(sizeof(globals_t));
-	if (*data) memset(*data, 0, sizeof(globals_t));
-	*/
-
-	// (Method 5)
+	// In Filter Foundry 1.7.0.17 we define a function called NewPtrClear, which is natively supported by Mac,
+	// and in Windows it will be implemented using GlobalAlloc/GlobalLock.
 	*data = (intptr_t)NewPtrClear(sizeof(globals_t));
 }
 
@@ -285,6 +323,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	pb->parameters = pb->handleProcs->newProc(1);
 	#endif
 
+	gpb = pb;
+
 	if (selector != filterSelectorAbout && !*data) {
 		// The filter was never called before. We allocate (zeroed) memory now.
 		// Note: gdata->standalone and gdata->parmloaded will be set later
@@ -300,8 +340,6 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	#ifdef WIN_ENV
 	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
 	#endif
-
-	gpb = pb;
 
 	nplanes = MIN(pb->planes,4);
 
