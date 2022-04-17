@@ -292,19 +292,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(ZOOMLEVELITEM, hDlg, (TCHAR*)TEXT("Fully zoom in/out"));
 
 		for(i = 0; i < 8; ++i){
-			if (!gdata->pluginDllSliderInfo.initialized) {
-				// Non PLUGIN.DLL sliders
-				SetWindowLongPtr(GetDlgItem(hDlg, FIRSTCTLITEM + i), GWL_STYLE, TBS_HORZ | TBS_AUTOTICKS | WS_CHILD | WS_VISIBLE);
-				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETRANGE, TRUE, MAKELONG(0, 255));
-				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETTICFREQ, SLIDERPAGE, 0);
-				SendDlgItemMessage(hDlg, FIRSTCTLITEM + i, TBM_SETPAGESIZE, 0, SLIDERPAGE);
-			}
-			else {
-				// PLUGIN.DLL sliders
-				#ifdef use_plugin_dll_sliders
-				SetSliderRange(GetDlgItem(hDlg, FIRSTCTLITEM + i), 0, 255);
-				#endif
-			}
+			FF_SetSliderRange(hDlg, FIRSTCTLITEM+i, 0, 255);
 			SendDlgItemMessage(hDlg,FIRSTCTLTEXTITEM+i,	EM_SETLIMITTEXT,3,0);
 		}
 		for(i = 0; i < 4; ++i){

@@ -175,13 +175,16 @@
 	#define HideDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_HIDE)
 	#define ShowDialogItem(d,i) ShowWindow(GetDlgItem(d,i),SW_SHOW)
 
-	// from PLUGIN.DLL, defined in "slider_win.c"
-	extern int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
-	extern int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
-
-	// TODO: It is very bad that we required "gdata" here, because this is library should NOT be FilterFoundry dependant!
-	#define GETSLIDERVALUE(d,i) (!gdata->pluginDllSliderInfo.initialized ? (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0) : GetSliderPos(GetDlgItem((d), (i)), false))
-	#define SETSLIDERVALUE(d,i,v) (!gdata->pluginDllSliderInfo.initialized ? SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v)) : SetSliderPos(GetDlgItem((d), (i)), (v), true))
+//TODO
+//#ifdef FILTER_FOUNDRY
+	extern int FF_GetSliderPos(HWND hDlg, int nIDDlgItem); // defined in slider_win.h
+	extern void FF_SetSliderPos(HWND hDlg, int nIDDlgItem, int pos); // defined in slider_win.h
+	#define GETSLIDERVALUE(d,i) FF_GetSliderPos((d),(i))
+	#define SETSLIDERVALUE(d,i,v) FF_SetSliderPos((d),(i),(v))
+//#else
+//	#define GETSLIDERVALUE(d,i) (int)SendDlgItemMessage((d), (i), TBM_GETPOS, 0, 0)
+//	#define SETSLIDERVALUE(d,i,v) SendDlgItemMessage((d), (i), TBM_SETPOS, TRUE, (v))
+//#endif
 
 	#define GETCTLTEXT GetDlgItemTextA
 	#define SETCTLTEXT SetDlgItemTextA

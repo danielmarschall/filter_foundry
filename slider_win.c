@@ -27,7 +27,7 @@
 // PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
 #ifdef use_plugin_dll_sliders
 typedef BOOL(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
-BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
+BOOL PluginDll_RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
 	BOOL res;
 
@@ -41,7 +41,7 @@ BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 // PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
 #ifdef use_plugin_dll_sliders
 typedef BOOL(__cdecl* f_UnRegisterSlider)(HINSTANCE hInstanceDll);
-BOOL UnRegisterSlider(HINSTANCE hInstanceDll) {
+BOOL PluginDll_UnRegisterSlider(HINSTANCE hInstanceDll) {
 	f_UnRegisterSlider fUnRegisterSlider;
 	BOOL res;
 
@@ -55,7 +55,7 @@ BOOL UnRegisterSlider(HINSTANCE hInstanceDll) {
 // PLUGIN.DLL Sliders: Set slider range (min/max)
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
-int SetSliderRange(HWND hWnd, int nMin, int nMax) {
+int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
 	int res;
 
@@ -69,7 +69,7 @@ int SetSliderRange(HWND hWnd, int nMin, int nMax) {
 // PLUGIN.DLL Sliders : Sets slider position
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
-int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
+int PluginDll_SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
 	int res;
 
@@ -78,17 +78,12 @@ int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	res = (fSetSliderPos != 0) ? fSetSliderPos(hWnd, nPos, bRepaint) : 0;
 	return res;
 }
-#else
-int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
-	// This dummy is required, otherwise ui_compat.h won't compile
-	return 0;
-}
 #endif
 
 // PLUGIN.DLL Sliders : Get slider position
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
-int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
+int PluginDll_GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
 	int res;
 
@@ -97,12 +92,44 @@ int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	res = (fGetSliderPos != 0) ? fGetSliderPos(hWnd, bPixelPosition) : 0;
 	return res;
 }
-#else
-int GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
-	// This dummy is required, otherwise ui_compat.h won't compile
-	return 0;
-}
 #endif
+
+void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max) {
+	if (!gdata->pluginDllSliderInfo.initialized) {
+		// Non PLUGIN.DLL sliders
+		SetWindowLongPtr(GetDlgItem(hDlg, nIDDlgItem), GWL_STYLE, TBS_HORZ | TBS_AUTOTICKS | WS_CHILD | WS_VISIBLE);
+		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETRANGE, TRUE, MAKELONG(min, max));
+		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETTICFREQ, SLIDERPAGE, 0);
+		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETPAGESIZE, 0, SLIDERPAGE);
+	}
+	else {
+		// PLUGIN.DLL sliders
+		#ifdef use_plugin_dll_sliders
+		PluginDll_SetSliderRange(GetDlgItem(hDlg, nIDDlgItem), min, max);
+		#endif
+	}
+}
+
+int FF_GetSliderPos(HWND hDlg, int nIDDlgItem) {
+	if (gdata->pluginDllSliderInfo.initialized) {
+		return PluginDll_GetSliderPos(GetDlgItem(hDlg, nIDDlgItem), false);
+	}
+	else if (gdata->comctlSliderInfo.initialized) {
+		return (int)SendDlgItemMessage(hDlg, nIDDlgItem, TBM_GETPOS, 0, 0);
+	}
+	else {
+		return 0;
+	}
+}
+
+void FF_SetSliderPos(HWND hDlg, int nIDDlgItem, int pos) {
+	if (gdata->pluginDllSliderInfo.initialized) {
+		PluginDll_SetSliderPos(GetDlgItem(hDlg, nIDDlgItem), pos, true);
+	}
+	else if (gdata->comctlSliderInfo.initialized) {
+		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETPOS, TRUE, pos);
+	}
+}
 
 LRESULT CALLBACK DummyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -193,7 +220,7 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 		gdata->pluginDllSliderInfo.hLib = LoadLibrary(TEXT("Plugin.dll"));
 	}
 
-	if (gdata->pluginDllSliderInfo.hLib && RegisterSlider(hDllInstance, &gdata->pluginDllSliderInfo.messageId)) {
+	if (gdata->pluginDllSliderInfo.hLib && PluginDll_RegisterSlider(hDllInstance, &gdata->pluginDllSliderInfo.messageId)) {
 		// Make "FoundrySlider" a subclass of "slider" then
 		if (MakeSimpleSubclass(targetClass, TEXT("slider"))) {
 			gdata->pluginDllSliderInfo.initialized = true;
@@ -218,7 +245,7 @@ void Slider_Uninit_PluginDll() {
 #else
 	if (!gdata->pluginDllSliderInfo.initialized) return;
 
-	if (!UnRegisterSlider(hDllInstance)) {
+	if (!PluginDll_UnRegisterSlider(hDllInstance)) {
 		simplealert((TCHAR*)TEXT("UnRegisterSlider failed"));
 		return;
 	}

@@ -27,16 +27,17 @@
 
 #ifdef use_plugin_dll_sliders
 // PLUGIN.DLL Sliders
-BOOL RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
-BOOL UnRegisterSlider(HINSTANCE hInstanceDll);
-int SetSliderRange(HWND hWnd, int nMin, int nMax);
-int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
-int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
-#else
-// This dummy is required, otherwise ui_compat.h won't compile
-int SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
-int GetSliderPos(HWND hWnd, BOOL bPixelPosition);
+BOOL PluginDll_RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
+BOOL PluginDll_UnRegisterSlider(HINSTANCE hInstanceDll);
+int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax);
+int PluginDll_SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
+int PluginDll_GetSliderPos(HWND hWnd, BOOL bPixelPosition);
 #endif
+
+// Use these functions ONLY !
+void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max);
+int FF_GetSliderPos(HWND hDlg, int nIDDlgItem);
+void FF_SetSliderPos(HWND hDlg, int nIDDlgItem, int pos);
 
 // Misc utilities
 Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass);
