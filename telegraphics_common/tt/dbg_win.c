@@ -21,5 +21,7 @@
 #include "str.h"
 
 void dbg(TCHAR *s){
+    #ifdef DEBUG
 	MessageBox(NULL,s,TEXT("plugin debug"),0);
+	#endif
 }

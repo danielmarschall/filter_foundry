@@ -30,7 +30,12 @@ OSErr putstr(Handle h,char *s);
 OSErr putstr(Handle h,char *s){
 	Ptr p;
 	OSErr e;
-	size_t size = PIGETHANDLESIZE(h),n = strlen(s);
+	size_t size, n;
+
+	if (!h) return nilHandleErr;
+
+	size = PIGETHANDLESIZE(h);
+	n = strlen(s);
 
 	if(!(e = PISETHANDLESIZE(h,(int32)(size+n)))){
 		p = PILOCKHANDLE(h,false);
@@ -48,7 +53,7 @@ OSErr saveparams_afs_pff(Handle h){
 	size_t est;
 	static char afs_sig[] = "%RGB-1.0\r";
 
-	if(!h) DBG("saveparams_afs_pff: Null handle!");
+	if (!h) return nilHandleErr;
 
 	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -106,7 +111,7 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 	OSErr e;
 	size_t est;
 
-	if (!h) DBG("saveparams_picotxt: Null handle!");
+	if (!h) return nilHandleErr;
 
 	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -192,9 +197,14 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 }
 
 OSErr savehandleintofile(Handle h,FILEREF r){
-	Ptr p = PILOCKHANDLE(h,false);
-	long n = PIGETHANDLESIZE(h);
-	OSErr e = FSWrite(r,&n,p);
+	Ptr p;
+	long n;
+	OSErr e;
+
+	if (!h) return nilHandleErr;
+	p = PILOCKHANDLE(h,false);
+	n = PIGETHANDLESIZE(h);
+	e = FSWrite(r,&n,p);
 	PIUNLOCKHANDLE(h);
 	return e;
 }

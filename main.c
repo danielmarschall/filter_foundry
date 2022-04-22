@@ -139,6 +139,7 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	return;
 }
 
+// this method is currently not used. We keep it in the code in case it is useful for someone...
 Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
 	PSBufferSuite1* pSBufferSuite32 = NULL;
 	PSBufferSuite2* pSBufferSuite64 = NULL;
@@ -152,10 +153,10 @@ Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
 	{
 		// PICA Buffer Suite 2.0 (64 bit)
 		// 
-		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested.) accept
-		// kPSBufferSuiteVersion2, but doesn't correctly implement it:
+		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested) accept
+		// kPSBufferSuiteVersion2, but dont't correctly implement it:
 		// Instead of returning a pointer to a PSBufferSuite2 structure,
-		// it returns the pointer RecordPtr->bufferProcs (structure BufferProcs)!
+		// they return the pointer RecordPtr->bufferProcs (structure BufferProcs)!
 		// 
 		// 64-bit support for Windows was established in Photoshop CS 4,
 		// and PSBufferSuite2 was first documented in SDK CS 6.
@@ -389,71 +390,79 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if(!pb->parameters)
 			pb->parameters = PINEWHANDLE(1); // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 
-		wantdialog |= checkandinitparams(pb->parameters);
+		if (!pb->parameters) {
+			e = memFullErr;
+		}
+		else
+		{
+			wantdialog |= checkandinitparams(pb->parameters);
 
-		/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
-		if( wantdialog && (!gdata->standalone || gdata->parm.popDialog) ){
-			if( maindialog(pb) ){
-				if (!host_preserves_parameters()) {
-					/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
-					   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
-					   Also, all global variables are unloaded, so the plugin cannot preserve any data.
-					   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
-					   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
-					   when the window is opened again. */
-					// Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
-					TCHAR outfilename[MAX_PATH+1];
-					StandardFileReply sfr;
-					char* bakexpr[4];
-					int i;
+			/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
+			if (wantdialog && (!gdata->standalone || gdata->parm.popDialog)) {
+				if (maindialog(pb)) {
+					if (!host_preserves_parameters()) {
+						/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
+						   The reason is a bug in PSPI: The host should preserve the value of pb->parameters, which PSPI does not do.
+						   Also, all global variables are unloaded, so the plugin cannot preserve any data.
+						   Workaround in FF 1.7: If the host GIMP is detected, then a special mode will be activated.
+						   This mode saves the filter data into a temporary file "FilterFoundryXX.afs" and loads it
+						   when the window is opened again. */
+						   // Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
+						TCHAR outfilename[MAX_PATH + 1];
+						StandardFileReply sfr;
+						char* bakexpr[4];
+						int i;
 
-					sfr.sfGood = true;
-					sfr.sfReplacing = true;
-					sfr.sfType = PS_FILTER_FILETYPE;
+						sfr.sfGood = true;
+						sfr.sfReplacing = true;
+						sfr.sfType = PS_FILTER_FILETYPE;
 
-					get_temp_afs(&outfilename[0], gdata->standalone, &gdata->parm);
+						get_temp_afs(&outfilename[0], gdata->standalone, &gdata->parm);
 
-					xstrcpy(sfr.sfFile.szName, outfilename);
-					#ifdef WIN_ENV
-					sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
-					#endif
-					sfr.sfScript = 0; // FIXME: is that ok?
+						xstrcpy(sfr.sfFile.szName, outfilename);
+						#ifdef WIN_ENV
+						sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
+						#endif
+						sfr.sfScript = 0; // FIXME: is that ok?
 
-					// We only want the parameters (ctl,map) in the temporary .afs file
-					// It is important to remove the expressions, otherwise they would be
-					// revealed in the temporary files.
-					for (i = 0; i < 4; i++) {
-						bakexpr[i] = expr[i]; // moved out of the if-definition to make the compiler happy
-					}
-					if (gdata->standalone) {
-						expr[0] = _strdup("r");
-						expr[1] = _strdup("g");
-						expr[2] = _strdup("b");
-						expr[3] = _strdup("a");
-					}
-
-					savefile_afs_pff_picotxt(&sfr);
-
-					if (gdata->standalone) {
+						// We only want the parameters (ctl,map) in the temporary .afs file
+						// It is important to remove the expressions, otherwise they would be
+						// revealed in the temporary files.
 						for (i = 0; i < 4; i++) {
-							if (expr[i]) free(expr[i]);
-							expr[i] = bakexpr[i];
+							bakexpr[i] = expr[i]; // moved out of the if-definition to make the compiler happy
+						}
+						if (gdata->standalone) {
+							expr[0] = _strdup("r");
+							expr[1] = _strdup("g");
+							expr[2] = _strdup("b");
+							expr[3] = _strdup("a");
+						}
+
+						savefile_afs_pff_picotxt(&sfr);
+
+						if (gdata->standalone) {
+							for (i = 0; i < 4; i++) {
+								if (expr[i]) free(expr[i]);
+								expr[i] = bakexpr[i];
+							}
 						}
 					}
-				} else {
-					/* update stored parameters from new user settings */
-					saveparams_afs_pff(pb->parameters);
+					else {
+						/* update stored parameters from new user settings */
+						if (pb->parameters)
+							saveparams_afs_pff(pb->parameters);
+					}
 				}
-			}else
-				e = userCanceledErr;
+				else
+					e = userCanceledErr;
+			}
+			wantdialog = false;
 		}
-		wantdialog = false;
 
-		if(!e){
+		if(e == noErr){
 			if(setup(pb)){
 				DoStart(pb);
 			}else{
-				SYSBEEP(1);
 				e = filterBadParameters;
 			}
 		}
@@ -592,7 +601,7 @@ int checkandinitparams(Handle params){
 		break;
 	}
 
-	saveparams_afs_pff(params);
+	if (params) saveparams_afs_pff(params);
 
 	return showdialog;
 }
@@ -647,9 +656,9 @@ void DoPrepare(FilterRecordPtr pb){
 	int i;
 
 	for(i = 4; i--;){
-		if(expr[i]||tree[i]) DBG("expr[] or tree[] non-NULL in Prepare!");
 		expr[i] = NULL;
 		tree[i] = NULL;
+		err[i] = NULL;
 	}
 
 	// Commented out by DM, 18 Dec 2018:

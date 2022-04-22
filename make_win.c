@@ -38,21 +38,23 @@ typedef struct _PE32 {
 
 Boolean doresources(FSSpec* dst, int bits);
 
-void dbglasterror(TCHAR *func){
+void showLastError(TCHAR *func){
 	TCHAR s[0x300] = {0};
 
 	xstrcpy(&s[0],func);
 	xstrcat(&s[0],TEXT(" failed: "));
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
-	dbg(&s[0]);
+	simplealert(&s[0]);
 }
 
 /*
 BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wIDLanguage,LONG lParam){
+	#ifdef DEBUG
 	char s[0x100];
 	sprintf(s,"EnumResourceLanguages callback: module=%#x type=%s name=%s lang=%d",
 		hModule,lpszType,lpszName,wIDLanguage);
 	dbg(s);
+	#endif
 	return TRUE;
 }
 */
@@ -400,7 +402,6 @@ Boolean doresources(FSSpec* dst, int bits){
 	memset(&dummy_symn, 0, sizeof(symndef_t));
 
 	if( (hupdate = _BeginUpdateResource(&dst->szName[0],false)) ){
-		DBG("BeginUpdateResource OK");
 		if( (datarsrc = FindResource(hDllInstance,MAKEINTRESOURCE(16000 + bits), TEXT("TPLT")))
 			&& (datah = LoadResource(hDllInstance,datarsrc))
 			&& (datap = (Ptr)LockResource(datah))
@@ -415,8 +416,6 @@ Boolean doresources(FSSpec* dst, int bits){
 			int manifestsize = SizeofResource(hDllInstance, manifestsrc);
 
 			newmanifest = (char*)malloc((size_t)manifestsize + 4096/*+4KiB for name,description,etc.*/);
-
-			DBG("loaded DATA, PiPL");
 
 			strcpy(title,gdata->parm.szTitle);
 			if(gdata->parm.popDialog)
@@ -497,7 +496,7 @@ Boolean doresources(FSSpec* dst, int bits){
 				{
 					discard = false;
 				} else {
-					dbglasterror((TCHAR*)TEXT("UpdateResource"));
+					showLastError((TCHAR*)TEXT("UpdateResource"));
 				}
 			}
 
@@ -515,7 +514,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					if ((binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
 						(binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
 					{
-						dbg((TCHAR*)TEXT("binary_replace_file failed"));
+						simplewarning((TCHAR*)TEXT("binary_replace_file failed"));
 						discard = true;
 					}
 				}
@@ -527,15 +526,15 @@ Boolean doresources(FSSpec* dst, int bits){
 				if (!repair_pe_checksum(dst)) {
 					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed"));
 				}
-			}else dbglasterror((TCHAR*)TEXT("EndUpdateResource"));
+			}else showLastError((TCHAR*)TEXT("EndUpdateResource"));
 
-		}else dbglasterror((TCHAR*)TEXT("Find-, Load- or LockResource"));
+		}else showLastError((TCHAR*)TEXT("Find-, Load- or LockResource"));
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
 	}else
-		dbglasterror((TCHAR*)TEXT("BeginUpdateResource"));
+	showLastError((TCHAR*)TEXT("BeginUpdateResource"));
 	return !discard;
 }
 

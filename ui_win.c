@@ -438,7 +438,7 @@ Boolean maindialog(FilterRecordPtr pb){
 		TCHAR s[0x300];
 		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: "));
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
-		dbg(&s[0]);
+		simplealert(&s[0]);
 	}
 
 	// Clean up after the dialog has been closed

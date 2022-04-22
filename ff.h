@@ -101,7 +101,6 @@ extern char *expr[4];
 extern int tokpos,tokstart,varused[];
 extern char *errstr;
 
-#define DBG(x) {}
 //#define DEBUG
 
 typedef struct InternalState_ {

@@ -46,10 +46,7 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 	char c;
 	int linecnt, lineptr, exprcnt;
 
-	if(!h){
-		*reason = _strdup("readparams: Null parameter handle.");
-		return false;
-	}
+	if (!h) return false;
 
 	p = PILOCKHANDLE(h,false);
 	dataend = p + PIGETHANDLESIZE(h);

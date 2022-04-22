@@ -432,7 +432,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 						TCHAR s[0x300];
 						xstrcpy(s, (TCHAR*)TEXT("ShellExecute failed: "));
 						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
-						dbg(&s[0]);
+						simplealert(&s[0]);
 
 						showmessage((TCHAR*)TEXT("Please edit the file manually to enter the title, category, author, copyright, filename, slidernames etc."));
 					}
@@ -471,7 +471,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			TCHAR s[0x300];
 			xstrcpy(s, (TCHAR*)TEXT("ShellExecute failed: "));
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
-			dbg(&s[0]);
+			simplealert(&s[0]);
 
 			showmessage((TCHAR*)TEXT("You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"));
 		}

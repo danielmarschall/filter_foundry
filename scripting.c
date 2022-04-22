@@ -53,7 +53,7 @@ char* get_cstring(PIReadDescriptor token) {
 	Handle h;
 	OSErr e = PIGetText(token, &h);
 
-	if (!e && h) {
+	if ((e == noErr) && h) {
 		n = PIGETHANDLESIZE(h);
 		p = PILOCKHANDLE(h, false);
 		if ((str = (char*)malloc(n + 1))) {

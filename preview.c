@@ -308,7 +308,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 				}
 			}
 
-			if (!e) {
+			if (e == noErr) {
 				preview_complete = true;
 
 				#ifdef WIN_ENV
@@ -443,7 +443,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 				}
 			}
 
-			if (!e) {
+			if (e == noErr) {
 				preview_complete = true;
 
 				#ifdef WIN_ENV
