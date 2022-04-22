@@ -5,7 +5,12 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* Adobe writes in the "New for Creative Cloud - CC 2019 - Photoshop 20.0" chapter:
+	"The NewHandle API for the Macintosh has been deprecated. Photoshop will be using the Ptr type to replace most occurrences of the Handle type. This will happen in the future for the Photoshop API. All of the SDK examples have moved away from using the Handle type internally. The Photoshop team recommends you do the same in your plugin. For example, your data being passed into the main callback routine was typically a Handle that your plugin created and Photoshop managed. This can be any type but it is recommended to now use the Ptr type."
+  Furthermore, the handleProcs suite seems to be deprecated, too
+	"HandleProcs* FilterRecord::handleProcs"
+	"A pointer to the Handle callback suite if it is supported by the host, otherwise NULL. See Handle Suite Callbacks (deprecated Standard Suite).  "
+  Does this mean that we need to replace pb->parameters with gdata ?
 
 
 Known problems

@@ -114,11 +114,11 @@ typedef struct InternalState_ {
 
 // from main.c
 unsigned long get_parm_hash(PARM_T *parm);
-void DoPrepare (FilterRecordPtr epb);
-void DoStart (FilterRecordPtr epb);
-OSErr DoContinue (FilterRecordPtr epb);
-void DoFinish (FilterRecordPtr epb);
-void RequestNext (FilterRecordPtr epb);
+void DoPrepare(FilterRecordPtr epb);
+void DoStart(FilterRecordPtr epb);
+OSErr DoContinue(FilterRecordPtr epb);
+void DoFinish(FilterRecordPtr epb);
+void RequestNext(FilterRecordPtr epb);
 InternalState saveInternalState();
 void restoreInternalState(InternalState state);
 

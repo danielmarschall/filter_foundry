@@ -51,8 +51,8 @@ globals_t *gdata;
 FilterRecordPtr gpb;
 
 #ifdef MAC_ENV
-        #define HINSTANCE HANDLE
-        #define hDllInstance NULL /* fake this Windows-only global */
+#define HINSTANCE HANDLE
+#define hDllInstance NULL /* fake this Windows-only global */
 #endif
 
 #ifdef WIN_ENV
@@ -135,7 +135,7 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	}
 	*/
 
-	simplealert((TCHAR*)TEXT("You tried to execute this method with RunDLL32. This is a Photoshop plugin!"));
+	simplealert((TCHAR*)TEXT("You tried to execute this DLL with RunDLL32. This is a Photoshop plugin!"));
 	return;
 }
 
@@ -247,7 +247,6 @@ DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
-	OSErr e = noErr;
 	char *reason;
 
 	#ifdef SHOW_HOST_DEBUG
@@ -265,6 +264,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	// ---------------------------------------------------------------------
 
 	EnterCodeResource();
+
+	#ifdef WIN_ENV
+	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
+	#endif
 
 	#ifdef WIN_ENV
 	if ((intptr_t)result == SW_SHOWDEFAULT) {
@@ -294,7 +297,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		//       otherwise we have a problem here!
 		// I don't understand why this works! Aren't we __cdecl and rundll expected __stdcall? But why is the parameter order correct and not reversed?
 		FakeRundll32((HWND)(intptr_t)selector, (HINSTANCE)pb, (LPSTR)data, (int)(intptr_t)result);
-		return;
+		goto endmain;
+	}
+	else {
+		// will be changed if an error happens
+		*result = noErr;
 	}
 	#endif
 
@@ -315,7 +322,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		}
 		premiereWarnedOnce = true;
 		*result = errPlugInHostInsufficient;
-		return;
+		goto endmain;
 	}
 
 	#ifdef DEBUG_SIMULATE_GIMP
@@ -323,7 +330,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	pb->parameters = pb->handleProcs->newProc(1);
 	#endif
 
-	gpb = pb;
+	gpb = pb; // required for CreateDataPointer()
 
 	if (selector != filterSelectorAbout && !*data) {
 		// The filter was never called before. We allocate (zeroed) memory now.
@@ -331,15 +338,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		CreateDataPointer(data);
 		if (!*data) {
 			*result = memFullErr;
-			return;
+			goto endmain;
 		}
 	}
 
 	gdata = (globals_t*)*data;
-
-	#ifdef WIN_ENV
-	activationContextUsed = ActivateManifest((HMODULE)hDllInstance, 1, &manifestVars);
-	#endif
 
 	nplanes = MIN(pb->planes,4);
 
@@ -391,7 +394,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			pb->parameters = PINEWHANDLE(1); // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 
 		if (!pb->parameters) {
-			e = memFullErr;
+			*result = memFullErr;
 		}
 		else
 		{
@@ -454,30 +457,30 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 					}
 				}
 				else
-					e = userCanceledErr;
+					*result = userCanceledErr;
 			}
 			wantdialog = false;
 		}
 
-		if(e == noErr){
+		if(*result == noErr){
 			if(setup(pb)){
 				DoStart(pb);
 			}else{
-				e = filterBadParameters;
+				*result = filterBadParameters;
 			}
 		}
 		break;
 	case filterSelectorContinue:
-		e = DoContinue(pb);
+		*result = DoContinue(pb);
 		break;
 	case filterSelectorFinish:
 		DoFinish(pb);
 		break;
 	default:
-		e = filterBadParameters;
+		*result = filterBadParameters;
 	}
 
-	*result = e;
+endmain:
 
 	// TODO: Question: Is that OK to call this every invocation, or should it be only around UI stuff?
 	#ifdef WIN_ENV
