@@ -31,7 +31,7 @@
 
 extern PSPixelMap preview_pmap;
 extern PSPixelMask preview_pmask;
-extern Handle preview_handle;
+extern BufferID preview_handle;
 extern UIRECT preview_rect;
 extern int preview_w,preview_h,nplanes,needall,needinput;
 extern Point preview_scroll;

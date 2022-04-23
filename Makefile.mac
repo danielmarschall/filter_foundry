@@ -52,7 +52,7 @@ vpath %.c telegraphics_common/tt telegraphics_common/adobeplugin ../MoreFiles/So
 
 # list of source files
 SRC_COMMON = main.c funcs.c process.c node.c symtab.c \
-	ui.c ui_build.c preview.c read.c save.c make.c obfusc.c \
+	ui.c ui_build.c preview.c read.c save.c make.c obfusc.c ff_misc.c \
 	scripting.c y.tab.c lex.yy.c str.c
 SRC_OSX = dbg_mac.c ui_mac.c make_mac.c load_mac.c ui_compat_mac.c \
 	choosefile_nav.c preview_mac.c \

@@ -171,6 +171,12 @@ struct node *parseexpr(char *s);
 // from funcs.c
 void factory_initialize_rnd_variables();
 
+// from ff_misc.c
+BufferID newBuffer(size_t size);
+Ptr lockBuffer(BufferID bid);
+void unlockBuffer(BufferID bid);
+void disposeBuffer(BufferID bid);
+
 // Useful macros
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 

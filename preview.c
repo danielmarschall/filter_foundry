@@ -34,7 +34,7 @@ extern FilterRecordPtr gpb;
 
 PSPixelMap preview_pmap;
 PSPixelMask preview_pmask;
-Handle preview_handle;
+BufferID preview_handle;
 UIRECT preview_rect;
 int preview_w,preview_h,previewerr = false,needall = false,needinput = true;
 Point preview_scroll;
@@ -104,7 +104,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		}else
 			preview_pmap.masks = NULL;
 
-		preview_handle = PINEWHANDLE((long)preview_h * preview_pmap.rowBytes);
+		preview_handle = newBuffer((long)preview_h * preview_pmap.rowBytes);
 	}else
 		preview_handle = NULL;
 	return preview_handle != NULL;
@@ -118,7 +118,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 
 void dispose_preview(){
 	if(preview_handle){
-		PIDISPOSEHANDLE(preview_handle);
+		disposeBuffer(preview_handle);
 		preview_handle = NULL;
 	}
 }
@@ -278,7 +278,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
 
 		if (!needinput || !(e = pb->advanceState())) {
-			Ptr outptr = PILOCKHANDLE(preview_handle, false);
+			Ptr outptr = lockBuffer(preview_handle);
 			int blankrows = (preview_h - imgh) / 2,
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
@@ -334,7 +334,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 				#endif
 			}
 
-			PIUNLOCKHANDLE(preview_handle);
+			unlockBuffer(preview_handle);
 		}
 
 		if (e && !previewerr) {
@@ -413,7 +413,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
 
 		if (!needinput || !(e = pb->advanceState())) {
-			Ptr outptr = PILOCKHANDLE(preview_handle, false);
+			Ptr outptr = lockBuffer(preview_handle);
 			int blankrows = (preview_h - imgh) / 2,
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
@@ -469,7 +469,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 				#endif
 			}
 
-			PIUNLOCKHANDLE(preview_handle);
+			unlockBuffer(preview_handle);
 		}
 
 		if (e && !previewerr) {

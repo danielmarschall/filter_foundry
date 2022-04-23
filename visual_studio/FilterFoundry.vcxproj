@@ -278,6 +278,7 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\versioninfo_modify_win.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ff_misc.c" />
     <ClCompile Include="..\obfusc.c" />
     <ClCompile Include="..\slider_win.c" />
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />

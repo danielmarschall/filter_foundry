@@ -185,6 +185,9 @@
     <ClCompile Include="..\slider_win.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\ff_misc.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\win_res.rc">

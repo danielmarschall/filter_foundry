@@ -230,7 +230,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	HGDIOBJ hfnt;
 
 	extern Boolean doupdates;
-	extern Handle preview_handle;
+	extern BufferID preview_handle;
 
 	if ((gdata->pluginDllSliderInfo.initialized) && (wMsg == gdata->pluginDllSliderInfo.messageId)) {
 		// This is for the PLUGIN.DLL sliders only
@@ -335,8 +335,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		if(pdi->itemAction == ODA_DRAWENTIRE){
 			switch(pdi->CtlID){
 			case PREVIEWITEM:
-				drawpreview(hDlg,pdi->hDC,PILOCKHANDLE(preview_handle,false));
-				PIUNLOCKHANDLE(preview_handle);
+				drawpreview(hDlg,pdi->hDC,lockBuffer(preview_handle));
+				unlockBuffer(preview_handle);
 				break;
 			case FIRSTICONITEM:
 			case FIRSTICONITEM + 1:
