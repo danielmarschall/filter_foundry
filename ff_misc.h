@@ -30,7 +30,7 @@ extern FilterRecordPtr gpb;
 #define BUFVERSION_SUITE64 'bSU2'
 
 typedef struct FFBuffer_ {
-    OSType signature;
+    OSType signature; // BUFVERSION_*
     BufferID standard;
     Ptr suite;
 } FFBuffer;
@@ -41,7 +41,7 @@ typedef struct FFBuffer_ {
 #define HDLVERSION_SUITE2   'hSU2'
 
 typedef struct FFHandle_ {
-    OSType signature;
+    OSType signature; // HDLVERSION_*
     Handle handle;
 } FFHandle;
 

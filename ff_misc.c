@@ -35,7 +35,7 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 	{
 		// PICA Handle Suite 2.0
 		hdl->signature = HDLVERSION_SUITE2;
-		gdata->lastKnownHandleVersion = hdl->signature;
+		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
 		hdl->handle = pSHandleSuite2->New(nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 	}
@@ -46,14 +46,14 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 	{
 		// PICA Handle Suite 1.0
 		hdl->signature = HDLVERSION_SUITE1;
-		gdata->lastKnownHandleVersion = hdl->signature;
+		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
 		hdl->handle = pSHandleSuite1->New(nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 	}
 	else {
 		// Standard Handle Suite (deprecated)
 		hdl->signature = HDLVERSION_STANDARD;
-		gdata->lastKnownHandleVersion = hdl->signature;
+		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
 		hdl->handle = gpb->handleProcs->newProc(nBytes);
 	}
 }
@@ -302,16 +302,13 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		// Instead of returning a pointer to a PSBufferSuite2 structure,
 		// they return the pointer RecordPtr->bufferProcs (structure BufferProcs)!
 		// 
-		// 64-bit support for Windows was established in Photoshop CS 4,
-		// and PSBufferSuite2 was first documented in SDK CS 6.
-		//
-		// So, kPSBufferSuiteVersion2 probably was partially implemented as hidden "Work in progress" version
-		// before it was publicly documented.
-		// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
-		//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
+		// Side note:  64-bit support for Windows was established in Photoshop CS 4,
+		//             PSBufferSuite2 was first documented in SDK CS 6,
+		//             pb->bufferProcs->allocateProc64 and spaceProc64 were documented in SDK CS 6,
+		//             pb->bufferSpace64 and pb->maxSpace64 were documented in SDK CC 2017.
 		unsigned32 siz = nBytes;
 		buf->signature = BUFVERSION_SUITE64;
-		gdata->lastKnownBufferVersion = buf->signature;
+		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		buf->suite = (Ptr)pSBufferSuite64->New(&siz, siz);
 		if (siz < nBytes) {
 			buf->signature = BUFVERSION_NULL;
@@ -326,7 +323,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		// PICA Buffer Suite 1.0 (32 bit)
 		unsigned32 siz = nBytes;
 		buf->signature = BUFVERSION_SUITE32;
-		gdata->lastKnownBufferVersion = buf->signature;
+		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		buf->suite = (Ptr)pSBufferSuite32->New(&siz, siz);
 		if (siz < nBytes) {
 			buf->signature = BUFVERSION_NULL;
@@ -338,7 +335,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 	{
 		// Standard Buffer Suite 64 bit (deprecated)
 		buf->signature = BUFVERSION_STD64;
-		gdata->lastKnownBufferVersion = buf->signature;
+		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		if (gpb->bufferProcs->allocateProc64(nBytes, &buf->standard) != noErr) {
 			buf->signature = BUFVERSION_NULL;
 			buf->standard = NULL;
@@ -348,7 +345,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 	{
 		// Standard Buffer Suite 32 bit (deprecated)
 		buf->signature = BUFVERSION_STD32;
-		gdata->lastKnownBufferVersion = buf->signature;
+		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		if (gpb->bufferProcs->allocateProc(nBytes, &buf->standard) != noErr) {
 			buf->signature = BUFVERSION_NULL;
 			buf->standard = NULL;
