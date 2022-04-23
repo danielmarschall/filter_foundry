@@ -335,8 +335,8 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		if(pdi->itemAction == ODA_DRAWENTIRE){
 			switch(pdi->CtlID){
 			case PREVIEWITEM:
-				drawpreview(hDlg,pdi->hDC,lockBuffer(preview_handle));
-				unlockBuffer(preview_handle);
+				drawpreview(hDlg,pdi->hDC,lockBuffer(&preview_handle));
+				unlockBuffer(&preview_handle);
 				break;
 			case FIRSTICONITEM:
 			case FIRSTICONITEM + 1:

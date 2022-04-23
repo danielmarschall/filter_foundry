@@ -23,25 +23,42 @@
 
 extern FilterRecordPtr gpb;
 
-#define BUFVERSION_NULL 'NULL'
-#define BUFVERSION_STD32 'ST32'
-#define BUFVERSION_STD64 'ST64'
-#define BUFVERSION_SUITE32 'SU32'
-#define BUFVERSION_SUITE64 'SU64'
+#define BUFVERSION_NULL    'b000'
+#define BUFVERSION_STD32   'bST1'
+#define BUFVERSION_STD64   'bST2'
+#define BUFVERSION_SUITE32 'bSU1'
+#define BUFVERSION_SUITE64 'bSU2'
 
 typedef struct FFBuffer_ {
     OSType signature;
     BufferID standard;
-    Ptr suite32;
-    Ptr suite64;
+    Ptr suite;
 } FFBuffer;
 
-#define PINEWHANDLE      gpb->handleProcs->newProc
-#define PIDISPOSEHANDLE  gpb->handleProcs->disposeProc
-#define PIGETHANDLESIZE  gpb->handleProcs->getSizeProc
-#define PISETHANDLESIZE  gpb->handleProcs->setSizeProc
-#define PILOCKHANDLE     gpb->handleProcs->lockProc
-#define PIUNLOCKHANDLE   gpb->handleProcs->unlockProc
+#define HDLVERSION_NULL     'h000'
+#define HDLVERSION_STANDARD 'hSTD'
+#define HDLVERSION_SUITE1   'hSU1'
+#define HDLVERSION_SUITE2   'hSU2'
+
+typedef struct FFHandle_ {
+    OSType signature;
+    Handle handle;
+} FFHandle;
+
+// These functions are for code backwards compatibility:
+Handle PINEWHANDLE(int32 size);
+void PIDISPOSEHANDLE(Handle h);
+int32 PIGETHANDLESIZE(Handle h);
+OSErr PISETHANDLESIZE(Handle h, int32 newSize);
+Ptr PILOCKHANDLE(Handle h, Boolean moveHigh);
+void PIUNLOCKHANDLE(Handle h);
+
+//#define PINEWHANDLE      gpb->handleProcs->newProc
+//#define PIDISPOSEHANDLE  gpb->handleProcs->disposeProc
+//#define PIGETHANDLESIZE  gpb->handleProcs->getSizeProc
+//#define PISETHANDLESIZE  gpb->handleProcs->setSizeProc
+//#define PILOCKHANDLE     gpb->handleProcs->lockProc
+//#define PIUNLOCKHANDLE   gpb->handleProcs->unlockProc
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))

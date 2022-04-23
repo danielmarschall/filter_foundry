@@ -85,6 +85,8 @@ typedef struct globals_t_ {
 	comctl_slider_info comctlSliderInfo;
 	plugin_dll_slider_info pluginDllSliderInfo;
 #endif /* _WIN32 */
+	OSType lastKnownBufferVersion;
+	OSType lastKnownHandleVersion;
 } globals_t;
 
 extern globals_t *gdata;
@@ -172,10 +174,16 @@ struct node *parseexpr(char *s);
 void factory_initialize_rnd_variables();
 
 // from ff_misc.c
-FFBuffer newBuffer(size_t size);
-Ptr lockBuffer(FFBuffer bid);
-void unlockBuffer(FFBuffer bid);
-void disposeBuffer(FFBuffer *bid);
+void newHandle(FFHandle* hdl, size_t nBytes);
+void disposeHandle(FFHandle* hdl);
+size_t getHandleSize(FFHandle* hdl);
+OSErr setHandleSize(FFHandle* hdl, size_t nBytes);
+Ptr lockHandle(FFHandle* hdl);
+void unlockHandle(FFHandle* hdl);
+void newBuffer(FFBuffer* buf, size_t size);
+Ptr lockBuffer(FFBuffer* buf);
+void unlockBuffer(FFBuffer* buf);
+void disposeBuffer(FFBuffer* buf);
 
 // Useful macros
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)

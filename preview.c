@@ -104,7 +104,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		}else
 			preview_pmap.masks = NULL;
 
-		preview_handle = newBuffer((long)preview_h * preview_pmap.rowBytes);
+		newBuffer(&preview_handle, (long)preview_h * preview_pmap.rowBytes);
 	}else
 		preview_handle.signature = BUFVERSION_NULL;
 	return preview_handle.signature != BUFVERSION_NULL;
@@ -275,7 +275,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
 
 		if (!needinput || !(e = pb->advanceState())) {
-			Ptr outptr = lockBuffer(preview_handle);
+			Ptr outptr = lockBuffer(&preview_handle);
 			int blankrows = (preview_h - imgh) / 2,
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
@@ -331,7 +331,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 				#endif
 			}
 
-			unlockBuffer(preview_handle);
+			unlockBuffer(&preview_handle);
 		}
 
 		if (e && !previewerr) {
@@ -410,7 +410,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		pb->inHiPlane = pb->outHiPlane = nplanes - 1;
 
 		if (!needinput || !(e = pb->advanceState())) {
-			Ptr outptr = lockBuffer(preview_handle);
+			Ptr outptr = lockBuffer(&preview_handle);
 			int blankrows = (preview_h - imgh) / 2,
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
@@ -466,7 +466,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 				#endif
 			}
 
-			unlockBuffer(preview_handle);
+			unlockBuffer(&preview_handle);
 		}
 
 		if (e && !previewerr) {

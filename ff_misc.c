@@ -1,34 +1,293 @@
 /*
-    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "ff.h"
 
 #include "PIBufferSuite.h"
+#include "PIHandleSuite.h"
 
-// TODO: Also implement the handleSuite like this
+void newHandle(FFHandle* hdl, size_t nBytes) {
+	PSHandleSuite1* pSHandleSuite1 = NULL;
+	PSHandleSuite2* pSHandleSuite2 = NULL;
 
-FFBuffer newBuffer(size_t nBytes) {
+	if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+		(pSHandleSuite2 != NULL) &&
+		(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+		)
+	{
+		// PICA Handle Suite 2.0
+		hdl->signature = HDLVERSION_SUITE2;
+		gdata->lastKnownHandleVersion = hdl->signature;
+		hdl->handle = pSHandleSuite2->New(nBytes);
+		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+	}
+	else if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+		(pSHandleSuite1 != NULL)
+		)
+	{
+		// PICA Handle Suite 1.0
+		hdl->signature = HDLVERSION_SUITE1;
+		gdata->lastKnownHandleVersion = hdl->signature;
+		hdl->handle = pSHandleSuite1->New(nBytes);
+		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+	}
+	else {
+		// Standard Handle Suite (deprecated)
+		hdl->signature = HDLVERSION_STANDARD;
+		gdata->lastKnownHandleVersion = hdl->signature;
+		hdl->handle = gpb->handleProcs->newProc(nBytes);
+	}
+}
+
+void disposeHandle(FFHandle* hdl) {
+	if (hdl->signature == HDLVERSION_SUITE2) {
+		PSHandleSuite2* pSHandleSuite2 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+			(pSHandleSuite2 != NULL) &&
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			)
+		{
+			// PICA Handle Suite 2.0
+			pSHandleSuite2->Dispose(hdl->handle);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+		}
+	}
+	else if (hdl->signature == HDLVERSION_SUITE1) {
+		PSHandleSuite1* pSHandleSuite1 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+			(pSHandleSuite1 != NULL)
+			)
+		{
+			// PICA Handle Suite 1.0
+			pSHandleSuite1->Dispose(hdl->handle);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+		}
+	}
+	else if (hdl->signature == HDLVERSION_STANDARD) {
+		// Standard Handle Suite (deprecated)
+		gpb->handleProcs->disposeProc(hdl->handle);
+	}
+	hdl->signature = HDLVERSION_NULL;
+}
+
+size_t getHandleSize(FFHandle* hdl) {
+	if (hdl->signature == HDLVERSION_SUITE2) {
+		PSHandleSuite2* pSHandleSuite2 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+			(pSHandleSuite2 != NULL) &&
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			)
+		{
+			// PICA Handle Suite 2.0
+			int32 size = pSHandleSuite2->GetSize(hdl->handle);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+			return (size_t)size;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_SUITE1) {
+		PSHandleSuite1* pSHandleSuite1 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+			(pSHandleSuite1 != NULL)
+			)
+		{
+			// PICA Handle Suite 1.0
+			int32 size = pSHandleSuite1->GetSize(hdl->handle);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+			return (size_t)size;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_STANDARD) {
+		// Standard Handle Suite (deprecated)
+		return gpb->handleProcs->getSizeProc(hdl->handle);
+	}
+	return 0;
+}
+
+OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
+	if (hdl->signature == HDLVERSION_SUITE2) {
+		PSHandleSuite2* pSHandleSuite2 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+			(pSHandleSuite2 != NULL) &&
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			)
+		{
+			// PICA Handle Suite 2.0
+			OSErr ret = pSHandleSuite2->SetSize(hdl->handle, nBytes);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+			return ret;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_SUITE1) {
+		PSHandleSuite1* pSHandleSuite1 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+			(pSHandleSuite1 != NULL)
+			)
+		{
+			// PICA Handle Suite 1.0
+			OSErr ret = pSHandleSuite1->SetSize(hdl->handle, nBytes);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+			return ret;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_STANDARD) {
+		// Standard Handle Suite (deprecated)
+		return gpb->handleProcs->setSizeProc(hdl->handle, nBytes);
+	}
+	return errMissingParameter;
+}
+
+Ptr lockHandle(FFHandle* hdl) {
+	if (hdl->signature == HDLVERSION_SUITE2) {
+		PSHandleSuite2* pSHandleSuite2 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+			(pSHandleSuite2 != NULL) &&
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			)
+		{
+			// PICA Handle Suite 2.0
+			Ptr address;
+			Boolean oldLock;
+			pSHandleSuite2->SetLock(hdl->handle, true, &address, &oldLock);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+			return address;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_SUITE1) {
+		PSHandleSuite1* pSHandleSuite1 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+			(pSHandleSuite1 != NULL)
+			)
+		{
+			// PICA Handle Suite 1.0
+			Ptr address;
+			Boolean oldLock;
+			pSHandleSuite1->SetLock(hdl->handle, true, &address, &oldLock);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+			return address;
+		}
+	}
+	else if (hdl->signature == HDLVERSION_STANDARD) {
+		// Standard Handle Suite (deprecated)
+		return gpb->handleProcs->lockProc(hdl->handle, true);
+	}
+	return NULL;
+}
+
+void unlockHandle(FFHandle* hdl) {
+	if (hdl->signature == HDLVERSION_SUITE2) {
+		PSHandleSuite2* pSHandleSuite2 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
+			(pSHandleSuite2 != NULL) &&
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			)
+		{
+			// PICA Handle Suite 2.0
+			Ptr address;
+			Boolean oldLock;
+			pSHandleSuite2->SetLock(hdl->handle, false, &address, &oldLock);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
+		}
+	}
+	else if (hdl->signature == HDLVERSION_SUITE1) {
+		PSHandleSuite1* pSHandleSuite1 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
+			(pSHandleSuite1 != NULL)
+			)
+		{
+			// PICA Handle Suite 1.0
+			Ptr address;
+			Boolean oldLock;
+			pSHandleSuite1->SetLock(hdl->handle, false, &address, &oldLock);
+			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
+		}
+	}
+	else if (hdl->signature == HDLVERSION_STANDARD) {
+		// Standard Handle Suite (deprecated)
+		gpb->handleProcs->unlockProc(hdl->handle);
+	}
+}
+
+// -----------------------------------------------------------------------------------
+// These functions are for code backwards compatibility:
+
+Handle PINEWHANDLE(int32 size) {
+	FFHandle fh;
+	newHandle(&fh, size);
+	// Note: newHandle() set gdata->lastKnownHandleVersion, so that
+	// the other functions like PILOCKHANDLE can use it. This is safe,
+	// as we can assume that the version is always the same for all handles from this host.
+	return fh.handle;
+}
+
+void PIDISPOSEHANDLE(Handle h) {
+	FFHandle fh;
+	fh.signature = gdata->lastKnownHandleVersion;
+	fh.handle = h;
+	disposeHandle(&fh);
+}
+
+int32 PIGETHANDLESIZE(Handle h) {
+	FFHandle fh;
+	fh.signature = gdata->lastKnownHandleVersion;
+	fh.handle = h;
+	return getHandleSize(&fh);
+}
+
+OSErr PISETHANDLESIZE(Handle h, int32 newSize) {
+	FFHandle fh;
+	fh.signature = gdata->lastKnownHandleVersion;
+	fh.handle = h;
+	return setHandleSize(&fh, newSize);
+}
+
+Ptr PILOCKHANDLE(Handle h, Boolean moveHigh) {
+	FFHandle fh;
+	fh.signature = gdata->lastKnownHandleVersion;
+	fh.handle = h;
+	return lockHandle(&fh);
+}
+
+void PIUNLOCKHANDLE(Handle h) {
+	FFHandle fh;
+	fh.signature = gdata->lastKnownHandleVersion;
+	fh.handle = h;
+	unlockHandle(&fh);
+}
+
+// -----------------------------------------------------------------------------------
+
+void newBuffer(FFBuffer* buf, size_t nBytes) {
 	PSBufferSuite1* pSBufferSuite32 = NULL;
 	PSBufferSuite2* pSBufferSuite64 = NULL;
-
-	FFBuffer ret;
 
 	if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
@@ -51,11 +310,12 @@ FFBuffer newBuffer(size_t nBytes) {
 		// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
 		//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
 		unsigned32 siz = nBytes;
-		ret.signature = BUFVERSION_SUITE64;
-		ret.suite64 = (Ptr)pSBufferSuite64->New(&siz, siz);
+		buf->signature = BUFVERSION_SUITE64;
+		gdata->lastKnownBufferVersion = buf->signature;
+		buf->suite = (Ptr)pSBufferSuite64->New(&siz, siz);
 		if (siz < nBytes) {
-			ret.signature = BUFVERSION_NULL;
-			ret.suite64 = NULL;
+			buf->signature = BUFVERSION_NULL;
+			buf->suite = NULL;
 		}
 		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
 	}
@@ -65,91 +325,94 @@ FFBuffer newBuffer(size_t nBytes) {
 	{
 		// PICA Buffer Suite 1.0 (32 bit)
 		unsigned32 siz = nBytes;
-		ret.signature = BUFVERSION_SUITE32;
-		ret.suite32 = (Ptr)pSBufferSuite32->New(&siz, siz);
+		buf->signature = BUFVERSION_SUITE32;
+		gdata->lastKnownBufferVersion = buf->signature;
+		buf->suite = (Ptr)pSBufferSuite32->New(&siz, siz);
 		if (siz < nBytes) {
-			ret.signature = BUFVERSION_NULL;
-			ret.suite32 = NULL;
+			buf->signature = BUFVERSION_NULL;
+			buf->suite = NULL;
 		}
 		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
 	}
 	else if (gpb->bufferProcs->numBufferProcs >= 8)
 	{
 		// Standard Buffer Suite 64 bit (deprecated)
-		ret.signature = BUFVERSION_STD64;
-		if ((/* *result = */ gpb->bufferProcs->allocateProc64(nBytes, &ret.standard))) {
-			ret.signature = BUFVERSION_NULL;
-			ret.standard = NULL;
+		buf->signature = BUFVERSION_STD64;
+		gdata->lastKnownBufferVersion = buf->signature;
+		if (gpb->bufferProcs->allocateProc64(nBytes, &buf->standard) != noErr) {
+			buf->signature = BUFVERSION_NULL;
+			buf->standard = NULL;
 		}
 	}
 	else
 	{
 		// Standard Buffer Suite 32 bit (deprecated)
-		ret.signature = BUFVERSION_STD32;
-		if ((/* *result = */ gpb->bufferProcs->allocateProc(nBytes, &ret.standard))) {
-			ret.signature = BUFVERSION_NULL;
-			ret.standard = NULL;
+		buf->signature = BUFVERSION_STD32;
+		gdata->lastKnownBufferVersion = buf->signature;
+		if (gpb->bufferProcs->allocateProc(nBytes, &buf->standard) != noErr) {
+			buf->signature = BUFVERSION_NULL;
+			buf->standard = NULL;
 		}
 	}
-
-	return ret;
 }
 
-Ptr lockBuffer(FFBuffer bid) {
-	if (bid.signature == BUFVERSION_SUITE64) {
-		return bid.suite64;
+Ptr lockBuffer(FFBuffer* buf) {
+	if (buf->signature == BUFVERSION_SUITE64) {
+		return buf->suite;
 	}
-	else if (bid.signature == BUFVERSION_SUITE32) {
-		return bid.suite32;
+	else if (buf->signature == BUFVERSION_SUITE32) {
+		return buf->suite;
 	}
-	else if (bid.signature == BUFVERSION_STD64) {
-		return gpb->bufferProcs->lockProc(bid.standard, true);
+	else if (buf->signature == BUFVERSION_STD64) {
+		return gpb->bufferProcs->lockProc(buf->standard, true);
 	}
-	else if (bid.signature == BUFVERSION_STD32) {
-		return gpb->bufferProcs->lockProc(bid.standard, true);
+	else if (buf->signature == BUFVERSION_STD32) {
+		return gpb->bufferProcs->lockProc(buf->standard, true);
 	}
 	else {
 		return NULL;
 	}
 }
 
-void unlockBuffer(FFBuffer bid) {
-	if (bid.signature == BUFVERSION_STD64) {
-		gpb->bufferProcs->unlockProc(bid.standard);
+void unlockBuffer(FFBuffer* buf) {
+	if (buf->signature == BUFVERSION_STD64) {
+		gpb->bufferProcs->unlockProc(buf->standard);
 	}
-	else if (bid.signature == BUFVERSION_STD32) {
-		gpb->bufferProcs->unlockProc(bid.standard);
+	else if (buf->signature == BUFVERSION_STD32) {
+		gpb->bufferProcs->unlockProc(buf->standard);
 	}
 }
 
-void disposeBuffer(FFBuffer* bid) {
-	if ((*bid).signature == BUFVERSION_SUITE64) {
+void disposeBuffer(FFBuffer* buf) {
+	if (buf->signature == BUFVERSION_SUITE64) {
 		PSBufferSuite2* pSBufferSuite64 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
-			(pSBufferSuite64 != NULL))
+			(pSBufferSuite64 != NULL) &&
+			(pSBufferSuite64 != (PSBufferSuite2*)gpb->bufferProcs /*Implementation mistake in old Photoshop versions! (see note below)*/)
+			)
 		{
 			// PICA Buffer Suite 2.0 (64 bit)
-			pSBufferSuite64->Dispose(&((*bid).suite64));
+			pSBufferSuite64->Dispose(&buf->suite);
 			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
 		}
 	}
-	else if ((*bid).signature == BUFVERSION_SUITE32) {
+	else if (buf->signature == BUFVERSION_SUITE32) {
 		PSBufferSuite1* pSBufferSuite32 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
 			(pSBufferSuite32 != NULL))
 		{
 			// PICA Buffer Suite 1.0 (32 bit)
-			pSBufferSuite32->Dispose(&((*bid).suite32));
+			pSBufferSuite32->Dispose(&buf->suite);
 			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
 		}
 	}
-	else if ((*bid).signature == BUFVERSION_STD64) {
-		gpb->bufferProcs->freeProc((*bid).standard);
+	else if (buf->signature == BUFVERSION_STD64) {
+		gpb->bufferProcs->freeProc(buf->standard);
 	}
-	else if ((*bid).signature == BUFVERSION_STD32) {
-		gpb->bufferProcs->freeProc((*bid).standard);
+	else if (buf->signature == BUFVERSION_STD32) {
+		gpb->bufferProcs->freeProc(buf->standard);
 	}
-	(*bid).signature = BUFVERSION_NULL;
+	buf->signature = BUFVERSION_NULL;
 }

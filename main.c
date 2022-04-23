@@ -139,62 +139,6 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	return;
 }
 
-// this method is currently not used. We keep it in the code in case it is useful for someone...
-Ptr NewPtrClearUsingBufferSuite(size_t nBytes) {
-	PSBufferSuite1* pSBufferSuite32 = NULL;
-	PSBufferSuite2* pSBufferSuite64 = NULL;
-	void* data;
-
-	if ((gpb->sSPBasic != 0) &&
-		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
-		(pSBufferSuite64 != NULL) &&
-		(pSBufferSuite64 != (PSBufferSuite2*)gpb->bufferProcs /*Implementation mistake in old Photoshop versions! (see note below)*/)
-		)
-	{
-		// PICA Buffer Suite 2.0 (64 bit)
-		// 
-		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested) accept
-		// kPSBufferSuiteVersion2, but dont't correctly implement it:
-		// Instead of returning a pointer to a PSBufferSuite2 structure,
-		// they return the pointer RecordPtr->bufferProcs (structure BufferProcs)!
-		// 
-		// 64-bit support for Windows was established in Photoshop CS 4,
-		// and PSBufferSuite2 was first documented in SDK CS 6.
-		//
-		// So, kPSBufferSuiteVersion2 probably was partially implemented as hidden "Work in progress" version
-		// before it was publicly documented.
-		// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
-		//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
-		unsigned32 siz = nBytes;
-		data = (void*)pSBufferSuite64->New(&siz, siz);
-		if (siz < nBytes) data = NULL;
-		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
-	}
-	else if ((gpb->sSPBasic != 0) &&
-		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
-		(pSBufferSuite32 != NULL))
-	{
-		// PICA Buffer Suite 1.0 (32 bit)
-		unsigned32 siz = nBytes;
-		data = (void*)pSBufferSuite32->New(&siz, siz);
-		if (siz < nBytes) data = NULL;
-		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
-	}
-	else
-	{
-		// Standard Buffer Suite (deprecated)
-		BufferID tempId;
-		if ((/* *result = */ gpb->bufferProcs->allocateProc(nBytes, &tempId))) {
-			data = NULL;
-			return (Ptr)data;
-		}
-		data = (void*)gpb->bufferProcs->lockProc(tempId, true);
-	}
-
-	if (data) memset(data, 0, nBytes);
-	return (Ptr)data;
-}
-
 void CreateDataPointer(intptr_t* data) {
 	// Register "gdata" that contains the PARM information and other things which need to be persistant
 	// and preserve them in *data
@@ -206,26 +150,37 @@ void CreateDataPointer(intptr_t* data) {
 
 	// (Method 1)
 	// 1. The deprecated Standard Buffer Suite (pb->bufferProcs) - works fine!
-	//BufferID tempId;
-	//if ((/* *result = */ gpb->bufferProcs->allocateProc(sizeof(globals_t), &tempId))) {
-	//	*data = NULL;
-	//	return *data;
-	//}
-	//*data = (void*)gpb->bufferProcs->lockProc(tempId, true);
+	/*
+	BufferID tempId;
+	if (gpb->bufferProcs->allocateProc(sizeof(globals_t), &tempId) != noErr) {
+		*data = NULL;
+	}
+	else {
+		*data = (void*)gpb->bufferProcs->lockProc(tempId, true);
+		if (*data) memset((void*)*data, 0, sizeof(globals_t));
+	}
+	*/
 
 	// (Method 2) *DOES NOT WORK*
 	// 2. The recommended buffer suite (kPSBufferSuite),
 	//    It does not work, since it causes memory corruption when the filter is invoked a second time.
 	//    Probably the BufferSuite cannot be used to share data between filter invocations?
 	//    Also, the buffer suite is only available in a Adobe Photoshop host.
-	//*data = (intptr_t)NewPtrClearUsingBufferSuite(sizeof(globals_t));
+	/*
+	FFBuffer buf;
+	newBuffer(&buf, sizeof(globals_t));
+	*data = (intptr_t)lockBuffer(&buf);
+	if (*data) memset((void*)*data, 0, sizeof(globals_t));
+	*/
 
 	// (Method 3)
 	// 3. Using malloc(), which works also fine and is more independent from the host. It is also easier.
 	//    However, we do not know how malloc() is implemented, and it might cause problems if the
 	//    DLL is unloaded between invocations.
-	//*data = (intptr_t)malloc(sizeof(globals_t));
-	//if (*data) memset(*data, 0, sizeof(globals_t));
+	/*
+	*data = (intptr_t)malloc(sizeof(globals_t));
+	if (*data) memset((void*)*data, 0, sizeof(globals_t));
+	*/
 
 	// (Method 4)
 	// 4. Using PLUGIN.DLL:NewPtr(). This does FilterFactory 3.0.4, but requires an Adobe host.
