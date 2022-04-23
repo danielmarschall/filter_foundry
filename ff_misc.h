@@ -23,6 +23,19 @@
 
 extern FilterRecordPtr gpb;
 
+#define BUFVERSION_NULL 'NULL'
+#define BUFVERSION_STD32 'ST32'
+#define BUFVERSION_STD64 'ST64'
+#define BUFVERSION_SUITE32 'SU32'
+#define BUFVERSION_SUITE64 'SU64'
+
+typedef struct FFBuffer_ {
+    OSType signature;
+    BufferID standard;
+    Ptr suite32;
+    Ptr suite64;
+} FFBuffer;
+
 #define PINEWHANDLE      gpb->handleProcs->newProc
 #define PIDISPOSEHANDLE  gpb->handleProcs->disposeProc
 #define PIGETHANDLESIZE  gpb->handleProcs->getSizeProc

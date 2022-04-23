@@ -34,7 +34,7 @@ extern FilterRecordPtr gpb;
 
 PSPixelMap preview_pmap;
 PSPixelMask preview_pmask;
-BufferID preview_handle;
+FFBuffer preview_handle;
 UIRECT preview_rect;
 int preview_w,preview_h,previewerr = false,needall = false,needinput = true;
 Point preview_scroll;
@@ -106,8 +106,8 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 
 		preview_handle = newBuffer((long)preview_h * preview_pmap.rowBytes);
 	}else
-		preview_handle = NULL;
-	return preview_handle != NULL;
+		preview_handle.signature = BUFVERSION_NULL;
+	return preview_handle.signature != BUFVERSION_NULL;
 
 	//---------------------------------------------------------------------------
 	// Fields new in version 2:
@@ -117,10 +117,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 }
 
 void dispose_preview(){
-	if(preview_handle){
-		disposeBuffer(preview_handle);
-		preview_handle = NULL;
-	}
+	disposeBuffer(&preview_handle);
 }
 
 void* memset_bgcolor(void* ptr, size_t num) {
@@ -220,7 +217,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 	preview_complete = false;
 
-	if (preview_handle) {
+	if (preview_handle.signature != BUFVERSION_NULL) {
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
 		scaledw = zoomfactor * preview_w;
 		if (scaledw > ((double)FILTER_RECT(pb).right - (double)FILTER_RECT(pb).left))
@@ -355,7 +352,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 
 	preview_complete = false;
 
-	if (preview_handle) {
+	if (preview_handle.signature != BUFVERSION_NULL) {
 		/* size of previewed area, of source image; but no larger than filtered area (selection) */
 		scaledw = zoomfactor * preview_w;
 		if (scaledw > ((double)BIGDOC_FILTER_RECT(pb).right - (double)BIGDOC_FILTER_RECT(pb).left))
@@ -508,7 +505,7 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 
 	UNREFERENCED_PARAMETER(dp);
 
-	if(preview_handle && preview_complete){
+	if((preview_handle.signature != BUFVERSION_NULL) && preview_complete){
 
 		srcRect = preview_pmap.bounds;
 

@@ -20,29 +20,136 @@
 
 #include "ff.h"
 
-BufferID newBuffer(size_t size) {
-	// TODO: If available, use new Buffer Suite ?
-	BufferID bid;
-	if (gpb->bufferProcs->numBufferProcs >= 8) {
-		gpb->bufferProcs->allocateProc64(size, &bid);
+#include "PIBufferSuite.h"
+
+// TODO: Also implement the handleSuite like this
+
+FFBuffer newBuffer(size_t nBytes) {
+	PSBufferSuite1* pSBufferSuite32 = NULL;
+	PSBufferSuite2* pSBufferSuite64 = NULL;
+
+	FFBuffer ret;
+
+	if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
+		(pSBufferSuite64 != NULL) &&
+		(pSBufferSuite64 != (PSBufferSuite2*)gpb->bufferProcs /*Implementation mistake in old Photoshop versions! (see note below)*/)
+		)
+	{
+		// PICA Buffer Suite 2.0 (64 bit)
+		// 
+		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested) accept
+		// kPSBufferSuiteVersion2, but dont't correctly implement it:
+		// Instead of returning a pointer to a PSBufferSuite2 structure,
+		// they return the pointer RecordPtr->bufferProcs (structure BufferProcs)!
+		// 
+		// 64-bit support for Windows was established in Photoshop CS 4,
+		// and PSBufferSuite2 was first documented in SDK CS 6.
+		//
+		// So, kPSBufferSuiteVersion2 probably was partially implemented as hidden "Work in progress" version
+		// before it was publicly documented.
+		// Side note:  pb->bufferSpace64/pb->maxSpace64 was documented in SDK CC 2017.
+		//             pb->bufferProcs->allocateProc64/spaceProc64 was documented in SDK CS 6.
+		unsigned32 siz = nBytes;
+		ret.signature = BUFVERSION_SUITE64;
+		ret.suite64 = (Ptr)pSBufferSuite64->New(&siz, siz);
+		if (siz < nBytes) {
+			ret.signature = BUFVERSION_NULL;
+			ret.suite64 = NULL;
+		}
+		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
+	}
+	else if ((gpb->sSPBasic != 0) &&
+		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
+		(pSBufferSuite32 != NULL))
+	{
+		// PICA Buffer Suite 1.0 (32 bit)
+		unsigned32 siz = nBytes;
+		ret.signature = BUFVERSION_SUITE32;
+		ret.suite32 = (Ptr)pSBufferSuite32->New(&siz, siz);
+		if (siz < nBytes) {
+			ret.signature = BUFVERSION_NULL;
+			ret.suite32 = NULL;
+		}
+		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
+	}
+	else if (gpb->bufferProcs->numBufferProcs >= 8)
+	{
+		// Standard Buffer Suite 64 bit (deprecated)
+		ret.signature = BUFVERSION_STD64;
+		if ((/* *result = */ gpb->bufferProcs->allocateProc64(nBytes, &ret.standard))) {
+			ret.signature = BUFVERSION_NULL;
+			ret.standard = NULL;
+		}
+	}
+	else
+	{
+		// Standard Buffer Suite 32 bit (deprecated)
+		ret.signature = BUFVERSION_STD32;
+		if ((/* *result = */ gpb->bufferProcs->allocateProc(nBytes, &ret.standard))) {
+			ret.signature = BUFVERSION_NULL;
+			ret.standard = NULL;
+		}
+	}
+
+	return ret;
+}
+
+Ptr lockBuffer(FFBuffer bid) {
+	if (bid.signature == BUFVERSION_SUITE64) {
+		return bid.suite64;
+	}
+	else if (bid.signature == BUFVERSION_SUITE32) {
+		return bid.suite32;
+	}
+	else if (bid.signature == BUFVERSION_STD64) {
+		return gpb->bufferProcs->lockProc(bid.standard, true);
+	}
+	else if (bid.signature == BUFVERSION_STD32) {
+		return gpb->bufferProcs->lockProc(bid.standard, true);
 	}
 	else {
-		gpb->bufferProcs->allocateProc(size, &bid);
+		return NULL;
 	}
-	return bid;
 }
 
-Ptr lockBuffer(BufferID bid) {
-	// TODO: If available, use new Buffer Suite ?
-	return gpb->bufferProcs->lockProc(bid, true);
+void unlockBuffer(FFBuffer bid) {
+	if (bid.signature == BUFVERSION_STD64) {
+		gpb->bufferProcs->unlockProc(bid.standard);
+	}
+	else if (bid.signature == BUFVERSION_STD32) {
+		gpb->bufferProcs->unlockProc(bid.standard);
+	}
 }
 
-void unlockBuffer(BufferID bid) {
-	// TODO: If available, use new Buffer Suite ?
-	gpb->bufferProcs->unlockProc(bid);
-}
-
-void disposeBuffer(BufferID bid) {
-	// TODO: If available, use new Buffer Suite ?
-	gpb->bufferProcs->freeProc(bid);
+void disposeBuffer(FFBuffer* bid) {
+	if ((*bid).signature == BUFVERSION_SUITE64) {
+		PSBufferSuite2* pSBufferSuite64 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion2, (const void**)&pSBufferSuite64) == noErr) &&
+			(pSBufferSuite64 != NULL))
+		{
+			// PICA Buffer Suite 2.0 (64 bit)
+			pSBufferSuite64->Dispose(&((*bid).suite64));
+			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
+		}
+	}
+	else if ((*bid).signature == BUFVERSION_SUITE32) {
+		PSBufferSuite1* pSBufferSuite32 = NULL;
+		if ((gpb->sSPBasic != 0) &&
+			(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
+			(pSBufferSuite32 != NULL))
+		{
+			// PICA Buffer Suite 1.0 (32 bit)
+			pSBufferSuite32->Dispose(&((*bid).suite32));
+			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
+		}
+	}
+	else if ((*bid).signature == BUFVERSION_STD64) {
+		gpb->bufferProcs->freeProc((*bid).standard);
+	}
+	else if ((*bid).signature == BUFVERSION_STD32) {
+		gpb->bufferProcs->freeProc((*bid).standard);
+	}
+	(*bid).signature = BUFVERSION_NULL;
 }

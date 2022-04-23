@@ -230,7 +230,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	HGDIOBJ hfnt;
 
 	extern Boolean doupdates;
-	extern BufferID preview_handle;
+	extern FFBuffer preview_handle;
 
 	if ((gdata->pluginDllSliderInfo.initialized) && (wMsg == gdata->pluginDllSliderInfo.messageId)) {
 		// This is for the PLUGIN.DLL sliders only
