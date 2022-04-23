@@ -4,7 +4,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,8 +69,8 @@ ostype_info('aete', 'Apple Event Terminology', 'Apple'); // https://developer.ap
 //ostype_info('PiMI', 'Plug-in Meta Information', 'Adobe');
 ostype_info('PiPL', 'PlugIn Property List', 'Adobe');
 ostype_info('DATA', 'Generic data (replaced by `tpLT` and `obFS`)', '?');
-ostype_info('tpLT', 'Template for standalone filter resources', 'Telegraphics'); // actually defined by ViaThinkSoft for Filter Foundry
-ostype_info('obFS', 'Filter Foundry obfuscated data', 'Telegraphics'); // actually defined by ViaThinkSoft
+ostype_info('tpLT', 'Template for standalone filter resources', 'ViaThinkSoft');
+ostype_info('obFS', 'Filter Foundry obfuscated data', 'ViaThinkSoft');
 ostype_info('PARM', 'Filter Factory parameter data (PARM.h)', 'Adobe');
 // https://developer.apple.com/library/archive/documentation/mac/pdf/ResEditReference.pdf
 // https://developer.apple.com/library/archive/documentation/mac/pdf/MoreMacintoshToolbox.pdf
@@ -103,6 +103,29 @@ pipl_property_info('8BIM', 'ms32', 'PiPL property "PlugInMaxSize" (PIPL.r)', 'Ad
 pipl_property_info('8BIM', 'fici', 'PiPL property "FilterCaseInfo" (PIPL.r)', 'Adobe');
 pipl_property_footer();
 
+ostype_header("Host signatures");
+ostype_info('8BIM', 'Adobe Photoshop', 'Adobe', true);
+ostype_info('8BIM', 'PluginCommander (illegal)', 'ISV', true);
+ostype_info('8BIM', 'Serif Photoplus (illegal)', 'ISV', true);
+ostype_info('8B)M', 'Adobe Premiere', 'Adobe', true);
+ostype_info('PMIG', 'GIMP', 'ISV', true);
+ostype_info('UP20', 'IrfanView', 'ISV', true);
+ostype_info('PSP9', 'JASC PaintShop Pro X', 'ISV', true);
+ostype_info('NDP.', 'Paint.net', 'ISV', true);
+ostype_footer();
+
+ostype_header("Miscellaneous / internal use");
+ostype_info('bNUL', 'BUFVERSION_NULL - No Nuffer Suite', 'ViaThinkSoft');
+ostype_info('bST1', 'BUFVERSION_STD32 - Standard Buffer Suite 32bit', 'ViaThinkSoft');
+ostype_info('bST2', 'BUFVERSION_STD64 - Standard Buffer Suite 64bit', 'ViaThinkSoft');
+ostype_info('bSU1', 'BUFVERSION_SUITE32 - PICA Buffer Suite 1.0', 'ViaThinkSoft');
+ostype_info('bSU2', 'BUFVERSION_SUITE64 - PICA Buffer Suite 2.0', 'ViaThinkSoft');
+ostype_info('hNUL', 'HDLVERSION_NULL - No Handle Suite', 'ViaThinkSoft');
+ostype_info('hSTD', 'HDLVERSION_STANDARD - Standard Handle Suite', 'ViaThinkSoft');
+ostype_info('hSU1', 'HDLVERSION_SUITE1 - PICA Handle Suite 1.0', 'ViaThinkSoft');
+ostype_info('hSU2', 'HDLVERSION_SUITE2 - PICA Handle Suite 2.0', 'ViaThinkSoft');
+ostype_footer();
+
 # ------------------------------------------------------------------------------
 
 $out = ob_get_contents();
@@ -114,7 +137,7 @@ file_put_contents(__DIR__.'/os_types.md', $out);
 
 # ------------------------------------------------------------------------------
 
-function ostype_info($type, $desc, $vendor) {
+function ostype_info($type, $desc, $vendor, $no_legality_check=false) {
 	$dec = 0;
 	for ($i=0;$i<4;$i++) $dec = ($dec<<8) + ord($type[$i]);
 	$hex = "0x".str_pad(dechex($dec), 8, "0", STR_PAD_LEFT);
@@ -134,6 +157,8 @@ function ostype_info($type, $desc, $vendor) {
 	// In re 8B##, we just assume that 8B## was legally assigned to Adobe by Apple
 	// Note: "8B" sounds like "Adobe"
 	if ((substr($type,0,2) === '8B') && (strpos($vendor,'Adobe') !== false)) $illegal = false;
+
+	if ($no_legality_check) $illegal = false;
 
 	if ($illegal) $vendor .= ' (illegal)';
 	$vendor = str_pad($vendor, VENDOR_WIDTH, " ", STR_PAD_RIGHT);

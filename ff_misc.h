@@ -23,7 +23,7 @@
 
 extern FilterRecordPtr gpb;
 
-#define BUFVERSION_NULL    'b000'
+#define BUFVERSION_NULL    'bNUL'
 #define BUFVERSION_STD32   'bST1'
 #define BUFVERSION_STD64   'bST2'
 #define BUFVERSION_SUITE32 'bSU1'
@@ -35,7 +35,12 @@ typedef struct FFBuffer_ {
     Ptr suite;
 } FFBuffer;
 
-#define HDLVERSION_NULL     'h000'
+void newBuffer(FFBuffer* buf, size_t size);
+Ptr lockBuffer(FFBuffer* buf);
+void unlockBuffer(FFBuffer* buf);
+void disposeBuffer(FFBuffer* buf);
+
+#define HDLVERSION_NULL     'hNUL'
 #define HDLVERSION_STANDARD 'hSTD'
 #define HDLVERSION_SUITE1   'hSU1'
 #define HDLVERSION_SUITE2   'hSU2'
@@ -44,6 +49,13 @@ typedef struct FFHandle_ {
     OSType signature; // HDLVERSION_*
     Handle handle;
 } FFHandle;
+
+void newHandle(FFHandle* hdl, size_t nBytes);
+void disposeHandle(FFHandle* hdl);
+size_t getHandleSize(FFHandle* hdl);
+OSErr setHandleSize(FFHandle* hdl, size_t nBytes);
+Ptr lockHandle(FFHandle* hdl);
+void unlockHandle(FFHandle* hdl);
 
 // These functions are for code backwards compatibility:
 Handle PINEWHANDLE(int32 size);

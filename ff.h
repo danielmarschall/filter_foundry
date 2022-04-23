@@ -173,18 +173,6 @@ struct node *parseexpr(char *s);
 // from funcs.c
 void factory_initialize_rnd_variables();
 
-// from ff_misc.c
-void newHandle(FFHandle* hdl, size_t nBytes);
-void disposeHandle(FFHandle* hdl);
-size_t getHandleSize(FFHandle* hdl);
-OSErr setHandleSize(FFHandle* hdl, size_t nBytes);
-Ptr lockHandle(FFHandle* hdl);
-void unlockHandle(FFHandle* hdl);
-void newBuffer(FFBuffer* buf, size_t size);
-Ptr lockBuffer(FFBuffer* buf);
-void unlockBuffer(FFBuffer* buf);
-void disposeBuffer(FFBuffer* buf);
-
 // Useful macros
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 

@@ -30,7 +30,7 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 	if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 		(pSHandleSuite2 != NULL) &&
-		(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+		(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 		)
 	{
 		// PICA Handle Suite 2.0
@@ -41,7 +41,8 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 	}
 	else if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-		(pSHandleSuite1 != NULL)
+		(pSHandleSuite1 != NULL) &&
+		(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 		)
 	{
 		// PICA Handle Suite 1.0
@@ -64,7 +65,7 @@ void disposeHandle(FFHandle* hdl) {
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 			(pSHandleSuite2 != NULL) &&
-			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 2.0
@@ -76,7 +77,8 @@ void disposeHandle(FFHandle* hdl) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-			(pSHandleSuite1 != NULL)
+			(pSHandleSuite1 != NULL) &&
+			(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 1.0
@@ -97,7 +99,7 @@ size_t getHandleSize(FFHandle* hdl) {
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 			(pSHandleSuite2 != NULL) &&
-			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 2.0
@@ -110,7 +112,8 @@ size_t getHandleSize(FFHandle* hdl) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-			(pSHandleSuite1 != NULL)
+			(pSHandleSuite1 != NULL) &&
+			(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 1.0
@@ -132,7 +135,7 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 			(pSHandleSuite2 != NULL) &&
-			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 2.0
@@ -145,7 +148,8 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-			(pSHandleSuite1 != NULL)
+			(pSHandleSuite1 != NULL) &&
+			(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 1.0
@@ -167,7 +171,7 @@ Ptr lockHandle(FFHandle* hdl) {
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 			(pSHandleSuite2 != NULL) &&
-			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 2.0
@@ -182,7 +186,8 @@ Ptr lockHandle(FFHandle* hdl) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-			(pSHandleSuite1 != NULL)
+			(pSHandleSuite1 != NULL) &&
+			(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 1.0
@@ -206,7 +211,7 @@ void unlockHandle(FFHandle* hdl) {
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion2, (const void**)&pSHandleSuite2) == noErr) &&
 			(pSHandleSuite2 != NULL) &&
-			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /*PS7 doesn't have the bug like in BufferSuite2, but we just want to be sure...*/)
+			(pSHandleSuite2 != (PSHandleSuite2*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 2.0
@@ -220,7 +225,8 @@ void unlockHandle(FFHandle* hdl) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
-			(pSHandleSuite1 != NULL)
+			(pSHandleSuite1 != NULL) &&
+			(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
 			)
 		{
 			// PICA Handle Suite 1.0
@@ -271,6 +277,7 @@ OSErr PISETHANDLESIZE(Handle h, int32 newSize) {
 
 Ptr PILOCKHANDLE(Handle h, Boolean moveHigh) {
 	FFHandle fh;
+	UNREFERENCED_PARAMETER(moveHigh);
 	fh.signature = gdata->lastKnownHandleVersion;
 	fh.handle = h;
 	return lockHandle(&fh);
@@ -318,7 +325,9 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 	}
 	else if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
-		(pSBufferSuite32 != NULL))
+		(pSBufferSuite32 != NULL) &&
+		(pSBufferSuite32 != (PSBufferSuite1*)gpb->bufferProcs /* Just to be sure (although no bug is known) */)
+		)
 	{
 		// PICA Buffer Suite 1.0 (32 bit)
 		unsigned32 siz = nBytes;
@@ -354,6 +363,8 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 }
 
 Ptr lockBuffer(FFBuffer* buf) {
+	const Boolean moveHigh = false; // Under the Mac OS, the moveHigh flag indicates whether you want the memory blocked moved
+	                                // to the high end of memory to avoid fragmentation. The moveHigh flag has no effect with Windows
 	if (buf->signature == BUFVERSION_SUITE64) {
 		return buf->suite;
 	}
@@ -361,10 +372,10 @@ Ptr lockBuffer(FFBuffer* buf) {
 		return buf->suite;
 	}
 	else if (buf->signature == BUFVERSION_STD64) {
-		return gpb->bufferProcs->lockProc(buf->standard, true);
+		return gpb->bufferProcs->lockProc(buf->standard, moveHigh);
 	}
 	else if (buf->signature == BUFVERSION_STD32) {
-		return gpb->bufferProcs->lockProc(buf->standard, true);
+		return gpb->bufferProcs->lockProc(buf->standard, moveHigh);
 	}
 	else {
 		return NULL;

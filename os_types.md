@@ -39,8 +39,8 @@ Resource fork types
 | `aete` | 1634038885 | 0x61657465 | Apple Event Terminology                                 | Apple           |
 | `PiPL` | 1349079116 | 0x5069504c | PlugIn Property List                                    | Adobe           |
 | `DATA` | 1145132097 | 0x44415441 | Generic data (replaced by `tpLT` and `obFS`)            | ?               |
-| `tpLT` | 1953516628 | 0x74704c54 | Template for standalone filter resources                | Telegraphics    |
-| `obFS` | 1868711507 | 0x6f624653 | Filter Foundry obfuscated data                          | Telegraphics    |
+| `tpLT` | 1953516628 | 0x74704c54 | Template for standalone filter resources                | ViaThinkSoft    |
+| `obFS` | 1868711507 | 0x6f624653 | Filter Foundry obfuscated data                          | ViaThinkSoft    |
 | `PARM` | 1346458189 | 0x5041524d | Filter Factory parameter data (PARM.h)                  | Adobe (illegal) |
 | `ALRT` | 1095520852 | 0x414c5254 | Alert (only Macintosh build)                            | Apple           |
 | `DITL` | 1145656396 | 0x4449544c | Dialog template (only Macintosh build)                  | Apple           |
@@ -75,4 +75,33 @@ PlugIn Property List (PiPL) properties
 | `8BIM` | `mode` |  943868237 1836016741 | 0x3842494d 0x6d6f6465 | PiPL property "SupportedModes" (PIPL.r)                 | Adobe           |
 | `8BIM` | `ms32` |  943868237 1836266290 | 0x3842494d 0x6d733332 | PiPL property "PlugInMaxSize" (PIPL.r)                  | Adobe           |
 | `8BIM` | `fici` |  943868237 1718182761 | 0x3842494d 0x66696369 | PiPL property "FilterCaseInfo" (PIPL.r)                 | Adobe           |
+
+Host signatures
+---------------
+
+| Type   | Dec        | Hex        | Description                                             | Vendor          |
+|--------|------------|------------|---------------------------------------------------------|-----------------|
+| `8BIM` |  943868237 | 0x3842494d | Adobe Photoshop                                         | Adobe           |
+| `8BIM` |  943868237 | 0x3842494d | PluginCommander (illegal)                               | ISV             |
+| `8BIM` |  943868237 | 0x3842494d | Serif Photoplus (illegal)                               | ISV             |
+| `8B)M` |  943860045 | 0x3842294d | Adobe Premiere                                          | Adobe           |
+| `PMIG` | 1347242311 | 0x504d4947 | GIMP                                                    | ISV             |
+| `UP20` | 1431319088 | 0x55503230 | IrfanView                                               | ISV             |
+| `PSP9` | 1347637305 | 0x50535039 | JASC PaintShop Pro X                                    | ISV             |
+| `NDP.` | 1313099822 | 0x4e44502e | Paint.net                                               | ISV             |
+
+Miscellaneous / internal use
+----------------------------
+
+| Type   | Dec        | Hex        | Description                                             | Vendor          |
+|--------|------------|------------|---------------------------------------------------------|-----------------|
+| `bNUL` | 1649300812 | 0x624e554c | BUFVERSION_NULL - No Nuffer Suite                       | ViaThinkSoft    |
+| `bST1` | 1649628209 | 0x62535431 | BUFVERSION_STD32 - Standard Buffer Suite 32bit          | ViaThinkSoft    |
+| `bST2` | 1649628210 | 0x62535432 | BUFVERSION_STD64 - Standard Buffer Suite 64bit          | ViaThinkSoft    |
+| `bSU1` | 1649628465 | 0x62535531 | BUFVERSION_SUITE32 - PICA Buffer Suite 1.0              | ViaThinkSoft    |
+| `bSU2` | 1649628466 | 0x62535532 | BUFVERSION_SUITE64 - PICA Buffer Suite 2.0              | ViaThinkSoft    |
+| `hNUL` | 1749964108 | 0x684e554c | HDLVERSION_NULL - No Handle Suite                       | ViaThinkSoft    |
+| `hSTD` | 1750291524 | 0x68535444 | HDLVERSION_STANDARD - Standard Handle Suite             | ViaThinkSoft    |
+| `hSU1` | 1750291761 | 0x68535531 | HDLVERSION_SUITE1 - PICA Handle Suite 1.0               | ViaThinkSoft    |
+| `hSU2` | 1750291762 | 0x68535532 | HDLVERSION_SUITE2 - PICA Handle Suite 2.0               | ViaThinkSoft    |
 
