@@ -109,7 +109,7 @@ But this does neither match the Windows implementation of Filter Factory nor its
 - d=-256 is at 12 o'clock position
 - d=0 is at 3 o'clock position
 - d=256 is at 6 o'clock position
-- d=512 is the full rotation back to 3 o'clock position
+- d=512 is the full rotation back to 9 o'clock position
 
 Therefore, `dmin` has been changed from 0 to -512, and `dmax` have been changed from 1024 to 512.
 It is questionable if `D` was meant to be a synonym of `dmax`, or if `D` was meant to be `D := dmax - dmin`.
