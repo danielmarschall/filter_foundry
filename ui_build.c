@@ -191,7 +191,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		else
 		#endif
 		if (extCharset) {
-			simplewarning((TCHAR*)TEXT("You were using characters of an extended charset. The characters might look correct on your machine, but on a machine in a different country, the characters might look wrong. Please consider using the ASCII character set only (i.e. Latin characters without accent marks)."));
+			simplewarning((TCHAR*)TEXT("You were using characters of an extended charset. The characters might look correct on your machine, but on a machine in a different country the characters might look wrong. Please consider using the ASCII character set only (i.e. Latin characters without accent marks)."));
 		}
 
 		// Now begin
@@ -218,10 +218,6 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		}
 		// Expressions
 		for (i = 0; i < 4; ++i) {
-			if (!expr[i]) {
-				simplealert((TCHAR*)TEXT("Bug! see builddlgitem"));
-				return true; // keep going. Let the user try again
-			}
 			if (strlen(expr[i]) >= sizeof(gdata->parm.szFormula[i])) {
 				if (i == 0) {
 					simplealert((TCHAR*)TEXT("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));

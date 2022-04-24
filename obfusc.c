@@ -219,7 +219,7 @@ int obfuscation_version(PARM_T* pparm) {
 		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
 		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
-		// Future: Version 6, 7, 8, ... 255
+		// Future: Version 7, 8, ... 255
 		return obfusc_info;
 	}
 	else {
@@ -345,7 +345,7 @@ void deobfusc(PARM_T* pparm) {
 		case 5: {
 			// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 			// Version 5 obfuscation (Filter Foundry 1.7.0.8)
-			// Not compiler dependent, but individual for each build
+			// Not compiler dependent, but individual for each standalone filter
 			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
 			// otherwise, the cross-make x86/x64 won't work!
 			// Version 5 contains a seed requirement (checksum).
@@ -382,7 +382,7 @@ void deobfusc(PARM_T* pparm) {
 		}
 		case 6: {
 			// Version 6 obfuscation (Filter Foundry 1.7.0.10)
-			// Not compiler dependent, but individual for each build
+			// Not compiler dependent, but individual for each standalone filter
 			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
 			// otherwise, the cross-make x86/x64 won't work!
 
@@ -430,7 +430,7 @@ void deobfusc(PARM_T* pparm) {
 	}
 		
 	if (obfusc_version >= 3) {
-		// Filter Foundry >= 1.7.0.5 builds combines obfuscation and protection
+		// Filter Foundry >= 1.7.0.5 combines obfuscation and protection
 		// when a standalone filter is built. Theoretically, you can un-protect a
 		// plugin, even if it is obfuscated, just by bit-flipping the LSB of byte 0x164.
 		// Therefore, we enforce that the plugin is protected!

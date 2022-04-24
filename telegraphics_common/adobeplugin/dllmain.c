@@ -21,14 +21,27 @@
 
 HINSTANCE hDllInstance = NULL;  /* DLL instance handle */
 
-BOOL APIENTRY DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved);
+BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved);
 
-BOOL APIENTRY DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-	UNREFERENCED_PARAMETER(lpReserved);
+    UNREFERENCED_PARAMETER(lpvReserved);
 
-	if (fdwReason == DLL_PROCESS_ATTACH)
-		hDllInstance = hInstance;
+#ifdef NEEDS_CRT_INIT
+    if (fdwReason == DLL_PROCESS_ATTACH || fdwReason == DLL_THREAD_ATTACH)
+    {
+        __security_init_cookie();
+        __crt_dll_initialize();
+    }
+#endif
+
+#ifdef __cplusplus
+    if (fdwReason == DLL_PROCESS_ATTACH || fdwReason == DLL_THREAD_ATTACH)
+        hDllInstance = static_cast<HINSTANCE>(hinstDLL);
+#else
+    if (fdwReason == DLL_PROCESS_ATTACH || fdwReason == DLL_THREAD_ATTACH)
+        hDllInstance = (HINSTANCE)hinstDLL;
+#endif
 
 	return TRUE;   // Indicate that the DLL was initialized successfully.
 }

@@ -23,5 +23,7 @@
 void dbg(TCHAR *s){
     #ifdef DEBUG
 	MessageBox(NULL,s,TEXT("plugin debug"),0);
+    #else
+    UNREFERENCED_PARAMETER(s);
 	#endif
 }

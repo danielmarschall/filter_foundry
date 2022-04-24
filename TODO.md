@@ -14,6 +14,8 @@ Known problems
 * The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area!
 	see wishlist\bug_rectangle.png
 
+* When you receive the error "Could not build preview at chosen zoom level..." because you zoomed out too far, you cannot recover from it, even if you zoom in again!
+
 
 Minor priority stuff or ideas
 -----------------------------

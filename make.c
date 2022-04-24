@@ -47,18 +47,18 @@ unsigned long printablehash(unsigned long hash) {
 	#ifdef PRINTABLE_HASH_FF16
 
 	// FilterFoundry version 1.6 hashing by Toby Thain
-	// Only accepts upper case at the last character
+	// Only accepts upper-case at the last character
 	// 0       = 'a  A'
 	// 6100899 = 'z~~Z'
-	unsigned long key = 'a' + (hash % 26);  hash /= 26; // first lower case
+	unsigned long key = 'a' + (hash % 26);  hash /= 26; // first lower-case
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
 	key = (key << 8) | (' ' + (hash % 95)); hash /= 95; // any printable
-	return  (key << 8) | ('A' + (hash % 26));           // last upper case
+	return  (key << 8) | ('A' + (hash % 26));           // last upper-case
 
 	#else
 
 	// FilterFoundry version 1.7 hashing by Daniel Marschall
-	// Accepts upper case at character 2, 3 or 4
+	// Accepts upper-case at character 2, 3 or 4
 	// Spaces are only set the right as padding to make a code shorter
 	// 0        = 'aA  '
 	// 13530139 = 'zZZZ'

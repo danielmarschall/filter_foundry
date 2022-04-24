@@ -73,20 +73,21 @@ typedef struct plugin_dll_slider_info_ {
 } plugin_dll_slider_info;
 #endif
 
-// size: 0x2088 (8328 Bytes)
+// size: 0x2090 (8336 Bytes)
 typedef struct globals_t_ {
 	PARM_T parm;
 	Boolean standalone;
 	Boolean parmloaded; // this means that the filter is loaded, but without PARM (title, author, etc.)
 	Boolean obfusc;
+	// (padding of 1 byte here)
+	OSType lastKnownBufferVersion;
+	OSType lastKnownHandleVersion;
 #ifdef _WIN32
 	HWND hWndMainDlg;
 	none_slider_info noneSliderInfo;
 	comctl_slider_info comctlSliderInfo;
 	plugin_dll_slider_info pluginDllSliderInfo;
 #endif /* _WIN32 */
-	OSType lastKnownBufferVersion;
-	OSType lastKnownHandleVersion;
 } globals_t;
 
 extern globals_t *gdata;
@@ -174,6 +175,8 @@ struct node *parseexpr(char *s);
 void factory_initialize_rnd_variables();
 
 // Useful macros
+
+// Note: "bigDocumentData->PluginUsing32BitCoordinates" will be set by filterSelectorStart, if HAS_BIG_DOC(pb) is true
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 
 #define BIGDOC_IMAGE_SIZE(x) ((x)->bigDocumentData->imageSize32)

@@ -27,23 +27,23 @@
 // implementation which is a 100% replica of the Filter Factory 3.0.4
 // for Windows.
 #ifdef WIN_ENV
-// i,u,v intentionally not equal to Filter Factory (this has been documented).
+// i, u, and v are intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_i
 //#define use_filterfactory_implementation_u
 //#define use_filterfactory_implementation_v
-// umin,umax and vmin,vmax intentionally not equal to Filter Factory (this has been documented).
+// umin, umax, vmin, and vmax are intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_u_minmax
 //#define use_filterfactory_implementation_v_minmax
-// U and V intentionally not equal to Filter Factory (this has been documented).
+// U and V are intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_U
 //#define use_filterfactory_implementation_V
-// dmin,dmax intentionally not equal to Filter Factory (this has been documented).
+// dmin and dmax are intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_d_minmax
-// D intentionally not equal to Filter Factory (this has been documented).
+// D is intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_D
-// get(i) intentionally not equal to Filter Factory (this has been documented).
+// get(i) is intentionally not equal to Filter Factory (this has been documented).
 //#define use_filterfactory_implementation_get
-// Following functions are implemented as 100% replicas
+// The following functions are implemented as 100% replicas:
 #define use_filterfactory_implementation_rad
 #define use_filterfactory_implementation_rnd
 #define use_filterfactory_implementation_c2d

@@ -504,7 +504,7 @@ value_type ff_map(value_type i,value_type n){
 		return n<=L || H==L ? 0 : ( n>=H ? 255 : ((n-L)*255L)/(H-L) );
 	}else
 		return 0;
-*/
+	*/
 	// this code is from GIMP User Filter
 	value_type x = ff_ctl(i*2),
 			   y = ff_ctl(i*2+1);
