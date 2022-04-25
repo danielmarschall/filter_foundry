@@ -1231,8 +1231,10 @@ value_type foundry_d() {
 
 value_type ff_d() {
 #ifdef use_filterfactory_implementation_d
+	// Output range: -512 ... 512
 	return factory_d();
 #else
+	// Output range: -511 ... 512
 	return foundry_d();
 #endif
 }

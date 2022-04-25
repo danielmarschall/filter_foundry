@@ -268,9 +268,11 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	#endif
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
-		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 (yes, that's possible,
+		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 + Win98 (yes, that's possible,
 		// and there is even a FilterFactory for Premiere!),
 		// but it crashes in evalpixel() where there is write-access to the "outp".
+		// DM 24.04.2022 : On Adobe Premiere 6 + Win10, the filter opens sometimes (and sometimes crashes inside DialogBoxParam),
+		// but the filter is not applied when you click "OK" (because it crashes internally; only the debugger sees it)...
 		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
 		if (!premiereWarnedOnce) {
 			simplealert((TCHAR*)TEXT("This version of Filter Foundry is not compatible with Adobe Premiere!"));

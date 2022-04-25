@@ -82,8 +82,8 @@ Host signatures
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
 | `8BIM` |  943868237 | 0x3842494d | Adobe Photoshop                                         | Adobe           |
-| `8BIM` |  943868237 | 0x3842494d | PluginCommander (illegal)                               | ISV             |
-| `8BIM` |  943868237 | 0x3842494d | Serif Photoplus (illegal)                               | ISV             |
+| `8BIM` |  943868237 | 0x3842494d | PluginCommander (illegal usage of "8BIM")               | ISV             |
+| `8BIM` |  943868237 | 0x3842494d | Serif Photoplus (illegal usage of "8BIM")               | ISV             |
 | `8B)M` |  943860045 | 0x3842294d | Adobe Premiere                                          | Adobe           |
 | `PMIG` | 1347242311 | 0x504d4947 | GIMP                                                    | ISV             |
 | `UP20` | 1431319088 | 0x55503230 | IrfanView                                               | ISV             |
@@ -95,13 +95,14 @@ Miscellaneous / internal use
 
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
-| `bNUL` | 1649300812 | 0x624e554c | BUFVERSION_NULL - No Nuffer Suite                       | ViaThinkSoft    |
-| `bST1` | 1649628209 | 0x62535431 | BUFVERSION_STD32 - Standard Buffer Suite 32bit          | ViaThinkSoft    |
-| `bST2` | 1649628210 | 0x62535432 | BUFVERSION_STD64 - Standard Buffer Suite 64bit          | ViaThinkSoft    |
-| `bSU1` | 1649628465 | 0x62535531 | BUFVERSION_SUITE32 - PICA Buffer Suite 1.0              | ViaThinkSoft    |
-| `bSU2` | 1649628466 | 0x62535532 | BUFVERSION_SUITE64 - PICA Buffer Suite 2.0              | ViaThinkSoft    |
-| `hNUL` | 1749964108 | 0x684e554c | HDLVERSION_NULL - No Handle Suite                       | ViaThinkSoft    |
-| `hSTD` | 1750291524 | 0x68535444 | HDLVERSION_STANDARD - Standard Handle Suite             | ViaThinkSoft    |
-| `hSU1` | 1750291761 | 0x68535531 | HDLVERSION_SUITE1 - PICA Handle Suite 1.0               | ViaThinkSoft    |
-| `hSU2` | 1750291762 | 0x68535532 | HDLVERSION_SUITE2 - PICA Handle Suite 2.0               | ViaThinkSoft    |
+| `bNUL` | 1649300812 | 0x624e554c | No Nuffer Suite (BUFVERSION_NULL)                       | ViaThinkSoft    |
+| `bST1` | 1649628209 | 0x62535431 | Standard Buffer Suite 32bit (BUFVERSION_STD32)          | ViaThinkSoft    |
+| `bST2` | 1649628210 | 0x62535432 | Standard Buffer Suite 64bit (BUFVERSION_STD64)          | ViaThinkSoft    |
+| `bSU1` | 1649628465 | 0x62535531 | PICA Buffer Suite 1.0 (BUFVERSION_SUITE32)              | ViaThinkSoft    |
+| `bSU2` | 1649628466 | 0x62535532 | PICA Buffer Suite 2.0 (BUFVERSION_SUITE64)              | ViaThinkSoft    |
+| `hNUL` | 1749964108 | 0x684e554c | No Handle Suite (HDLVERSION_NULL)                       | ViaThinkSoft    |
+| `hSTD` | 1750291524 | 0x68535444 | Standard Handle Suite (HDLVERSION_STANDARD)             | ViaThinkSoft    |
+| `hSU1` | 1750291761 | 0x68535531 | PICA Handle Suite 1.0 (HDLVERSION_SUITE1)               | ViaThinkSoft    |
+| `hSU2` | 1750291762 | 0x68535532 | PICA Handle Suite 2.0 (HDLVERSION_SUITE2)               | ViaThinkSoft    |
+| `tDRW` | 1950634583 | 0x74445257 | Initial preview timer (IDT_TIMER_INITPREVIEW_DRAW)      | ViaThinkSoft    |
 

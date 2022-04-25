@@ -105,8 +105,8 @@ pipl_property_footer();
 
 ostype_header("Host signatures");
 ostype_info('8BIM', 'Adobe Photoshop', 'Adobe', true);
-ostype_info('8BIM', 'PluginCommander (illegal)', 'ISV', true);
-ostype_info('8BIM', 'Serif Photoplus (illegal)', 'ISV', true);
+ostype_info('8BIM', 'PluginCommander (illegal usage of "8BIM")', 'ISV', true);
+ostype_info('8BIM', 'Serif Photoplus (illegal usage of "8BIM")', 'ISV', true);
 ostype_info('8B)M', 'Adobe Premiere', 'Adobe', true);
 ostype_info('PMIG', 'GIMP', 'ISV', true);
 ostype_info('UP20', 'IrfanView', 'ISV', true);
@@ -115,15 +115,16 @@ ostype_info('NDP.', 'Paint.net', 'ISV', true);
 ostype_footer();
 
 ostype_header("Miscellaneous / internal use");
-ostype_info('bNUL', 'BUFVERSION_NULL - No Nuffer Suite', 'ViaThinkSoft');
-ostype_info('bST1', 'BUFVERSION_STD32 - Standard Buffer Suite 32bit', 'ViaThinkSoft');
-ostype_info('bST2', 'BUFVERSION_STD64 - Standard Buffer Suite 64bit', 'ViaThinkSoft');
-ostype_info('bSU1', 'BUFVERSION_SUITE32 - PICA Buffer Suite 1.0', 'ViaThinkSoft');
-ostype_info('bSU2', 'BUFVERSION_SUITE64 - PICA Buffer Suite 2.0', 'ViaThinkSoft');
-ostype_info('hNUL', 'HDLVERSION_NULL - No Handle Suite', 'ViaThinkSoft');
-ostype_info('hSTD', 'HDLVERSION_STANDARD - Standard Handle Suite', 'ViaThinkSoft');
-ostype_info('hSU1', 'HDLVERSION_SUITE1 - PICA Handle Suite 1.0', 'ViaThinkSoft');
-ostype_info('hSU2', 'HDLVERSION_SUITE2 - PICA Handle Suite 2.0', 'ViaThinkSoft');
+ostype_info('bNUL', 'No Nuffer Suite (BUFVERSION_NULL)', 'ViaThinkSoft');
+ostype_info('bST1', 'Standard Buffer Suite 32bit (BUFVERSION_STD32)', 'ViaThinkSoft');
+ostype_info('bST2', 'Standard Buffer Suite 64bit (BUFVERSION_STD64)', 'ViaThinkSoft');
+ostype_info('bSU1', 'PICA Buffer Suite 1.0 (BUFVERSION_SUITE32)', 'ViaThinkSoft');
+ostype_info('bSU2', 'PICA Buffer Suite 2.0 (BUFVERSION_SUITE64)', 'ViaThinkSoft');
+ostype_info('hNUL', 'No Handle Suite (HDLVERSION_NULL)', 'ViaThinkSoft');
+ostype_info('hSTD', 'Standard Handle Suite (HDLVERSION_STANDARD)', 'ViaThinkSoft');
+ostype_info('hSU1', 'PICA Handle Suite 1.0 (HDLVERSION_SUITE1)', 'ViaThinkSoft');
+ostype_info('hSU2', 'PICA Handle Suite 2.0 (HDLVERSION_SUITE2)', 'ViaThinkSoft');
+ostype_info('tDRW', 'Initial preview timer (IDT_TIMER_INITPREVIEW_DRAW)', 'ViaThinkSoft');
 ostype_footer();
 
 # ------------------------------------------------------------------------------

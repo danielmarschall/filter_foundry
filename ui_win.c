@@ -179,7 +179,7 @@ HWND CreateToolTip(int toolID, HWND hDlg, LPTSTR pszText) {
 	return hwndTip;
 }
 
-#define IDT_TIMER_INITPREVIEW_DRAW 1111
+#define IDT_TIMER_INITPREVIEW_DRAW 'tDRW'
 
 WNDPROC lpControlEditWndProc[8];
 
