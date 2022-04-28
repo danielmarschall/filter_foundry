@@ -40,7 +40,7 @@
 
 // Here are working variables:
 struct node *tree[4];
-char *err[4];
+TCHAR *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
 uint8_t slider[8]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 char* expr[4]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
@@ -135,7 +135,8 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 	}
 	*/
 
-	simplealert((TCHAR*)TEXT("You tried to execute this DLL with RunDLL32. This is a Photoshop plugin!"));
+	simplealert_id(MSG_RUNDLL_ERR_ID);
+
 	return;
 }
 
@@ -202,7 +203,7 @@ DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
-	char *reason;
+	TCHAR*reason;
 
 	#ifdef SHOW_HOST_DEBUG
 	char* tmp;
@@ -275,7 +276,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// but the filter is not applied when you click "OK" (because it crashes internally; only the debugger sees it)...
 		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
 		if (!premiereWarnedOnce) {
-			simplealert((TCHAR*)TEXT("This version of Filter Foundry is not compatible with Adobe Premiere!"));
+			simplealert_id(MSG_PREMIERE_COMPAT_ID);
 		}
 		premiereWarnedOnce = true;
 		*result = errPlugInHostInsufficient;
@@ -314,10 +315,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				if (gdata->obfusc) {
-					simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
+					simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 				}
 				else {
-					simplealert((TCHAR*)TEXT("Invalid parameter data."));
+					simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 				}
 			}
 			else {
@@ -448,7 +449,7 @@ endmain:
 }
 
 int checkandinitparams(Handle params){
-	char *reasonstr,*reason;
+	TCHAR*reasonstr,*reason;
 	int i;
 	Boolean bUninitializedParams;
 	Boolean showdialog;
@@ -470,10 +471,10 @@ int checkandinitparams(Handle params){
 		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason);
 		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
-				simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
+				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 			}
 			else {
-				simplealert((TCHAR*)TEXT("Invalid parameter data."));
+				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
 			gdata->parmloaded = false;
 			return false;
@@ -516,10 +517,10 @@ int checkandinitparams(Handle params){
 		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
 		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
-				simplealert((TCHAR*)TEXT("Incompatible obfuscation."));
+				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 			}
 			else {
-				simplealert((TCHAR*)TEXT("Invalid parameter data."));
+				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
 			gdata->parmloaded = false;
 			return false;

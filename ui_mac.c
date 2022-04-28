@@ -62,6 +62,16 @@ Boolean simplealert(char *s){
 	return i == ok;
 }
 
+Boolean simplewarning(char *s){
+	int i;
+
+	myc2pstr(_strdup(s));
+	ParamText((StringPtr)s,NULL,NULL,NULL);
+	i = Alert(ID_SYNTAXALERT,NULL);
+	myp2cstr((StringPtr)s);
+	return i == ok;
+}
+
 Boolean showmessage(char *s){
 	int i;
 

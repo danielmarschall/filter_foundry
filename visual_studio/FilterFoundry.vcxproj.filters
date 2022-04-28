@@ -93,6 +93,9 @@
     <ClInclude Include="..\slider_win.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\language.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c">
@@ -186,6 +189,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\ff_misc.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\language.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

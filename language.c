@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,13 +18,29 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* wrapper file for Windows resource compiler input */
+#include "ff.h"
 
-#include "Scripting.rc"
-#include "PiPL.rc"
-#include "ui_win.rc"
-#include "manifest.rc"
-#include "version_win.rc"
-#include "language_win.rc"
+// Attention: No bounds checking!
+void FF_GetMsg(TCHAR* ret, int MsgId) {
+#ifdef WIN_ENV
+	TCHAR* szMsg;
+    int len;
+    len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
+    LoadString(hDllInstance, MsgId, ret, len);
+#else
+	Str255 msg;
+	GetIndString(msg, 1000, MsgId);
+    myp2cstrcpy(ret, msg);
+#endif
+}
 
-// "1032 TPLT", "1064 TPLT", "3032 TPLT", and "3064 TPLT" will be added by the 3264_mixer tool
+TCHAR* FF_GetMsg_Cpy(int MsgId) {
+    TCHAR* szMsg;
+    int len;
+    TCHAR* ret;
+    len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
+    ret = (TCHAR*)malloc((len+1) * sizeof(TCHAR)); // TODO: This leaks memory! Like _strdup() does... Not a good design!
+    if (ret == NULL) return NULL;
+    LoadString(hDllInstance, MsgId, ret, len);
+    return ret;
+}

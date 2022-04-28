@@ -38,7 +38,7 @@ enum{
 	MAXLINE = 0x200,
 };
 
-Boolean readparams_afs_pff(Handle h,char **reason){
+Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 	Boolean res = false;
 	char linebuf[MAXLINE + 1] = { 0 };
 	char curexpr[MAXEXPR + 1] = { 0 };
@@ -54,7 +54,7 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 	q = curexpr;
 	linecnt = exprcnt = lineptr = 0;
 
-	//*reason = _strdup("File was too short.");
+	//*reason = _strdup("File was too short."); // TODO (Not so important): TRANSLATE
 	while(p < dataend){
 
 		c = *p++;
@@ -70,7 +70,7 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 			/* process complete line */
 			if(linecnt==0){
 				if(strcmp(linebuf,"%RGB-1.0")){
-					// *reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\").");
+					// *reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\")."); // TODO (Not so important): TRANSLATE
 					break;
 				}
 			}else if(linecnt<=8){
@@ -83,7 +83,8 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
 					if( q+lineptr > curexpr+MAXEXPR ){
-						*reason = _strdup("Found an expression longer than 1024 characters.");
+						// TODO: isn't the limit 1024?! (because we need to have the NUL too?)
+						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION1024_FOUND_ID);
 						break;
 					}
 					q = cat(q,linebuf);
@@ -93,7 +94,7 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 						free(expr[exprcnt]);
 					*q = 0;
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
-						*reason = _strdup("Could not get memory for expression.");
+						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID);
 						break;
 					}
 
@@ -126,9 +127,9 @@ Boolean readparams_afs_pff(Handle h,char **reason){
 						break;
 					case '\\': break;
 					//default:
-					//	if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("Unknown escape sequence in input."));
+					//	if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("Unknown escape sequence in input.")); // TODO (Not so important): TRANSLATE
 					}
-				}//else if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("truncated escape sequence ends input"));
+				}//else if(alerts) alertuser((TCHAR*)TEXT("Warning:"),TEXT("truncated escape sequence ends input")); // TODO (Not so important): TRANSLATE
 			}
 
 			if(lineptr < MAXLINE)
@@ -194,7 +195,7 @@ char* _ffx_read_str(char** q) {
 	return val;
 }
 
-Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
+Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
@@ -217,7 +218,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
 				if (format_version > 0) {
-					simplewarning((TCHAR*)TEXT("Attention! You are loading a \"Filters Unlimited\" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most \"Filters Unlimited\" filters won't work with Filter Foundry."));
+					simplewarning_id(MSG_FILTERS_UNLIMITED_WARNING_ID);
 
 					val = _ffx_read_str(&q);
 					strcpy(gdata->parm.szTitle, val);
@@ -259,16 +260,16 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 						}
 						if (strlen(val) >= sizeof(gdata->parm.szFormula[i])) {
 							if (i == 0) {
-								simplealert((TCHAR*)TEXT("Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."));
+								simplealert_id(MSG_FORMULA_IR_1023_TRUNCATED_ID);
 							}
 							else if (i == 1) {
-								simplealert((TCHAR*)TEXT("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
+								simplealert_id(MSG_FORMULA_G_1023_TRUNCATED_ID);
 							}
 							else if (i == 2) {
-								simplealert((TCHAR*)TEXT("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
+								simplealert_id(MSG_FORMULA_B_1023_TRUNCATED_ID);
 							}
 							else if (i == 3) {
-								simplealert((TCHAR*)TEXT("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
+								simplealert_id(MSG_FORMULA_A_1023_TRUNCATED_ID);
 							}
 							// C++ wrong warning: Buffer overflow (C6386)
 							#pragma warning(suppress : 6386)
@@ -321,7 +322,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, char** reason) {
 	return res;
 }
 
-Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
+Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason){
 	unsigned char magic[2];
 	FILECOUNT count;
 	Handle h;
@@ -350,7 +351,7 @@ Boolean readfile_8bf(StandardFileReply *sfr,char **reason){
 		} // else no point in proceeding
 		FSClose(refnum);
 	}else
-		*reason = _strdup("Could not open file.");
+		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
 
 	if (res) gdata->obfusc = false;
 	return res;
@@ -701,7 +702,7 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 	return true;
 }
 
-Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
+Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason) {
 	extern int ctls[], maps[];
 
 	Handle h;
@@ -790,7 +791,7 @@ Boolean readfile_picotxt(StandardFileReply* sfr, char** reason) {
 	return res;
 }
 
-Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
+Boolean readfile_afs_pff(StandardFileReply *sfr, TCHAR**reason){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
@@ -813,8 +814,9 @@ Boolean readfile_afs_pff(StandardFileReply *sfr,char **reason){
 			PIDISPOSEHANDLE(h);
 		}
 		FSClose(r);
-	}else
-		*reason = _strdup("Could not open the file.");
+	}
+	else
+		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
 
 	return res;
 }

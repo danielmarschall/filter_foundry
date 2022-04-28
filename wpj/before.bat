@@ -7,4 +7,3 @@ rem IDE doesnt like multiple dots in filenames
 ren y.tab.c y_tab.c
 ren lex.yy.c lex_yy.c
 cd wpj
-

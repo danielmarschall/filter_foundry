@@ -23,6 +23,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WIN_ENV
+	#include <windows.h> // for TCHAR
+#else
+	#ifdef UNICODE
+	#define TCHAR wchar_t
+	#else
+	#define TCHAR char
+	#endif
+#endif
+
 #ifndef false
 #define false 0
 #define true 1
@@ -35,14 +45,19 @@
 int yyparse(void);
 int yylex(void); // hack. correct prototype is buried in lex output
 //#endif
-void yyerror(char*);
+
+// DM 29.04.2022
+#define YY_(Msg) ((TCHAR*)TEXT(Msg))
+
+
+void yyerror(TCHAR*);
 int pushflag(int x);
 struct node *parseexpr(char *s);
 
 #define DPARSE 
 
 struct node *parsetree;
-char *errstr;
+TCHAR *errstr;
 
 enum{ PARENSTACK = 100 };
 
@@ -52,7 +67,7 @@ int pushflag(int x){
 	if(arglistptr < (PARENSTACK-1))
 		inarglist[++arglistptr] = x;
 	else{
-		yyerror(_strdup("too many nested parentheses or function calls"));
+		yyerror((TCHAR*)TEXT("too many nested parentheses or function calls"));
 		return true;
 	}
 	return false;
@@ -144,8 +159,8 @@ expr : TOK_NUM
 	| '-' expr %prec NEG { $$ = $1; $$->child[0] = 0; $$->child[1] = $2; }
 	| '+' expr %prec NEG { $$ = $2; }
 /* error tokens */
-	| TOK_UNKNOWN { yyerror(_strdup("unknown name")); YYERROR; }
-	| TOK_BADCHAR { yyerror(_strdup("disallowed character")); YYERROR; }
+	| TOK_UNKNOWN { yyerror((TCHAR*)TEXT("unknown name")); YYERROR; }
+	| TOK_BADCHAR { yyerror((TCHAR*)TEXT("disallowed character")); YYERROR; }
 	;
 
 %%
@@ -171,10 +186,10 @@ struct node *parseexpr(char *s){
 		else /* ensure we don't leak memory, on an unsuccessful parse */
 			freeallnodes();
 	}else
-		yyerror(_strdup("null string???"));
+		yyerror((TCHAR*)TEXT("null string???"));
 	return 0;
 }
 
-void yyerror(char *msg){
+void yyerror(TCHAR *msg){
 	errstr = msg;
 }

@@ -34,6 +34,7 @@
 #include "PARM.h"
 #include "preview.h"
 #include "ff_misc.h"
+#include "language.h"
 
 #define HOSTSIG_GIMP 'PMIG' // sic: NOT 'GIMP'
 #define HOSTSIG_IRFANVIEW 'UP20'
@@ -95,14 +96,14 @@ extern globals_t *gdata;
 #define NUM_CELLS 0x100
 
 extern struct node *tree[4];
-extern char *err[4];
+extern TCHAR *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
 extern uint8_t slider[8];
 extern value_type cell[NUM_CELLS];
 extern char *expr[4];
 
 extern int tokpos,tokstart,varused[];
-extern char *errstr;
+extern TCHAR *errstr;
 
 //#define DEBUG
 
@@ -126,13 +127,13 @@ InternalState saveInternalState();
 void restoreInternalState(InternalState state);
 
 // from read.c
-Boolean readparams_afs_pff(Handle h,char **reason);
+Boolean readparams_afs_pff(Handle h, TCHAR**reason);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
-Boolean readfile_8bf(StandardFileReply *sfr,char **reason);
+Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason);
 Handle readfileintohandle(FILEREF r);
-Boolean readfile_afs_pff(StandardFileReply* sfr, char** reason);
-Boolean readfile_ffx(StandardFileReply* sfr, char** reason);
-Boolean readfile_picotxt(StandardFileReply* sfr, char** reason);
+Boolean readfile_afs_pff(StandardFileReply* sfr, TCHAR** reason);
+Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason);
+Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason);
 Boolean readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
@@ -160,8 +161,8 @@ uint64_t obfusc(PARM_T* pparm);
 void deobfusc(PARM_T* pparm);
 
 // from loadfile_*.c
-Boolean loadfile(StandardFileReply *sfr,char **reason);
-Boolean readPARMresource(HMODULE hm,char **reason);
+Boolean loadfile(StandardFileReply *sfr, TCHAR**reason);
+Boolean readPARMresource(HMODULE hm, TCHAR**reason);
 
 // from main.c
 int64_t maxspace();

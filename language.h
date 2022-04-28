@@ -1,0 +1,179 @@
+/*
+    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// TODO: Search for more things to translate, e.g. in *_mac.*
+// TODO: Translate "TODO: Translate" in *.c
+// TODO: Translate dialogs
+
+// TODO: Deutsche Umlaute sind kaputt (UTF8 Zeichen werden gezeigt)
+// Hiermit geht es aber...
+// Meldung "Unbekanntes Pragma" (trotzdem bringt es was?!)
+#pragma code_page(65001)
+
+#define MSG_PREMIERE_COMPAT_ID 1
+#define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
+#define MSG_PREMIERE_COMPAT_DEDE "Diese Version von Filter Foundry ist mit Adobe Premiere nicht kompatibel!"
+
+#define MSG_RUNDLL_ERR_ID 2
+#define MSG_RUNDLL_ERR_ENUS "You tried to execute this DLL with RunDLL32. This is a Photoshop plugin!"
+#define MSG_RUNDLL_ERR_DEDE "Es wurde versucht, diese DLL mit RunDLL32 aufzurufen, aber dies ist ein Photoshop-Plugin!"
+
+#define MSG_INCOMPATIBLE_OBFUSCATION_ID 3
+#define MSG_INCOMPATIBLE_OBFUSCATION_ENUS "Incompatible obfuscation."
+#define MSG_INCOMPATIBLE_OBFUSCATION_DEDE "Inkompatible Verschlüsselung."
+
+#define MSG_FILTER_PROTECTED_ID 4
+#define MSG_FILTER_PROTECTED_ENUS "The filter is protected."
+#define MSG_FILTER_PROTECTED_DEDE "Der Filter ist geschützt."
+
+#define MSG_LOADFILE_UNKNOWN_FORMAT_ID 5
+#define MSG_LOADFILE_UNKNOWN_FORMAT_ENUS "It is not a text parameter file, nor a standalone Mac/PC filter created by Filter Factory/Filter Foundry."
+#define MSG_LOADFILE_UNKNOWN_FORMAT_DEDE "Dies ist keine gültige Paramter-Datei, und auch kein Mac/PC Filter, der mit Filter Factory oder Filter Foundry erstellt wurde."
+
+#define MSG_INVALID_PARAMETER_DATA_ID 6
+#define MSG_INVALID_PARAMETER_DATA_ENUS "Invalid parameter data."
+#define MSG_INVALID_PARAMETER_DATA_DEDE "Ungültige Parameter-Daten."
+
+#define MSG_CANNOT_ZOOM_ID 7
+#define MSG_CANNOT_ZOOM_ENUS "Could not build preview at chosen zoom level."
+#define MSG_CANNOT_ZOOM_DEDE "Die Vorschau konnte nicht in dieser Vergrößerung erstellt werden."
+
+#define MSG_CANNOT_ZOOM_MEMFULL_ID 8
+#define MSG_CANNOT_ZOOM_MEMFULL_ENUS "Could not build preview at chosen zoom level. The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter."
+#define MSG_CANNOT_ZOOM_MEMFULL_DEDE "Die Vorschau konnte nicht in dieser Vergrößerung erstellt werden, da das Bild zu groß für den verfügbaren Speicher ist. Versuchen Sie, die Vorschau zu vergrößern.\nWenn dies nicht hilft, brechen Sie den Filter ab und starten Sie ihn neu."
+
+#define MSG_BUILT32_ID 9
+#define MSG_BUILT32_ENUS "32 bit standalone filter was successfully created"
+#define MSG_BUILT32_DEDE "32-Bit Filter wurde erfolgreich erzeugt"
+
+#define MSG_BUILT64_ID 10
+#define MSG_BUILT64_ENUS "64 bit standalone filter was successfully created"
+#define MSG_BUILT64_DEDE "64-Bit Filter wurde erfolgreich erzeugt"
+
+#define MSG_CANNOT_OPEN_FILE_ID 11
+#define MSG_CANNOT_OPEN_FILE_ENUS "Could not open the file."
+#define MSG_CANNOT_OPEN_FILE_DEDE "Kann Datei nicht öffnen."
+
+#define MSG_CANNOT_CREATE_FILE_ID 12
+#define MSG_CANNOT_CREATE_FILE_ENUS "Could not create the file."
+#define MSG_CANNOT_CREATE_FILE_DEDE "Kann Datei nicht erstellen."
+
+#define MSG_EXPRESSION1024_FOUND_ID 13
+#define MSG_EXPRESSION1024_FOUND_ENUS "Found an expression longer than 1024 characters."
+#define MSG_EXPRESSION1024_FOUND_DEDE "Es wurde eine Formel gefunden, die länger als 1024 Zeichen ist."
+
+#define MSG_EXPRESSION_OOM_ID 14
+#define MSG_EXPRESSION_OOM_ENUS "Could not get memory for expression."
+#define MSG_EXPRESSION_OOM_DEDE "Kann nicht genügend Speicher für die Formel erhalten."
+
+#define MSG_FILTERS_UNLIMITED_WARNING_ID 15
+#define MSG_FILTERS_UNLIMITED_WARNING_ENUS "Attention! You are loading a ""Filters Unlimited"" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most ""Filters Unlimited"" filters won't work with Filter Foundry."
+#define MSG_FILTERS_UNLIMITED_WARNING_DEDE "Achtung! Sie laden ein Datei, die mit ""Filters Unlimited"" erstellt wurde. Bitte beachten Sie, dass Filter Foundry nur die grundlegenden Filter Factory-Funktionalitäten implementiert. Deswegen werden die meisten ""Filters Unlimited"" Filter nicht mit Filter Foundry funktionieren."
+
+#define MSG_FORMULA_IR_1023_TRUNCATED_ID 16
+#define MSG_FORMULA_IR_1023_TRUNCATED_ENUS "Attention! The formula for channel I/R was too long (longer than 1023 characters) and was truncated."
+#define MSG_FORMULA_IR_1023_TRUNCATED_DEDE "Achtung! Die Formel für den Rot/Intro-Kanal ist zu lang (länger als 1023 Zeichen) und wurde deshalb abgeschnitten."
+
+#define MSG_FORMULA_R_1023_TRUNCATED_ID 17
+#define MSG_FORMULA_R_1023_TRUNCATED_ENUS "Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."
+#define MSG_FORMULA_R_1023_TRUNCATED_DEDE "Achtung! Die Formel für den Rot-Kanal ist zu lang (länger als 1023 Zeichen) und wurde deshalb abgeschnitten."
+
+#define MSG_FORMULA_G_1023_TRUNCATED_ID 18
+#define MSG_FORMULA_G_1023_TRUNCATED_ENUS "Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."
+#define MSG_FORMULA_G_1023_TRUNCATED_DEDE "Achtung! Die Formel für den Grün-Kanal ist zu lang (länger als 1023 Zeichen) und wurde deshalb abgeschnitten."
+
+#define MSG_FORMULA_B_1023_TRUNCATED_ID 19
+#define MSG_FORMULA_B_1023_TRUNCATED_ENUS "Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."
+#define MSG_FORMULA_B_1023_TRUNCATED_DEDE "Achtung! Die Formel für den Blau-Kanal ist zu lang (länger als 1023 Zeichen) und wurde deshalb abgeschnitten."
+
+#define MSG_FORMULA_A_1023_TRUNCATED_ID 20
+#define MSG_FORMULA_A_1023_TRUNCATED_ENUS "Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."
+#define MSG_FORMULA_A_1023_TRUNCATED_DEDE "Achtung! Die Formel für den Alpha-Kanal ist zu lang (länger als 1023 Zeichen) und wurde deshalb abgeschnitten."
+
+#define MSG_CANNOT_CREATE_32BIT_FILTER_ID 21
+#define MSG_CANNOT_CREATE_32BIT_FILTER_ENUS "Could not create 32 bit standalone filter"
+#define MSG_CANNOT_CREATE_32BIT_FILTER_DEDE "Konnte keinen 32-Bit Filter erzeugen"
+
+#define MSG_CANNOT_CREATE_64BIT_FILTER_ID 22
+#define MSG_CANNOT_CREATE_64BIT_FILTER_ENUS "Could not create 64 bit standalone filter"
+#define MSG_CANNOT_CREATE_64BIT_FILTER_DEDE "Konnte keinen 64-Bit Filter erzeugen"
+
+#define MSG_CANNOT_SAVE_SETTINGS_ID 23
+#define MSG_CANNOT_SAVE_SETTINGS_ENUS "Could not save settings."
+#define MSG_CANNOT_SAVE_SETTINGS_DEDE "Einstellungen konnten nicht gespeichert werden."
+
+#define MSG_CANNOT_LOAD_SETTINGS_ID 24
+#define MSG_CANNOT_LOAD_SETTINGS_ENUS "Could not load settings."
+#define MSG_CANNOT_LOAD_SETTINGS_DEDE "Einstellungen konnten nicht geladen werden."
+
+#define MSG_SAVED_EXPR_ERR_ID 25
+#define MSG_SAVED_EXPR_ERR_ENUS "Can't run this filter (there is a problem with the saved expressions)."
+#define MSG_SAVED_EXPR_ERR_DEDE "Dieser Filter kann nicht ausgeführt werden, da es ein Problem mit den enthaltenen Formeln gibt."
+
+#define MSG_CATEGORY_EMPTY_ERR_ID 26
+#define MSG_CATEGORY_EMPTY_ERR_ENUS "Category must not be empty!"
+#define MSG_CATEGORY_EMPTY_ERR_DEDE "Kategorie darf nicht leer sein!"
+
+#define MSG_TITLE_EMPTY_ERR_ID 27
+#define MSG_TITLE_EMPTY_ERR_ENUS "Title must not be empty!"
+#define MSG_TITLE_EMPTY_ERR_DEDE "Titel darf nicht leer sein!"
+
+#define MSG_UNICODE_DATA_WARNING_ID 28
+#define MSG_UNICODE_DATA_WARNING_ENUS "The internal structures of Photoshop and Filter Factory are not compatible with Unicode characters. It is highly recommended that you only use characters of your current charset. Unicode characters will be converted into question mark symbols."
+#define MSG_UNICODE_DATA_WARNING_DEDE "Die internen Strukturen von Photoshop und Filter Factory sind nicht kompatibel mit Unicode-Zeichen. Es wird sehr stark empfohlen, dass Sie nur Zeichen aus Ihrem aktuellen Zeichensatz verwenden. Unicode-Zeichen werden in Fragezeichen-Symbole umgewandelt werden."
+
+#define MSG_EXTCHARSET_DATA_WARNING_ID 29
+#define MSG_EXTCHARSET_DATA_WARNING_ENUS "You were using characters of an extended charset. The characters might look correct on your machine, but on a machine in a different country the characters might look wrong. Please consider using the ASCII character set only (i.e. Latin characters without accent marks)."
+#define MSG_EXTCHARSET_DATA_WARNING_DEDE "Sie verwenden besondere Zeichen wie z.B. Umlaute. Diese Zeichen werden auf Ihrem System normal aussehen, jedoch werden sie auf einem fremdsprachigen Computer falsch dargestellt werden. Bitte ziehen Sie in Betracht, nur ASCII-Zeichen zu verwenden (A-Z, ohne Umlaute)."
+
+#define MSG_SLIDER_UNAVAILABLE_ID 30
+#define MSG_SLIDER_UNAVAILABLE_ENUS "Visual sliders are not available because neither PLUGIN.DLL (part of Photoshop), nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."
+#define MSG_SLIDER_UNAVAILABLE_DEDE "Schiebe-Regler sind nicht verfügbar, da weder PLUGIN.DLL (Bestandteil von Photoshop), noch die Microsoft Trackbar Control (msctls_trackbar32) auf Ihrem System gefunden wurden."
+
+#define MSG_PICO_SAVED_ID 31
+#define MSG_PICO_SAVED_ENUS "The file was successfully saved in the ""PluginCommander"" TXT format. The file will now be opened in a text editor, so that you can fill in the missing data: Category, Title, Copyright, Author, Filename, and Slider/Map names."
+#define MSG_PICO_SAVED_DEDE "Die Datei wurde erfolgreich im ""PluginCommander"" TXT-Format gespeichert. Die Datei wird nun in einem Text-Editor geöffnet, sodass Sie die fehlenden Angaben ergänzen können: Kategorie, Titel, Copyright, Autor, Dateiname und Regler-Namen."
+
+#define MSG_PLEASE_EDIT_MANUALLY_ID 32
+#define MSG_PLEASE_EDIT_MANUALLY_ENUS "Please edit the file manually to enter the title, category, author, copyright, slider names, etc."
+#define MSG_PLEASE_EDIT_MANUALLY_DEDE "Bitte bearbeiten Sie die Datei manuell und tragen Sie dort ein: Titel, Kategorie, Autor, Copyright, Regler-Namen, usw."
+
+#define MSG_FIND_DOKU_HERE_ID 33
+#define MSG_FIND_DOKU_HERE_ENUS "You can find the documentation here: https://github.com/danielmarschall/filter_foundry/tree/master/doc"
+#define MSG_FIND_DOKU_HERE_DEDE "Sie können die englisch-sprachige Dokumentation hier finden: https://github.com/danielmarschall/filter_foundry/tree/master/doc"
+
+#define MSG_ERROR_IN_EXPRESSION_CLICK_DETAILS_ID 34
+#define MSG_ERROR_IN_EXPRESSION_CLICK_DETAILS_ENUS "Error in expression! Click to see details."
+#define MSG_ERROR_IN_EXPRESSION_CLICK_DETAILS_DEDE "Fehler in der Formel! Klicken für mehr Details."
+
+#define MSG_ZOOM_IN_ID 35
+#define MSG_ZOOM_IN_ENUS "Zoom in"
+#define MSG_ZOOM_IN_DEDE "Vergrößern"
+
+#define MSG_ZOOM_OUT_ID 36
+#define MSG_ZOOM_OUT_ENUS "Zoom out"
+#define MSG_ZOOM_OUT_DEDE "Verkleinern"
+
+#define MSG_FULLY_ZOOM_INOUT_ID 37
+#define MSG_FULLY_ZOOM_INOUT_ENUS "Fully zoom in/out"
+#define MSG_FULLY_ZOOM_INOUT_DEDE "Vollständig rein/raus-zoomen"
+
+void FF_GetMsg(TCHAR* ret, int MsgId);
+TCHAR* FF_GetMsg_Cpy(int MsgId);

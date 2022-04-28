@@ -38,7 +38,7 @@ static BOOL CALLBACK enum_find_resname(HMODULE hModule, LPCTSTR lpszType,
 	else return true;
 }
 
-Boolean readPARMresource(HMODULE hm, char** reason) {
+Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
@@ -69,7 +69,7 @@ Boolean readPARMresource(HMODULE hm, char** reason) {
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
 				if (!res) {
-					*reason = _strdup("Incompatible obfuscation.");
+					*reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 				}
 				free(copy);
 				gdata->obfusc = true;
@@ -85,7 +85,7 @@ Boolean readPARMresource(HMODULE hm, char** reason) {
 	return false;
 }
 
-Boolean loadfile(StandardFileReply* sfr, char** reason) {
+Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	HMODULE hm;
 
 	// The different read-functions will return true if the resource was successfully loaded,
@@ -107,7 +107,7 @@ Boolean loadfile(StandardFileReply* sfr, char** reason) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm, reason)) {
 				if (gdata->parm.iProtected) {
-					*reason = _strdup("The filter is protected.");
+					*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
 					//gdata->parmloaded = false;
 				}
 				else {
@@ -142,7 +142,7 @@ Boolean loadfile(StandardFileReply* sfr, char** reason) {
 		if (readfile_8bf(sfr, reason)) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
-				*reason = _strdup("The filter is protected.");
+				*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
 			}
 			else {
 				gdata->parmloaded = true;
@@ -154,7 +154,7 @@ Boolean loadfile(StandardFileReply* sfr, char** reason) {
 	// We didn't had success. If we have a clear reason, return false and the reason.
 	// If we don't have a clear reason, set a generic reason and return false.
 	if (*reason == NULL) {
-		*reason = _strdup("It is not a text parameter file, nor a standalone Mac/PC filter created by Filter Factory/Filter Foundry.");
+		*reason = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	}
 	return false;
 }

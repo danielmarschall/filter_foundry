@@ -143,12 +143,12 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		// Do a few checks first
 		GetDlgItemTextA(dp, CATEGORYITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert((TCHAR*)TEXT("Category must not be empty!"));
+			simplealert_id(MSG_CATEGORY_EMPTY_ERR_ID);
 			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
 		}
 		GetDlgItemTextA(dp, TITLEITEM, s, MAXFIELD);
 		if (strlen(s) == 0) {
-			simplealert((TCHAR*)TEXT("Title must not be empty!"));
+			simplealert_id(MSG_TITLE_EMPTY_ERR_ID);
 			return true; // don't continue (i.e. don't call EndDialog). Let the user correct the input
 		}
 
@@ -186,12 +186,14 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 		#ifdef UNICODE
 		if (unicode) {
-			simplewarning((TCHAR*)TEXT("The internal structures of Photoshop and Filter Factory are not compatible with Unicode characters. It is highly recommended that you only use characters of your current charset. Unicode characters will be converted into question mark symbols."));
+			// TODO: In this message, we recommend that the user chooses character of his own charset.
+			// BUT: The user should actually only choose A-Z, otherwise stuff might be displayed wrong on foreign computers?!
+			simplewarning_id(MSG_UNICODE_DATA_WARNING_ID);
 		}
 		else
 		#endif
 		if (extCharset) {
-			simplewarning((TCHAR*)TEXT("You were using characters of an extended charset. The characters might look correct on your machine, but on a machine in a different country the characters might look wrong. Please consider using the ASCII character set only (i.e. Latin characters without accent marks)."));
+			simplewarning_id(MSG_EXTCHARSET_DATA_WARNING_ID);
 		}
 
 		// Now begin
@@ -220,16 +222,16 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		for (i = 0; i < 4; ++i) {
 			if (strlen(expr[i]) >= sizeof(gdata->parm.szFormula[i])) {
 				if (i == 0) {
-					simplealert((TCHAR*)TEXT("Attention! The formula for channel R was too long (longer than 1023 characters) and was truncated."));
+					simplealert_id(MSG_FORMULA_R_1023_TRUNCATED_ID);
 				}
 				else if (i == 1) {
-					simplealert((TCHAR*)TEXT("Attention! The formula for channel G was too long (longer than 1023 characters) and was truncated."));
+					simplealert_id(MSG_FORMULA_G_1023_TRUNCATED_ID);
 				}
 				else if (i == 2) {
-					simplealert((TCHAR*)TEXT("Attention! The formula for channel B was too long (longer than 1023 characters) and was truncated."));
+					simplealert_id(MSG_FORMULA_B_1023_TRUNCATED_ID);
 				}
 				else if (i == 3) {
-					simplealert((TCHAR*)TEXT("Attention! The formula for channel A was too long (longer than 1023 characters) and was truncated."));
+					simplealert_id(MSG_FORMULA_A_1023_TRUNCATED_ID);
 				}
 				expr[i][sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 			}
@@ -255,16 +257,16 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		#endif
 		if (putfile(
 			#ifdef MAC_ENV
-			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string"
+			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO: TRANSLATE
 			(StringPtr)myc2pstr(_strdup(fname)),
 			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
-			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1
+			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1 // TODO: TRANSLATE
 			#else
-			TEXT("Make standalone filter"),
+			TEXT("Make standalone filter"), // TODO: TRANSLATE
 			fname,
 			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
 			TEXT("8bf"),
-			TEXT("Filter plugin file (.8bf)\0*.8bf\0\0"), 1
+			TEXT("Filter plugin file (.8bf)\0*.8bf\0\0"), 1 // TODO: TRANSLATE
 			, (HWND)dp
 			#endif
 		)) {

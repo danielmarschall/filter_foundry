@@ -164,7 +164,7 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 		clx.lpszClassName = targetClass;
 		if (RegisterClass(&clx) == 0) {
 			TCHAR s[0x300];
-			xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: "));
+			xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: ")); // TODO (Not so important): TRANSLATE
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 			simplealert(&s[0]);
 			return false;
@@ -190,7 +190,7 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 
 			if (RegisterClass(&clx) == 0) {
 				TCHAR s[0x300];
-				xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: "));
+				xstrcpy(s, (TCHAR*)TEXT("RegisterClass failed: ")); // TODO (Not so important): TRANSLATE
 				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 				simplealert(&s[0]);
 				return false;
@@ -200,7 +200,7 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 			}
 		}
 		else {
-			simplealert((TCHAR*)TEXT("GetClassInfo failed"));
+			simplealert((TCHAR*)TEXT("GetClassInfo failed")); // TODO (Not so important): TRANSLATE
 		}
 		return false;
 	}
@@ -246,7 +246,7 @@ void Slider_Uninit_PluginDll() {
 	if (!gdata->pluginDllSliderInfo.initialized) return;
 
 	if (!PluginDll_UnRegisterSlider(hDllInstance)) {
-		simplealert((TCHAR*)TEXT("UnRegisterSlider failed"));
+		simplealert((TCHAR*)TEXT("UnRegisterSlider failed")); // TODO (Not so important): TRANSLATE
 		return;
 	}
 

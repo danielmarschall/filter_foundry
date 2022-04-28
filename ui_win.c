@@ -284,12 +284,20 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		SetClassLongPtr(GetDlgItem(hDlg, FIRSTICONITEM), GCLP_HCURSOR, (LONG_PTR)hCurHandQuestion);
 
 		for(i = 0; i < 4; ++i){
-			CreateToolTip(FIRSTICONITEM + i, hDlg, (TCHAR*)TEXT("Error in expression! Click to see details."));
+			TCHAR msg[0x100];
+			LoadString(hDllInstance, MSG_ERROR_IN_EXPRESSION_CLICK_DETAILS_ID, &msg[0], 0x100);
+			CreateToolTip(FIRSTICONITEM + i, hDlg, msg);
 		}
 
-		CreateToolTip(ZOOMINITEM, hDlg, (TCHAR*)TEXT("Zoom in"));
-		CreateToolTip(ZOOMOUTITEM, hDlg, (TCHAR*)TEXT("Zoom out"));
-		CreateToolTip(ZOOMLEVELITEM, hDlg, (TCHAR*)TEXT("Fully zoom in/out"));
+		{
+			TCHAR msg[0x100];
+			LoadString(hDllInstance, MSG_ZOOM_IN_ID, &msg[0], 0x100);
+			CreateToolTip(ZOOMINITEM, hDlg, msg);
+			LoadString(hDllInstance, MSG_ZOOM_OUT_ID, &msg[0], 0x100);
+			CreateToolTip(ZOOMOUTITEM, hDlg, msg);
+			LoadString(hDllInstance, MSG_FULLY_ZOOM_INOUT_ID, &msg[0], 0x100);
+			CreateToolTip(ZOOMLEVELITEM, hDlg, msg);
+		}
 
 		for(i = 0; i < 8; ++i){
 			FF_SetSliderRange(hDlg, FIRSTCTLITEM+i, 0, 255);
@@ -416,7 +424,7 @@ Boolean maindialog(FilterRecordPtr pb){
 			//return false;
 
 			// We simply hide the sliders and let the user enter the numeric values in the edit-box.
-			simplewarning((TCHAR*)TEXT("Visual sliders are not available because neither PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32) was found on your system."));
+			simplewarning_id(MSG_SLIDER_UNAVAILABLE_ID);
 			Slider_Init_None(TEXT("FoundrySlider"));
 		}
 	}
@@ -432,11 +440,11 @@ Boolean maindialog(FilterRecordPtr pb){
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
-		simplealert((TCHAR*)TEXT("DialogBoxParam invalid parent window handle"));
+		simplealert((TCHAR*)TEXT("DialogBoxParam invalid parent window handle")); // TODO (Not so important): TRANSLATE
 	}
 	if (res == -1) {
 		TCHAR s[0x300];
-		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: "));
+		xstrcpy(s, (TCHAR*)TEXT("DialogBoxParam failed: ")); // TODO (Not so important): TRANSLATE
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 		simplealert(&s[0]);
 	}

@@ -335,8 +335,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		}
 
 		if (e && !previewerr) {
-			alertuser((TCHAR*)TEXT("Could not build preview at chosen zoom level."),
-				e == memFullErr && !needall ? (TCHAR*)TEXT("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : (TCHAR*)TEXT(""));
+			simplealert_id(e == memFullErr && !needall ? MSG_CANNOT_ZOOM_MEMFULL_ID : MSG_CANNOT_ZOOM_ID);
 			previewerr = true;
 		}
 
@@ -470,8 +469,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		}
 
 		if (e && !previewerr) {
-			alertuser((TCHAR*)TEXT("Could not build preview at chosen zoom level."),
-				e == memFullErr && !needall ? (TCHAR*)TEXT("The image is too large for available memory. Try zooming in.\nIf that does not help, cancel and retry the filter.") : (TCHAR*)TEXT(""));
+			simplealert_id(e == memFullErr && !needall ? MSG_CANNOT_ZOOM_MEMFULL_ID : MSG_CANNOT_ZOOM_ID);
 			previewerr = true;
 		}
 

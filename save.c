@@ -213,7 +213,7 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
-	char *reasonstr = _strdup("");
+	TCHAR *reasonstr = NULL;
 
 	FSpDelete(&sfr->sfFile);
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
@@ -252,17 +252,11 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = _strdup("Could not open the file.");
-	else reasonstr = _strdup("Could not create the file.");
+		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
+	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID);
 
 	if (!res) {
-		#ifdef UNICODE
-		TCHAR reasonstrW[0x300];
-		mbstowcs(reasonstrW, reasonstr, 0x300);
-		alertuser((TCHAR*)TEXT("Could not save settings."), reasonstrW);
-		#else
-		alertuser((TCHAR*)TEXT("Could not save settings."), reasonstr);
-		#endif
+		alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reasonstr);
 	}
 
 	return res;

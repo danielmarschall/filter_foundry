@@ -253,6 +253,7 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\c.h" />
     <ClInclude Include="..\ff.h" />
     <ClInclude Include="..\funcs.h" />
+    <ClInclude Include="..\language.h" />
     <ClInclude Include="..\manifest.h" />
     <ClInclude Include="..\ff_misc.h" />
     <ClInclude Include="..\node.h" />
@@ -279,6 +280,7 @@ foundry_3264_mixer.bat
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ff_misc.c" />
+    <ClCompile Include="..\language.c" />
     <ClCompile Include="..\obfusc.c" />
     <ClCompile Include="..\slider_win.c" />
     <ClCompile Include="..\telegraphics_common\adobeplugin\dllmain.c" />

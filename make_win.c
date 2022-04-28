@@ -42,7 +42,7 @@ void showLastError(TCHAR *func){
 	TCHAR s[0x300] = {0};
 
 	xstrcpy(&s[0],func);
-	xstrcat(&s[0],TEXT(" failed: "));
+	xstrcat(&s[0],TEXT(" failed: ")); // TODO (Not so important): TRANSLATE
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 	simplealert(&s[0]);
 }
@@ -454,7 +454,7 @@ Boolean doresources(FSSpec* dst, int bits){
 				// ====== Change version attributes
 
 				if (changeVersionInfo(dst, hupdate, pparm, bits) != NOERROR) {
-					simplewarning((TCHAR*)TEXT("changeVersionInfo failed"));
+					simplewarning((TCHAR*)TEXT("changeVersionInfo failed")); // TODO (Not so important): TRANSLATE
 				}
 
 				// ====== Obfuscate pparm!
@@ -514,17 +514,17 @@ Boolean doresources(FSSpec* dst, int bits){
 					if ((binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
 						(binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
 					{
-						simplewarning((TCHAR*)TEXT("binary_replace_file failed"));
+						simplewarning((TCHAR*)TEXT("binary_replace_file failed")); // TODO (Not so important): TRANSLATE
 						discard = true;
 					}
 				}
 
 				if (!update_pe_timestamp(dst, (__time32_t)time(0))) {
-					simplewarning((TCHAR*)TEXT("update_pe_timestamp failed"));
+					simplewarning((TCHAR*)TEXT("update_pe_timestamp failed")); // TODO (Not so important): TRANSLATE
 				}
 
 				if (!repair_pe_checksum(dst)) {
-					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed"));
+					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed")); // TODO (Not so important): TRANSLATE
 				}
 			}else showLastError((TCHAR*)TEXT("EndUpdateResource"));
 
@@ -621,10 +621,6 @@ BOOL StripAuthenticode(FSSpec* dst) {
 }
 
 OSErr do_make_standalone(FSSpec* dst, int bits) {
-	char errA[MAX_PATH + 200];
-	#ifdef UNICODE
-	TCHAR errW[MAX_PATH + 200];
-	#endif
 	Boolean res;
 
 	//DeleteFile(dstname);
@@ -638,14 +634,7 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 		res = doresources(dst, bits);
 		if (!res) {
 			DeleteFile(&dst->szName[0]);
-
-			sprintf(errA, "Could not create %d bit standalone plugin (doresources failed).", bits);
-			#ifdef UNICODE
-			mbstowcs(errW, errA, MAX_PATH + 200);
-			simplealert(&errW[0]);
-			#else
-			simplealert(&errA[0]);
-			#endif
+			alertuser_id(bits == 32 ? MSG_CANNOT_CREATE_32BIT_FILTER_ID : MSG_CANNOT_CREATE_64BIT_FILTER_ID, (TCHAR*)TEXT("doresources failed"));
 		}
 	}
 	else {
@@ -653,13 +642,7 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 		res = false;
 		//DeleteFile(dstname);
 
-		sprintf(errA, "Could not create %d bit standalone plugin (File extraction failed).", bits);
-		#ifdef UNICODE
-		mbstowcs(errW, errA, MAX_PATH + 200);
-		simplealert(&errW[0]);
-		#else
-		simplealert(&errA[0]);
-		#endif
+		alertuser_id(bits == 32 ? MSG_CANNOT_CREATE_32BIT_FILTER_ID : MSG_CANNOT_CREATE_64BIT_FILTER_ID, (TCHAR*)TEXT("extract_file failed"));
 	}
 
 	return res ? noErr : ioErr;
@@ -679,7 +662,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	if (tmpErr != noErr)
 		outErr = tmpErr;
 	else
-		showmessage((TCHAR*)TEXT("32 bit standalone filter was successfully created"));
+		showmessage_id(MSG_BUILT32_ID);
 
 	// Make 64 bit:
 	// Destfile = no64_or_32(chosenname) + 64
@@ -690,7 +673,7 @@ OSErr make_standalone(StandardFileReply *sfr){
 	if (tmpErr != noErr)
 		outErr = tmpErr;
 	else
-		showmessage((TCHAR*)TEXT("64 bit standalone filter was successfully created"));
+		showmessage_id(MSG_BUILT64_ID);
 
 	return outErr;
 }
