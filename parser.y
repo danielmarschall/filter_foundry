@@ -67,7 +67,7 @@ int pushflag(int x){
 	if(arglistptr < (PARENSTACK-1))
 		inarglist[++arglistptr] = x;
 	else{
-		yyerror((TCHAR*)TEXT("too many nested parentheses or function calls"));
+		yyerror((TCHAR*)TEXT("too many nested parentheses or function calls")); // TODO: translate
 		return true;
 	}
 	return false;
@@ -159,8 +159,8 @@ expr : TOK_NUM
 	| '-' expr %prec NEG { $$ = $1; $$->child[0] = 0; $$->child[1] = $2; }
 	| '+' expr %prec NEG { $$ = $2; }
 /* error tokens */
-	| TOK_UNKNOWN { yyerror((TCHAR*)TEXT("unknown name")); YYERROR; }
-	| TOK_BADCHAR { yyerror((TCHAR*)TEXT("disallowed character")); YYERROR; }
+	| TOK_UNKNOWN { yyerror((TCHAR*)TEXT("unknown name")); YYERROR; } // TODO: translate
+	| TOK_BADCHAR { yyerror((TCHAR*)TEXT("disallowed character")); YYERROR; } // TODO: translate
 	;
 
 %%
@@ -186,7 +186,7 @@ struct node *parseexpr(char *s){
 		else /* ensure we don't leak memory, on an unsuccessful parse */
 			freeallnodes();
 	}else
-		yyerror((TCHAR*)TEXT("null string???"));
+		yyerror((TCHAR*)TEXT("null string???"));// TODO: translate
 	return 0;
 }
 

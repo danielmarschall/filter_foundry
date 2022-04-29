@@ -240,17 +240,18 @@
 #define MSG_ABOUT_BY_DEDE " von "
 
 #define MSG_ABOUT_BUILT_USING_ID 55
-#define MSG_ABOUT_BUILT_USING_ENUS "This plugin was built using Filter Foundry "
-#define MSG_ABOUT_BUILT_USING_DEDE "Dieses Plugin wurde erstellt mit Filter Foundry "
+#define MSG_ABOUT_BUILT_USING_ENUS "This plugin was built using Filter Foundry"
+#define MSG_ABOUT_BUILT_USING_DEDE "Dieses Plugin wurde erstellt mit Filter Foundry"
 
 #define MSG_ABOUT_LATEST_VERSION_FROM_ID 56
 #define MSG_ABOUT_LATEST_VERSION_FROM_ENUS "Latest version available from:"
-#define MSG_ABOUT_LATEST_VERSION_FROM_DEDE "Aktuelle Version herunterladen:"
+#define MSG_ABOUT_LATEST_VERSION_FROM_DEDE "Aktuelle Version hier herunterladen:"
 
 #define MSG_ABOUT_CONTACT_AUTHOR_ID 57
 #define MSG_ABOUT_CONTACT_AUTHOR_ENUS "Please contact the author with any bug reports,\nsuggestions or comments.\nIf you use this program and like it, please consider\nmaking a donation."
-#define MSG_ABOUT_CONTACT_AUTHOR_DEDE "Bitte kontaktieren Sie den Autor für Fehlerberichte,\nAnregungen und Kommentare.\nWenn Sie dieses Programm mögen,\nerwägen Sie bitte eine Spende."
+#define MSG_ABOUT_CONTACT_AUTHOR_DEDE "Bitte kontaktieren Sie den Autor für Fehlerberichte,\nAnregungen und Kommentare.\nWenn Sie dieses Programm mögen,\nerwägen Sie bitte eine kleine Spende."
 
 
+void strcpy_advance_id(TCHAR** str, int msgid);
 void FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);

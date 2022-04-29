@@ -359,103 +359,57 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		return false; // end dialog
 	case OPENITEM:
 	{
-		TCHAR filters[3000];
-		TCHAR *tmp1, *tmp2;
-		size_t len;
+		TCHAR* tmp1;
+		TCHAR* filters = (TCHAR*)malloc(4096);
+		if (filters == NULL) return false;
+		memset(filters, 0, 4096);
+		tmp1 = filters;
 
-		memset(&filters[0], 0, sizeof(filters));
-		tmp1 = &filters[0];
+		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_ALL_SUPPORTED_FILES_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_AFS_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_AFS_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.afs)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.afs"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_TXT_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.txt)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.txt")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_TXT_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.txt)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.txt"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_8BF_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.8bf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.8bf")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_8BF_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.8bf)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.8bf"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_PFF_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.pff)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.pff")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_PFF_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.pff)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.pff"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_PRM_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.prm)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.prm")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_PRM_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.prm)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.prm"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_RSRC_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.bin, *.rsrc)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.bin;*.rsrc")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_RSRC_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.bin, *.rsrc)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.bin;*.rsrc"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_OPEN_FFX_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.ffx)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.ffx")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_OPEN_FFX_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.ffx)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.ffx"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-
-		FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.*)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.*"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_ALL_FILES_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
 		if (!gdata->standalone && choosefiletypes(
 		#ifdef MAC_ENV
 		(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			&sfr, &reply, types, 2,
-			&filters[0]
+			filters
 		#else
 			FF_GetMsg_Cpy(MSG_LOAD_FILTER_SETTINGS_TITLE_ID),
 			&sfr, &reply, types, 2,
-			&filters[0], gdata->hWndMainDlg
+			filters, gdata->hWndMainDlg
 		#endif
 		)) {
 			// Backup everything, otherwise we might lose parameter data if the loading fails
@@ -472,61 +426,36 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				restoreInternalState(bakState);
 			}
 		}
+		free(filters);
 		break;
 	}
 	case SAVEITEM:
 	{
-		TCHAR filters[3000];
-		TCHAR* tmp1, * tmp2;
-		size_t len;
+		TCHAR* tmp1;
+		TCHAR* filters = (TCHAR*)malloc(4096);
+		if (filters == NULL) return false;
+		memset(filters, 0, 4096);
+		tmp1 = filters;
 
-		memset(&filters[0], 0, sizeof(filters));
-		tmp1 = &filters[0];
+		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.pff, *.txt)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.pff;*.txt")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_ALL_SUPPORTED_FILES_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.afs, *.pff, *.txt)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.afs;*.pff;*.txt"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_SAVE_AFS_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_SAVE_AFS_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.afs)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.afs"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_SAVE_PFF_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.pff)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.pff")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_SAVE_PFF_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.pff)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.pff"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_SAVE_TXT_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.txt)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.txt")); tmp1++;
 
-		FF_GetMsg(tmp1, MSG_SAVE_TXT_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.txt)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.txt"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-
-		FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
-		tmp1 += xstrlen(tmp1);
-		len = xstrlen(tmp2 = TEXT(" (*.*)"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
-		len = xstrlen(tmp2 = TEXT("*.*"));
-		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-		tmp1 += (len + 1);
+		strcpy_advance_id(&tmp1, MSG_ALL_FILES_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
 		if (!gdata->standalone && putfile(
 		#ifdef MAC_ENV
@@ -534,13 +463,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			(StringPtr)_strdup("\0"),
 			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			"afs",
-			& filters[0], 1
+			filters, 1
 		#else
 			FF_GetMsg_Cpy(MSG_SAVE_FILTER_SETTINGS_TITLE_ID),
 			TEXT("\0"),
 			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			TEXT("afs"),
-			& filters[0], 1, gdata->hWndMainDlg
+			filters, 1, gdata->hWndMainDlg
 		#endif
 		)) {
 			if (savefile_afs_pff_picotxt(&sfr)) {
@@ -576,6 +505,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 			}
 		}
+		free(filters);
 		break;
 	}
 	case MAKEITEM:

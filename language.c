@@ -20,6 +20,15 @@
 
 #include "ff.h"
 
+void strcpy_advance_id(TCHAR** str, int msgid) {
+    TCHAR tmp[1000];
+
+    FF_GetMsg(*str, msgid);
+
+    FF_GetMsg(&tmp[0], msgid);
+    *str += xstrlen(&tmp[0]);
+}
+
 // Attention: No bounds checking!
 void FF_GetMsg(TCHAR* ret, int MsgId) {
 #ifdef WIN_ENV

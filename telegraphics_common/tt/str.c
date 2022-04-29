@@ -27,6 +27,21 @@
 #include "str.h"
 #include "sprintf_tiny.h"
 
+
+void strcpy_advance(TCHAR** str, TCHAR* append) {
+	xstrcpy(*str, append);
+	*str += xstrlen(append);
+}
+
+void strcpy_advance_a(TCHAR** str, char* append) {
+#ifdef UNICODE
+	mbstowcs(*str, append, 1000);
+	*str += strlen(append);
+#else
+	strcpy_advance(str, append);
+#endif
+}
+
 #ifdef UNICODE
 size_t xstrlen(wchar_t* s) {
 	return lstrlen(s);

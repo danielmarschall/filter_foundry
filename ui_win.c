@@ -41,68 +41,50 @@ HICON hIconCautionSign;
 extern HINSTANCE hDllInstance;
 
 void DoAbout(AboutRecordPtr pb){
-	PlatformData *p = (PlatformData*)pb->platformData;
+	TCHAR* tmp1;
+	TCHAR* filters = (TCHAR*)malloc(4096);
+	if (filters == NULL) return;
+	memset(filters, 0, 4096);
+	tmp1 = filters;
 
 	if (gdata && gdata->standalone) {
-		TCHAR filters[3000];
-		TCHAR* tmp1, * tmp2;
+		// strcpy(gdata->parm.szTitle, "TestTitle");
+		// strcpy(gdata->parm.szAuthor, "TestAuthor");
+		// strcpy(gdata->parm.szCopyright, "TestCopyright");
 
-		memset(&filters[0], 0, sizeof(filters));
-		tmp1 = &filters[0];
+		strcpy_advance_a(&tmp1, gdata->parm.szTitle);
+		strcpy_advance_id(&tmp1, MSG_ABOUT_BY_ID);
+		strcpy_advance_a(&tmp1, gdata->parm.szAuthor);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("\n"));
 
-		//strcpy(gdata->parm.szTitle, "TestTitle");
-		//strcpy(gdata->parm.szAuthor, "TestAuthor");
-		//strcpy(gdata->parm.szCopyright, "TestCopyright");
+		strcpy_advance_a(&tmp1, gdata->parm.szCopyright);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("\n\n"));
 
-		tmp1 += mbstowcs(tmp1, gdata->parm.szTitle, 100);
-		FF_GetMsg(tmp1, MSG_ABOUT_BY_ID); tmp1 += xstrlen(tmp1);
-		tmp1 += mbstowcs(tmp1, gdata->parm.szAuthor, 100);
-		tmp1 += mbstowcs(tmp1, "\n", 100);
-
-		tmp1 += mbstowcs(tmp1, gdata->parm.szCopyright, 100);
-		tmp1 += mbstowcs(tmp1, "\n\n", 100);
-
-		FF_GetMsg(tmp1, MSG_ABOUT_BUILT_USING_ID); tmp1 += xstrlen(tmp1);
-		tmp1 += mbstowcs(tmp1, VERSION_STR, 100);
-
+		strcpy_advance_id(&tmp1, MSG_ABOUT_BUILT_USING_ID);
 		#ifdef _WIN64
-		tmp1 += mbstowcs(tmp1, " (64 bit)\n", 100);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT(" ") TEXT(VERSION_STR) TEXT(" (64 bit)\n")));
 		#else
-		tmp1 += mbstowcs(tmp1, " (32 bit)\n", 100);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT(" ") TEXT(VERSION_STR) TEXT(" (32 bit)\n")));
 		#endif
 
-		tmp1 += mbstowcs(tmp1, "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n", 100);
-
-		FF_GetMsg(tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID); tmp1 += xstrlen(tmp1);
-		tmp1 += mbstowcs(tmp1, "\n", 100);
-		tmp1 += mbstowcs(tmp1, PROJECT_URL, 100);
-
-		showmessage(&filters[0]);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT("(C) 2003-2009 Toby Thain, 2018-") TEXT(RELEASE_YEAR) TEXT(" Daniel Marschall\n")));
+		strcpy_advance_id(&tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("\n"));
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(PROJECT_URL));
 	} else {
-		TCHAR filters[3000];
-		TCHAR* tmp1, * tmp2;
-
-		memset(&filters[0], 0, sizeof(filters));
-		tmp1 = &filters[0];
-
-		tmp1 += mbstowcs(tmp1, "Filter Foundry " VERSION_STR, 100);
 		#ifdef _WIN64
-		tmp1 += mbstowcs(tmp1, " (64 bit)\n", 100);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT("Filter Foundry ") TEXT(VERSION_STR) TEXT(" (64 bit)\n")));
 		#else
-		tmp1 += mbstowcs(tmp1, " (32 bit)\n", 100);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT("Filter Foundry ") TEXT(VERSION_STR) TEXT(" (32 bit)\n")));
 		#endif
-
-		tmp1 += mbstowcs(tmp1, "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n\n", 100);
-
-		FF_GetMsg(tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID); tmp1 += xstrlen(tmp1);
-		tmp1 += mbstowcs(tmp1, "\n", 100);
-		tmp1 += mbstowcs(tmp1, PROJECT_URL, 100);
-		tmp1 += mbstowcs(tmp1, "\n\n", 100);
-
-		FF_GetMsg(tmp1, MSG_ABOUT_CONTACT_AUTHOR_ID); tmp1 += xstrlen(tmp1);
-
-		showmessage(&filters[0]);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT("(C) 2003-2009 Toby Thain, 2018-") TEXT(RELEASE_YEAR) TEXT(" Daniel Marschall\n\n")));
+		strcpy_advance_id(&tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID);
+		strcpy_advance(&tmp1, (TCHAR*)(TEXT("\n") TEXT(PROJECT_URL) TEXT("\n\n")));
+		strcpy_advance_id(&tmp1, MSG_ABOUT_CONTACT_AUTHOR_ID);
 	}
+
+	showmessage(filters);
+	free(filters);
 }
 
 Boolean simplealert(TCHAR* s){

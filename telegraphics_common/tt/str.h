@@ -17,8 +17,23 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifdef WIN_ENV
+#include <windows.h>
+#endif
+
 #ifndef STR_H_
 #define STR_H_
+
+#ifdef MAC_ENV
+#ifdef UNICODE
+#define TCHAR wchar_t
+#else
+#define TCHAR char
+#endif
+#endif
+
+void strcpy_advance(TCHAR** str, TCHAR* append);
+void strcpy_advance_a(TCHAR** str, char* append);
 
 #ifdef UNICODE
 size_t xstrlen(wchar_t* s);
