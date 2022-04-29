@@ -203,7 +203,6 @@ DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
-	TCHAR*reason;
 
 	#ifdef SHOW_HOST_DEBUG
 	char* tmp;
@@ -312,7 +311,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
-			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
+			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance, NULL);
 			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				if (gdata->obfusc) {
 					simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
@@ -449,7 +448,6 @@ endmain:
 }
 
 int checkandinitparams(Handle params){
-	TCHAR*reasonstr,*reason;
 	int i;
 	Boolean bUninitializedParams;
 	Boolean showdialog;
@@ -468,7 +466,7 @@ int checkandinitparams(Handle params){
 		// We need to set gdata->standalone after loadfile(), but we must call readPARMresource() before loadfile()
 		// Reason: readPARMresource() reads parameters from the DLL while loadfile() reads parameters from the AFS file
 		// But loadfile() will reset gdata->standalone ...
-		isStandalone = readPARMresource((HMODULE)hDllInstance, &reason);
+		isStandalone = readPARMresource((HMODULE)hDllInstance, NULL);
 		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
@@ -495,7 +493,7 @@ int checkandinitparams(Handle params){
 			}
 		}
 
-		if (loadfile(&sfr, &reason)) {
+		if (loadfile(&sfr, NULL)) {
 			gdata->standalone = gdata->parmloaded = isStandalone;
 
 			if (isStandalone) {
@@ -509,12 +507,12 @@ int checkandinitparams(Handle params){
 		}
 	}
 
-	if( (bUninitializedParams = !(params && readparams_afs_pff(params,&reasonstr))) ){
+	if( (bUninitializedParams = !(params && readparams_afs_pff(params, NULL))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance,&reason);
+		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance, NULL);
 		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);

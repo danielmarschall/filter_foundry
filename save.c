@@ -90,7 +90,7 @@ OSErr saveparams_afs_pff(Handle h){
 					p = cat(p,outbuf);
 				}
 			else
-				p = cat(p,_strdup("(null expr)\r")); // this shouldn't happen
+				p = cat(p,(char*)("(null expr)\r")); // this shouldn't happen
 			*p++ = CR;
 		}
 
@@ -213,7 +213,7 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
-	TCHAR *reasonstr = NULL;
+	TCHAR* reasonstr = NULL;
 
 	FSpDelete(&sfr->sfFile);
 	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
@@ -252,12 +252,14 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
-	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
+	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID);
 
 	if (!res) {
 		alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reasonstr);
 	}
+
+	if (reasonstr) FF_GetMsg_Free(reasonstr);
 
 	return res;
 }

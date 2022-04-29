@@ -69,7 +69,7 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
 				if (!res) {
-					*reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+					if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 				}
 				free(copy);
 				gdata->obfusc = true;
@@ -87,15 +87,16 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 
 Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	HMODULE hm;
+	TCHAR* reasonstr;
 
 	// The different read-functions will return true if the resource was successfully loaded,
 	// or false otherwise. If *reason is set, then the answer is clearly "No". If the result
 	// is just false, it means that the program should continue with the next read-function.
-	*reason = NULL;
+	reasonstr = NULL;
 
 	// First, try to read the file as AFS/PFF/TXT file
-	if (*reason == NULL) {
-		if (readfile_afs_pff(sfr, reason)) {
+	if (reasonstr == NULL) {
+		if (readfile_afs_pff(sfr, &reasonstr)) {
 			gdata->obfusc = false;
 			gdata->parmloaded = false;
 			return true;
@@ -103,11 +104,11 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	}
 
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
-	if (*reason == NULL) {
+	if (reasonstr == NULL) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
-			if (readPARMresource(hm, reason)) {
+			if (readPARMresource(hm, &reasonstr)) {
 				if (gdata->parm.iProtected) {
-					*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+					reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
 					//gdata->parmloaded = false;
 				}
 				else {
@@ -121,16 +122,16 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	}
 
 	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
-	if (*reason == NULL) {
-		if (readfile_ffx(sfr, reason)) {
+	if (reasonstr == NULL) {
+		if (readfile_ffx(sfr, &reasonstr)) {
 			gdata->parmloaded = true;
 			return true;
 		}
 	}
 
 	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
-	if (*reason == NULL) {
-		if (readfile_picotxt(sfr, reason)) {
+	if (reasonstr == NULL) {
+		if (readfile_picotxt(sfr, &reasonstr)) {
 			gdata->parmloaded = true;
 			return true;
 		}
@@ -138,11 +139,11 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or 64 bit 8BF on Win32 OS)
 	// Note that we cannot detect obfuscated filters here!
-	if (*reason == NULL) {
-		if (readfile_8bf(sfr, reason)) {
+	if (reasonstr == NULL) {
+		if (readfile_8bf(sfr, &reasonstr)) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
-				*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+				reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
 			}
 			else {
 				gdata->parmloaded = true;
@@ -153,8 +154,11 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 
 	// We didn't had success. If we have a clear reason, return false and the reason.
 	// If we don't have a clear reason, set a generic reason and return false.
-	if (*reason == NULL) {
-		*reason = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+	if (reasonstr == NULL) {
+		reasonstr = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	}
+
+	if (reason) *reason = reasonstr;
+
 	return false;
 }

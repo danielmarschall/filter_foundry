@@ -343,7 +343,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	StandardFileReply sfr;
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
-	TCHAR*reason;
+	TCHAR*reason = NULL;
 	HINSTANCE hShellRes;
 	InternalState bakState;
 
@@ -411,7 +411,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 		loadDlgRet = !gdata->standalone && choosefiletypes(
 #ifdef MAC_ENV
-		(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+			"\pChoose filter settings", // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			&sfr, &reply, types, 2,
 			filters
 #else
@@ -437,6 +437,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				// Restore
 				restoreInternalState(bakState);
 			}
+			if (reason) FF_GetMsg_Free(reason);
 		}
 		break;
 	}
@@ -478,8 +479,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 		saveDlgRet = !gdata->standalone && putfile(
 #ifdef MAC_ENV
-		(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
-			(StringPtr)_strdup("\0"),
+			"\pSave filter settings", // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+			"\0",
 			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			"afs",
 			filters, 1

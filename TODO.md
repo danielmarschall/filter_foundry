@@ -75,8 +75,6 @@ Minor priority stuff or ideas
 
 * Let PIPL have resource ID 16 instead of 16000, so that other apps might be able to recognize it as Filter Factory plugin?
 
-* Make Filter Foundry ready for translations? In Windows, put all strings in string lists (resources, `LoadStringA`), as well as in Mac resources.
-
 * Should the compiler flags in `funcs.h` as well as settings like `use_plugin_dll_sliders` be placed as resource (binary bits), so that the behavior can be changed if required?
 
 

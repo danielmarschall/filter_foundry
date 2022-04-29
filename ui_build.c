@@ -281,8 +281,8 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 			makeDlgRet = putfile(
 #ifdef MAC_ENV
-				(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
-				(StringPtr)myc2pstr(_strdup(fname)),
+				"\pMake standalone filter", // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+				myc2pstr(_strdup(fname)), // TODO: memory leak?
 				PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
 				"8bf", &filters[0], 1
 #else

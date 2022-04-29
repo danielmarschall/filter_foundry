@@ -54,7 +54,6 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 	q = curexpr;
 	linecnt = exprcnt = lineptr = 0;
 
-	//*reason = _strdup("File was too short."); // TODO (Not so important): TRANSLATE
 	while(p < dataend){
 
 		c = *p++;
@@ -70,7 +69,8 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 			/* process complete line */
 			if(linecnt==0){
 				if(strcmp(linebuf,"%RGB-1.0")){
-					// *reason = _strdup("This doesn't look like a Filter Factory file (first line is not \"%RGB-1.0\")."); // TODO (Not so important): TRANSLATE
+					// Note: We don't set *reason, because we cannot be sure if it is a valid file in regards to a different data type
+					// We only set *Reason, if we are sure that it is an AFS file which is indeed wrong.
 					break;
 				}
 			}else if(linecnt<=8){
@@ -84,7 +84,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 					/* it's not an empty line; append it to current expr string */
 					if( q+lineptr > curexpr+MAXEXPR ){
 						// TODO: isn't the limit 1024?! (because we need to have the NUL too?)
-						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION1024_FOUND_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+						if (reason) *reason = FF_GetMsg_Cpy(MSG_EXPRESSION1024_FOUND_ID);
 						break;
 					}
 					q = cat(q,linebuf);
@@ -94,7 +94,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 						free(expr[exprcnt]);
 					*q = 0;
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
-						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+						if (reason) *reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID);
 						break;
 					}
 
@@ -351,7 +351,7 @@ Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason){
 		} // else no point in proceeding
 		FSClose(refnum);
 	}else
-		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+		if (reason) *reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
 
 	if (res) gdata->obfusc = false;
 	return res;
@@ -816,7 +816,7 @@ Boolean readfile_afs_pff(StandardFileReply *sfr, TCHAR**reason){
 		FSClose(r);
 	}
 	else
-		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+		if (reason) *reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
 
 	return res;
 }
