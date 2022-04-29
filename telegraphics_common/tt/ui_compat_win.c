@@ -86,7 +86,7 @@ Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 
 			return true;
 		}else
-			dbg((TCHAR*)TEXT("CreateDIBSection FAILED")); // TODO (Not so important): TRANSLATE
+			dbg((TCHAR*)TEXT("CreateDIBSection FAILED"));
 	}
 	return false;
 }

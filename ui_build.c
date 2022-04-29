@@ -242,14 +242,6 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
 		gdata->obfusc = (Boolean)ISDLGBUTTONCHECKED(dp,PROTECTITEM);
 
-		// TODO: Unicode!
-		//xstrcpy(fname, gdata->parm.szTitle);
-		/*
-		for (i = 0; i < (int)strlen(gdata->parm.szTitle); i++) {
-			fname[i] = gdata->parm.szTitle[i];
-			fname[i + 1] = 0;
-		}
-		*/
 		GetDlgItemText(dp, TITLEITEM, fname, MAXFIELD);
 
 		{

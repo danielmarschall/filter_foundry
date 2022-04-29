@@ -22,7 +22,7 @@
 
 void dbg(TCHAR *s){
     #ifdef DEBUG
-	MessageBox(NULL,s,TEXT("plugin debug"),0); // TODO (Not so important): TRANSLATE
+	MessageBox(NULL,s,TEXT("plugin debug"),0);
     #else
     UNREFERENCED_PARAMETER(s);
 	#endif

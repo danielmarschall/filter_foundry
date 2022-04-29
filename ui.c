@@ -214,7 +214,7 @@ void maindlgupdate(DIALOGREF dp){
 	for(i = 0; i < 8; i++)
 		if(unknown || ctls[i]){
 			ENABLEDLGITEM(dp,FIRSTCTLITEM+i); // TODO: slider is still shown as disabled
-			REPAINTCTL(dp, FIRSTCTLITEM + i); // required for PLUGIN.DLL sliders
+			REPAINTCTL(dp, FIRSTCTLITEM+i); // required for PLUGIN.DLL sliders
 			ENABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			ShowDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
 		}else{
