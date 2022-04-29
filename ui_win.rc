@@ -370,7 +370,7 @@ BEGIN
 	CHECKBOX        "ctl(6)",FIRSTCTLCHECKITEM+6,   114,182,  35,12
 	CHECKBOX        "ctl(7)",FIRSTCTLCHECKITEM+7,   114,197,  35,12
 
-	CHECKBOX        "Filter schützen",PROTECTITEM, 10,219, 90,12
+	CHECKBOX        "Filter schützen",PROTECTITEM,  10,219,   67,12
 
 	LTEXT           "Kategorie:",  100,        10,10, 35,12
 	LTEXT           "Titel:",     101,        10,25, 35,12
