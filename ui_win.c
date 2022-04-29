@@ -41,45 +41,68 @@ HICON hIconCautionSign;
 extern HINSTANCE hDllInstance;
 
 void DoAbout(AboutRecordPtr pb){
-	char text[1000];
-	char title[200];
 	PlatformData *p = (PlatformData*)pb->platformData;
 
 	if (gdata && gdata->standalone) {
-		sprintf(title, "About %s", gdata->parm.szTitle);
-		sprintf(text,  "%s by %s\n" /* {Title} by {Author} */
-		               "%s\n" /* {Copyright} */
-		               "\n"
-		               "This plugin was built using Filter Foundry " VERSION_STR
-				#ifdef _WIN64
-		               " (64 bit)\n"
-				#else
-		               " (32 bit)\n"
-				#endif
-		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
-		               "available from " PROJECT_URL,
-		               gdata->parm.szTitle,
-		               gdata->parm.szAuthor,
-		               gdata->parm.szCopyright);
-	} else {
-		sprintf(title, "About Filter Foundry");
-		sprintf(text,  "Filter Foundry " VERSION_STR
-				#ifdef _WIN64
-		               " (64 bit)\n"
-				#else
-		               " (32 bit)\n"
-				#endif
-		               "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n"
-		               "\n"
-		               "Latest version available from\n"
-		               PROJECT_URL "\n"
-		               "\nPlease contact the author with any bug reports,\n"
-		               "suggestions or comments.\n"
-		               "If you use this program and like it, please consider\n"
-		               "making a donation.");
-	}
+		TCHAR filters[3000];
+		TCHAR* tmp1, * tmp2;
 
-	MessageBoxA((HWND)p->hwnd, text, title, MB_TASKMODAL|MB_ICONINFORMATION|MB_OK);
+		memset(&filters[0], 0, sizeof(filters));
+		tmp1 = &filters[0];
+
+		//strcpy(gdata->parm.szTitle, "TestTitle");
+		//strcpy(gdata->parm.szAuthor, "TestAuthor");
+		//strcpy(gdata->parm.szCopyright, "TestCopyright");
+
+		tmp1 += mbstowcs(tmp1, gdata->parm.szTitle, 100);
+		FF_GetMsg(tmp1, MSG_ABOUT_BY_ID); tmp1 += xstrlen(tmp1);
+		tmp1 += mbstowcs(tmp1, gdata->parm.szAuthor, 100);
+		tmp1 += mbstowcs(tmp1, "\n", 100);
+
+		tmp1 += mbstowcs(tmp1, gdata->parm.szCopyright, 100);
+		tmp1 += mbstowcs(tmp1, "\n\n", 100);
+
+		FF_GetMsg(tmp1, MSG_ABOUT_BUILT_USING_ID); tmp1 += xstrlen(tmp1);
+		tmp1 += mbstowcs(tmp1, VERSION_STR, 100);
+
+		#ifdef _WIN64
+		tmp1 += mbstowcs(tmp1, " (64 bit)\n", 100);
+		#else
+		tmp1 += mbstowcs(tmp1, " (32 bit)\n", 100);
+		#endif
+
+		tmp1 += mbstowcs(tmp1, "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n", 100);
+
+		FF_GetMsg(tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID); tmp1 += xstrlen(tmp1);
+		tmp1 += mbstowcs(tmp1, "\n", 100);
+		tmp1 += mbstowcs(tmp1, PROJECT_URL, 100);
+
+		showmessage(&filters[0]);
+	} else {
+		TCHAR filters[3000];
+		TCHAR* tmp1, * tmp2;
+
+		memset(&filters[0], 0, sizeof(filters));
+		tmp1 = &filters[0];
+
+		tmp1 += mbstowcs(tmp1, "Filter Foundry " VERSION_STR, 100);
+		#ifdef _WIN64
+		tmp1 += mbstowcs(tmp1, " (64 bit)\n", 100);
+		#else
+		tmp1 += mbstowcs(tmp1, " (32 bit)\n", 100);
+		#endif
+
+		tmp1 += mbstowcs(tmp1, "(C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall\n\n", 100);
+
+		FF_GetMsg(tmp1, MSG_ABOUT_LATEST_VERSION_FROM_ID); tmp1 += xstrlen(tmp1);
+		tmp1 += mbstowcs(tmp1, "\n", 100);
+		tmp1 += mbstowcs(tmp1, PROJECT_URL, 100);
+		tmp1 += mbstowcs(tmp1, "\n\n", 100);
+
+		FF_GetMsg(tmp1, MSG_ABOUT_CONTACT_AUTHOR_ID); tmp1 += xstrlen(tmp1);
+
+		showmessage(&filters[0]);
+	}
 }
 
 Boolean simplealert(TCHAR* s){

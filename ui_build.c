@@ -252,28 +252,55 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		*/
 		GetDlgItemText(dp, TITLEITEM, fname, MAXFIELD);
 
-		#ifdef MACMACHO
-		strcat(fname, ".plugin");
-		#endif
-		if (putfile(
-			#ifdef MAC_ENV
-			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO: TRANSLATE
-			(StringPtr)myc2pstr(_strdup(fname)),
-			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
-			"8bf", "Filter plugin file (.8bf)\0*.8bf\0\0", 1 // TODO: TRANSLATE
-			#else
-			TEXT("Make standalone filter"), // TODO: TRANSLATE
-			fname,
-			PS_FILTER_FILETYPE, kPhotoshopSignature, & reply, & sfr,
-			TEXT("8bf"),
-			TEXT("Filter plugin file (.8bf)\0*.8bf\0\0"), 1 // TODO: TRANSLATE
-			, (HWND)dp
+		{
+			TCHAR filters[3000];
+			TCHAR* tmp1, * tmp2;
+			size_t len;
+
+			memset(&filters[0], 0, sizeof(filters));
+			tmp1 = &filters[0];
+
+			FF_GetMsg(tmp1, MSG_MAKE_8BF_ID);
+			tmp1 += xstrlen(tmp1);
+			len = xstrlen(tmp2 = TEXT(" (*.8bf)"));
+			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+			tmp1 += (len + 1);
+			len = xstrlen(tmp2 = TEXT("*.8bf"));
+			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+			tmp1 += (len + 1);
+
+			FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
+			tmp1 += xstrlen(tmp1);
+			len = xstrlen(tmp2 = TEXT(" (*.*)"));
+			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+			tmp1 += (len + 1);
+			len = xstrlen(tmp2 = TEXT("*.*"));
+			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+			tmp1 += (len + 1);
+
+			#ifdef MACMACHO
+			strcat(fname, ".plugin");
 			#endif
-		)) {
-			make_standalone(&sfr);
-		}
-		else {
-			return true; // keep going. Let the user correct their input
+			if (putfile(
+			#ifdef MAC_ENV
+			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+				(StringPtr)myc2pstr(_strdup(fname)),
+				PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
+				"8bf", &filters[0], 1
+			#else
+				FF_GetMsg_Cpy(MSG_MAKE_FILTER_SETTINGS_TITLE_ID),
+				fname,
+				PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
+				TEXT("8bf"),
+				&filters[0], 1
+				, (HWND)dp
+			#endif
+			)) {
+				make_standalone(&sfr);
+			}
+			else {
+				return true; // keep going. Let the user correct their input
+			}
 		}
 
 		return false; // end dialog

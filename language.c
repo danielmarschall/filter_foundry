@@ -26,7 +26,7 @@ void FF_GetMsg(TCHAR* ret, int MsgId) {
 	TCHAR* szMsg;
     int len;
     len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
-    LoadString(hDllInstance, MsgId, ret, len);
+    LoadString(hDllInstance, MsgId, ret, len+1);
 #else
 	Str255 msg;
 	GetIndString(msg, 1000, MsgId);
@@ -35,12 +35,20 @@ void FF_GetMsg(TCHAR* ret, int MsgId) {
 }
 
 TCHAR* FF_GetMsg_Cpy(int MsgId) {
+#ifdef WIN_ENV
     TCHAR* szMsg;
     int len;
     TCHAR* ret;
     len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
     ret = (TCHAR*)malloc((len+1) * sizeof(TCHAR)); // TODO: This leaks memory! Like _strdup() does... Not a good design!
     if (ret == NULL) return NULL;
-    LoadString(hDllInstance, MsgId, ret, len);
+    LoadString(hDllInstance, MsgId, ret, len+1);
     return ret;
+#else
+    Str255 msg;
+    TCHAR* ret;
+    GetIndString(msg, 1000, MsgId);
+    myp2cstrcpy(ret, msg);
+    return ret;
+#endif
 }

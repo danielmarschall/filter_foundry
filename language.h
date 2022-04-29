@@ -18,10 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// TODO: Search for more things to translate, e.g. in *_mac.*
-// TODO: Translate "TODO: Translate" in *.c
-// TODO: Translate dialogs
-
 // TODO: Deutsche Umlaute sind kaputt (UTF8 Zeichen werden gezeigt)
 // Hiermit geht es aber...
 // Meldung "Unbekanntes Pragma" (trotzdem bringt es was?!)
@@ -174,6 +170,87 @@
 #define MSG_FULLY_ZOOM_INOUT_ID 37
 #define MSG_FULLY_ZOOM_INOUT_ENUS "Fully zoom in/out"
 #define MSG_FULLY_ZOOM_INOUT_DEDE "Vollständig rein/raus-zoomen"
+
+#define MSG_LOAD_FILTER_SETTINGS_TITLE_ID 38
+#define MSG_LOAD_FILTER_SETTINGS_TITLE_ENUS "Load filter settings"
+#define MSG_LOAD_FILTER_SETTINGS_TITLE_DEDE "Filter-Einstellungen laden"
+
+#define MSG_SAVE_FILTER_SETTINGS_TITLE_ID 39
+#define MSG_SAVE_FILTER_SETTINGS_TITLE_ENUS "Save filter settings"
+#define MSG_SAVE_FILTER_SETTINGS_TITLE_DEDE "Filter-Einstellungen speichern"
+
+#define MSG_MAKE_FILTER_SETTINGS_TITLE_ID 40
+#define MSG_MAKE_FILTER_SETTINGS_TITLE_ENUS "Create standalone filter"
+#define MSG_MAKE_FILTER_SETTINGS_TITLE_DEDE "Eigenständigen Filter erzeugen"
+
+#define MSG_ALL_SUPPORTED_FILES_ID 41
+#define MSG_ALL_SUPPORTED_FILES_ENUS "All supported files"
+#define MSG_ALL_SUPPORTED_FILES_DEDE "Alle unterstützten Dateien"
+
+#define MSG_ALL_FILES_ID 42
+#define MSG_ALL_FILES_ENUS "All files"
+#define MSG_ALL_FILES_DEDE "Alle Dateien"
+
+#define MSG_OPEN_AFS_ID 43
+#define MSG_OPEN_AFS_ENUS "Filter Factory Settings"
+#define MSG_OPEN_AFS_DEDE "Filter Factory Einstellungen"
+
+#define MSG_OPEN_TXT_ID 44
+#define MSG_OPEN_TXT_ENUS "PluginCommander or FFDecomp TXT file"
+#define MSG_OPEN_TXT_DEDE "PluginCommander oder FFDecomp Text-Datei"
+
+#define MSG_OPEN_8BF_ID 45
+#define MSG_OPEN_8BF_ENUS "Filter Factory for Windows, Standalone Filter"
+#define MSG_OPEN_8BF_DEDE "Filter Factory für Windows, Eigenständiger Filter"
+
+#define MSG_OPEN_PFF_ID 46
+#define MSG_OPEN_PFF_ENUS "Premiere TF / FF Settings"
+#define MSG_OPEN_PFF_DEDE "Premiere TF / FF Einstellungen"
+
+#define MSG_OPEN_PRM_ID 47
+#define MSG_OPEN_PRM_ENUS "Premiere TF/FF for Windows, Standalone Filter"
+#define MSG_OPEN_PRM_DEDE "Premiere TF/FF für Windows, Eigenständiger Filter"
+
+#define MSG_OPEN_RSRC_ID 48
+#define MSG_OPEN_RSRC_ENUS "FilterFactory for MacOS, Standalone Filter"
+#define MSG_OPEN_RSRC_DEDE "FilterFactory für MacOS, Eigenständiger Filter"
+
+#define MSG_OPEN_FFX_ID 49
+#define MSG_OPEN_FFX_ENUS """Filters Unlimited"" filter"
+#define MSG_OPEN_FFX_DEDE """Filters Unlimited"" Filter"
+
+#define MSG_SAVE_AFS_ID 50
+#define MSG_SAVE_AFS_ENUS "Filter Factory Settings"
+#define MSG_SAVE_AFS_DEDE "Filter Factory Einstellungen"
+
+#define MSG_SAVE_PFF_ID 51
+#define MSG_SAVE_PFF_ENUS "Premiere TF / FF Settings"
+#define MSG_SAVE_PFF_DEDE "Premiere TF / FF Einstellungen"
+
+#define MSG_SAVE_TXT_ID 52
+#define MSG_SAVE_TXT_ENUS "PluginCommander TXT file"
+#define MSG_SAVE_TXT_DEDE "PluginCommander Text-Datei"
+
+#define MSG_MAKE_8BF_ID 53
+#define MSG_MAKE_8BF_ENUS "Filter plugin file"
+#define MSG_MAKE_8BF_DEDE "Eigenständiger Filter"
+
+#define MSG_ABOUT_BY_ID 54
+#define MSG_ABOUT_BY_ENUS " by "
+#define MSG_ABOUT_BY_DEDE " von "
+
+#define MSG_ABOUT_BUILT_USING_ID 55
+#define MSG_ABOUT_BUILT_USING_ENUS "This plugin was built using Filter Foundry "
+#define MSG_ABOUT_BUILT_USING_DEDE "Dieses Plugin wurde erstellt mit Filter Foundry "
+
+#define MSG_ABOUT_LATEST_VERSION_FROM_ID 56
+#define MSG_ABOUT_LATEST_VERSION_FROM_ENUS "Latest version available from:"
+#define MSG_ABOUT_LATEST_VERSION_FROM_DEDE "Aktuelle Version herunterladen:"
+
+#define MSG_ABOUT_CONTACT_AUTHOR_ID 57
+#define MSG_ABOUT_CONTACT_AUTHOR_ENUS "Please contact the author with any bug reports,\nsuggestions or comments.\nIf you use this program and like it, please consider\nmaking a donation."
+#define MSG_ABOUT_CONTACT_AUTHOR_DEDE "Bitte kontaktieren Sie den Autor für Fehlerberichte,\nAnregungen und Kommentare.\nWenn Sie dieses Programm mögen,\nerwägen Sie bitte eine Spende."
+
 
 void FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);

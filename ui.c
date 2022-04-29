@@ -358,22 +358,110 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		dispose_preview();
 		return false; // end dialog
 	case OPENITEM:
-		if(!gdata->standalone && choosefiletypes(
-			#ifdef MAC_ENV
-			(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string" // TODO: TRANSLATE
-			& sfr, & reply, types, 2,
-			"All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander or FFDecomp TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin, *.rsrc)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0" // TODO: TRANSLATE
-			#else
-			TEXT("Choose filter settings"), // TODO: TRANSLATE
-			& sfr, & reply, types, 2,
-			TEXT("All supported files (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)\0*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx\0Filter Factory Settings (*.afs, *.txt)\0*.afs;*.txt\0PluginCommander or FFDecomp TXT file (*.txt)\0*.txt\0Filter Factory for Windows, Standalone Filter (*.8bf)\0*.8bf\0Premiere TF/FF Settings (*.pff)\0*.pff\0Premiere TT/FF for Windows, Standalone Filter (*.prm)\0*.prm\0FilterFactory for MacOS, Standalone Filter (*.bin, *.rsrc)\0*.bin\0\"Filters Unlimited\" filter (*.ffx)\0*.ffx\0All files (*.*)\0*.*\0\0") // TODO: TRANSLATE
-			,gdata->hWndMainDlg
-			#endif
-		)){
+	{
+		TCHAR filters[3000];
+		TCHAR *tmp1, *tmp2;
+		size_t len;
+
+		memset(&filters[0], 0, sizeof(filters));
+		tmp1 = &filters[0];
+
+		FF_GetMsg(tmp1, MSG_ALL_SUPPORTED_FILES_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_AFS_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.afs)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.afs"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_TXT_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.txt)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.txt"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_8BF_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.8bf)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.8bf"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_PFF_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.pff)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.pff"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_PRM_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.prm)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.prm"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_RSRC_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.bin, *.rsrc)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.bin;*.rsrc"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_OPEN_FFX_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.ffx)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.ffx"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.*)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.*"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		if (!gdata->standalone && choosefiletypes(
+		#ifdef MAC_ENV
+		(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+			&sfr, &reply, types, 2,
+			&filters[0]
+		#else
+			FF_GetMsg_Cpy(MSG_LOAD_FILTER_SETTINGS_TITLE_ID),
+			&sfr, &reply, types, 2,
+			&filters[0], gdata->hWndMainDlg
+		#endif
+		)) {
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
-			if (loadfile(&sfr,&reason)) {
+			if (loadfile(&sfr, &reason)) {
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}
@@ -385,24 +473,77 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			}
 		}
 		break;
+	}
 	case SAVEITEM:
-		if(!gdata->standalone && putfile(
-			#ifdef MAC_ENV
-			(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string" // TODO: TRANSLATE
+	{
+		TCHAR filters[3000];
+		TCHAR* tmp1, * tmp2;
+		size_t len;
+
+		memset(&filters[0], 0, sizeof(filters));
+		tmp1 = &filters[0];
+
+		FF_GetMsg(tmp1, MSG_ALL_SUPPORTED_FILES_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.afs, *.pff, *.txt)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.afs;*.pff;*.txt"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_SAVE_AFS_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.afs)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.afs"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_SAVE_PFF_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.pff)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.pff"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_SAVE_TXT_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.txt)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.txt"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
+		tmp1 += xstrlen(tmp1);
+		len = xstrlen(tmp2 = TEXT(" (*.*)"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+		len = xstrlen(tmp2 = TEXT("*.*"));
+		memcpy(tmp1, tmp2, len * sizeof(TCHAR));
+		tmp1 += (len + 1);
+
+		if (!gdata->standalone && putfile(
+		#ifdef MAC_ENV
+		(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			(StringPtr)_strdup("\0"),
-			TEXT_FILETYPE, SIG_SIMPLETEXT, & reply, & sfr,
+			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			"afs",
-			"All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0", 1 // TODO: TRANSLATE
-			#else
-			TEXT("Save filter settings"), // TODO: TRANSLATE
+			& filters[0], 1
+		#else
+			FF_GetMsg_Cpy(MSG_SAVE_FILTER_SETTINGS_TITLE_ID),
 			TEXT("\0"),
-			TEXT_FILETYPE, SIG_SIMPLETEXT, & reply, & sfr,
+			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			TEXT("afs"),
-			TEXT("All supported files (.afs, *.pff, .txt)\0*.afs;*.pff;*.txt\0Filter Factory Settings (*.afs)\0*.afs\0Premiere TF/FF Settings (*.pff)\0*.pff\0PluginCommander TXT file (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0"), 1 // TODO: TRANSLATE
-			,gdata->hWndMainDlg
-			#endif
-		)){
-			if(savefile_afs_pff_picotxt(&sfr)) {
+			& filters[0], 1, gdata->hWndMainDlg
+		#endif
+		)) {
+			if (savefile_afs_pff_picotxt(&sfr)) {
 				completesave(&reply);
 
 				if (fileHasExtension(&sfr, TEXT(".txt"))) {
@@ -436,6 +577,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			}
 		}
 		break;
+	}
 	case MAKEITEM:
 		if (gdata->standalone) return true; // should not happen since the button should be grayed out
 

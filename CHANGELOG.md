@@ -2,6 +2,9 @@
 
 ## 1.7.0.17 [Work-In-Progress]
 - Fixed theoretical bug that can crash a Photoshop application if PLUGIN.DLL exists but is not loaded.
+- Added translation for German systems (*)
+
+(*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 
 ## 1.7.0.16 [22-Mar-2022]
 - Fixed bug that caused PLUGIN.DLL sliders not working if the filter was called multiple times. You can hotfix existing standalone plugins by replacing "UnregisterSlider" with "UnRegisterSlider" using a hex-editor. Affected are plugins built using 1.7.0.13/14/15.
