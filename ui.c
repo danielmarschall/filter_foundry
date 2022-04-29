@@ -360,10 +360,18 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	case OPENITEM:
 	{
 		TCHAR* tmp1;
-		TCHAR* filters = (TCHAR*)malloc(4096);
+		TCHAR* filters, *title;
+		Boolean loadDlgRet;
+
+		title = (TCHAR*)malloc(1024);
+		if (title == NULL) return false;
+
+		filters = (TCHAR*)malloc(4096);
 		if (filters == NULL) return false;
 		memset(filters, 0, 4096);
 		tmp1 = filters;
+
+		FF_GetMsg(title, MSG_LOAD_FILTER_SETTINGS_TITLE_ID);
 
 		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)")); tmp1++;
@@ -401,17 +409,21 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
-		if (!gdata->standalone && choosefiletypes(
-		#ifdef MAC_ENV
+		loadDlgRet = !gdata->standalone && choosefiletypes(
+#ifdef MAC_ENV
 		(StringPtr)_strdup("\pChoose filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			&sfr, &reply, types, 2,
 			filters
-		#else
-			FF_GetMsg_Cpy(MSG_LOAD_FILTER_SETTINGS_TITLE_ID),
-			&sfr, &reply, types, 2,
+#else
+			title, &sfr, &reply, types, 2,
 			filters, gdata->hWndMainDlg
-		#endif
-		)) {
+#endif
+		);
+		
+		free(filters);
+		free(title);
+
+		if (loadDlgRet) {
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
@@ -426,16 +438,23 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				restoreInternalState(bakState);
 			}
 		}
-		free(filters);
 		break;
 	}
 	case SAVEITEM:
 	{
 		TCHAR* tmp1;
-		TCHAR* filters = (TCHAR*)malloc(4096);
+		TCHAR* filters, *title;
+		Boolean saveDlgRet;
+
+		title = (TCHAR*)malloc(1024);
+		if (title == NULL) return false;
+
+		filters = (TCHAR*)malloc(4096);
 		if (filters == NULL) return false;
 		memset(filters, 0, 4096);
 		tmp1 = filters;
+
+		FF_GetMsg(title, MSG_SAVE_FILTER_SETTINGS_TITLE_ID);
 
 		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.pff, *.txt)")); tmp1++;
@@ -457,21 +476,26 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
-		if (!gdata->standalone && putfile(
-		#ifdef MAC_ENV
+		saveDlgRet = !gdata->standalone && putfile(
+#ifdef MAC_ENV
 		(StringPtr)_strdup("\pSave filter settings"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			(StringPtr)_strdup("\0"),
 			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			"afs",
 			filters, 1
-		#else
-			FF_GetMsg_Cpy(MSG_SAVE_FILTER_SETTINGS_TITLE_ID),
+#else
+			title,
 			TEXT("\0"),
 			TEXT_FILETYPE, SIG_SIMPLETEXT, &reply, &sfr,
 			TEXT("afs"),
 			filters, 1, gdata->hWndMainDlg
-		#endif
-		)) {
+#endif
+		);
+		
+		free(filters);
+		free(title);
+
+		if (saveDlgRet) {
 			if (savefile_afs_pff_picotxt(&sfr)) {
 				completesave(&reply);
 
@@ -505,7 +529,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 			}
 		}
-		free(filters);
+
 		break;
 	}
 	case MAKEITEM:

@@ -253,49 +253,52 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		GetDlgItemText(dp, TITLEITEM, fname, MAXFIELD);
 
 		{
-			TCHAR filters[3000];
-			TCHAR* tmp1, * tmp2;
-			size_t len;
+			TCHAR* tmp1;
+			TCHAR* filters, *title;
+			Boolean makeDlgRet;
 
-			memset(&filters[0], 0, sizeof(filters));
-			tmp1 = &filters[0];
+			title = (TCHAR*)malloc(1024);
+			if (title == NULL) return false;
 
-			FF_GetMsg(tmp1, MSG_MAKE_8BF_ID);
-			tmp1 += xstrlen(tmp1);
-			len = xstrlen(tmp2 = TEXT(" (*.8bf)"));
-			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-			tmp1 += (len + 1);
-			len = xstrlen(tmp2 = TEXT("*.8bf"));
-			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-			tmp1 += (len + 1);
+			filters = (TCHAR*)malloc(4096);
+			if (filters == NULL) return false;
+			memset(filters, 0, 4096);
+			tmp1 = filters;
 
-			FF_GetMsg(tmp1, MSG_ALL_FILES_ID);
-			tmp1 += xstrlen(tmp1);
-			len = xstrlen(tmp2 = TEXT(" (*.*)"));
-			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-			tmp1 += (len + 1);
-			len = xstrlen(tmp2 = TEXT("*.*"));
-			memcpy(tmp1, tmp2, len * sizeof(TCHAR));
-			tmp1 += (len + 1);
+			FF_GetMsg(title, MSG_MAKE_FILTER_SETTINGS_TITLE_ID);
+
+			strcpy_advance_id(&tmp1, MSG_MAKE_8BF_ID);
+			strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.8bf)")); tmp1++;
+			strcpy_advance(&tmp1, (TCHAR*)TEXT("*.8bf")); tmp1++;
+
+			strcpy_advance_id(&tmp1, MSG_ALL_FILES_ID);
+			strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
+			strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
 			#ifdef MACMACHO
 			strcat(fname, ".plugin");
 			#endif
-			if (putfile(
-			#ifdef MAC_ENV
-			(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
+
+			makeDlgRet = putfile(
+#ifdef MAC_ENV
+				(StringPtr)_strdup("\pMake standalone filter"), // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 				(StringPtr)myc2pstr(_strdup(fname)),
 				PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
 				"8bf", &filters[0], 1
-			#else
-				FF_GetMsg_Cpy(MSG_MAKE_FILTER_SETTINGS_TITLE_ID),
+#else
+				title,
 				fname,
 				PS_FILTER_FILETYPE, kPhotoshopSignature, &reply, &sfr,
 				TEXT("8bf"),
 				&filters[0], 1
 				, (HWND)dp
-			#endif
-			)) {
+#endif
+			);
+			
+			free(filters);
+			free(title);
+
+			if (makeDlgRet) {
 				make_standalone(&sfr);
 			}
 			else {

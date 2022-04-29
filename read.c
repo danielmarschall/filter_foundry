@@ -84,7 +84,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 					/* it's not an empty line; append it to current expr string */
 					if( q+lineptr > curexpr+MAXEXPR ){
 						// TODO: isn't the limit 1024?! (because we need to have the NUL too?)
-						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION1024_FOUND_ID);
+						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION1024_FOUND_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 						break;
 					}
 					q = cat(q,linebuf);
@@ -94,7 +94,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 						free(expr[exprcnt]);
 					*q = 0;
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
-						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID);
+						*reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 						break;
 					}
 
@@ -351,7 +351,7 @@ Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason){
 		} // else no point in proceeding
 		FSClose(refnum);
 	}else
-		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
+		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 
 	if (res) gdata->obfusc = false;
 	return res;
@@ -816,7 +816,7 @@ Boolean readfile_afs_pff(StandardFileReply *sfr, TCHAR**reason){
 		FSClose(r);
 	}
 	else
-		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
+		*reason = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 
 	return res;
 }

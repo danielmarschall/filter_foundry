@@ -69,7 +69,7 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
 				if (!res) {
-					*reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID);
+					*reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 				}
 				free(copy);
 				gdata->obfusc = true;
@@ -107,7 +107,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm, reason)) {
 				if (gdata->parm.iProtected) {
-					*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
+					*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 					//gdata->parmloaded = false;
 				}
 				else {
@@ -142,7 +142,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		if (readfile_8bf(sfr, reason)) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
-				*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
+				*reason = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 			}
 			else {
 				gdata->parmloaded = true;
@@ -154,7 +154,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	// We didn't had success. If we have a clear reason, return false and the reason.
 	// If we don't have a clear reason, set a generic reason and return false.
 	if (*reason == NULL) {
-		*reason = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
+		*reason = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 	}
 	return false;
 }

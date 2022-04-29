@@ -252,8 +252,8 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 			}
 
 			FSClose(r);
-		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
-	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID);
+		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
+	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID); // TODO: This leaks memory! Needs FF_GetMsg_Free()...
 
 	if (!res) {
 		alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reasonstr);

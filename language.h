@@ -255,3 +255,4 @@
 void strcpy_advance_id(TCHAR** str, int msgid);
 void FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);
+void FF_GetMsg_Free(TCHAR* str);
