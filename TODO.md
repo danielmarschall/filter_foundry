@@ -20,6 +20,10 @@ Known problems
 Minor priority stuff or ideas
 -----------------------------
 
+* Import FFL format (but which filter to select?)
+
+* Import GUF format ( http://gimpuserfilter.sourceforge.net/ )
+
 * If controls are ambigous e.g. ctl(3+c), then you should be able to disable control in the "Make" dialog. Like in Filter Factory.
 
 * When you open a file, e.g. "Test.8bf" and you want to save it again, it would be good, if the default output filename is "Test".
