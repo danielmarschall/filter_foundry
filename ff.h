@@ -83,6 +83,8 @@ typedef struct globals_t_ {
 	// (padding of 1 byte here)
 	OSType lastKnownBufferVersion;
 	OSType lastKnownHandleVersion;
+	double* tantab;
+	double* costab;
 #ifdef _WIN32
 	HWND hWndMainDlg;
 	none_slider_info noneSliderInfo;

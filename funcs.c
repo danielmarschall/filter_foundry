@@ -1,37 +1,37 @@
 /*
-    This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
+	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+	Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #ifdef MAC_ENV
-	#include <fp.h>
+#include <fp.h>
 #endif
 
 #include <math.h>
 #include <stdlib.h>
 
 #ifndef PARSERTEST
-	#include "ff.h"
+#include "ff.h"
 #else
-	#define uint8_t unsigned char
-	#define uint16_t unsigned short
-	#define uint32_t unsigned int
-	#define int32_t int
+#define uint8_t unsigned char
+#define uint16_t unsigned short
+#define uint32_t unsigned int
+#define int32_t int
 #endif
 
 #include "funcs.h"
@@ -255,26 +255,39 @@ const uint16_t FACTORY_C2M_LOOKUP[1024] = {
 
 extern uint8_t slider[];
 extern value_type cell[], var[];
-extern unsigned char *image_ptr;
+extern unsigned char* image_ptr;
 
 // -------------------------------------------------------------------------------------------
 
-double costab[COSTABSIZE];
-double tantab[TANTABSIZE];
-void init_trigtab(){
+void init_trigtab() {
 #ifdef PARSERTEST
 	return;
 #else
 	int i;
-	for(i=0;i<COSTABSIZE;++i){
-		costab[i] = cos(FFANGLE(i));
+
+	if (gdata == NULL) return; // should not happen
+
+	if (gdata->costab == NULL) {
+		gdata->costab = (double*)malloc(sizeof(double) * COSTABSIZE);
+		if (gdata->costab) {
+			for (i = 0; i < COSTABSIZE; ++i) {
+				gdata->costab[i] = cos(FFANGLE(i));
+			}
+		}
 	}
-	for(i=0;i<TANTABSIZE;++i){
-		if (i>=TANTABSIZE/2) {
-			/* the last '-1' in the expression '512-i-1' is for FilterFactory compatibility, and to avoid the undefined pi/2 area */
-			tantab[i] = -tantab[TANTABSIZE-i-1];
-		} else {
-			tantab[i] = tan(FFANGLE(i));
+
+	if (gdata->tantab == NULL) {
+		gdata->tantab = (double*)malloc(sizeof(double) * TANTABSIZE);
+		if (gdata->tantab) {
+			for (i = 0; i < TANTABSIZE; ++i) {
+				if (i >= TANTABSIZE / 2) {
+					/* the last '-1' in the expression '512-i-1' is for FilterFactory compatibility, and to avoid the undefined pi/2 area */
+					gdata->tantab[i] = -gdata->tantab[TANTABSIZE - i - 1];
+				}
+				else {
+					gdata->tantab[i] = tan(FFANGLE(i));
+				}
+			}
 		}
 	}
 #endif
@@ -284,7 +297,7 @@ void init_trigtab(){
 
 /* Channel z for the input pixel at coordinates x,y.
  * Coordinates are relative to the input image data (pb->inData) */
-static value_type rawsrc(value_type x,value_type y,value_type z){
+static value_type rawsrc(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -319,20 +332,20 @@ static value_type rawsrc(value_type x,value_type y,value_type z){
 /* src(x,y,z) Channel z for the pixel at coordinates x,y.
  * Coordinates are relative to filtered area (selection). */
 
-value_type ff_src(value_type x,value_type y,value_type z){
+value_type ff_src(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	if(x < 0)
+	if (x < 0)
 		x = 0;
-	else if(x >= var['X'])
-		x = var['X']-1;
-	if(y < 0)
+	else if (x >= var['X'])
+		x = var['X'] - 1;
+	if (y < 0)
 		y = 0;
-	else if(y >= var['Y'])
-		y = var['Y']-1;
+	else if (y >= var['Y'])
+		y = var['Y'] - 1;
 	return z >= 0 && z < var['Z'] ?
-		image_ptr[(long)gpb->inRowBytes*y + (long)nplanes*x + z] : 0;
+		image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z] : 0;
 #endif
 }
 
@@ -358,7 +371,7 @@ value_type foundry_r2x(value_type d, value_type m) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return (value_type)RINT(m * costab[abs(d) % COSTABSIZE]);
+	return (value_type)RINT(m * gdata->costab[abs(d) % COSTABSIZE]);
 #endif
 }
 
@@ -388,7 +401,7 @@ value_type foundry_r2y(value_type d, value_type m) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return (value_type)RINT(m * costab[abs(d - 256) % COSTABSIZE]);
+	return (value_type)RINT(m * gdata->costab[abs(d - 256) % COSTABSIZE]);
 #endif
 }
 
@@ -447,7 +460,7 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 	//return ff_src(ecx, ebx, z);
 	ebx *= gpb->inRowBytes;
 	ecx *= var['Z'] - zmin;
-	return image_ptr[z+ebx+ecx];
+	return image_ptr[z + ebx + ecx];
 #endif
 }
 
@@ -459,7 +472,7 @@ value_type foundry_rad(value_type d, value_type m, value_type z) {
 #endif
 }
 
-value_type ff_rad(value_type d,value_type m,value_type z){
+value_type ff_rad(value_type d, value_type m, value_type z) {
 #ifdef use_filterfactory_implementation_rad
 	return factory_rad(d, m, z);
 #else
@@ -470,22 +483,22 @@ value_type ff_rad(value_type d,value_type m,value_type z){
 // -------------------------------------------------------------------------------------------
 
 /* ctl(i) Value of slider i, where i is an integer between 0 and 7, inclusive */
-value_type ff_ctl(value_type i){
+value_type ff_ctl(value_type i) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return i>=0 && i<=7 ? slider[i] : 0;
+	return i >= 0 && i <= 7 ? slider[i] : 0;
 #endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* val(i,a,b) Value of slider i, mapped onto the range a to b */
-value_type ff_val(value_type i,value_type a,value_type b){
+value_type ff_val(value_type i, value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return ((long)ff_ctl(i)*(b-a))/255 + a;
+	return ((long)ff_ctl(i) * (b - a)) / 255 + a;
 #endif
 }
 
@@ -494,28 +507,50 @@ value_type ff_val(value_type i,value_type a,value_type b){
 /* map(i,n) Item n from mapping table i, where i is an integer between
 	0 and 3, inclusive, and n is and integer between 0 and 255,
 	inclusive */
-value_type ff_map(value_type i,value_type n){
+value_type ff_map(value_type i, value_type n) {
 #ifdef PARSERTEST
 	return 0;
 #else
+	value_type H, L;
+	const int i2 = i << 1;
+
+	// This is how Filter Factory for Windows implements it:
+	if (i < 0) return 0;
+	if (i > 3) return 0;
+	H = slider[i2]; // ctl(2i)
+	L = slider[i2 + 1]; // ctl(2i+1)
+	if (n < 0) n = 0;
+	if (n > 255) n = 255; // Note: MacFF probably does "return 255" if n>255 (see testcases/map1_factory_win.png)
+
+	if (H == L) {
+		// This is undocumented in Filter Factory! (Taken from Windows implementation)
+		if (n < H) return 0;
+		if (n >= L) return 255;
+	} else if (L > H) {
+		// This is undocumented in Filter Factory! (Taken from Windows implementation)
+		if (n <= H) return 255;
+		if (n >= L) return 0;
+	} else {
+		if (n <= L) return 0;
+		if (n >= H) return 255;
+	}
+	return (n - L) * 255 / (H - L);
+
+	// This is the original formula used by GIMP User Filter v0.8 (uf-pcode.h).
+	// It was used in Filter Foundry till version 1.7.0.16, inclusive.
 	/*
-	if( i>=0 && i<=3 && n>=0 && n<=255 ){
-		int H = slider[i*2],L = slider[i*2+1];
-		return n<=L || H==L ? 0 : ( n>=H ? 255 : ((n-L)*255L)/(H-L) );
-	}else
-		return 0;
+	value_type H = ff_ctl(i * 2);
+	value_type L = ff_ctl(i * 2 + 1);
+	return abs(((long)n * (L - H) / 255) + H);
 	*/
-	// this code is from GIMP User Filter
-	value_type x = ff_ctl(i*2),
-			   y = ff_ctl(i*2+1);
-	return abs(((long)n*(y-x) / 255)+x);
 #endif
+
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* min(a,b) Lesser of a and b */
-value_type ff_min(value_type a,value_type b){
+value_type ff_min(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -526,7 +561,7 @@ value_type ff_min(value_type a,value_type b){
 // -------------------------------------------------------------------------------------------
 
 /* max(a,b) Greater of a and b */
-value_type ff_max(value_type a,value_type b){
+value_type ff_max(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -537,7 +572,7 @@ value_type ff_max(value_type a,value_type b){
 // -------------------------------------------------------------------------------------------
 
 /* abs(a) Absolute value of a */
-value_type ff_abs(value_type a){
+value_type ff_abs(value_type a) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -548,33 +583,33 @@ value_type ff_abs(value_type a){
 // -------------------------------------------------------------------------------------------
 
 /* add(a,b,c) Sum of a and b, or c, whichever is lesser */
-value_type ff_add(value_type a,value_type b,value_type c){
+value_type ff_add(value_type a, value_type b, value_type c) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return ff_min(a+b,c);
+	return ff_min(a + b, c);
 #endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* sub(a,b,c) Difference of a and b, or c, whichever is greater */
-value_type ff_sub(value_type a,value_type b,value_type c){
+value_type ff_sub(value_type a, value_type b, value_type c) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return ff_max(ff_dif(a,b),c);
+	return ff_max(ff_dif(a, b), c);
 #endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* dif(a,b) Absolute value of the difference of a and b */
-value_type ff_dif(value_type a,value_type b){
+value_type ff_dif(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return abs(a-b);
+	return abs(a - b);
 #endif
 }
 
@@ -610,16 +645,16 @@ void factory_fill_rnd_lookup(uint32_t seed, struct factoryRngState* state) {
 
 	mk = 1;
 	ii = 0;
-	for (i=1; i<=54; ++i) {
+	for (i = 1; i <= 54; ++i) {
 		if ((ii += 21) >= 55) ii -= 55; // ii = (21*i)%55;
 		state->seedTable[ii] = mk;
 		mk = mj - mk;
 		mj = state->seedTable[ii];
 	}
 
-	for (k=1; k<=4; ++k) {
+	for (k = 1; k <= 4; ++k) {
 		ii = 30;
-		for (i=1; i<=55; ++i) {
+		for (i = 1; i <= 55; ++i) {
 			if ((ii += 1) >= 55) ii -= 55;
 			state->seedTable[i] -= state->seedTable[1 + ii]; // 1 + (i+30)%55
 		}
@@ -665,26 +700,26 @@ uint32_t factory_rnd(uint32_t a, uint32_t b, struct factoryRngState* state) {
 	range = b - a;
 	if (range < 0) return 0;
 	switch (range) {
-		case 255:
-			return a + (mj & 0xFF);
-		case 127:
-			return a + (mj & 0x7F);
-		case 63:
-			return a + (mj & 0x3F);
-		case 31:
-			return a + (mj & 0x1F);
-		case 15:
-			return a + (mj & 0xF);
-		case 7:
-			return a + (mj & 0x7);
-		case 3:
-			return a + (mj & 0x3);
-		case 1:
-			return a + (mj & 0x1);
-		case 0:
-			return a;
-		default:
-			return a + (mj % (range + 1));
+	case 255:
+		return a + (mj & 0xFF);
+	case 127:
+		return a + (mj & 0x7F);
+	case 63:
+		return a + (mj & 0x3F);
+	case 31:
+		return a + (mj & 0x1F);
+	case 15:
+		return a + (mj & 0xF);
+	case 7:
+		return a + (mj & 0x7);
+	case 3:
+		return a + (mj & 0x3);
+	case 1:
+		return a + (mj & 0x1);
+	case 0:
+		return a;
+	default:
+		return a + (mj % (range + 1));
 	}
 #endif
 }
@@ -693,12 +728,12 @@ value_type foundry_rnd(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return (int)((abs(a-b)+1)*(rand()/(RAND_MAX+1.))) + ff_min(a,b);
+	return (int)((abs(a - b) + 1) * (rand() / (RAND_MAX + 1.))) + ff_min(a, b);
 	//	return ((unsigned)rand() % (ff_dif(a,b)+1)) + ff_min(a,b);
 #endif
 }
 
-value_type ff_rnd(value_type a,value_type b){
+value_type ff_rnd(value_type a, value_type b) {
 #ifdef use_filterfactory_implementation_rnd
 	return factory_rnd(a, b, &gFactoryRngState);
 #else
@@ -786,18 +821,18 @@ void initialize_rnd_variables() {
 // -------------------------------------------------------------------------------------------
 
 /* mix(a,b,n,d) Mixture of a and b by fraction n/d, a*n/d+b*(d-n)/d */
-value_type ff_mix(value_type a,value_type b,value_type n,value_type d){
+value_type ff_mix(value_type a, value_type b, value_type n, value_type d) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return d ? ((long)a*n)/d + ((long)b*(d-n))/d : 0;
+	return d ? ((long)a * n) / d + ((long)b * (d - n)) / d : 0;
 #endif
 }
 
 // -------------------------------------------------------------------------------------------
 
 /* scl(a,il,ih,ol,oh) Scale a from input range (il to ih)
-                      to output range (ol to oh) */
+					  to output range (ol to oh) */
 value_type ff_scl(value_type a, value_type il, value_type ih,
 	value_type ol, value_type oh) {
 #ifdef PARSERTEST
@@ -835,7 +870,7 @@ static uint32_t isqrt(uint32_t x) {
 
 	static uint32_t lkpSquares[65535];
 	static int lkpInitialized = 0;
-	const uint32_t *p;
+	const uint32_t* p;
 	int i;
 
 	while (lkpInitialized == 1) { /* If other thread is currently creating the lookup table, then wait */ }
@@ -903,7 +938,7 @@ value_type foundry_sqr(value_type x) {
 #endif
 }
 
-value_type ff_sqr(value_type x){
+value_type ff_sqr(value_type x) {
 #ifdef use_filterfactory_implementation_sqr
 	return factory_sqr(x);
 #else
@@ -936,11 +971,11 @@ value_type foundry_cos(value_type x) {
 	return 0;
 #else
 	//return RINT(TRIGAMP*cos(FFANGLE(x)));
-	return (value_type)RINT(TRIGAMP * costab[abs(x) % COSTABSIZE]);
+	return (value_type)RINT(TRIGAMP * gdata->costab[abs(x) % COSTABSIZE]);
 #endif
 }
 
-value_type ff_cos(value_type x){
+value_type ff_cos(value_type x) {
 #ifdef use_filterfactory_implementation_cos
 	return factory_cos(x);
 #else
@@ -1007,7 +1042,7 @@ value_type factory_tan(value_type x) {
 #endif
 }
 
-value_type foundry_tan(value_type x){
+value_type foundry_tan(value_type x) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1019,7 +1054,7 @@ value_type foundry_tan(value_type x){
 	// So, we do it the same way to stay compatible.
 	if (x < 0) x--; /* required for Filter Factory compatibility */
 	while (x < 0) x += TANTABSIZE;
-	return (value_type)RINT(2*TRIGAMP*tantab[x % TANTABSIZE]); // We need the x2 multiplicator for some reason
+	return (value_type)RINT(2 * TRIGAMP * gdata->tantab[x % TANTABSIZE]); // We need the x2 multiplicator for some reason
 #endif
 }
 
@@ -1435,7 +1470,7 @@ value_type factory_get(value_type i) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return i>=0 && i<NUM_CELLS ? cell[i] : i;
+	return i >= 0 && i < NUM_CELLS ? cell[i] : i;
 #endif
 }
 
@@ -1458,11 +1493,11 @@ value_type ff_get(value_type i) {
 // -------------------------------------------------------------------------------------------
 
 /* put(v,i) Puts the new value v into cell i */
-value_type ff_put(value_type v,value_type i){
+value_type ff_put(value_type v, value_type i) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	if(i>=0 && i<NUM_CELLS)
+	if (i >= 0 && i < NUM_CELLS)
 		cell[i] = v;
 	return v;
 #endif
@@ -1471,17 +1506,17 @@ value_type ff_put(value_type v,value_type i){
 // -------------------------------------------------------------------------------------------
 
 /* Convolve. Applies a convolution matrix and divides with d. */
-value_type ff_cnv(value_type m11,value_type m12,value_type m13,
-                  value_type m21,value_type m22,value_type m23,
-                  value_type m31,value_type m32,value_type m33,
-                  value_type d)
+value_type ff_cnv(value_type m11, value_type m12, value_type m13,
+	value_type m21, value_type m22, value_type m23,
+	value_type m31, value_type m32, value_type m33,
+	value_type d)
 {
 #ifdef PARSERTEST
 	return 0;
 #else
 	long total;
 	int x, y, z;
-	// shift x,y from selection-relative to image relative
+	// shift x,y from selection-relative to image relative required by rawsrc()
 	if (HAS_BIG_DOC(gpb)) {
 		x = var['x'] + BIGDOC_FILTER_RECT(gpb).left;
 		y = var['y'] + BIGDOC_FILTER_RECT(gpb).top;
@@ -1491,14 +1526,15 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 	}
 	z = var['z'];
 
-	if(z >= 0 && z < var['Z'])
-		total = m11*rawsrc(x-1,y-1,z) + m12*rawsrc(x,y-1,z) + m13*rawsrc(x+1,y-1,z)
-			  + m21*rawsrc(x-1,y,  z) + m22*rawsrc(x,y,  z) + m23*rawsrc(x+1,y,  z)
-			  + m31*rawsrc(x-1,y+1,z) + m32*rawsrc(x,y+1,z) + m33*rawsrc(x+1,y+1,z);
+	// rawsrc() will choose the neighbor pixels if x/y goes out-of-bounds (outer border pixels)
+	if (z >= 0 && z < var['Z'])
+		total = m11 * rawsrc(x - 1, y - 1, z) + m12 * rawsrc(x, y - 1, z) + m13 * rawsrc(x + 1, y - 1, z)
+		+ m21 * rawsrc(x - 1, y, z) + m22 * rawsrc(x, y, z) + m23 * rawsrc(x + 1, y, z)
+		+ m31 * rawsrc(x - 1, y + 1, z) + m32 * rawsrc(x, y + 1, z) + m33 * rawsrc(x + 1, y + 1, z);
 	else
-		total = 0;
+		total = 0; // ... can this happen at all ?!
 
-	return d ? total/d : 0;
+	return d ? total / d : 0;
 #endif
 }
 
@@ -1554,7 +1590,7 @@ value_type val_D = 1024; // max_val_d - min_val_d;
 #endif
 
 /* predefined symbols */
-struct sym_rec predefs[]={
+struct sym_rec predefs[] = {
 	/* functions */
 
 	{0,TOK_FN3,"src", (pfunc_type)ff_src, 0},

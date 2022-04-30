@@ -3,6 +3,7 @@
 ## 1.7.0.17 [Work-In-Progress]
 - Fixed theoretical bug that can crash a Photoshop application if PLUGIN.DLL exists but is not loaded.
 - Added translation for German systems (*)
+- map(i,n) now works like in Filter Factory and not like GIMP User Filter v0.8
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

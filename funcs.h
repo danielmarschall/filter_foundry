@@ -67,17 +67,16 @@
 
 #include "symtab.h"
 
-enum{ COSTABSIZE=1024,TANTABSIZE=512 };
+#define TANTABSIZE 512
+#define COSTABSIZE 1024
 
 void init_trigtab();
-
-extern double costab[],tantab[];
 
 #define DEG2RAD(x) ((x)*M_PI/180.)
 #define RAD2DEG(x) ((x)*180./M_PI)
 
 /* [trig functions return] an integer between -512 and 512, inclusive (Windows)
-	or -1024 and 1024, inclusive (Mac OS) */
+    or -1024 and 1024, inclusive (Mac OS) */
 #ifdef WIN_ENV
 #define TRIGAMP 512
 #else
@@ -86,7 +85,6 @@ extern double costab[],tantab[];
 #define FFANGLE(v) ((v)*M_PI/512.)
 #define TO_FFANGLE(v) ((v)*512./M_PI)
 
-#define INITRANDSEED() initialize_rnd_variables()
 void initialize_rnd_variables();
 
 // Functions

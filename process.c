@@ -46,7 +46,7 @@ int state_changing_funcs_used;
 void evalinit(){
 	int i;
 
-	INITRANDSEED();
+	initialize_rnd_variables();
 
 	for (i=0; i<NUM_CELLS; ++i) {
 		cell[i] = 0;
