@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -389,7 +389,7 @@ void deobfusc(PARM_T* pparm) {
 			unsigned char* p;
 			uint32_t xorseed, checksum;
 			uint64_t initial_seed, rolseed;
-			
+
 			initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			rolseed = initial_seed;
@@ -428,7 +428,7 @@ void deobfusc(PARM_T* pparm) {
 		(pparm->cbSize != PARM_SIG_MAC)) {
 		memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
 	}
-		
+
 	if (obfusc_version >= 3) {
 		// Filter Foundry >= 1.7.0.5 combines obfuscation and protection
 		// when a standalone filter is built. Theoretically, you can un-protect a

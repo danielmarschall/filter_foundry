@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -175,6 +175,22 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 
 	p = (char*)pipl + origsize;
 	prop = (PIProperty*)p;
+
+	/* Important not about proptyLength:
+	 
+		In regards propertyLength, Adobe writes in SPPiPL.h:
+		"Number of characters in the data array. Rounded to a multiple of 4."
+
+		On the other hand, the 1997 PICA documentation(page 23) and
+		1996 "Cross-Application Plug-in Development Resource Guide" describes :
+		"[propertyLength] contains the length of the propertyData field. It does not include any padding bytes after
+		propertyData to achieve four byte alignment.This field may be zero."
+
+		I think this is not correct, since even official plugins of Adobe(e.g. "3D Transform.8bf") and cnvtpipl
+		are rounding the length to a multiple of 4 (actually, rounding to the next possible multiple 4,
+		so that padding is always guaranteed).
+		Photoshop (tested with Photoshop 7) will crash if the propertyLength follows the definition of PICA.
+	*/
 
 	/* add Title/Name property key */
 

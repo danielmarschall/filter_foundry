@@ -9,17 +9,18 @@ Incompatibilities with GIMP / PSPI
 	of the PIPL structure (in RC files, and in fixpipl()).
 	The length value must include everything, including paddings of strings.
 	
-	Adobe writes in SPPiPL.h:
+	In regards propertyLength, Adobe writes in SPPiPL.h:
 	"Number of characters in the data array. Rounded to a multiple of 4."
 	
 	On the other hand, the 1997 PICA documentation (page 23) and
 	1996 "Cross-Application Plug-in Development Resource Guide" describes:
-	"Contains the length of the propertyData field. It does not include any padding bytes after
+	"[propertyLength] contains the length of the propertyData field. It does not include any padding bytes after
 	propertyData to achieve four byte alignment. This field may be zero."
 	
-	I think this is not correct, since even official plugins of Adobe (e.g. "3D Transform.8bf")
+	I think this is not correct, since even official plugins of Adobe (e.g. "3D Transform.8bf") and cnvtpipl
 	are rounding the length to a multiple of 4 (actually, rounding to the next possible multiple 4,
 	so that padding is always guaranteed).
+	Photoshop (tested with Photoshop 7) will crash if the propertyLength follows the definition of PICA.
 
 2. Filters will only fill the bottom of the picture, not the whole canvas.
 
