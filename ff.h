@@ -74,7 +74,12 @@ typedef struct plugin_dll_slider_info_ {
 } plugin_dll_slider_info;
 #endif
 
-// size: 0x2090 (8336 Bytes)
+// The "gdata" structure contains all values which MUST be kept between filter invocations.
+// All other working-data (which automatically gets calculated etc.) are NOT part of this structure.
+// To increase performance, the lookup tables *tantab and *costab have been included here, so that
+// they only need to be calculated one.
+// size: 0x2098 (8344 Bytes) for 32-bit
+// size: 0x20AC (8364 Bytes) for 64-bit
 typedef struct globals_t_ {
 	PARM_T parm;
 	Boolean standalone;

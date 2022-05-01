@@ -57,6 +57,7 @@
 #define use_filterfactory_implementation_d
 #define use_filterfactory_implementation_m
 #define use_filterfactory_implementation_M
+#define use_filterfactory_implementation_val
 #endif
 
 

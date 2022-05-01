@@ -336,6 +336,7 @@ value_type ff_src(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
+	if (z < 0 || z >= var['Z']) return 0;
 	if (x < 0)
 		x = 0;
 	else if (x >= var['X'])
@@ -344,8 +345,7 @@ value_type ff_src(value_type x, value_type y, value_type z) {
 		y = 0;
 	else if (y >= var['Y'])
 		y = var['Y'] - 1;
-	return z >= 0 && z < var['Z'] ?
-		image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z] : 0;
+	return image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z];
 #endif
 }
 
@@ -494,11 +494,30 @@ value_type ff_ctl(value_type i) {
 // -------------------------------------------------------------------------------------------
 
 /* val(i,a,b) Value of slider i, mapped onto the range a to b */
-value_type ff_val(value_type i, value_type a, value_type b) {
+
+value_type val_factory(value_type i, value_type a, value_type b) {
+#ifdef PARSERTEST
+	return 0;
+#else
+	if (i < 0 || i > 7) return 0;
+	return ((long)slider[i] * (b - a)) / 255 + a;
+#endif
+}
+
+value_type val_foundry(value_type i, value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
 #else
 	return ((long)ff_ctl(i) * (b - a)) / 255 + a;
+#endif
+}
+
+value_type ff_val(value_type i, value_type a, value_type b) {
+	// The only difference is the handling of invalid values of "i"
+#ifdef use_filterfactory_implementation_val
+	return val_factory(i, a, b);
+#else
+	return val_foundry(i, a, b);
 #endif
 }
 
@@ -825,7 +844,8 @@ value_type ff_mix(value_type a, value_type b, value_type n, value_type d) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return d ? ((long)a * n) / d + ((long)b * (d - n)) / d : 0;
+	if (d == 0) return 0;
+	return ((long)a * n) / d + ((long)b * (d - n)) / d;
 #endif
 }
 
@@ -1100,7 +1120,7 @@ value_type factory_c2d(value_type x, value_type y) {
 		if (eax != 0) {
 			eax = (eax & 0xFFFF0000) | (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
 			eax = eax << 9;
-			ebx = 205888; // 205888/65536 == pi
+			ebx = 205888; // 205888/65536 == pi == 3.14159265358979323846264338327
 			eax /= ebx;
 		}
 	}
@@ -1151,7 +1171,7 @@ value_type factory_c2m(value_type x, value_type y) {
 	ebx = y < 0 ? -y : y;
 	eax = x < 0 ? -x : x;
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(2)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
 	}
 	else {
 		if (eax > ebx) {
@@ -1225,7 +1245,7 @@ value_type factory_d() {
 		if (eax != 0) { // C2D_LOOKUP[-1] will never be called. Good!
 			eax = (eax & 0xFFFF0000) + (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
 			eax = eax << 9;
-			ebx = 205888; // 205888/65536 == pi
+			ebx = 205888; // 205888/65536 == pi == 3.14159265358979323846264338327
 			eax /= ebx;
 		}
 	}
@@ -1290,7 +1310,7 @@ value_type factory_M() {
 	eax = (var['X'] - xmin) >> 1;
 	ebx = (var['Y'] - ymin) >> 1;
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(2)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
 	}
 	else {
 		if (eax > ebx) {
@@ -1343,7 +1363,7 @@ value_type factory_m() {
 	ebx = ebx < 0 ? -ebx : ebx;
 
 	if (eax == ebx) {
-		eax = 27146; // 27146/65536 == sqrt(2)-1
+		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
 	}
 	else {
 		if (eax > ebx) {
@@ -1483,6 +1503,7 @@ value_type foundry_get(value_type i) {
 }
 
 value_type ff_get(value_type i) {
+	// The only difference is the handling of invalid values of "i"
 #ifdef use_filterfactory_implementation_get
 	return factory_get(i);
 #else
@@ -1516,6 +1537,9 @@ value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 #else
 	long total;
 	int x, y, z;
+
+	if (d == 0) return 0;
+
 	// shift x,y from selection-relative to image relative required by rawsrc()
 	if (HAS_BIG_DOC(gpb)) {
 		x = var['x'] + BIGDOC_FILTER_RECT(gpb).left;
@@ -1534,7 +1558,7 @@ value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 	else
 		total = 0; // ... can this happen at all ?!
 
-	return d ? total / d : 0;
+	return total / d;
 #endif
 }
 
