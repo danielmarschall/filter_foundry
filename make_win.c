@@ -59,30 +59,58 @@ BOOL CALLBACK enumfunc(HMODULE hModule,LPCTSTR lpszType,LPCTSTR lpszName,WORD wI
 }
 */
 
-int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
-	char name[1024] = { 0 };
-	char description[1024] = { 0 };
-	size_t i;
-	size_t iname = 0;
+int WriteXmlEscaped(char* description, char c) {
 	int idescription = 0;
+	if (c == '&') {
+		description[idescription++] = '&';
+		description[idescription++] = 'a';
+		description[idescription++] = 'm';
+		description[idescription++] = 'p';
+		description[idescription++] = ';';
+	}
+	else if (c == '<') {
+		description[idescription++] = '&';
+		description[idescription++] = 'l';
+		description[idescription++] = 't';
+		description[idescription++] = ';';
+	}
+	else if (c == '>') {
+		description[idescription++] = '&';
+		description[idescription++] = 'g';
+		description[idescription++] = 't';
+		description[idescription++] = ';';
+	}
+	else {
+		description[idescription++] = c;
+	}
+	return idescription;
+}
 
+int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
+	char* name;
+	char* description, *tmpDescription;
+	int res;
+	size_t i;
+	size_t iname;
+
+	name = (char*)malloc(40 + (2 * 256) * 5);
+	description = (char*)malloc(10 + (2 * 256)); // x4 because & becomes &amp;
+	if (name == NULL || description == NULL) return 0;
+	
 	// Description
+	tmpDescription = description;
 	for (i = 0; i < strlen(pparm->szCategory); i++) {
 		char c = pparm->szCategory[i];
-		if ((c != '<') && (c != '>')) {
-			description[idescription++] = c;
-		}
+		tmpDescription += WriteXmlEscaped(tmpDescription, c);
 	}
-	description[idescription++] = ' ';
-	description[idescription++] = '-';
-	description[idescription++] = ' ';
+	tmpDescription += WriteXmlEscaped(tmpDescription, ' ');
+	tmpDescription += WriteXmlEscaped(tmpDescription, '-');
+	tmpDescription += WriteXmlEscaped(tmpDescription, ' ');
 	for (i = 0; i < strlen(pparm->szTitle); i++) {
 		char c = pparm->szTitle[i];
-		if ((c != '<') && (c != '>')) {
-			description[idescription++] = c;
-		}
+		tmpDescription += WriteXmlEscaped(tmpDescription, c);
 	}
-	description[idescription++] = '\0';
+	tmpDescription[0] = '\0';
 
 	// Name
 	strcpy(name, "Telegraphics.FilterFoundry.");
@@ -103,11 +131,16 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	name[iname++] = '\0';
 
 	if (bits == 64) {
-		return sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
+		res = sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
 	}
 	else {
-		return sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
+		res = sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
 	}
+
+	free(name);
+	free(description);
+
+	return res;
 }
 
 ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
