@@ -258,14 +258,13 @@ uint64_t crc64(const unsigned char* data, size_t len)
 int obfuscation_version(PARM_T* pparm) {
 	uint32_t obfusc_info = pparm->unknown2;
 
-	if (obfusc_info == 0x00000000) { // 00 00 00 00
-		// Photoshop FilterFactory default initialization of field "unknown2"
-		// (no obfuscation)
+	if (obfusc_info == 0x00000001) { // 01 00 00 00
+		// Photoshop FilterFactory default initialization of field "unknown2" (no obfuscation)
 		return 0;
 	}
-	else if (obfusc_info == 0x00000001) { // 01 00 00 00
-		// Premiere FilterFactory default initialization of field "unknown1" (it is at the offset of Photoshop's "unknown2")
-		// (no obfuscation)
+	else if (obfusc_info == 0x00000000) { // 00 00 00 00
+		// Premiere FilterFactory default initialization of field "unknown1" (no obfuscation)
+		// (Premiere Field "unknown1" has the offset of Photoshop's "unknown2" field)
 		return 0;
 	}
 	else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
@@ -395,7 +394,7 @@ void deobfusc(PARM_T* pparm) {
 				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
 			}
 			*((uint32_t*)p) = 0; // here was the seed. Fill it with 0x00000000
-			p += 4;
+			p += 4; // jump to the next DWORD
 			for (i = 0; i < size - seed_position - 4; i++) {
 				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
 			}
@@ -427,8 +426,8 @@ void deobfusc(PARM_T* pparm) {
 
 			p = (unsigned char*)pparm;
 			xorshift(&p, &seed, seed_position);
-			*((uint32_t*)p) = 0; // here was the version info. Fill it with 0x00000000
-			p += 4; // obfusc info was 4 or 5
+			*((uint32_t*)p) = 0; // here was the version info (4 or 5). Fill it with 0x00000000
+			p += 4; // jump to the next DWORD
 			xorshift(&p, &seed, size - seed_position - 4);
 
 			if (obfusc_version == 5) {
