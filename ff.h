@@ -162,7 +162,10 @@ size_t fixpipl(PIPropertyList *pipl,size_t origsize,char* title, long *event_id)
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 
 // from obfusc.c
-extern const volatile uint64_t cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+#ifdef _MSC_VER
+__declspec(noinline)
+#endif
+uint64_t GetObfuscSeed();
 int obfuscation_version(PARM_T* pparm);
 uint64_t obfusc(PARM_T* pparm);
 void deobfusc(PARM_T* pparm);

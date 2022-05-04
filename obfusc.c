@@ -23,9 +23,70 @@
 
 #include "ff.h"
 
-// this value will be manipulated during the building of each individual filter (see make_win.c)
-// It should be aligned to 4
-const volatile uint64_t cObfuscSeed = 0x38AD972A52830517ull;
+// Random seed for obfuscation "17 05 83 52 2a 97 16 74"
+// During the standalone-make process, this value will be changed by manipulating the 8BF file.
+// Therefore, the 32/64 bit 8BF files *MUST* contain the key contiguous and preferrpreferablyibly 4-aligned
+// Why do I use GetObfuscSeed?
+// 1. Because I prefer the key in side code segment so that it is better hidden than if it was in a data segment.
+// 2. Since the code segment is closer to the 8BF file start, the search+replace of the key is faster
+// Please also note:
+// The 8BF file *MUST* only contain the seed A SINGLE TIME
+// (In the Non-Standalone filter actually 3 times, because we have 2 resourced containing the 32/64 template DLLs)
+#if defined(__WATCOMC__)
+	uint64_t GetObfuscSeed() {
+		// Due to "volatile", this value will only exist a single time in the binary file.
+		// This char array will result in contiguous chars in OpenWatcom.
+		// In MSVC++, the array will be built using several "mov ..." OP codes.
+		volatile char seed[8] = { '\x17', '\x05', '\x83', '\x52', '\x2a', '\x97', '\x16', '\x74' };
+		return (uint64_t)seed;
+	}
+#elif defined(_MSC_VER)
+	#ifdef _WIN64
+	// Note: For MSVCC 64-bit, neither making the method volatile, nor including a volatile variable did avoid inlining.
+	// so we use __declspec(noinline)
+	__declspec(noinline) uint64_t GetObfuscSeed() {
+		// TODO: Not 4-byte aligned! (both variants)
+		//volatile uint64_t seed = 0x7416972a52830517ull;
+		//return seed;
+		return 0x7416972a52830517ull;
+	}
+	#else
+	__declspec(noinline) uint64_t GetObfuscSeed() {
+		//volatile int test = 0;
+		uint64_t* addr = NULL;
+		__asm {
+			mov eax, seed // Doesn't work in OpenWatcom
+			mov addr, eax
+			jmp end
+			align 4 // Doesn't work in OpenWatcom
+			seed:
+				_emit 0x17 // Doesn't work in OpenWatcom
+				_emit 0x05
+				_emit 0x83
+				_emit 0x52
+				_emit 0x2A
+				_emit 0x97
+				_emit 0x16
+				_emit 0x74
+				/*
+				pop ss
+				add eax, 0x972a5283
+				push ss
+				jz seed
+				*/
+			end:
+		}
+		return addr == NULL ? 0 : *addr;
+	}
+	#endif
+#else
+	// Unfortunately, with this compiler, we the value needs to be in the .data segment...
+	// Due to "const volatile", this value will only exist a single time in the binary file.
+	const volatile uint64_t seed = 0x7416972a52830517ull;
+	uint64_t GetObfuscSeed() {
+		return seed;
+	}
+#endif
 
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
@@ -243,7 +304,7 @@ uint64_t obfusc(PARM_T* pparm) {
 #ifdef MAC_ENV
 	// Currently, make_mac.c does not implement modifying the executable code (TODO),
 	// so we will use the default initial_seed!
-	initial_seed = cObfuscSeed;
+	initial_seed = GetObfuscSeed();
 #else
 	// Give always the same seed if the parameters are the same. No random values.
 	// This initial seed will be returned and built into the executable code by make_win.c
@@ -354,7 +415,7 @@ void deobfusc(PARM_T* pparm) {
 			size_t seed_position;
 			uint32_t seed, initial_seed;
 
-			initial_seed = cObfuscSeed & 0xFFFFFFFF; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed = GetObfuscSeed() & 0xFFFFFFFF; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			seed = initial_seed;
 			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
@@ -390,7 +451,7 @@ void deobfusc(PARM_T* pparm) {
 			uint32_t xorseed, checksum;
 			uint64_t initial_seed, rolseed;
 
-			initial_seed = cObfuscSeed; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed = GetObfuscSeed(); // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			rolseed = initial_seed;
 			p = (unsigned char*)pparm;

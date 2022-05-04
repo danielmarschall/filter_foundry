@@ -546,8 +546,8 @@ Boolean doresources(FSSpec* dst, int bits){
 					// and if that failed, try without alignment ("1").
 					// We only need to set maxamount to "1", because "const volatile" makes sure that
 					// the compiler won't place (inline) it at several locations in the code.
-					if ((binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
-						(binary_replace_file(dst, cObfuscSeed, obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
+					if (//(binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
+						(binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
 					{
 						simplewarning((TCHAR*)TEXT("binary_replace_file failed")); // TODO (Not so important): TRANSLATE
 						discard = true;

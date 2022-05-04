@@ -31,7 +31,8 @@ First, the fields `unknown1`, `unknown2`, aned `unknown3` are set to 0.
 
 A 64 bit seed will be generated.
 On Windows, the seed is the ECMA 182 CRC64 checksum of the PARM.
-On Macintosh, it stays at the default value `0x38AD972A52830517`
+On Macintosh, it stays at the default value `0x38AD972A52830517` or
+`0x7416972a52830517`.
 (because the manipulation of the binary code is not implemented).
 
 Then, the CRC32b checksum of the PARM will be written to `unknown1`.
