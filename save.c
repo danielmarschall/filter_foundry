@@ -46,7 +46,8 @@ OSErr putstr(Handle h,char *s){
 }
 
 OSErr saveparams_afs_pff(Handle h){
-	char outbuf[CHOPLINES*2+2],*q,*p,*r,*start;
+	char outbuf[CHOPLINES * 2 + 2] = "";
+	char *q, * p, * r, * start;
 	size_t n, chunk, j;
 	int i;
 	OSErr e;
@@ -70,25 +71,29 @@ OSErr saveparams_afs_pff(Handle h){
 
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){
-			if( (r = expr[i]) )
-				for( n = strlen(r) ; n ; n -= chunk ){
-					chunk = n> (int)CHOPLINES ? (int)CHOPLINES : n;
-					for( j = chunk,q = outbuf ; j-- ; )
-						if(*r == CR){
+			if ((r = expr[i])) {
+				chunk = 0; // to avoid that compiler complains
+				for (n = strlen(r); n; n -= chunk) {
+					chunk = n > (int)CHOPLINES ? (int)CHOPLINES : n;
+					for (j = chunk, q = outbuf; j--; )
+						if (*r == CR) {
 							*q++ = '\\';
 							*q++ = 'r';
 							++r;
-						}else if (*r == LF) {
+						}
+						else if (*r == LF) {
 
 							// This can only happen with Windows or Linux.
 							// Native Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
 							++r;
-						}else
+						}
+						else
 							*q++ = *r++;
 					*q++ = CR;
 					*q = 0;
-					p = cat(p,outbuf);
+					p = cat(p, outbuf);
 				}
+			}
 			else
 				p = cat(p,(char*)("(null expr)\r")); // this shouldn't happen
 			*p++ = CR;
@@ -198,12 +203,12 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 
 OSErr savehandleintofile(Handle h,FILEREF r){
 	Ptr p;
-	long n;
+	FILECOUNT n;
 	OSErr e;
 
 	if (!h) return nilHandleErr;
 	p = PILOCKHANDLE(h,false);
-	n = PIGETHANDLESIZE(h);
+	n = (FILECOUNT)PIGETHANDLESIZE(h);
 	e = FSWrite(r,&n,p);
 	PIUNLOCKHANDLE(h);
 	return e;

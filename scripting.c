@@ -47,7 +47,7 @@ OSErr put_cstring(PIWriteDescriptor token, DescriptorKeyID key, char* s) {
 }
 
 char* get_cstring(PIReadDescriptor token) {
-	int n;
+	size_t n;
 	Ptr p;
 	char* str = NULL;
 	Handle h;

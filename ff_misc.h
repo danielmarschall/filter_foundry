@@ -60,7 +60,7 @@ void unlockHandle(FFHandle* hdl);
 // These functions are for code backwards compatibility:
 Handle PINEWHANDLE(int32 size);
 void PIDISPOSEHANDLE(Handle h);
-int32 PIGETHANDLESIZE(Handle h);
+size_t PIGETHANDLESIZE(Handle h);
 OSErr PISETHANDLESIZE(Handle h, int32 newSize);
 Ptr PILOCKHANDLE(Handle h, Boolean moveHigh);
 void PIUNLOCKHANDLE(Handle h);

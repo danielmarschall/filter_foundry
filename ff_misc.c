@@ -36,7 +36,7 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 		// PICA Handle Suite 2.0
 		hdl->signature = HDLVERSION_SUITE2;
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
-		hdl->handle = pSHandleSuite2->New(nBytes);
+		hdl->handle = pSHandleSuite2->New((int32)nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 	}
 	else if ((gpb->sSPBasic != 0) &&
@@ -48,14 +48,14 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 		// PICA Handle Suite 1.0
 		hdl->signature = HDLVERSION_SUITE1;
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
-		hdl->handle = pSHandleSuite1->New(nBytes);
+		hdl->handle = pSHandleSuite1->New((int32)nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 	}
 	else {
 		// Standard Handle Suite (deprecated)
 		hdl->signature = HDLVERSION_STANDARD;
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
-		hdl->handle = gpb->handleProcs->newProc(nBytes);
+		hdl->handle = gpb->handleProcs->newProc((int32)nBytes);
 	}
 }
 
@@ -139,7 +139,7 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 			)
 		{
 			// PICA Handle Suite 2.0
-			OSErr ret = pSHandleSuite2->SetSize(hdl->handle, nBytes);
+			OSErr ret = pSHandleSuite2->SetSize(hdl->handle, (int32)nBytes);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 			return ret;
 		}
@@ -153,14 +153,14 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 			)
 		{
 			// PICA Handle Suite 1.0
-			OSErr ret = pSHandleSuite1->SetSize(hdl->handle, nBytes);
+			OSErr ret = pSHandleSuite1->SetSize(hdl->handle, (int32)nBytes);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 			return ret;
 		}
 	}
 	else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
-		return gpb->handleProcs->setSizeProc(hdl->handle, nBytes);
+		return gpb->handleProcs->setSizeProc(hdl->handle, (int32)nBytes);
 	}
 	return errMissingParameter;
 }
@@ -261,7 +261,7 @@ void PIDISPOSEHANDLE(Handle h) {
 	disposeHandle(&fh);
 }
 
-int32 PIGETHANDLESIZE(Handle h) {
+size_t PIGETHANDLESIZE(Handle h) {
 	FFHandle fh;
 	fh.signature = gdata->lastKnownHandleVersion;
 	fh.handle = h;
@@ -313,7 +313,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		//             PSBufferSuite2 was first documented in SDK CS 6,
 		//             pb->bufferProcs->allocateProc64 and spaceProc64 were documented in SDK CS 6,
 		//             pb->bufferSpace64 and pb->maxSpace64 were documented in SDK CC 2017.
-		unsigned32 siz = nBytes;
+		unsigned32 siz = (unsigned32)nBytes;
 		buf->signature = BUFVERSION_SUITE64;
 		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		buf->suite = (Ptr)pSBufferSuite64->New(&siz, siz);
@@ -330,7 +330,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		)
 	{
 		// PICA Buffer Suite 1.0 (32 bit)
-		unsigned32 siz = nBytes;
+		unsigned32 siz = (unsigned32)nBytes;
 		buf->signature = BUFVERSION_SUITE32;
 		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
 		buf->suite = (Ptr)pSBufferSuite32->New(&siz, siz);
@@ -355,7 +355,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		// Standard Buffer Suite 32 bit (deprecated)
 		buf->signature = BUFVERSION_STD32;
 		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
-		if (gpb->bufferProcs->allocateProc(nBytes, &buf->standard) != noErr) {
+		if (gpb->bufferProcs->allocateProc((int32)nBytes, &buf->standard) != noErr) {
 			buf->signature = BUFVERSION_NULL;
 			buf->standard = NULL;
 		}

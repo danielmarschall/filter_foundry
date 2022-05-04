@@ -549,8 +549,8 @@ void _ffdcomp_removebrackets(char* x, char* maxptr) {
 
 // isFormula=false => outputFile is C string. TXT linebreaks become spaces.
 // isFormula=true  => outputFile is C string. TXT line breaks become CRLF line breaks
-Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean isFormula) {
-	int i;
+Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean isFormula) {
+	size_t i;
 	char* outputwork;
 	char* sline;
 	char* svalue;
@@ -587,11 +587,11 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		// Controls:
 		for (i = 0; i < 8; i++) {
 			k1 = (char*)malloc(strlen("Control X:") + 1);
-			sprintf(k1, "Control %d:", i);
+			sprintf(k1, "Control %d:", (int)i);
 			x = strstr(inputwork, k1);
 			if (x) {
 				k2 = (char*)malloc(strlen("ctl[X]:   ") + 1);
-				sprintf(k2, "ctl[%d]:   ", i);
+				sprintf(k2, "ctl[%d]:   ", (int)i);
 				memcpy(x, k2, strlen(k2));
 				x += strlen("ctl[X]");
 				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
@@ -602,11 +602,11 @@ Boolean _picoReadProperty(char* inputFile, int maxInput, const char* property, c
 		// Maps:
 		for (i = 0; i < 4; i++) {
 			k1 = (char*)malloc(strlen("Map X:") + 1);
-			sprintf(k1, "Map %d:", i);
+			sprintf(k1, "Map %d:", (int)i);
 			x = strstr(inputwork, k1);
 			if (x) {
 				k2 = (char*)malloc(strlen("map[X]:") + 1);
-				sprintf(k2, "map[%d]:", i);
+				sprintf(k2, "map[%d]:", (int)i);
 				memcpy(x, k2, strlen(k2));
 				x += strlen("map[X]");
 				_ffdcomp_removebrackets(x, inputwork + maxInput - 1);
@@ -715,7 +715,7 @@ Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason) {
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
-			FILECOUNT count = PIGETHANDLESIZE(h);
+			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
 			char* q = PILOCKHANDLE(h, false);
 
 			char out[256];
