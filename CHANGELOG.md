@@ -6,6 +6,7 @@
 - `map(i,n)` now works like in Filter Factory and not like GIMP User Filter v0.8.
 - `val(i,a,b)` now returns the same value like Filter Factory for illegal values of `i`.
 - Windows: Standalone filters containing a `&` in Name or Category now have the correct "Visual Themes", as the Manifest XML is not broken anymore.
+- Introduced obfuscation version 7, which is more secure.
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

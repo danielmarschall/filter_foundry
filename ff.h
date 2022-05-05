@@ -166,8 +166,12 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 __declspec(noinline)
 #endif
 uint64_t GetObfuscSeed();
+#ifdef _MSC_VER
+__declspec(noinline)
+#endif
+uint64_t GetObfuscSeed2();
 int obfuscation_version(PARM_T* pparm);
-uint64_t obfusc(PARM_T* pparm);
+void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2);
 void deobfusc(PARM_T* pparm);
 
 // from loadfile_*.c

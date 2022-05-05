@@ -82,12 +82,24 @@
 #else
 	// Unfortunately, with this compiler, we the value needs to be in the .data segment...
 	// Due to "const volatile", this value will only exist a single time in the binary file.
-	const volatile uint64_t seed = 0x7416972a52830517ull;
+	const volatile uint64_t obfusc_seed = 0x7416972a52830517ull;
 	uint64_t GetObfuscSeed() {
-		return seed;
+		return obfusc_seed;
 	}
 #endif
 
+// Random seed #2 for obfuscation "86 21 1f 3e f1 a2 87 ef"
+// Lies in the data segment. Same rules like for the random seed #1.
+const volatile uint64_t obfusc_seed2 = 0xef87a2f13e1f2186ull;
+#ifdef _MSC_VER
+__declspec(noinline)
+#endif
+uint64_t GetObfuscSeed2() {
+	// Additional seed for Obfusc V7. It is always in the data segment,
+	// while obfusc seed 1 is in the code segment (if the compiler allows it)
+	return obfusc_seed2;
+}
+	
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
@@ -108,6 +120,19 @@ void xorshift(unsigned char** p, uint32_t* x32, size_t num) {
 		*x32 ^= *x32 >> 17;
 		*x32 ^= *x32 << 5;
 		*x++ ^= *x32;
+	}
+	*p = x;
+}
+
+void xorshift64(unsigned char** p, uint64_t* x64, size_t num) {
+	// https://de.wikipedia.org/wiki/Xorshift
+	size_t i;
+	unsigned char* x = *p;
+	for (i = 0; i < num; i++) {
+		*x64 ^= *x64 << 13;
+		*x64 ^= *x64 >> 7;
+		*x64 ^= *x64 << 17;
+		*x++ ^= *x64;
 	}
 	*p = x;
 }
@@ -279,7 +304,8 @@ int obfuscation_version(PARM_T* pparm) {
 		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
 		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
-		// Future: Version 7, 8, ... 255
+		// Version 7 obfuscation (Filter Foundry 1.7.0.17)
+		// Future: Version 8, ... 255
 		return obfusc_info;
 	}
 	else {
@@ -289,28 +315,36 @@ int obfuscation_version(PARM_T* pparm) {
 	}
 }
 
-uint64_t obfusc(PARM_T* pparm) {
-	// Version 6 obfuscation (Introduced in Filter Foundry 1.7.0.10)
+void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2) {
+	// Version 7 obfuscation (Introduced in Filter Foundry 1.7.0.17)
 
 	unsigned char* p;
-	uint64_t initial_seed, rolseed;
+	uint64_t initial_seed, initial_seed2, rolseed;
 	uint32_t xorseed;
-
-	pparm->unknown1 = 0;
-	pparm->unknown2 = 0;
-	pparm->unknown3 = 0;
+	uint64_t xorseed2;
 
 #ifdef MAC_ENV
 	// Currently, make_mac.c does not implement modifying the executable code (TODO),
 	// so we will use the default initial_seed!
 	initial_seed = GetObfuscSeed();
+	initial_seed2 = GetObfuscSeed2();
 #else
 	// Give always the same seed if the parameters are the same. No random values.
 	// This initial seed will be returned and built into the executable code by make_win.c
+	pparm->unknown1 = 0;
+	pparm->unknown2 = 0;
+	pparm->unknown3 = 0;
 	initial_seed = crc64((unsigned char*)pparm, sizeof(PARM_T));
+	pparm->unknown3 = crc32b((char*)pparm, sizeof(PARM_T)); // make sure that the second seed is different
+	pparm->unknown2 = crc32b((char*)pparm, sizeof(PARM_T)); // make sure that the second seed is different
+	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T)); // make sure that the second seed is different
+	initial_seed2 = crc64((unsigned char*)pparm, sizeof(PARM_T));
 #endif
 
-	// AFTER unknown1-3 have been set to 0, calculate the checksum!
+	// AFTER unknown1-3 have been set to 0 (again), calculate the checksum!
+	pparm->unknown1 = 0;
+	pparm->unknown2 = 0;
+	pparm->unknown3 = 0;
 	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T));
 
 	xorseed = initial_seed & 0xFFFFFFFF;
@@ -321,9 +355,14 @@ uint64_t obfusc(PARM_T* pparm) {
 	p = (unsigned char*)pparm;
 	rolshift(&p, &rolseed, sizeof(PARM_T));
 
-	pparm->unknown2 = 6; // obfusc version
+	xorseed2 = initial_seed2;
+	p = (unsigned char*)pparm;
+	xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
-	return initial_seed;
+	pparm->unknown2 = 7; // obfusc version
+
+	*out_initial_seed = initial_seed;
+	*out_initial_seed2 = initial_seed2;
 }
 
 void deobfusc(PARM_T* pparm) {
@@ -451,6 +490,46 @@ void deobfusc(PARM_T* pparm) {
 			uint64_t initial_seed, rolseed;
 
 			initial_seed = GetObfuscSeed(); // this value will be manipulated during the building of each individual filter (see make_win.c)
+
+			rolseed = initial_seed;
+			p = (unsigned char*)pparm;
+			rolshift(&p, &rolseed, sizeof(PARM_T));
+
+			xorseed = initial_seed & 0xFFFFFFFF;
+			p = (unsigned char*)pparm;
+			xorshift(&p, &xorseed, sizeof(PARM_T));
+
+			checksum = pparm->unknown1;
+
+			pparm->unknown1 = 0;
+			pparm->unknown2 = 0;
+			pparm->unknown3 = 0;
+
+			if (checksum != crc32b((char*)pparm, sizeof(PARM_T))) {
+				// Integrity check failed!
+				memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
+			}
+
+			break;
+		}
+		case 7: {
+			// Version 7 obfuscation (Filter Foundry 1.7.0.17)
+			// Not compiler dependent, but individual for each standalone filter
+			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
+			// otherwise, the cross-make x86/x64 won't work!
+
+			unsigned char* p;
+			uint32_t xorseed, checksum;
+			uint64_t xorseed2;
+			uint64_t initial_seed, initial_seed2, rolseed;
+
+			initial_seed = GetObfuscSeed(); // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
+
+			// This is the difference between V6 and V7
+			xorseed2 = initial_seed2;
+			p = (unsigned char*)pparm;
+			xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
 			rolseed = initial_seed;
 			p = (unsigned char*)pparm;

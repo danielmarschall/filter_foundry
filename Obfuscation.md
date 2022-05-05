@@ -14,14 +14,25 @@ Normal standalone filters:
 
 Defined in **ff.h**, implemented in **obfusc.c**:
 
-    // Implements Obfusc V6.
-    // Returns a seed that needs to be stored in the executable code.
-    uint64_t obfusc(PARM_T* pparm);
+    // Implements Obfusc V7.
+    // Returns a seed1 and seed2 which need to be stored in the executable code.
+    obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2);
 
     // In V1+V2: Seed is hardcoded
     // In V3:    Seed is in PARM (field "unknown2")
-    // In V4-V6: Seed is in the program code and will me modified with a binary search+replace
+    // In V4-V7: Seed is in the program code and will me modified with a binary search+replace
     void deobfusc(PARM_T* pparm);
+
+### Obfuscation "Version 7"
+
+Introduced in **Filter Foundry 1.7.0.17**
+
+Now, there are two 64-bit seeds:
+
+Initial seed 1: `0x7416972a52830517` (is in the code segment)
+Initial seed 2: `0xEF87A2F13E1F2186` (is in the data segment)
+
+First, XOR-Shift64 using seed 2, then ROL shift, then XOR-Shift32 like in Obfusc V6.
 
 ### Obfuscation "Version 6"
 

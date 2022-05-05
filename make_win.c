@@ -285,6 +285,7 @@ int binary_replace_file(FSSpec* dst, uint64_t search, uint64_t replace, Boolean 
 	cnt = sizeof(srecord);
 	while (FSRead(fptr, &cnt, &srecord) == noErr)
 	{
+		if (cnt != sizeof(srecord)) break; // EOF reached
 		if (srecord == search) {
 			srecord = replace;
 			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
@@ -427,7 +428,7 @@ Boolean doresources(FSSpec* dst, int bits){
 	LPCTSTR parm_type;
 	LPCTSTR parm_id;
 	Boolean discard = true;
-	uint64_t obfuscseed = 0;
+	uint64_t obfuscseed = 0, obfuscseed2 = 0;
 	long event_id;
 
 	memset(&dummy_oper, 0, sizeof(operdef_t));
@@ -497,7 +498,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					parm_id = OBFUSCDATA_ID_NEW;
 
 					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
-					obfuscseed = obfusc(pparm);
+					obfusc(pparm, &obfuscseed, &obfuscseed2);
 				}else{
 					parm_type = PARM_TYPE;
 					parm_id = PARM_ID_NEW;
@@ -546,8 +547,8 @@ Boolean doresources(FSSpec* dst, int bits){
 					// and if that failed, try without alignment ("1").
 					// We only need to set maxamount to "1", because "const volatile" makes sure that
 					// the compiler won't place (inline) it at several locations in the code.
-					if (//(binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*align to 4*/1, /*maxamount=*/1) == 0) &&
-						(binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0))
+					if ((binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*align to 1*/0, /*maxamount=*/1) == 0) ||
+						(binary_replace_file(dst, GetObfuscSeed2(), obfuscseed2, /*align to 1*/0, /*maxamount=*/1) == 0))
 					{
 						simplewarning((TCHAR*)TEXT("binary_replace_file failed")); // TODO (Not so important): TRANSLATE
 						discard = true;
