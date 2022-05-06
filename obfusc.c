@@ -142,7 +142,7 @@ void xorshift64(unsigned char** p, uint64_t* x64, size_t num) {
 #endif
 
 uint64_t rol_u64(uint64_t value, uint64_t by) {
-	return value << by | value >> (sizeof(uint64_t) * CHAR_BIT - by);
+	return value << by | value >> ((uint64_t)sizeof(uint64_t) * CHAR_BIT - by);
 }
 
 void rolshift(unsigned char** p, uint64_t* x64, size_t num) {
@@ -479,8 +479,10 @@ void deobfusc(PARM_T* pparm) {
 
 			break;
 		}
-		case 6: {
+		case 6:
+		case 7: {
 			// Version 6 obfuscation (Filter Foundry 1.7.0.10)
+			// Version 7 obfuscation (Filter Foundry 1.7.0.17)
 			// Not compiler dependent, but individual for each standalone filter
 			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
 			// otherwise, the cross-make x86/x64 won't work!
@@ -491,45 +493,13 @@ void deobfusc(PARM_T* pparm) {
 
 			initial_seed = GetObfuscSeed(); // this value will be manipulated during the building of each individual filter (see make_win.c)
 
-			rolseed = initial_seed;
-			p = (unsigned char*)pparm;
-			rolshift(&p, &rolseed, sizeof(PARM_T));
-
-			xorseed = initial_seed & 0xFFFFFFFF;
-			p = (unsigned char*)pparm;
-			xorshift(&p, &xorseed, sizeof(PARM_T));
-
-			checksum = pparm->unknown1;
-
-			pparm->unknown1 = 0;
-			pparm->unknown2 = 0;
-			pparm->unknown3 = 0;
-
-			if (checksum != crc32b((char*)pparm, sizeof(PARM_T))) {
-				// Integrity check failed!
-				memset(pparm, 0, sizeof(PARM_T)); // invalidate everything
+			if (obfusc_version >= 7) {
+				uint64_t xorseed2, initial_seed2;
+				initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
+				xorseed2 = initial_seed2;
+				p = (unsigned char*)pparm;
+				xorshift64(&p, &xorseed2, sizeof(PARM_T));
 			}
-
-			break;
-		}
-		case 7: {
-			// Version 7 obfuscation (Filter Foundry 1.7.0.17)
-			// Not compiler dependent, but individual for each standalone filter
-			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
-			// otherwise, the cross-make x86/x64 won't work!
-
-			unsigned char* p;
-			uint32_t xorseed, checksum;
-			uint64_t xorseed2;
-			uint64_t initial_seed, initial_seed2, rolseed;
-
-			initial_seed = GetObfuscSeed(); // this value will be manipulated during the building of each individual filter (see make_win.c)
-			initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
-
-			// This is the difference between V6 and V7
-			xorseed2 = initial_seed2;
-			p = (unsigned char*)pparm;
-			xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
 			rolseed = initial_seed;
 			p = (unsigned char*)pparm;
