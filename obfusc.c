@@ -99,6 +99,50 @@ uint64_t GetObfuscSeed2() {
 	// while obfusc seed 1 is in the code segment (if the compiler allows it)
 	return obfusc_seed2;
 }
+
+#ifdef WIN_ENV
+Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uint64_t replace1, uint64_t replace2, int maxamount1, int maxamount2) {
+	uint64_t srecord = 0;
+	int found1 = 0, found2 = 0;
+	Boolean done = false;
+	FILEREF fptr;
+	FILECOUNT cnt;
+
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return -1;
+
+	cnt = sizeof(srecord);
+	while (FSRead(fptr, &cnt, &srecord) == noErr)
+	{
+		if (cnt != sizeof(srecord)) break; // EOF reached
+		if (srecord == search1) {
+			srecord = replace1;
+			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
+			cnt = (int)sizeof(srecord);
+			FSWrite(fptr, &cnt, &srecord);
+			SetFPos(fptr, fsFromStart, 0); // important for fseek
+			found1++;
+			done = (found1 == maxamount1) && (found2 == maxamount2);
+			if (done) break;
+		}
+		else if (srecord == search2) {
+			srecord = replace2;
+			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
+			cnt = (int)sizeof(srecord);
+			FSWrite(fptr, &cnt, &srecord);
+			SetFPos(fptr, fsFromStart, 0); // important for fseek
+			found2++;
+			done = (found1 == maxamount1) && (found2 == maxamount2);
+			if (done) break;
+		}
+		else {
+			SetFPos(fptr, fsFromMark, -1 * (long)(sizeof(srecord) - 1));
+		}
+	}
+	FSClose(fptr);
+
+	return done;
+}
+#endif
 	
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
@@ -322,6 +366,8 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	uint64_t initial_seed, initial_seed2, rolseed;
 	uint32_t xorseed;
 	uint64_t xorseed2;
+	size_t size = sizeof(PARM_T);
+	int rand_iters, i, j;
 
 #ifdef MAC_ENV
 	// Currently, make_mac.c does not implement modifying the executable code (TODO),
@@ -354,6 +400,19 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	rolseed = initial_seed;
 	p = (unsigned char*)pparm;
 	rolshift(&p, &rolseed, sizeof(PARM_T));
+
+	rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+	if (rand_iters < 0) rand_iters = 0;
+	for (j = rand_iters; j >= 0; j--) {
+		uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+		p = (unsigned char*)pparm;
+		for (i = 0; i < 10; i++) {
+			rand_msvcc(&rand_seed);
+		}
+		for (i = 0; i < (int)size; i++) {
+			*p++ ^= (int)(rand_msvcc(&rand_seed) * 1.0 / ((double)RAND_MAX + 1) * 256);
+		}
+	}
 
 	xorseed2 = initial_seed2;
 	p = (unsigned char*)pparm;
@@ -495,10 +554,25 @@ void deobfusc(PARM_T* pparm) {
 
 			if (obfusc_version >= 7) {
 				uint64_t xorseed2, initial_seed2;
+				int rand_iters, i, j;
+
 				initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
 				xorseed2 = initial_seed2;
 				p = (unsigned char*)pparm;
 				xorshift64(&p, &xorseed2, sizeof(PARM_T));
+
+				rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+				if (rand_iters < 0) rand_iters = 0;
+				for (j = 0; j <= rand_iters; j++) {
+					uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+					p = (unsigned char*)pparm;
+					for (i = 0; i < 10; i++) {
+						rand_msvcc(&rand_seed);
+					}
+					for (i = 0; i < (int)size; i++) {
+						*p++ ^= (int)(rand_msvcc(&rand_seed) * 1.0 / ((double)RAND_MAX + 1) * 256);
+					}
+				}
 			}
 
 			rolseed = initial_seed;

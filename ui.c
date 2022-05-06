@@ -229,6 +229,8 @@ void maindlgupdate(DIALOGREF dp){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
 			if(gdata->standalone){
+				// TODO: But before this happens, we get filterBadParameters in filterSelectorStart, since setup() failed
+				//       so, do we need this message here at all?
 				simplealert_id(MSG_SAVED_EXPR_ERR_ID);
 			}else{
 				DISABLEDLGITEM(dp,SAVEITEM);

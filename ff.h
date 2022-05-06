@@ -170,6 +170,9 @@ uint64_t GetObfuscSeed();
 __declspec(noinline)
 #endif
 uint64_t GetObfuscSeed2();
+#ifdef WIN_ENV
+Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uint64_t replace1, uint64_t replace2, int maxamount1, int maxamount2);
+#endif
 int obfuscation_version(PARM_T* pparm);
 void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2);
 void deobfusc(PARM_T* pparm);

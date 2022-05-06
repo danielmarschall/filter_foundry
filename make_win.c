@@ -251,7 +251,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	return dwError;
 }
 
-typedef long                          __time32_t;
+typedef long __time32_t;
 
 Boolean update_pe_timestamp(const FSSpec* dst, __time32_t timestamp) {
 	size_t peoffset;
@@ -272,38 +272,6 @@ Boolean update_pe_timestamp(const FSSpec* dst, __time32_t timestamp) {
 	FSClose(fptr);
 
 	return res == noErr; // res=0 means everything was noErr, res=1 means something was !=noErr
-}
-
-int binary_replace_file(FSSpec* dst, uint64_t search, uint64_t replace, Boolean align, int maxamount) {
-	uint64_t srecord = 0;
-	int found = 0;
-	FILEREF fptr;
-	FILECOUNT cnt;
-
-	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return -1;
-
-	cnt = sizeof(srecord);
-	while (FSRead(fptr, &cnt, &srecord) == noErr)
-	{
-		if (cnt != sizeof(srecord)) break; // EOF reached
-		if (srecord == search) {
-			srecord = replace;
-			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
-			cnt = (int)sizeof(srecord);
-			FSWrite(fptr, &cnt, &srecord);
-			SetFPos(fptr, fsFromStart, 0); // important for fseek
-			found++;
-			if (found == maxamount) break;
-		}
-		else {
-			if (!align) {
-				SetFPos(fptr, fsFromMark, -1 * (long)(sizeof(srecord) - 1));
-			}
-		}
-	}
-	FSClose(fptr);
-
-	return found;
 }
 
 uint32_t calculate_checksum(FSSpec* dst) {
@@ -547,11 +515,9 @@ Boolean doresources(FSSpec* dst, int bits){
 					// and if that failed, try without alignment ("1").
 					// We only need to set maxamount to "1", because "const volatile" makes sure that
 					// the compiler won't place (inline) it at several locations in the code.
-					// TODO: This is very slow
-					if ((binary_replace_file(dst, GetObfuscSeed(), obfuscseed, /*0 means "align to 1"*/0, /*maxamount=*/1) == 0) ||
-						(binary_replace_file(dst, GetObfuscSeed2(), obfuscseed2, /*0 means "align to 1"*/0, /*maxamount=*/1) == 0))
+					if (!obfusc_seed_replace(dst, GetObfuscSeed(), GetObfuscSeed2(), obfuscseed, obfuscseed2, 1, 1))
 					{
-						simplewarning((TCHAR*)TEXT("binary_replace_file failed")); // TODO (Not so important): TRANSLATE
+						simplewarning((TCHAR*)TEXT("obfusc_seed_replace failed")); // TODO (Not so important): TRANSLATE
 						discard = true;
 					}
 				}

@@ -423,6 +423,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			if(setup(pb)){
 				DoStart(pb);
 			}else{
+				simplealert_id(MSG_SAVED_EXPR_ERR_ID);
 				*result = filterBadParameters;
 			}
 		}
