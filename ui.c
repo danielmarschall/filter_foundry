@@ -254,27 +254,6 @@ void maindlgupdate(DIALOGREF dp){
 
 /* one-time initialisation of dialog box */
 
-void strcpy_win_replace_ampersand(char *dst, char *src) {
-	size_t i;
-	for (i = 0; i < strlen(src); i++) {
-#ifdef WIN_ENV
-		// & needs to be replaced to && in:
-		// - Labels (SETCTLTEXT)
-		// - Menu items (i.e. PIPL)
-		// It is not required in:
-		// - Filedialog FileName
-		// - MessageBox title or content
-		// - Window titles
-		// - Input boxes, e.g. import+export of an existing filter
-		if (src[i] == '&') {
-			*dst++ = src[i];
-		}
-#endif
-		*dst++ = src[i];
-	}
-	*dst++ = '\0';
-}
-
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;

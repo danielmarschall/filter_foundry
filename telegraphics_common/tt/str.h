@@ -67,4 +67,6 @@ char *my_strdup(char *s); // my_strdup() is like _strdup(), with the difference 
 /* in-place conversion from Pascal to C string */
 //#define INPLACEP2CSTR(s) ((s)[*(s)+1] = 0,(char*)(s)+1)
 
+void strcpy_win_replace_ampersand(char* dst, char* src);
+
 #endif

@@ -90,14 +90,14 @@ void builddlginit(DIALOGREF dp){
 
 Boolean containsUnicodeInput(DIALOGREF dp, int item) {
 	enum { MAXFIELD = 0x100 };
-	char s[MAXFIELD + 1];
+	char sa[MAXFIELD + 1];
 	wchar_t sw[MAXFIELD + 1];
 	size_t i;
 
-	GetDlgItemTextA(dp, item, s, MAXFIELD);
+	GetDlgItemTextA(dp, item, sa, MAXFIELD);
 	GetDlgItemTextW(dp, item, sw, MAXFIELD);
-	for (i = 0; i < strlen(s); i++) {
-		if (((wchar_t)s[i] != sw[i]) && (s[i] == '?')) {
+	for (i = 0; i < strlen(sa); i++) {
+		if (((wchar_t)sa[i] != sw[i]) && (sa[i] == '?')) {
 			return true;
 		}
 	}
@@ -186,8 +186,8 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 		#ifdef UNICODE
 		if (unicode) {
-			// TODO: In this message, we recommend that the user chooses character of his own charset.
-			// BUT: The user should actually only choose A-Z, otherwise stuff might be displayed wrong on foreign computers?!
+			// "unicode" means that there are characters that will be converted to "?" when converting wchar_t* => char*
+			// Note that this is might be not true if your the characters are mapped in your current default Ansi Charset (e.g. German Umlauts on a German computer)
 			simplewarning_id(MSG_UNICODE_DATA_WARNING_ID);
 		}
 		else

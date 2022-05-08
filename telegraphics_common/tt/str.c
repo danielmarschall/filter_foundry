@@ -166,3 +166,24 @@ unsigned char *PLcstrcat(unsigned char * str1,const char * s2){
 	return str1;
 }
 */
+
+void strcpy_win_replace_ampersand(char* dst, char* src) {
+	size_t i;
+	for (i = 0; i < strlen(src); i++) {
+#ifdef WIN_ENV
+		// & needs to be replaced to && in:
+		// - Labels (SETCTLTEXT)
+		// - Menu items (i.e. PIPL)
+		// It is not required in:
+		// - Filedialog FileName
+		// - MessageBox title or content
+		// - Window titles
+		// - Input boxes, e.g. import+export of an existing filter
+		if (src[i] == '&') {
+			*dst++ = src[i];
+		}
+#endif
+		* dst++ = src[i];
+	}
+	*dst++ = '\0';
+}
