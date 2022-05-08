@@ -33,32 +33,32 @@ void builddlginit(DIALOGREF dp){
 	char s[0x100];
 
 	if(gdata->parmloaded){
-		SetDlgItemTextA(dp,CATEGORYITEM, gdata->parm.szCategory);
-		SetDlgItemTextA(dp,TITLEITEM,    gdata->parm.szTitle);
-		SetDlgItemTextA(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
-		SetDlgItemTextA(dp,AUTHORITEM,   gdata->parm.szAuthor);
+		SETCTLTEXT(dp,CATEGORYITEM, gdata->parm.szCategory);
+		SETCTLTEXT(dp,TITLEITEM,    gdata->parm.szTitle);
+		SETCTLTEXT(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
+		SETCTLTEXT(dp,AUTHORITEM,   gdata->parm.szAuthor);
 		for(i=0;i<4;++i){
-			SetDlgItemTextA(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
+			SETCTLTEXT(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
 		}
 		for(i=0;i<8;++i){
-			SetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
+			SETCTLTEXT(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
 		}
 	}else{
 		/* strictly speaking this is not needed on the Mac,
 		   we can set initial values statically in the rez description */
-		SetDlgItemTextA(dp,CATEGORYITEM, "Filter Foundry");
-		SetDlgItemTextA(dp,TITLEITEM,    "Untitled");
-		SetDlgItemTextA(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
-		SetDlgItemTextA(dp,AUTHORITEM,   "Anonymous");
+		SETCTLTEXT(dp,CATEGORYITEM, "Filter Foundry");
+		SETCTLTEXT(dp,TITLEITEM,    "Untitled");
+		SETCTLTEXT(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
+		SETCTLTEXT(dp,AUTHORITEM,   "Anonymous");
 		strcpy(s,"Map X");
 		for(i = 0; i < 4; ++i){
 			s[4] = (char)('0' + i);
-			SetDlgItemTextA(dp,FIRSTMAPNAMEITEM+i,s);
+			SETCTLTEXT(dp,FIRSTMAPNAMEITEM+i,s);
 		}
 		strcpy(s,"ctl(X)");
 		for(i = 0; i < 8; ++i){
 			s[4] = (char)('0' + i);
-			SetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i,s);
+			SETCTLTEXT(dp,FIRSTCTLNAMEITEM+i,s);
 		}
 	}
 

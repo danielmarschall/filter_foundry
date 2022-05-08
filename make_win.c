@@ -392,12 +392,12 @@ Boolean doresources(FSSpec* dst, int bits){
 	char* manifestp_copy;
 	PARM_T *pparm = NULL;
 	size_t piplsize,aetesize,origsize;
-	char title[256];
+	char title[256], category[256];
 	LPCTSTR parm_type;
 	LPCTSTR parm_id;
 	Boolean discard = true;
 	uint64_t obfuscseed = 0, obfuscseed2 = 0;
-	long event_id;
+	long event_id = 0;
 
 	memset(&dummy_oper, 0, sizeof(operdef_t));
 	memset(&dummy_func, 0, sizeof(funcdef_t));
@@ -419,9 +419,11 @@ Boolean doresources(FSSpec* dst, int bits){
 
 			newmanifest = (char*)malloc((size_t)manifestsize + 4096/*+4KiB for name,description,etc.*/);
 
-			strcpy(title,gdata->parm.szTitle);
-			if(gdata->parm.popDialog)
-				strcat(title,"...");
+			strcpy_win_replace_ampersand(&title[0], &gdata->parm.szTitle[0]);
+			if (gdata->parm.popDialog)
+				strcat(title, "...");
+
+			strcpy_win_replace_ampersand(&category[0], &gdata->parm.szCategory[0]);
 
 			origsize = SizeofResource(hDllInstance,datarsrc);
 
@@ -435,7 +437,7 @@ Boolean doresources(FSSpec* dst, int bits){
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
-				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,&title[0], &event_id) + 2;
+				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,&title[0],&category[0],&event_id) + 2;
 
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));

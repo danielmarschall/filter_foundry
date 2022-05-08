@@ -153,7 +153,7 @@ size_t roundToNext4(size_t x) {
 	return x + pad;
 }
 
-size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_id) {
+size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* category, long *event_id) {
 	PIProperty *prop;
 	char *p;
 	struct hstm_data {
@@ -211,9 +211,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 	prop->propertyKey = PICategoryProperty;
 	prop->propertyID = 0;
 
-	prop->propertyLength = (SPInt32)roundToNext4(strlen(gdata->parm.szCategory) + 1);
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(category) + 1);
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
-	myc2pstrcpy((StringPtr)prop->propertyData, gdata->parm.szCategory);
+	myc2pstrcpy((StringPtr)prop->propertyData, category);
 
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
 	prop = (PIProperty*)p;
@@ -222,9 +222,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, long *event_i
 
 	hstm = (struct hstm_data*)prop->propertyData;
 
-	sprintf(szScope, "%s %s",
-	    gdata->parm.szCategory,
-	    title);
+	sprintf(szScope, "%s %s", category, title);
 
 	#ifdef ENABLE_APPLESCRIPT
 	// If the uniqueString/scope is set, the plugin will only communicate with Photoshop.

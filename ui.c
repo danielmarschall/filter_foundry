@@ -254,6 +254,27 @@ void maindlgupdate(DIALOGREF dp){
 
 /* one-time initialisation of dialog box */
 
+void strcpy_win_replace_ampersand(char *dst, char *src) {
+	size_t i;
+	for (i = 0; i < strlen(src); i++) {
+#ifdef WIN_ENV
+		// & needs to be replaced to && in:
+		// - Labels (SETCTLTEXT)
+		// - Menu items (i.e. PIPL)
+		// It is not required in:
+		// - Filedialog FileName
+		// - MessageBox title or content
+		// - Window titles
+		// - Input boxes, e.g. import+export of an existing filter
+		if (src[i] == '&') {
+			*dst++ = src[i];
+		}
+#endif
+		*dst++ = src[i];
+	}
+	*dst++ = '\0';
+}
+
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;
@@ -265,26 +286,28 @@ void maindlginit(DIALOGREF dp){
 
 	/* hide unused expression items */
 	if(gdata->standalone){
-		SetDlgItemTextA(dp,PARAMAUTHORITEM,gdata->parm.szAuthor);
-		SetDlgItemTextA(dp,PARAMCOPYITEM,gdata->parm.szCopyright);
+		strcpy_win_replace_ampersand(&s[0], &gdata->parm.szAuthor[0]);
+		SETCTLTEXT(dp,PARAMAUTHORITEM,s);
+		strcpy_win_replace_ampersand(&s[0], &gdata->parm.szCopyright[0]);
+		SETCTLTEXT(dp,PARAMCOPYITEM,s);
 
 		// update labels for map() or ctl() sliders
 		for(i = 0; i < 8; ++i){
-			if(gdata->parm.map_used[i/2]){
+			if(gdata->parm.map_used[i/2]) {
 				if((i&1) == 0){
 					// even (0, 2, 4, 6)
-					strcpy(s,gdata->parm.szMap[i/2]);
-					SetDlgItemTextA(dp, FIRSTMAPLABELITEM+(i/2),s);
+					strcpy_win_replace_ampersand(&s[0], &gdata->parm.szMap[i/2][0]);
+					SETCTLTEXT(dp, FIRSTMAPLABELITEM + (i/2),s);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i);
 					HideDialogItem(dp, FIRSTCTLLABELITEM + i + 1);
 				}
-			} else if(gdata->parm.ctl_used[i]){
-				strcpy(s,gdata->parm.szCtl[i]);
-				SetDlgItemTextA(dp, FIRSTCTLLABELITEM+i,s);
+			} else if(gdata->parm.ctl_used[i]) {
+				strcpy_win_replace_ampersand(&s[0], &gdata->parm.szCtl[i][0]);
+				SETCTLTEXT(dp, FIRSTCTLLABELITEM+i,s);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
-			}else{
-				HideDialogItem(dp, FIRSTCTLITEM+i);
-				HideDialogItem(dp, FIRSTCTLTEXTITEM+i);
+			} else {
+				HideDialogItem(dp, FIRSTCTLITEM + i);
+				HideDialogItem(dp, FIRSTCTLTEXTITEM + i);
 				HideDialogItem(dp, FIRSTCTLLABELITEM + i);
 				HideDialogItem(dp, FIRSTMAPLABELITEM + i/2);
 			}
@@ -299,7 +322,7 @@ void maindlginit(DIALOGREF dp){
 			HideDialogItem(dp,FIRSTLABELITEM+i);
 		}else{
 			s[0] = channelsuffixes[gpb->imageMode][i];
-			SetDlgItemTextA(dp,FIRSTLABELITEM+i,s);
+			SETCTLTEXT(dp,FIRSTLABELITEM+i,s);
 		}
 	}
 

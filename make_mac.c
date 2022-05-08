@@ -41,7 +41,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 	Handle hpipl,h;
 	long origsize,newsize,parm_type,parm_id;
 	OSErr e = noErr;
-	Str255 title;
+	Str255 title, category;
 	long event_id;
 
 	#ifdef MACMACHO
@@ -78,11 +78,13 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			myc2pstrcpy(title,gdata->parm.szTitle);
 			if(gdata->parm.popDialog)
 				PLstrcat(title,"\pÉ");
+			
+			myc2pstrcpy(category,gdata->parm.szCategory);
 
 			origsize = GetHandleSize(hpipl);
 			SetHandleSize(hpipl,origsize+0x300); /* some slop for fixup to work with */
 			HLock(hpipl);
-			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title,&event_id);
+			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title,category,&event_id);
 			HUnlock(hpipl);
 			SetHandleSize(hpipl,newsize);
 

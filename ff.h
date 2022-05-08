@@ -156,9 +156,12 @@ OSErr make_standalone(StandardFileReply *sfr);
 Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
+// from ui.c
+void strcpy_win_replace_ampersand(char* dst, char* src);
+
 // from make.c
 unsigned long printablehash(unsigned long hash);
-size_t fixpipl(PIPropertyList *pipl,size_t origsize,char* title, long *event_id);
+size_t fixpipl(PIPropertyList *pipl,size_t origsize,char* title, char* category, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 
 // from obfusc.c
