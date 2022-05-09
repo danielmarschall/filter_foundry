@@ -21,7 +21,7 @@
 // This RC file is for Windows only.
 // The PiPL_body contains the properties which are added to PIPL and TPLT (PIPL-Template).
 // PIPL will additionally receive name, catg and hstm
-// Attention: This file may only contain 5 properties. If this number changes,
+// Attention: This file may only contain 7 properties. If this number changes,
 //            please also change PiPL.rc
 
 /* Filter module */
@@ -30,32 +30,32 @@ VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),
 /* Version Number */
 VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion, latestFilterVersion,
 
-
-
-#define doesSupportsBitmap         flagSupportsBitmap
-#define doesSupportsGrayScale      flagSupportsGrayScale
-#define doesSupportsIndexedColor   flagSupportsIndexedColor
-#define doesSupportsRGBColor       flagSupportsRGBColor
-#define doesSupportsCMYKColor      flagSupportsCMYKColor
-#define doesSupportsHSLColor       flagSupportsHSLColor
-#define doesSupportsHSBColor       flagSupportsHSBColor
-#define doesSupportsMultichannel   flagSupportsMultichannel
-#define doesSupportsDuotone        32768 // (flagSupportsDuotone << 8)    RC doesn't know <<8, nor *256 !
-#define doesSupportsLABColor       16384 // (flagSupportsLABColor << 8)   RC doesn't know <<8, nor *256 !
+#ifndef doesSupportBitmap
+#define doesSupportBitmap         flagSupportsBitmap
+#define doesSupportGrayScale      flagSupportsGrayScale
+#define doesSupportIndexedColor   flagSupportsIndexedColor
+#define doesSupportRGBColor       flagSupportsRGBColor
+#define doesSupportCMYKColor      flagSupportsCMYKColor
+#define doesSupportHSLColor       flagSupportsHSLColor
+#define doesSupportHSBColor       flagSupportsHSBColor
+#define doesSupportMultichannel   flagSupportsMultichannel
+#define doesSupportDuotone        32768 // (flagSupportsDuotone << 8)    RC doesn't know <<8, nor *256 !
+#define doesSupportLABColor       16384 // (flagSupportsLABColor << 8)   RC doesn't know <<8, nor *256 !
+#endif
 
 /* Supported modes */
 /* Second byte:    */
-VENDORID, LC(m,o,d,e), NULLID, 4L, /* First byte:     */ /*doesSupportsBitmap|*/
-                                                         doesSupportsGrayScale|
-                                                         doesSupportsIndexedColor|
-                                                         doesSupportsRGBColor|
-                                                         doesSupportsCMYKColor|
-                                                         doesSupportsHSLColor|
-                                                         doesSupportsHSBColor|
-                                                         doesSupportsMultichannel|
-                                   /* Second byte: */    doesSupportsDuotone|
-                                                         doesSupportsLABColor,
-                                                         /* 3rd & 4th byte: */ 0,
+VENDORID, LC(m,o,d,e), NULLID, 4L, /* First byte:     */ /*doesSupportBitmap|*/
+                                                         doesSupportGrayScale|
+                                                         doesSupportIndexedColor|
+                                                         doesSupportRGBColor|
+                                                         doesSupportCMYKColor|
+                                                         doesSupportHSLColor|
+                                                         doesSupportHSBColor|
+                                                         doesSupportMultichannel|
+                                   /* Second byte: */    doesSupportDuotone|
+                                                         doesSupportLABColor,
+                                   /* 3rd & 4th byte: */ 0,
 
 /* We need this to enable the plugin for BigDocuments */
 VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
@@ -69,11 +69,13 @@ VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
 VENDORID, LC(f,l,l,y), NULLID, 4L, 0x80L,
 
 /* Enable info */
-VENDORID, LC(e,n,b,l), NULLID, 4L, 134L, "in (PSHOP_ImageMode, GrayScaleMode, IndexedColorMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0"
+/* Note: 136 must divisible by 4 */
+VENDORID, LC(e,n,b,l), NULLID, 136L, "in (PSHOP_ImageMode, GrayScaleMode, IndexedColorMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0\0\0",
 
 /* "Component". Values taken from Clouds.8BF */
 /* TODO: What is this? Commented out to be sure */
-//VENDORID, LC(c,m,p,t), NULLID, 4L, 18L, 0x00170301L, "FilterFoundry\0"
+/* Note: 20 must divisible by 4 */
+//VENDORID, LC(c,m,p,t), NULLID, 20L, 0x00170301L, "FilterFoundry\0\0\0",
 
 /* MonitorScalingAware */
 /* TODO: Do we support it? For now, commented out */

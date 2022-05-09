@@ -9,6 +9,7 @@
 - Introduced obfuscation version 7, which is more secure.
 - Windows: Handling of ampersand characters ("&") in Title, Category, Author, Copyright, and Controller/Map labels fixed.
 - Support for "Filter layers" added (not fully tested).
+- FilterFoundry can now work correctly with Duotone and Lab color spaces (PiPL 'mode' entry was wrong)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

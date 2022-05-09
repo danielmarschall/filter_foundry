@@ -5,7 +5,13 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* In regards color modes...
+	"Bitmap" => what is this mode and why isn't it supported?
+	"IndexedColor" => enabled in PiPL 'mode' and 'enbl', but is still not enabled?!
+	"HSL" => how do you set this color space in Photoshop?!
+	"HSB" => how do you set this color space in Photoshop?!
+	"Duotone" => The preview background is white (TODO)
+	"Lab" => The preview background is red (TODO)
 
 
 Known problems
