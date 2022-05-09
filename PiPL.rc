@@ -38,10 +38,14 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,     /* Reserved (for Photoshop) */
 	0L,         /* kCurrentPiPLVersion */
-	11L,        /* Property Count */
+	13L,        /* Property Count */
 
 	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0",    /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
+
+	/* "Component". Values taken from Clouds.8BF */
+	/* Note: Length 20 must be divisible by 4 */
+	VENDORID, LC(c,m,p,t), NULLID, 20L, MainComponentVersion, "Filter Foundry\0\0",
 
 	/* HasTerminology { plugInClassID, plugInEventID, AETE_ID, vendorName " " plugInName }, */
 	VENDORID, LC(h,s,t,m), NULLID, 16L, /* = 3*4 + 2 + sizeof(c string) + padding */
@@ -49,7 +53,6 @@ BEGIN
 	LC(F,l,t,r),       /* Class ID, always required.  Must be eventFilter='Fltr' to show up in "Actions" tab. */
 	LC(f,i,F,o),       /* Event ID, or typeNULL if not Filter/Color Picker/Selection. */
 	AETE_ID,           /* Dictionary ('AETE') resource ID. (only 2 bytes long!) */
-
 	/*"Telegraphics FilterFoundry\0\0\0\0"*/
 	/* Unique scope string, C format, long padded. If set, the plugin will only communicate with the host (Photoshop), not with AppleScript. */
 	/* Beginning with 1.7.0.2, we accept AppleScript, since the AETE keys are now randomly chosen for each standalone plugin. */
@@ -70,7 +73,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,       /* Reserved (for Photoshop) */
 	0L,           /* kCurrentPiPLVersion */
-	8L,           /* Property Count */
+	9L,           /* Property Count */
 	VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 	#include "PiPL_body.rc"
 END
@@ -80,7 +83,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,       /* Reserved (for Photoshop) */
 	0L,           /* kCurrentPiPLVersion */
-	8L,           /* Property Count */
+	9L,           /* Property Count */
 	VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 	#include "PiPL_body.rc"
 END

@@ -21,6 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <assert.h>
+#include <time.h>
 
 #include "ff.h"
 #include "symtab.h"
@@ -153,7 +154,7 @@ size_t roundToNext4(size_t x) {
 	return x + pad;
 }
 
-size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* category, long *event_id) {
+size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* component, char* category, long *event_id) {
 	PIProperty *prop;
 	char *p;
 	struct hstm_data {
@@ -169,9 +170,11 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* categor
 	unsigned long hash;
 	size_t realLength;
 	size_t roundedLength;
+	unsigned long componentVersion;
+	time_t curTime;
 	char szScope[0x300];
 
-	pipl->count += 3; // 3 more keys in PiPL: name, catg, hstm
+	pipl->count += 4; // 4 more keys in PiPL: catg, name, cmpt, hstm
 
 	p = (char*)pipl + origsize;
 	prop = (PIProperty*)p;
@@ -192,6 +195,17 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* categor
 		Photoshop (tested with Photoshop 7) will crash if the propertyLength follows the definition of PICA.
 	*/
 
+	/* add Category property key */
+
+	prop->vendorID = kPhotoshopSignature;
+	prop->propertyKey = PICategoryProperty;
+	prop->propertyID = 0;
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(category) + 1);
+	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
+	myc2pstrcpy((StringPtr)prop->propertyData, category);
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength; // skip past new property record, and any padding
+	prop = (PIProperty*)p;
+
 	/* add Title/Name property key */
 
 	prop->vendorID = kPhotoshopSignature;
@@ -200,22 +214,21 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* categor
 	prop->propertyLength = (SPInt32)roundToNext4(strlen(title) + 1);
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
 	myc2pstrcpy((StringPtr)prop->propertyData, title);
-
-	// skip past new property record, and any padding
-	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength; // skip past new property record, and any padding
 	prop = (PIProperty*)p;
 
-	/* add Category property key */
+	/* add Component property key */
 
 	prop->vendorID = kPhotoshopSignature;
-	prop->propertyKey = PICategoryProperty;
+	prop->propertyKey = PIComponentProperty;
 	prop->propertyID = 0;
-
-	prop->propertyLength = (SPInt32)roundToNext4(strlen(category) + 1);
+	time(&curTime);
+	componentVersion = (unsigned long)curTime - 946681200/*01.Jan.2000 00:00:00*/;
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(component) + 1 + sizeof(componentVersion));
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
-	myc2pstrcpy((StringPtr)prop->propertyData, category);
-
-	p += offsetof(PIProperty, propertyData) + prop->propertyLength;
+	memcpy(prop->propertyData, &componentVersion, sizeof(componentVersion));
+	strcpy((char*)(prop->propertyData+sizeof(componentVersion)), component);
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength; // skip past new property record, and any padding
 	prop = (PIProperty*)p;
 
 	/* add HasTerminology property key */

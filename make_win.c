@@ -437,7 +437,7 @@ Boolean doresources(FSSpec* dst, int bits){
 				memcpy(newpipl,datap,origsize);
 				/* note that Windows PiPLs have 2 byte version datum in front
 				   that isn't reflected in struct definition or Mac resource template: */
-				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,&title[0],&category[0],&event_id) + 2;
+				piplsize = fixpipl((PIPropertyList*)(newpipl+2),origsize-2,&title[0],&gdata->parm.szTitle[0],&category[0],&event_id) + 2;
 
 				/* set up the PARM resource with saved parameters */
 				memcpy(pparm,&gdata->parm,sizeof(PARM_T));

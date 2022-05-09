@@ -75,6 +75,7 @@ PlugIn Property List (PiPL) properties
 | `8BIM` | `mode` |  943868237 1836016741 | 0x3842494d 0x6d6f6465 | PiPL property "SupportedModes" (PIPL.r)                 | Adobe           |
 | `8BIM` | `ms32` |  943868237 1836266290 | 0x3842494d 0x6d733332 | PiPL property "PlugInMaxSize" (PIPL.r)                  | Adobe           |
 | `8BIM` | `fici` |  943868237 1718182761 | 0x3842494d 0x66696369 | PiPL property "FilterCaseInfo" (PIPL.r)                 | Adobe           |
+| `ViaT` | `ObId` | 1449746772 1331841380 | 0x56696154 0x4f624964 | PiPL property "Object Identifier"                       | ViaThinkSoft    |
 
 Host signatures
 ---------------

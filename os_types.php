@@ -101,6 +101,7 @@ pipl_property_info('8BIM', 'vers', 'PiPL property "Version" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'mode', 'PiPL property "SupportedModes" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'ms32', 'PiPL property "PlugInMaxSize" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'fici', 'PiPL property "FilterCaseInfo" (PIPL.r)', 'Adobe');
+pipl_property_info('ViaT', 'ObId', 'PiPL property "Object Identifier"', 'ViaThinkSoft');
 pipl_property_footer();
 
 ostype_header("Host signatures");

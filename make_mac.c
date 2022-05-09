@@ -84,7 +84,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			origsize = GetHandleSize(hpipl);
 			SetHandleSize(hpipl,origsize+0x300); /* some slop for fixup to work with */
 			HLock(hpipl);
-			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title,category,&event_id);
+			newsize = fixpipl((PIPropertyList*) *hpipl,origsize,title,gdata->parm.szCategory,category,&event_id);
 			HUnlock(hpipl);
 			SetHandleSize(hpipl,newsize);
 

@@ -104,7 +104,7 @@ BUILDING WITH MINGW32/64
 * IMPORTANT: Building with MINGW32/64 is currently NOT possible
   because the resoure compiler doesn't resolve the compiler (windres) constants of language.h in
   language_win.rc and shows a syntax error. You can compile if you replace the constants by hand.
-  Reported bug in May 8, 2022 via email, because the bugtracker doesn't allow user account creation.
+  Bugreport: https://sourceware.org/bugzilla/show_bug.cgi?id=29133
 * Mingw32 can be hosted on virtually any UNIX or Linux system, or under Windows.
 * Download: http://mingw-w64.org/doku.php/download/mingw-builds
 * Do NOT install mingw32 to a directory that contains white spaces (i.e. "C:\Program Files (x86)\")!

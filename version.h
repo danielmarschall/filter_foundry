@@ -26,7 +26,7 @@
 Note: Changelog has been moved into the file CHANGELOG.md
 
 For a NEW VERSION, please change:
-- version.h (3 times)
+- version.h (3 times cleartext + MainComponentVersion)
 - manifest32.xml and manifest64.xml
 - README.md
 - CHANGELOG.md
@@ -35,8 +35,8 @@ For a NEW VERSION, please change:
 
 #define plugInName "FilterFoundry"
 
-#define VERSION_STR "1.7.0.16"
-#define VERSION_NUM 1,7,0,1
+#define VERSION_STR "1.7.0.17"
+#define VERSION_NUM 1,7,0,17
 
 #define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 
@@ -44,8 +44,11 @@ For a NEW VERSION, please change:
 
 #define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
+/* For the 'cmpt' PIPL attribute */
+#define MainComponentVersion 0x01070011L // 1.7.0.17
+
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM	1,7,0,16
+#define VI_VERS_NUM	1,7,0,17
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Download the latest version here: " PROJECT_URL "\0"	/* null terminated Comments field */
 #define VI_COMPANY_NAME	"ViaThinkSoft, Telegraphics Pty Ltd\0"

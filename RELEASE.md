@@ -3,7 +3,7 @@ ViaThinkSoft release procedure
 ------------------------------
 
 1. Fix version information:
-	- version.h (3 times)
+	- version.h (3 times cleartext + MainComponentVersion)
 	- manifest32.xml and manifest64.xml
 	- README.md
 	- CHANGELOG.md

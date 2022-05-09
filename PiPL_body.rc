@@ -21,7 +21,7 @@
 // This RC file is for Windows only.
 // The PiPL_body contains the properties which are added to PIPL and TPLT (PIPL-Template).
 // PIPL will additionally receive name, catg and hstm
-// Attention: This file may only contain 7 properties. If this number changes,
+// Attention: This file may only contain 8 properties. If this number changes,
 //            please also change PiPL.rc
 
 /* Filter module */
@@ -69,13 +69,15 @@ VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
 VENDORID, LC(f,l,l,y), NULLID, 4L, 0x80L,
 
 /* Enable info */
-/* Note: 136 must divisible by 4 */
+/* Note: Length 136 must be divisible by 4 */
+/* "Plug-in Resource Guide.pdf", pages 61-62 */
 VENDORID, LC(e,n,b,l), NULLID, 136L, "in (PSHOP_ImageMode, GrayScaleMode, IndexedColorMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0\0\0",
 
-/* "Component". Values taken from Clouds.8BF */
-/* TODO: What is this? Commented out to be sure */
-/* Note: 20 must divisible by 4 */
-//VENDORID, LC(c,m,p,t), NULLID, 20L, 0x00170301L, "FilterFoundry\0\0\0",
+/* Object Identifier attribute */
+/* Note that 'ViaT' is not a official creator code for ViaThinkSoft and it is unclear where a creator code can be aquired from... */
+/* TODO: In the future, create individual OIDs for standalone filters, i.e. via hash */
+/* Note: Length 24 must be divisible by 4 */
+LC(V,i,a,T), LC(O,b,I,d), NULLID, 24L, "1.3.6.1.4.1.37476.2.72\0\0",
 
 /* MonitorScalingAware */
 /* TODO: Do we support it? For now, commented out */
