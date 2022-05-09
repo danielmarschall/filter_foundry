@@ -223,7 +223,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	prop->propertyKey = PIComponentProperty;
 	prop->propertyID = 0;
 	time(&curTime);
-	componentVersion = (unsigned long)curTime - 946681200/*01.Jan.2000 00:00:00*/;
+	componentVersion = (unsigned long)(curTime - (time_t)946681200)/*01.Jan.2000 00:00:00*/;
 	prop->propertyLength = (SPInt32)roundToNext4(strlen(component) + 1 + sizeof(componentVersion));
 	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
 	memcpy(prop->propertyData, &componentVersion, sizeof(componentVersion));

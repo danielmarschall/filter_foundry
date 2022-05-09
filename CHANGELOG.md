@@ -5,9 +5,9 @@
 - Added translation for German systems (*)
 - `map(i,n)` now works like in Filter Factory and not like GIMP User Filter v0.8.
 - `val(i,a,b)` now returns the same value like Filter Factory for illegal values of `i`.
-- Windows: Standalone filters containing a `&` in Name or Category now have the correct "Visual Themes", as the Manifest XML is not broken anymore.
-- Introduced obfuscation version 7, which is more secure.
+- Windows: Standalone filters containing ampersand characters ("&") in Name or Category now have the correct "Visual Themes", as the Manifest XML is not broken anymore.
 - Windows: Handling of ampersand characters ("&") in Title, Category, Author, Copyright, and Controller/Map labels fixed.
+- Introduced obfuscation version 7, which is more secure.
 - Support for "Filter layers" added (not fully tested; PiPL attribute `'flly'`) (*)
 - FilterFoundry can now work correctly with Duotone and Lab color spaces (PiPL `'mode'` entry was wrong)
 - Internal change: PiPL resource now contains `'8BIM':'cmpt'` (Component) (*)
