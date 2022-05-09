@@ -38,7 +38,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,     /* Reserved (for Photoshop) */
 	0L,         /* kCurrentPiPLVersion */
-	9L,         /* Property Count */
+	11L,        /* Property Count */
 
 	VENDORID, LC(c,a,t,g), NULLID, 16L, "\014Telegraphics\0\0\0",    /* PString */
 	VENDORID, LC(n,a,m,e), NULLID, 20L, "\021Filter Foundry...\0\0", /* PString */
@@ -70,7 +70,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,       /* Reserved (for Photoshop) */
 	0L,           /* kCurrentPiPLVersion */
-	6L,           /* Property Count */
+	8L,           /* Property Count */
 	VENDORID, LC(w,x,8,6), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 	#include "PiPL_body.rc"
 END
@@ -80,7 +80,7 @@ LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
 BEGIN
 	0x0001,       /* Reserved (for Photoshop) */
 	0L,           /* kCurrentPiPLVersion */
-	6L,           /* Property Count */
+	8L,           /* Property Count */
 	VENDORID, LC(8,6,6,4), NULLID, 12L, "PluginMain\0\0",  /* Entrypoint Name (Long Word padded C String) */
 	#include "PiPL_body.rc"
 END
