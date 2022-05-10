@@ -88,8 +88,9 @@ void builddlginit(DIALOGREF dp){
 	SELECTDLGITEMTEXT(dp,TITLEITEM,0,-1);
 }
 
+#define MAXFIELD 0x100
+
 Boolean containsUnicodeInput(DIALOGREF dp, int item) {
-	enum { MAXFIELD = 0x100 };
 	char sa[MAXFIELD + 1];
 	wchar_t sw[MAXFIELD + 1];
 	size_t i;
@@ -106,7 +107,6 @@ Boolean containsUnicodeInput(DIALOGREF dp, int item) {
 }
 
 Boolean containsExtCharset(DIALOGREF dp, int item) {
-	enum { MAXFIELD = 0x100 };
 	char s[MAXFIELD + 1];
 	size_t i;
 
@@ -123,7 +123,6 @@ Boolean containsExtCharset(DIALOGREF dp, int item) {
 /* process an item hit. return false if the dialog is finished; otherwise return true. */
 
 Boolean builddlgitem(DIALOGREF dp,int item){
-	enum{MAXFIELD=0x100};
 	char s[MAXFIELD+1];
 	int i,needui;
 	TCHAR fname[MAX_PATH + 1];

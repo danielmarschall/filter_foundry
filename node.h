@@ -23,7 +23,7 @@
 
 #include "symtab.h"
 
-enum{ MAXCHILDREN = 10 };
+#define MAXCHILDREN 10
 
 struct node{
 	int kind;

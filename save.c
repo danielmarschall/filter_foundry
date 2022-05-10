@@ -23,7 +23,7 @@
 #include "file_compat.h"
 #include "sprintf_tiny.h"
 
-enum{ CHOPLINES = 63 };
+#define CHOPLINES 63
 
 OSErr putstr(Handle h,char *s);
 

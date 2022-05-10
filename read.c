@@ -33,10 +33,8 @@ int EndianS32_LtoN(int num) {
 }
 #endif
 
-enum{
-	BUFSIZE = 4L<<10,
-	MAXLINE = 0x200,
-};
+#define BUFSIZE 4L<<10
+#define MAXLINE 0x200
 
 Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 	Boolean res = false;

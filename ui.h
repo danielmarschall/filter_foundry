@@ -97,9 +97,7 @@
 
 	#include "ui_compat.h"
 
-	enum{
-		MAXEXPR = 1024,
-	};
+	#define MAXEXPR 1024
 
 	void DoAbout(AboutRecordPtr prec);
 	Boolean maindialog(FilterRecordPtr pb);

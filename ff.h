@@ -49,16 +49,16 @@
 #define kViaThinkSoftSignature 'ViaT' // 0x56696154 (inofficial creator code)
 #define PIOIDProperty          'ObId' // 0x4f624964
 
+#define TEXT_FILETYPE 'TEXT'
+#define SIG_SIMPLETEXT 'ttxt'
+#define PS_FILTER_FILETYPE '8BFM'
+
+#define CHUNK_ROWS 64
+
 enum{
 	TAB = 011,
 	LF  = 012,
 	CR  = 015,
-
-	CHUNK_ROWS = 64,
-
-	TEXT_FILETYPE = 'TEXT',
-	SIG_SIMPLETEXT = 'ttxt',
-	PS_FILTER_FILETYPE = '8BFM'
 };
 
 #ifdef _WIN32

@@ -59,7 +59,7 @@ struct node *parseexpr(char *s);
 struct node *parsetree;
 TCHAR *errstr;
 
-enum{ PARENSTACK = 100 };
+#define PARENSTACK 100
 
 int inarglist[PARENSTACK],arglistptr; // keep track of whether a comma is an function argument separator, or operator
 
