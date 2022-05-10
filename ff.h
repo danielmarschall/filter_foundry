@@ -45,6 +45,10 @@
 #define HOSTSIG_PAINT_NET 'NDP.'
 #define HOSTSIG_ADOBE_PREMIERE '8B)M'/*sic*/
 
+// see also PiPL.rc
+#define kViaThinkSoftSignature 'ViaT' // 0x56696154 (inofficial creator code)
+#define PIOIDProperty          'ObId' // 0x4f624964
+
 enum{
 	TAB = 011,
 	LF  = 012,

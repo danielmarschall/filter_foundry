@@ -172,9 +172,9 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	size_t roundedLength;
 	unsigned long componentVersion;
 	time_t curTime;
-	char szScope[0x300];
+	char szScope[0x300], szOID[0x50];
 
-	pipl->count += 4; // 4 more keys in PiPL: catg, name, cmpt, hstm
+	pipl->count += 5; // 5 more keys in PiPL: catg, name, cmpt, hstm, ObId
 
 	p = (char*)pipl + origsize;
 	prop = (PIProperty*)p;
@@ -231,11 +231,25 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	p += offsetof(PIProperty, propertyData) + prop->propertyLength; // skip past new property record, and any padding
 	prop = (PIProperty*)p;
 
+	/* add OID property key */
+
+	sprintf(szScope, "%s %s", category, component);
+	hash = djb2(szScope);
+	// max 47 chars ("1.3.6.1.4.1.37476.2.72.1.4294967295.4294967295\0")
+	sprintf(szOID, "1.3.6.1.4.1.37476.2.72.1.%lu.%lu", hash, componentVersion);
+
+	prop->vendorID = kViaThinkSoftSignature;
+	prop->propertyKey = PIOIDProperty;
+	prop->propertyID = 0;
+	prop->propertyLength = (SPInt32)roundToNext4(strlen(szOID) + 1);
+	memset(prop->propertyData, 0x00, prop->propertyLength); // fill padding with 00h bytes (cosmetics)
+	strcpy((char*)prop->propertyData, szOID);
+	p += offsetof(PIProperty, propertyData) + prop->propertyLength; // skip past new property record, and any padding
+	prop = (PIProperty*)p;
+
 	/* add HasTerminology property key */
 
 	hstm = (struct hstm_data*)prop->propertyData;
-
-	sprintf(szScope, "%s %s", category, title);
 
 	#ifdef ENABLE_APPLESCRIPT
 	// If the uniqueString/scope is set, the plugin will only communicate with Photoshop.
@@ -253,7 +267,6 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	#endif
 
 	/* make up a new event ID for this aete, based on printable base-95 hash of scope */
-	hash = djb2(szScope);
 	*event_id = printablehash(hash); /* this is used by aete_generate() later... */
 
 	prop->vendorID = kPhotoshopSignature;

@@ -53,6 +53,6 @@ For a NEW VERSION, please change:
 #define VI_COMMENTS	"Download the latest version here: " PROJECT_URL "\0"	/* null terminated Comments field */
 #define VI_COMPANY_NAME	"ViaThinkSoft, Telegraphics Pty Ltd\0"
 /* wildcard signature in resources */
-#define ANY '    '
+#define ANY 0x20202020 // '    '
 
 #endif
