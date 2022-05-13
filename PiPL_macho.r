@@ -33,20 +33,22 @@ resource 'PiPL' (16000, purgeable)
 	{
 		Category { "Telegraphics" },
 		Name { "Filter Foundry…" },
-
-#include "PiPL_common.r"
-
-#if (defined(__x86_64__))
-		CodeMacIntel64 { "PluginMain" },
-#endif
-#if (defined(__i386__))
-		CodeMacIntel32 { "PluginMain" },
-#endif
-#if (defined(__ppc__))
-		CodeMachOPowerPC { 0, 0, "PluginMain" },
-#endif
-
+		Component { MainComponentVersion, "Filter Foundry" },
 		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
+
+		#if (defined(__x86_64__))
+		CodeMacIntel64 { "PluginMain" },
+		#endif
+		#if (defined(__i386__))
+		CodeMacIntel32 { "PluginMain" },
+		#endif
+		#if (defined(__ppc__))
+		CodeMachOPowerPC { 0, 0, "PluginMain" },
+		#endif
+		#include "PiPL_common.r"
+
+		// TODO: How to do that?
+		//ObjectIdentifier { "1.3.6.1.4.1.37476.2.72" }
 	}
 };
 
@@ -54,17 +56,16 @@ type 'tpLT' as 'PiPL';
 resource 'tpLT' (16000, purgeable)
 {
 	{
-#include "pipl_common.r"
-
-#if (defined(__x86_64__))
+		#if (defined(__x86_64__))
 		CodeMacIntel64 { "PluginMain" },
-#endif
-#if (defined(__i386__))
+		#endif
+		#if (defined(__i386__))
 		CodeMacIntel32 { "PluginMain" },
-#endif
-#if (defined(__ppc__))
+		#endif
+		#if (defined(__ppc__))
 		CodeMachOPowerPC { 0, 0, "PluginMain" },
-#endif
+		#endif
+		#include "pipl_common.r"
 	}
 };
 

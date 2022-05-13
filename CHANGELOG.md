@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.17 [Work-In-Progress]
+## 1.7.0.17 [14-May-2022]
 - Fixed theoretical bug that can crash a Photoshop application if PLUGIN.DLL exists but is not loaded.
 - Added translation for German systems (*)
 - `map(i,n)` now works like in Filter Factory and not like GIMP User Filter v0.8.
@@ -10,8 +10,10 @@
 - Introduced obfuscation version 7, which is more secure.
 - Support for "Filter layers" added (not fully tested; PiPL attribute `'flly'`) (*)
 - FilterFoundry can now work correctly with Duotone and Lab color spaces (PiPL `'mode'` entry was wrong)
+- "Indexed Color" mode removed, since it seems to have never worked.
 - Internal change: PiPL resource now contains `'8BIM':'cmpt'` (Component) (*)
 - Internal change: PiPL resource now contains `'ViaT':'ObId'` (Object Identifier) (*)
+- Internal change: PiPL resource now contains `prty` (Priority)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

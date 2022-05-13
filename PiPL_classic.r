@@ -32,13 +32,17 @@ resource 'PiPL' (16000, purgeable)
 	{
 		Category { "Telegraphics" },
 		Name { "Filter Foundry…" },
-#include "pipl_common.r"
-		CodePowerPC { 0, 0, "" },
-#ifdef BUILD68K
-		Code68K { Filter, 16000 },
-#endif
-
+		Component { MainComponentVersion, "Filter Foundry" },
 		HasTerminology { plugInClassID, plugInEventID, AETE_ID, /*vendorName " " plugInName*/ ""/*Empty scope enabled AppleScript*/ },
+
+		CodePowerPC { 0, 0, "" },
+		#ifdef BUILD68K
+		Code68K { Filter, 16000 },
+		#endif
+		#include "pipl_common.r"
+
+		// TODO: How to do that?
+		//ObjectIdentifier { "1.3.6.1.4.1.37476.2.72" }
 	}
 };
 
@@ -46,11 +50,11 @@ type 'tpLT' as 'PiPL';
 resource 'tpLT' (16000, purgeable)
 {
 	{
-#include "pipl_common.r"
 		CodePowerPC { 0, 0, "" },
-#ifdef BUILD68K
+		#ifdef BUILD68K
 		Code68K { Filter, 16000 },
-#endif
+		#endif
+		#include "pipl_common.r"
 	}
 };
 

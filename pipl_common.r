@@ -20,11 +20,12 @@
 
 Kind { Filter },
 Version { (latestFilterVersion << 16) | latestFilterSubVersion },
+Priority { 0 }, /* default */
 
 SupportedModes {
 	noBitmap,
 	doesSupportGrayScale,
-	doesSupportIndexedColor,
+	noIndexedColor, /* changed in 1.7.0.17, since it probably never worked */
 	doesSupportRGBColor,
 	doesSupportCMYKColor,
 	doesSupportHSLColor,
@@ -33,6 +34,24 @@ SupportedModes {
 	doesSupportDuotone,
 	doesSupportLABColor
 },
+
+/* We need this to enable the plugin for BigDocuments */
+PlugInMaxSize { 2000000L, 2000000L },
+
+/* Commented out, because there is a risk that a badly programmed host will think that '    '!='8BIM' and does not load the plugin then?! */
+//RequiredHost { ANY },
+
+/* "FilterLayerSupport" (Allows smart filters) */
+/* TODO: It seems to work, but are we really fully supporting Smart Filters?! */
+FilterLayerSupport { 0x80L },
+
+/* Enable info */
+/* "Plug-in Resource Guide.pdf", pages 61-62 */
+EnableInfo { "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)" },
+
+/* MonitorScalingAware */
+/* TODO: Do we support it? For now, commented out */
+//MonitorScalingAware { 1 },
 
 FilterCaseInfo {
 	{

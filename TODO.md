@@ -5,13 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* In regards color modes...
-	"Bitmap" => what is this mode and why isn't it supported?
-	"IndexedColor" => enabled in PiPL 'mode' and 'enbl', but is still not enabled?!
-	"HSL" => how do you set this color space in Photoshop?!
-	"HSB" => how do you set this color space in Photoshop?!
-	"Duotone" => The preview background is white (TODO)
-	"Lab" => The preview background is red (TODO)
+(None)
 
 
 Known problems
@@ -21,6 +15,14 @@ Known problems
 	see wishlist\bug_rectangle.png
 
 * When you receive the error "Could not build preview at chosen zoom level..." because you zoomed out too far, you cannot recover from it, even if you zoom in again!
+
+* In regards color modes...
+	"Bitmap" => what is this mode and why isn't it supported?
+	"IndexedColor" => enabled in PiPL 'mode' and 'enbl', but is still not enabled. disabled in 1.7.0.17, as it makes no sense.
+	"HSL" => how do you set this color space in Photoshop?! It is a sub-space of RGB, so why is it a thing in the PiPL `mode` resource?
+	"HSB" => how do you set this color space in Photoshop?! It is a sub-space of RGB, so why is it a thing in the PiPL `mode` resource?
+	"Duotone" => The preview background is white (TODO)
+	"Lab" => The preview background is red (TODO)
 
 
 Minor priority stuff or ideas
