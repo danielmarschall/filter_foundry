@@ -21,7 +21,7 @@
 // This RC file is for Windows only.
 // The PiPL_body contains the properties which are added to PIPL and TPLT (PIPL-Template).
 // PIPL will additionally receive name, catg and hstm
-// Attention: This file may only contain 7 properties. If this number changes,
+// Attention: This file may only contain 8 properties. If this number changes,
 //            please also change PiPL.rc
 
 /* Filter module */
@@ -30,24 +30,13 @@ VENDORID, LC(k,i,n,d), NULLID, 4L, LC(8,B,F,M),
 /* Version Number */
 VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion, latestFilterVersion,
 
-#ifndef doesSupportBitmap
-#define doesSupportBitmap         flagSupportsBitmap
-#define doesSupportGrayScale      flagSupportsGrayScale
-#define doesSupportIndexedColor   flagSupportsIndexedColor
-#define doesSupportRGBColor       flagSupportsRGBColor
-#define doesSupportCMYKColor      flagSupportsCMYKColor
-#define doesSupportHSLColor       flagSupportsHSLColor
-#define doesSupportHSBColor       flagSupportsHSBColor
-#define doesSupportMultichannel   flagSupportsMultichannel
-#define doesSupportDuotone        32768 // (flagSupportsDuotone << 8)    RC doesn't know <<8, nor *256 !
-#define doesSupportLABColor       16384 // (flagSupportsLABColor << 8)   RC doesn't know <<8, nor *256 !
-#endif
+/* Priority (0 = default) */
+VENDORID, LC(p,r,t,y), NULLID, 4L, NULLID,
 
 /* Supported modes */
-/* Second byte:    */
 VENDORID, LC(m,o,d,e), NULLID, 4L, /* First byte:     */ /*doesSupportBitmap|*/
                                                          doesSupportGrayScale|
-                                                         doesSupportIndexedColor|
+                                                         /*doesSupportIndexedColor|*/
                                                          doesSupportRGBColor|
                                                          doesSupportCMYKColor|
                                                          doesSupportHSLColor|
@@ -69,9 +58,9 @@ VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
 VENDORID, LC(f,l,l,y), NULLID, 4L, 0x80L,
 
 /* Enable info */
-/* Note: Length 136 must be divisible by 4 */
+/* Note: Length 116 must be divisible by 4 */
 /* "Plug-in Resource Guide.pdf", pages 61-62 */
-VENDORID, LC(e,n,b,l), NULLID, 136L, "in (PSHOP_ImageMode, GrayScaleMode, IndexedColorMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0\0\0",
+VENDORID, LC(e,n,b,l), NULLID, 116L, "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0",
 
 /* MonitorScalingAware */
 /* TODO: Do we support it? For now, commented out */

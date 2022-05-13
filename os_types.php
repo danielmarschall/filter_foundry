@@ -85,34 +85,47 @@ ostype_info('CURS', 'Cursor (only Macintosh build)', 'Apple');
 ostype_info('vers', 'Version number (only Macintosh build)', 'Apple');
 ostype_footer();
 
+ostype_header("File type");
+ostype_info('8BFM', 'Adobe Filter module (used in `kind` PiPL property)', 'Adobe');
+ostype_info('TEXT', 'Text file', 'Apple');
+ostype_footer();
+
 ostype_header("Creator codes");
 ostype_info('8BIM', 'Adobe Photoshop', 'Adobe');
-ostype_info('8BFM', 'Adobe Filter module (used in `kind` PiPL property)', 'Adobe');
+ostype_info('ttxt', 'Text file', 'Apple');
+ostype_info('pled', 'Property List Editor', 'Apple');
 ostype_footer();
 
 pipl_property_header("PlugIn Property List (PiPL) properties");
 pipl_property_info('8BIM', 'catg', 'PiPL property "Category"', 'Adobe');
 pipl_property_info('8BIM', 'name', 'PiPL property "Name"', 'Adobe');
-pipl_property_info('8BIM', 'hstm', 'PiPL property "Has terminology"', 'Adobe');
+pipl_property_info('8BIM', 'cmpt', 'PiPL property "Component" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'hstm', 'PiPL property "HasTerminology" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'wx86', 'PiPL property PIWin32X86CodeProperty (PIGeneral.h)', 'Adobe');
 pipl_property_info('8BIM', '8664', 'PiPL property PIWin64X86CodeProperty (PIGeneral.h)', 'Adobe');
 pipl_property_info('8BIM', 'kind', 'PiPL property "Kind" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'prty', 'PiPL property "Priority" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'vers', 'PiPL property "Version" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'mode', 'PiPL property "SupportedModes" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'ms32', 'PiPL property "PlugInMaxSize" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'host', 'PiPL property "RequiredHost" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'flly', 'PiPL property "FilterLayerSupport" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'enbl', 'PiPL property "EnableInfo" (PIPL.r)', 'Adobe');
+pipl_property_info('8BIM', 'pmsa', 'PiPL property "MonitorScalingAware" (PIPL.r)', 'Adobe');
 pipl_property_info('8BIM', 'fici', 'PiPL property "FilterCaseInfo" (PIPL.r)', 'Adobe');
 pipl_property_info('ViaT', 'ObId', 'PiPL property "Object Identifier"', 'ViaThinkSoft');
 pipl_property_footer();
 
 ostype_header("Host signatures");
-ostype_info('8BIM', 'Adobe Photoshop', 'Adobe', true);
-ostype_info('8BIM', 'PluginCommander (illegal usage of "8BIM")', 'ISV', true);
-ostype_info('8BIM', 'Serif Photoplus (illegal usage of "8BIM")', 'ISV', true);
-ostype_info('8B)M', 'Adobe Premiere', 'Adobe', true);
-ostype_info('PMIG', 'GIMP', 'ISV', true);
-ostype_info('UP20', 'IrfanView', 'ISV', true);
-ostype_info('PSP9', 'JASC PaintShop Pro X', 'ISV', true);
-ostype_info('NDP.', 'Paint.net', 'ISV', true);
+ostype_info('8BIM', 'Adobe Photoshop', 'Adobe');
+ostype_info('8BIM', 'PluginCommander', 'Other');
+ostype_info('8BIM', 'Serif Photoplus', 'Other');
+ostype_info('8B)M', 'Adobe Premiere', 'Adobe');
+ostype_info('PMIG', 'GIMP', 'Other', true);
+ostype_info('UP20', 'IrfanView', 'Other', true);
+ostype_info('PSP9', 'JASC PaintShop Pro X', 'Other', true);
+ostype_info('NDP.', 'Paint.net', 'Other', true);
+ostype_info('    ', 'Any host', 'Adobe', true);
 ostype_footer();
 
 ostype_header("Miscellaneous / internal use");

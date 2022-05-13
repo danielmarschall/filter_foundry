@@ -52,13 +52,22 @@ Resource fork types
 | `CURS` | 1129665107 | 0x43555253 | Cursor (only Macintosh build)                           | Apple           |
 | `vers` | 1986359923 | 0x76657273 | Version number (only Macintosh build)                   | Apple           |
 
+File type
+---------
+
+| Type   | Dec        | Hex        | Description                                             | Vendor          |
+|--------|------------|------------|---------------------------------------------------------|-----------------|
+| `8BFM` |  943867469 | 0x3842464d | Adobe Filter module (used in `kind` PiPL property)      | Adobe           |
+| `TEXT` | 1413830740 | 0x54455854 | Text file                                               | Apple           |
+
 Creator codes
 -------------
 
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
 | `8BIM` |  943868237 | 0x3842494d | Adobe Photoshop                                         | Adobe           |
-| `8BFM` |  943867469 | 0x3842464d | Adobe Filter module (used in `kind` PiPL property)      | Adobe           |
+| `ttxt` | 1953790068 | 0x74747874 | Text file                                               | Apple           |
+| `pled` | 1886152036 | 0x706c6564 | Property List Editor                                    | Apple           |
 
 PlugIn Property List (PiPL) properties
 --------------------------------------
@@ -67,13 +76,19 @@ PlugIn Property List (PiPL) properties
 |--------|--------|-----------------------|-----------------------|---------------------------------------------------------|-----------------|
 | `8BIM` | `catg` |  943868237 1667331175 | 0x3842494d 0x63617467 | PiPL property "Category"                                | Adobe           |
 | `8BIM` | `name` |  943868237 1851878757 | 0x3842494d 0x6e616d65 | PiPL property "Name"                                    | Adobe           |
-| `8BIM` | `hstm` |  943868237 1752396909 | 0x3842494d 0x6873746d | PiPL property "Has terminology"                         | Adobe           |
+| `8BIM` | `cmpt` |  943868237 1668116596 | 0x3842494d 0x636d7074 | PiPL property "Component" (PIPL.r)                      | Adobe           |
+| `8BIM` | `hstm` |  943868237 1752396909 | 0x3842494d 0x6873746d | PiPL property "HasTerminology" (PIPL.r)                 | Adobe           |
 | `8BIM` | `wx86` |  943868237 2004367414 | 0x3842494d 0x77783836 | PiPL property PIWin32X86CodeProperty (PIGeneral.h)      | Adobe           |
 | `8BIM` | `8664` |  943868237  943076916 | 0x3842494d 0x38363634 | PiPL property PIWin64X86CodeProperty (PIGeneral.h)      | Adobe           |
 | `8BIM` | `kind` |  943868237 1802071652 | 0x3842494d 0x6b696e64 | PiPL property "Kind" (PIPL.r)                           | Adobe           |
+| `8BIM` | `prty` |  943868237 1886549113 | 0x3842494d 0x70727479 | PiPL property "Priority" (PIPL.r)                       | Adobe           |
 | `8BIM` | `vers` |  943868237 1986359923 | 0x3842494d 0x76657273 | PiPL property "Version" (PIPL.r)                        | Adobe           |
 | `8BIM` | `mode` |  943868237 1836016741 | 0x3842494d 0x6d6f6465 | PiPL property "SupportedModes" (PIPL.r)                 | Adobe           |
 | `8BIM` | `ms32` |  943868237 1836266290 | 0x3842494d 0x6d733332 | PiPL property "PlugInMaxSize" (PIPL.r)                  | Adobe           |
+| `8BIM` | `host` |  943868237 1752134516 | 0x3842494d 0x686f7374 | PiPL property "RequiredHost" (PIPL.r)                   | Adobe           |
+| `8BIM` | `flly` |  943868237 1718381689 | 0x3842494d 0x666c6c79 | PiPL property "FilterLayerSupport" (PIPL.r)             | Adobe           |
+| `8BIM` | `enbl` |  943868237 1701732972 | 0x3842494d 0x656e626c | PiPL property "EnableInfo" (PIPL.r)                     | Adobe           |
+| `8BIM` | `pmsa` |  943868237 1886221153 | 0x3842494d 0x706d7361 | PiPL property "MonitorScalingAware" (PIPL.r)            | Adobe           |
 | `8BIM` | `fici` |  943868237 1718182761 | 0x3842494d 0x66696369 | PiPL property "FilterCaseInfo" (PIPL.r)                 | Adobe           |
 | `ViaT` | `ObId` | 1449746772 1331841380 | 0x56696154 0x4f624964 | PiPL property "Object Identifier"                       | ViaThinkSoft    |
 
@@ -83,13 +98,14 @@ Host signatures
 | Type   | Dec        | Hex        | Description                                             | Vendor          |
 |--------|------------|------------|---------------------------------------------------------|-----------------|
 | `8BIM` |  943868237 | 0x3842494d | Adobe Photoshop                                         | Adobe           |
-| `8BIM` |  943868237 | 0x3842494d | PluginCommander (illegal usage of "8BIM")               | ISV             |
-| `8BIM` |  943868237 | 0x3842494d | Serif Photoplus (illegal usage of "8BIM")               | ISV             |
+| `8BIM` |  943868237 | 0x3842494d | PluginCommander                                         | Other (illegal) |
+| `8BIM` |  943868237 | 0x3842494d | Serif Photoplus                                         | Other (illegal) |
 | `8B)M` |  943860045 | 0x3842294d | Adobe Premiere                                          | Adobe           |
-| `PMIG` | 1347242311 | 0x504d4947 | GIMP                                                    | ISV             |
-| `UP20` | 1431319088 | 0x55503230 | IrfanView                                               | ISV             |
-| `PSP9` | 1347637305 | 0x50535039 | JASC PaintShop Pro X                                    | ISV             |
-| `NDP.` | 1313099822 | 0x4e44502e | Paint.net                                               | ISV             |
+| `PMIG` | 1347242311 | 0x504d4947 | GIMP                                                    | Other           |
+| `UP20` | 1431319088 | 0x55503230 | IrfanView                                               | Other           |
+| `PSP9` | 1347637305 | 0x50535039 | JASC PaintShop Pro X                                    | Other           |
+| `NDP.` | 1313099822 | 0x4e44502e | Paint.net                                               | Other           |
+| `    ` |  538976288 | 0x20202020 | Any host                                                | Adobe           |
 
 Miscellaneous / internal use
 ----------------------------
