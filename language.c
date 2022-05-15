@@ -21,19 +21,8 @@
 #include "ff.h"
 
 void strcpy_advance_id(TCHAR** str, int msgid) {
-    //TCHAR tmp[1000];
-    int len;
-
-    len = FF_GetMsg(*str, msgid);
-
+    int len = FF_GetMsg(*str, msgid);
     *str += len;
-
-    //FF_GetMsg(&tmp[0], msgid);
-    //len = xstrlen(&tmp[0]);
-    if (len == 0) {
-        simplealert(TEXT("strcpy_advance_id ist len=0!"));
-    }
-    
 }
 
 // Attention: No bounds checking!
@@ -76,7 +65,6 @@ int FF_GetMsg(TCHAR* ret, int MsgId) {
 // Attention: Requires FF_GetMsg_Free(), otherwise memory is leaked
 TCHAR* FF_GetMsg_Cpy(int MsgId) {
 #ifdef WIN_ENV
-    TCHAR* szMsg;
     int len;
     TCHAR* ret;
     len = FF_GetMsg(NULL, MsgId);
