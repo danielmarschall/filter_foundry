@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* OpenWatcom (32 bit) build cannot handle German characters, see bug report: https://github.com/open-watcom/open-watcom-v2/issues/863
+(None)
 
 
 Known problems

@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// Attention: Please save this file as UTF-8 without BOM!
+
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
 #define MSG_PREMIERE_COMPAT_DEDE "Diese Version von Filter Foundry ist mit Adobe Premiere nicht kompatibel!"
