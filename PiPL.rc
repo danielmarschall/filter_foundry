@@ -45,7 +45,7 @@
 /* Note: make_win.c writes language 0. So, this should be language 0, too,
    otherwise the standalone filter would have 2 languages for this resource. */
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
-16000  PiPL  DISCARDABLE
+16000  PIPL  DISCARDABLE
 BEGIN
 	0x0001,     /* Reserved (for Photoshop) */
 	0L,         /* kCurrentPiPLVersion */

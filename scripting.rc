@@ -81,7 +81,7 @@
 
 /* Note: make_win.c writes language 0. So, this should be language 0, too, otherwise the standalone filter would have 2 languages for this resource. */
 LANGUAGE LANG_NEUTRAL,SUBLANG_NEUTRAL
-AETE_ID aete
+AETE_ID AETE
 {
 	// Attention! If you change something here, please also change it in make.c and scripting.r (Mac OS)
 
