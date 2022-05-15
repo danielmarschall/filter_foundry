@@ -21,21 +21,51 @@
 #include "ff.h"
 
 void strcpy_advance_id(TCHAR** str, int msgid) {
-    TCHAR tmp[1000];
+    //TCHAR tmp[1000];
+    int len;
 
-    FF_GetMsg(*str, msgid);
+    len = FF_GetMsg(*str, msgid);
 
-    FF_GetMsg(&tmp[0], msgid);
-    *str += xstrlen(&tmp[0]);
+    *str += len;
+
+    //FF_GetMsg(&tmp[0], msgid);
+    //len = xstrlen(&tmp[0]);
+    if (len == 0) {
+        simplealert(TEXT("strcpy_advance_id ist len=0!"));
+    }
+    
 }
 
 // Attention: No bounds checking!
-void FF_GetMsg(TCHAR* ret, int MsgId) {
+int FF_GetMsg(TCHAR* ret, int MsgId) {
 #ifdef WIN_ENV
-	TCHAR* szMsg;
+
+#ifdef UNICODE
+    TCHAR* szMsg;
     int len;
     len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
-    LoadString(hDllInstance, MsgId, ret, len+1);
+    if (len == 0) return 0; // resource not found
+    if (ret != NULL) {
+        LoadString(hDllInstance, MsgId, ret, len + 1);
+    }
+    return len;
+#else
+    // LoadStringA is either broken or badly documented!
+    // The documentation says that you receive a read-only string reference as well as the length as return value if cchBufferMax==0.
+    // Reality shows that return value is -1 if cchBufferMax==0.
+    // https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/8d8c5382-1867-460a-a18f-70dc425ffe2f/loadstring-not-behaving-as-documented?forum=windowssdk
+    // We cannot receive a read-only memory using LoadStringA, because the WinAPI needs to do a Unicode-to-ANSI convertion,
+    // so we must define some max limit.
+    TCHAR szMsg[4096];
+    int len;
+    len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 4096);
+    if (len == 0) return 0; // resource not found
+    if (ret != NULL) {
+        LoadString(hDllInstance, MsgId, ret, len + 1);
+    }
+    return len;
+#endif
+
 #else
 	Str255 msg;
 	GetIndString(msg, 1000, MsgId);
@@ -49,7 +79,8 @@ TCHAR* FF_GetMsg_Cpy(int MsgId) {
     TCHAR* szMsg;
     int len;
     TCHAR* ret;
-    len = LoadString(hDllInstance, MsgId, (LPTSTR)&szMsg, 0);
+    len = FF_GetMsg(NULL, MsgId);
+    if (len == 0) return NULL; // resource not found
     ret = (TCHAR*)malloc((len+1) * sizeof(TCHAR));
     if (ret == NULL) return NULL;
     LoadString(hDllInstance, MsgId, ret, len+1);

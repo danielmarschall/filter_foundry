@@ -18,11 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// TODO: Deutsche Umlaute sind kaputt (UTF8 Zeichen werden gezeigt)
-// Hiermit geht es aber...
-// Meldung "Unbekanntes Pragma" (trotzdem bringt es was?!)
-#pragma code_page(65001)
-
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
 #define MSG_PREMIERE_COMPAT_DEDE "Diese Version von Filter Foundry ist mit Adobe Premiere nicht kompatibel!"
@@ -253,6 +248,6 @@
 
 
 void strcpy_advance_id(TCHAR** str, int msgid);
-void FF_GetMsg(TCHAR* ret, int MsgId);
+int FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);
 void FF_GetMsg_Free(TCHAR* str);

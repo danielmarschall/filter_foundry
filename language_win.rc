@@ -23,7 +23,8 @@
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 STRINGTABLE
 {
-	// TODO: mingw windres does not want the MSG_* defines here :-( Why?! Even Watcom can do it!
+	// TODO: mingw windres does not want the MSG_* defines here :-(
+	//       Bugreport: https://sourceware.org/bugzilla/show_bug.cgi?id=29133
 	MSG_PREMIERE_COMPAT_ID, MSG_PREMIERE_COMPAT_ENUS
 	MSG_RUNDLL_ERR_ID, MSG_RUNDLL_ERR_ENUS
 	MSG_INCOMPATIBLE_OBFUSCATION_ID, MSG_INCOMPATIBLE_OBFUSCATION_ENUS
@@ -86,7 +87,8 @@ STRINGTABLE
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 STRINGTABLE
 {
-	// TODO: mingw windres does not want the MSG_* defines here :-( Why?! Even Watcom can do it!
+	// TODO: mingw windres does not want the MSG_* defines here :-(
+	//       Bugreport: https://sourceware.org/bugzilla/show_bug.cgi?id=29133
 	MSG_PREMIERE_COMPAT_ID, MSG_PREMIERE_COMPAT_DEDE
 	MSG_RUNDLL_ERR_ID, MSG_RUNDLL_ERR_DEDE
 	MSG_INCOMPATIBLE_OBFUSCATION_ID, MSG_INCOMPATIBLE_OBFUSCATION_DEDE

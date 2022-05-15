@@ -20,6 +20,10 @@
 
 /* wrapper file for Windows resource compiler input */
 
+// TODO: OpenWatcom doesn't like this!
+//       Bugreport: https://github.com/open-watcom/open-watcom-v2/issues/863
+#pragma code_page(65001)
+
 #include "Scripting.rc"
 #include "PiPL.rc"
 #include "ui_win.rc"

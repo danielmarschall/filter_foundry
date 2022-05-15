@@ -24,11 +24,6 @@
 #include "commctrl.h"
 #include "ui.h"
 
-// TODO: Deutsche Umlaute sind kaputt (UTF8 Zeichen werden gezeigt)
-// Hiermit geht es aber...
-// Meldung "Unbekanntes Pragma" (trotzdem bringt es was?!)
-#pragma code_page(65001)
-
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 CAUTION_ICO    ICON   "caution.ico"
 
