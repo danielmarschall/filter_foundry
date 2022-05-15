@@ -23,10 +23,10 @@
 // This pragma is ignored by OpenWatcom
 // If language.h and ui_win.rc are UTF-8 (without BOM):
 // => MSVC++ requires this pragma to be set to code page 65001
-// => OpenWatcom requires setting "-zku8"
+// => OpenWatcom requires setting "-zku8" and "-bt=nt"
 // If language.h and ui_win.rc are ANSI encoded:
 // => MSVC++ requires this pragma to be MISSING
-// => OpenWatcom requires setting "Single byte characters only"
+// => OpenWatcom requires setting "Single byte characters only" and "-bt=nt"
 #pragma code_page(65001)
 
 #include "Scripting.rc"

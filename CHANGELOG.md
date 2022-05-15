@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.18 [15-May-2022]
+- Fixed issue with 32-bit resource strings (English and German language was broken) introduced in version 1.7.0.17.
+
 ## 1.7.0.17 [14-May-2022]
 - Fixed theoretical bug that can crash a Photoshop application if PLUGIN.DLL exists but is not loaded.
 - Added translation for German systems (*)
