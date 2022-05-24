@@ -80,8 +80,9 @@
 	}
 	#endif
 #else
-	// Unfortunately, with this compiler, we the value needs to be in the .data segment...
-	// Due to "const volatile", this value will only exist a single time in the binary file.
+	// Unfortunately, with this compiler, we don't know how to force the seed into the .code segment.
+	// So, we put it in the .data segment.
+	// Note: Due to "const volatile", this value will only exist a single time in the binary file.
 	const volatile uint64_t obfusc_seed = 0x7416972a52830517ull;
 	uint64_t GetObfuscSeed() {
 		return obfusc_seed;
@@ -349,7 +350,7 @@ int obfuscation_version(PARM_T* pparm) {
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
 		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
 		// Version 7 obfuscation (Filter Foundry 1.7.0.17)
-		// Future: Version 8, ... 255
+		// Future: Version 8, 9, ..., 255
 		return obfusc_info;
 	}
 	else {

@@ -15,7 +15,7 @@ AppleScript related
 |--------|------------|------------|---------------------------------------------------------|-----------------|
 | `tELE` | 1950698565 | 0x74454c45 | Plugin Suite ID                                         | Telegraphics    |
 | `Fltr` | 1181512818 | 0x466c7472 | Class ID "Filter" (PITerminology.h:eventFilter)         | Adobe           |
-| `fiFo` | 1718175343 | 0x6669466f | Event ID (for non-standalone filter)                    | Telegraphics    |
+| `fiFo` | 1718175343 | 0x6669466f | Event ID (for non-standalone filters)                   | Telegraphics    |
 | `xprR` | 2020635218 | 0x78707252 | Expression "red" channel (for non-standalone filter)    | Telegraphics    |
 | `xprG` | 2020635207 | 0x78707247 | Expression "green" channel (for non-standalone filter)  | Telegraphics    |
 | `xprB` | 2020635202 | 0x78707242 | Expression "blue" channel (for non-standalone filter)   | Telegraphics    |
@@ -28,6 +28,10 @@ AppleScript related
 | `cTl5` | 1666477109 | 0x63546c35 | Slider 5 (for non-standalone filter)                    | Telegraphics    |
 | `cTl6` | 1666477110 | 0x63546c36 | Slider 6 (for non-standalone filter)                    | Telegraphics    |
 | `cTl7` | 1666477111 | 0x63546c37 | Slider 7 (for non-standalone filter)                    | Telegraphics    |
+| `long` | 1819242087 | 0x6c6f6e67 | Data type integer                                       | Apple           |
+| `TEXT` | 1413830740 | 0x54455854 | Data type string                                        | Apple           |
+| `null` | 1853189228 | 0x6e756c6c | noReply                                                 | Apple           |
+| `#ImR` |  592014674 | 0x23496d52 | typeImageReference                                      | Adobe           |
 
 Note: For standalone plugins, all FourCC codes above will be replaced by different hashes based on the parameter data of the filter (except `tELE` and `Fltr`).
 

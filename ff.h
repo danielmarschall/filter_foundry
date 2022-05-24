@@ -39,8 +39,8 @@
 #define HOSTSIG_GIMP 'PMIG' // sic: NOT 'GIMP'
 #define HOSTSIG_IRFANVIEW 'UP20'
 #define HOSTSIG_PHOTOSHOP '8BIM'
-//#define HOSTSIG_PLUGINCOMMANDER '8BIM' // meh.
-//#define HOSTSIG_SERIF_PHOTOPLUS '8BIM' // meh.
+//#define HOSTSIG_PLUGINCOMMANDER '8BIM' // illegal usage of signature
+//#define HOSTSIG_SERIF_PHOTOPLUS '8BIM' // illegal usage of signature
 #define HOSTSIG_JASC_PAINTSHOP_PRO_X 'PSP9'
 #define HOSTSIG_PAINT_NET 'NDP.'
 #define HOSTSIG_ADOBE_PREMIERE '8B)M'/*sic*/

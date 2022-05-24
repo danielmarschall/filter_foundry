@@ -20,6 +20,9 @@
 
 // Attention: Please save this file as UTF-8 without BOM!
 
+#ifndef LANGUAGE_H_
+#define LANGUAGE_H_
+
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
 #define MSG_PREMIERE_COMPAT_DEDE "Diese Version von Filter Foundry ist mit Adobe Premiere nicht kompatibel!"
@@ -253,3 +256,6 @@ void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);
 void FF_GetMsg_Free(TCHAR* str);
+
+#endif
+

@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.7.0.18 [15-May-2022]
-- Fixed issue with 32-bit resource strings (English and German language was broken) introduced in version 1.7.0.17.
+- 32bit/Windows filter: Fixed issue with resource strings (English and German language was broken) introduced in version 1.7.0.17.
 
 ## 1.7.0.17 [14-May-2022]
 - Fixed theoretical bug that can crash a Photoshop application if PLUGIN.DLL exists but is not loaded.
@@ -11,12 +11,12 @@
 - Windows: Standalone filters containing ampersand characters ("&") in Name or Category now have the correct "Visual Themes", as the Manifest XML is not broken anymore.
 - Windows: Handling of ampersand characters ("&") in Title, Category, Author, Copyright, and Controller/Map labels fixed.
 - Introduced obfuscation version 7, which is more secure.
-- Support for "Filter layers" added (not fully tested; PiPL attribute `'flly'`) (*)
-- FilterFoundry can now work correctly with Duotone and Lab color spaces (PiPL `'mode'` entry was wrong)
+- Support for "Filter layers" added (not fully tested; PiPL attribute `'8BIM':'flly'`) (*)
+- FilterFoundry can now work correctly with Duotone and Lab color spaces (PiPL property `'8BIM':'mode'` was wrong)
 - "Indexed Color" mode removed, since it seems to have never worked.
 - Internal change: PiPL resource now contains `'8BIM':'cmpt'` (Component) (*)
 - Internal change: PiPL resource now contains `'ViaT':'ObId'` (Object Identifier) (*)
-- Internal change: PiPL resource now contains `prty` (Priority)
+- Internal change: PiPL resource now contains `'8BIM':'prty'` (Priority)
 
 (*) This bug/solution was tested on Windows but needs to be verified and/or implemented on Mac.
 

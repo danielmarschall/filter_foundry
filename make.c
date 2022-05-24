@@ -179,7 +179,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	p = (char*)pipl + origsize;
 	prop = (PIProperty*)p;
 
-	/* Important not about proptyLength:
+	/* Important note about propertyLength:
 	 
 		In regards propertyLength, Adobe writes in SPPiPL.h:
 		"Number of characters in the data array. Rounded to a multiple of 4."

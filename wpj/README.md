@@ -14,7 +14,8 @@ Prerequisites
 
 2) Adobe Photoshop SDK
    Available on some Photoshop CDs, or can be downloaded at
-   https://www.adobe.com/devnet/photoshop/sdk.html
+   https://developer.adobe.com/photoshop/
+   (see more details at the ../photoshop_sdk/DOWNLOAD.txt)
 
 3) Watcom 1.6beta RC1 or later
    Available here:
