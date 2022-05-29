@@ -23,7 +23,7 @@
 
 // This script generates the documentation file os_types.md
 
-define('DESC_WIDTH', 55);
+define('DESC_WIDTH', 60);
 define('VENDOR_WIDTH', 15);
 
 ob_start();
@@ -45,27 +45,28 @@ echo "\n";
 ostype_header("AppleScript related");
 ostype_info('tELE', 'Plugin Suite ID', 'Telegraphics');
 ostype_info('Fltr', 'Class ID "Filter" (PITerminology.h:eventFilter)', 'Adobe');
-ostype_info('fiFo', 'Event ID (for non-standalone filters)', 'Telegraphics');
-ostype_info('xprR', 'Expression "red" channel (for non-standalone filter)', 'Telegraphics');
-ostype_info('xprG', 'Expression "green" channel (for non-standalone filter)', 'Telegraphics');
-ostype_info('xprB', 'Expression "blue" channel (for non-standalone filter)', 'Telegraphics');
-ostype_info('xprA', 'Expression "alpha" channel (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl0', 'Slider 0 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl1', 'Slider 1 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl2', 'Slider 2 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl3', 'Slider 3 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl4', 'Slider 4 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl5', 'Slider 5 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl6', 'Slider 6 (for non-standalone filter)', 'Telegraphics');
-ostype_info('cTl7', 'Slider 7 (for non-standalone filter)', 'Telegraphics');
+ostype_info('fiFo', 'Event ID (for non-standalone filters*)', 'Telegraphics');
+ostype_info('xprR', 'Expression "red channel" (for non-standalone filters*)', 'Telegraphics');
+ostype_info('xprG', 'Expression "green channel" (for non-standalone filters*)', 'Telegraphics');
+ostype_info('xprB', 'Expression "blue channel" (for non-standalone filters*)', 'Telegraphics');
+ostype_info('xprA', 'Expression "alpha channel" (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl0', 'Slider 0 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl1', 'Slider 1 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl2', 'Slider 2 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl3', 'Slider 3 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl4', 'Slider 4 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl5', 'Slider 5 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl6', 'Slider 6 (for non-standalone filters*)', 'Telegraphics');
+ostype_info('cTl7', 'Slider 7 (for non-standalone filters*)', 'Telegraphics');
 ostype_info('long', 'Data type integer', 'Apple');
 ostype_info('TEXT', 'Data type string', 'Apple');
 ostype_info('null', 'noReply', 'Apple');
 ostype_info('#ImR', 'typeImageReference', 'Adobe');
 ostype_footer();
 
-echo "Note: For standalone plugins, all FourCC codes above will be replaced ";
-echo "by different hashes based on the parameter data of the filter (except `tELE` and `Fltr`).\n\n";
+echo "Note: For standalone plugins, these FourCC codes marked with *  will be replaced ";
+echo "by different hashes based on the category and title of the standalone ";
+echo "filter (except `tELE` and `Fltr`).\n\n";
 
 // TODO: also display Windows types, e.g. RT_RCDATA = 'DATA' ?
 ostype_header("Resource fork types");
@@ -98,6 +99,7 @@ ostype_header("Creator codes");
 ostype_info('8BIM', 'Adobe Photoshop', 'Adobe');
 ostype_info('ttxt', 'Text file', 'Apple');
 ostype_info('pled', 'Property List Editor', 'Apple');
+//ostype_info('ViaT', 'ViaThinkSoft', 'ViaThinkSoft');
 ostype_footer();
 
 pipl_property_header("PlugIn Property List (PiPL) properties");
