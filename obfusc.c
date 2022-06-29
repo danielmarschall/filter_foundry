@@ -38,7 +38,8 @@
 		// This char array will result in contiguous chars in OpenWatcom.
 		// In MSVC++, the array will be built using several "mov ..." OP codes.
 		volatile char seed[8] = { '\x17', '\x05', '\x83', '\x52', '\x2a', '\x97', '\x16', '\x74' };
-		return (uint64_t)seed;
+		return *((uint64_t*)&seed[0]);
+
 	}
 #elif defined(_MSC_VER)
 	#ifdef _WIN64

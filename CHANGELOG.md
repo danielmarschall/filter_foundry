@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.19 [Work-In-Progress]
+- Fixed bug in Watcom (32 bit) build that prevented creation of protected filters.
+
 ## 1.7.0.18 [15-May-2022]
 - 32bit/Windows filter: Fixed issue with resource strings (English and German language was broken) introduced in version 1.7.0.17.
 
