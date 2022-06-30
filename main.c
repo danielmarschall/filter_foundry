@@ -166,7 +166,7 @@ void CreateDataPointer(intptr_t* data) {
 	// 2. The recommended buffer suite (kPSBufferSuite),
 	//    It does not work, since it causes memory corruption when the filter is invoked a second time.
 	//    Probably the BufferSuite cannot be used to share data between filter invocations?
-	//    Also, the buffer suite is only available in a Adobe Photoshop host.
+	//    Also, the buffer suite is only available on the Adobe Photoshop host application.
 	/*
 	FFBuffer buf;
 	newBuffer(&buf, sizeof(globals_t));
@@ -268,12 +268,13 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	#endif
 
 	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
-		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 + Win98 (yes, that's possible,
-		// and there is even a FilterFactory for Premiere!),
+		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 + Win98
+		// (yes, that's possible, and there is even a FilterFactory for Premiere!),
 		// but it crashes in evalpixel() where there is write-access to the "outp".
 		// DM 24.04.2022 : On Adobe Premiere 6 + Win10, the filter opens sometimes (and sometimes crashes inside DialogBoxParam),
 		// but the filter is not applied when you click "OK" (because it crashes internally; only the debugger sees it)...
-		// Probably the canvas structure is different (maybe it contains frames to achieve transitions?)
+		// Maybe the canvas structure is different (maybe it contains frames to achieve transitions?)
+		// TODO: make Filter Foundry compatible with Premiere!
 		if (!premiereWarnedOnce) {
 			simplealert_id(MSG_PREMIERE_COMPAT_ID);
 		}

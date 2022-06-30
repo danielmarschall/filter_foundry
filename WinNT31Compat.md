@@ -50,10 +50,13 @@ Fixed problems:
 
 	Note: msctls_trackbar32 seems to be defined in COMCTL32.DLL, but Win NT 3.1 has no REGSVR32.EXE, so there can't be any controls added??
 	Windows NT 3.51 has COMCTL32.DLL and works perfectly with the trackbars!
+
 	Fixed in SVN Revision 422: We are now using the sliders of Photoshop using PLUGIN.DLL (like Filter Factory 3.0.4 does).
+
 	If PLUGIN.DLL is not existing (e.g. non-Photoshop host) and msctls_trackbar32 is not available (Windows NT 3.1),
 	then we will simply remove the sliders completely by subclassing them from a static control,
 	and let the user enter the control values via keyboard only (SVN Revision 419).
+
 	Note that you can copy PLUGIN.DLL to any host application. It is not bound to Photoshop. However, it is copyrighted by Adobe!
 
 - WinNT311+WinNT351: The preview image is not drawn at dialog box opening. You need to enter something first.
