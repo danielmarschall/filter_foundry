@@ -24,6 +24,7 @@ ViaThinkSoft release procedure
 		- LICENSE_GPLv3.html                => LICENSE_GPLv3.html
 3. Verify that each 8BF files contains the hex sequence `17 05 83 52 2a 97 16 74` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
 4. Verify that each 8BF files contains the hex sequence `86 21 1f 3e f1 a2 87 ef` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
-5. Commit to SVN with commit message `=== RELEASE 1.7.0.x ===`
-6. Sync SVN with GitHub
-7. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)
+5. Put release ZIP into "releases/" folder
+6. Commit to SVN with commit message `=== RELEASE 1.7.0.x ===`
+7. Sync SVN with GitHub
+8. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.19 [Work-In-Progress]
+## 1.7.0.19 [01-Jul-2022]
 - Fixed bug in Watcom (32 bit) build that prevented creation of protected filters.
 
 ## 1.7.0.18 [15-May-2022]

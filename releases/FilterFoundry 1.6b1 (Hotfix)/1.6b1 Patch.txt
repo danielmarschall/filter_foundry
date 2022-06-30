@@ -1,0 +1,31 @@
+
+FilterFoundry 1.6b1 for Windows Hotfix
+======================================
+
+The two most severe bugs in 1.6b1 can be hotfixed by editing the binary file.
+All bugs have been solved in 1.7+
+
+(1) Patching memory bug 1.6b1
+
+Problem: FilterFoundry crashes at start if the computer
+has too much RAM (maxSpace variable calculation).
+Emergency patch: Disable "DoPrepare" function
+
+8BF Search:    B8 67 66 66 66
+8BF Replace:   89 46 2C 66 66
+
+Fixed in SVN Rev 106, main.c, method DoPrepare (published in 1.7.0.1)
+
+
+(2) Obfuscate loading bug
+
+Problem: Obfuscated filters can be built, but not be loaded.
+The problem cannot be easily solved, therefore it is
+the best to prevent the option.
+Therefore, remove the obfuscate checkbox using a resource editor.
+
+Fixed in SVN Rev 106, load_win.c, method readPARMresource (published in 1.7.0.1)
+
+Reason: Tried to edit LockResource memory. But LockResource memory
+is read-only. Therefore, you need a copy. This is impossible
+to be done using a hex-patch. Need a recompile!

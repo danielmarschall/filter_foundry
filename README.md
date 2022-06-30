@@ -6,9 +6,9 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory.
 Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
-### Windows version 1.7.0.18
+### Windows version 1.7.0.19
 
-Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip).
+Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip) or from the [Releases folder](https://github.com/danielmarschall/filter_foundry/tree/master/releases).
 
 To install the plugin to Photoshop, simply place the appropriate 8BF file into the **Plug-Ins\Filters** subdirectory of your Adobe Photoshop program files path and restart Photoshop. For other host applications like GIMP, look at the manual on how to install ".8bf" Photoshop filters. If you have reports whether or whether not Filter Foundry works on a non-Photoshop host application, please send us a message!
 
