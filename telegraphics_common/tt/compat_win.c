@@ -24,7 +24,7 @@
 #include "compat_win_resource.h"
 
 typedef BOOL(__stdcall* f_GetVersionEx)(LPOSVERSIONINFOA lpVersionInformation);
-Boolean Implements3264ResourceAPI() {
+Boolean Implements3264ResourceAPI(void) {
 #ifdef _WIN64
 	// 64 bit OS is never Win9x, so it must be WinNT
 	return true;
@@ -57,7 +57,7 @@ Boolean Implements3264ResourceAPI() {
 // ---------------------------------
 
 typedef ULONGLONG(__stdcall* f_GetTickCount64)();
-ULONGLONG _GetTickCount64() {
+ULONGLONG _GetTickCount64(void) {
 	HMODULE hLib;
 	f_GetTickCount64 fGetTickCount64;
 	ULONGLONG res;

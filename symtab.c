@@ -59,7 +59,7 @@ void init_symtab(struct sym_rec *pre){
 	}
 }
 
-void dump_symbols(){
+void dump_symbols(void){
 	struct sym_rec *p;
 	int i,occ,maxchain,chain;
 

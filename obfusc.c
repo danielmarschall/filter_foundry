@@ -33,7 +33,7 @@
 // The 8BF file *MUST* only contain the seed A SINGLE TIME
 // (In the Non-Standalone filter actually 3 times, because we have 2 resourced containing the 32/64 template DLLs)
 #if defined(__WATCOMC__)
-	uint64_t GetObfuscSeed() {
+	uint64_t GetObfuscSeed(void) {
 		// Due to "volatile", this value will only exist a single time in the binary file.
 		// This char array will result in contiguous chars in OpenWatcom.
 		// In MSVC++, the array will be built using several "mov ..." OP codes.
@@ -45,14 +45,14 @@
 	#ifdef _WIN64
 	// Note: For MSVCC 64-bit, neither making the method volatile, nor including a volatile variable did avoid inlining.
 	// so we use __declspec(noinline)
-	__declspec(noinline) uint64_t GetObfuscSeed() {
+	__declspec(noinline) uint64_t GetObfuscSeed(void) {
 		// TODO: Not 4-byte aligned! (both variants)
 		//volatile uint64_t seed = 0x7416972a52830517ull;
 		//return seed;
 		return 0x7416972a52830517ull;
 	}
 	#else
-	__declspec(noinline) uint64_t GetObfuscSeed() {
+	__declspec(noinline) uint64_t GetObfuscSeed(void) {
 		//volatile int test = 0;
 		uint64_t* addr = NULL;
 		__asm {
@@ -85,7 +85,7 @@
 	// So, we put it in the .data segment.
 	// Note: Due to "const volatile", this value will only exist a single time in the binary file.
 	const volatile uint64_t obfusc_seed = 0x7416972a52830517ull;
-	uint64_t GetObfuscSeed() {
+	uint64_t GetObfuscSeed(void) {
 		return obfusc_seed;
 	}
 #endif
@@ -96,7 +96,7 @@ const volatile uint64_t obfusc_seed2 = 0xef87a2f13e1f2186ull;
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
-uint64_t GetObfuscSeed2() {
+uint64_t GetObfuscSeed2(void) {
 	// Additional seed for Obfusc V7. It is always in the data segment,
 	// while obfusc seed 1 is in the code segment (if the compiler allows it)
 	return obfusc_seed2;
@@ -145,7 +145,7 @@ Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uin
 	return done;
 }
 #endif
-	
+
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */

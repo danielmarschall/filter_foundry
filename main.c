@@ -567,7 +567,7 @@ int checkandinitparams(Handle params){
 	return showdialog;
 }
 
-Boolean host_preserves_parameters() {
+Boolean host_preserves_parameters(void) {
 	#ifdef DEBUG_SIMULATE_GIMP
 	return false;
 	#endif
@@ -579,7 +579,7 @@ Boolean host_preserves_parameters() {
 	return true;
 }
 
-int64_t maxspace(){
+int64_t maxspace(void){
 	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
 
 	// Plugins that don't support MaxSpace64 shall set the field to zero; then we will use MaxSpace instead.
@@ -600,7 +600,7 @@ int64_t maxspace(){
 	}
 }
 
-Boolean maxspace_available() {
+Boolean maxspace_available(void) {
 	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
 
 	// GIMP PSPI sets MaxSpace to hardcoded 100 MB
@@ -820,7 +820,7 @@ void DoFinish(FilterRecordPtr pb){
 	}
 }
 
-InternalState saveInternalState() {
+InternalState saveInternalState(void) {
 	InternalState ret;
 	int i;
 

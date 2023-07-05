@@ -74,7 +74,7 @@ void freenodes(struct node *p){
 		#endif
 	}
 }
-void freeallnodes(){
+void freeallnodes(void){
 	freenodes(node_list);
 	node_list = 0;
 }

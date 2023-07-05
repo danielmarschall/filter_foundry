@@ -116,7 +116,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 //	preview_pmap.colorManagementOptions;
 }
 
-void dispose_preview(){
+void dispose_preview(void){
 	disposeBuffer(&preview_handle);
 }
 

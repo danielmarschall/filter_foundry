@@ -45,10 +45,10 @@ void Win32sFixSuperclassing(HWND hDlg, int destItem, int sourceItem);
 
 // Init and uninit
 Boolean Slider_Init_PluginDll(LPCTSTR targetClass);
-void Slider_Uninit_PluginDll();
+void Slider_Uninit_PluginDll(void);
 Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass);
-void Slider_Uninit_MsTrackbar();
+void Slider_Uninit_MsTrackbar(void);
 Boolean Slider_Init_None(LPCTSTR targetClass);
-void Slider_Uninit_None();
+void Slider_Uninit_None(void);
 
 #endif

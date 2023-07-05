@@ -29,7 +29,7 @@ You can find more examples in the ["examples" directory](https://github.com/dani
 
 Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters. Following hosts have been tested with Filter Foundry 1.7:
 
--   Photoshop 3.0.0 (32 bit) through Photoshop CC 2022 (64 bit)
+-   Photoshop 3.0.0 (32 bit) through Photoshop 2023 (64 bit)
 -   IrfanView 4.53 (32/64 bit)
 -   JASC PSP 9, Corel's Paint Shop Pro XI
 -   The Gimp 2.2 with [PSPI.exe](https://www.chip.de/downloads/PSPI-fuer-GIMP_37803068.html) extension to run Photoshop .8bf files

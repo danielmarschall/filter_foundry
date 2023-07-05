@@ -44,11 +44,11 @@ extern OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
                                    VRect filterRect, VRect outRect,
                                    void* outData, long outRowBytes, double zoom);
 extern Boolean alertuser(TCHAR *err,TCHAR *more);
-extern void evalinit();
+extern void evalinit(void);
 
 Boolean setup_preview(FilterRecordPtr pb,int nplanes);
 void recalc_preview(FilterRecordPtr pb,DIALOGREF dp);
-void dispose_preview();
+void dispose_preview(void);
 OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr);
 
 #endif

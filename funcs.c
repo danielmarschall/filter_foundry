@@ -259,7 +259,7 @@ extern unsigned char* image_ptr;
 
 // -------------------------------------------------------------------------------------------
 
-void init_trigtab() {
+void init_trigtab(void) {
 #ifdef PARSERTEST
 	return;
 #else
@@ -812,7 +812,7 @@ value_type ff_rst(value_type seed) {
 
 // -------------------------------------------------------------------------------------------
 
-void factory_initialize_rnd_variables() {
+void factory_initialize_rnd_variables(void) {
 #ifdef PARSERTEST
 	return;
 #else
@@ -821,7 +821,7 @@ void factory_initialize_rnd_variables() {
 #endif
 }
 
-void foundry_initialize_rnd_variables() {
+void foundry_initialize_rnd_variables(void) {
 #ifdef PARSERTEST
 	return;
 #else
@@ -829,7 +829,7 @@ void foundry_initialize_rnd_variables() {
 #endif
 }
 
-void initialize_rnd_variables() {
+void initialize_rnd_variables(void) {
 #ifdef use_filterfactory_implementation_rnd
 	factory_initialize_rnd_variables();
 #else
@@ -1210,7 +1210,7 @@ value_type ff_c2m(value_type x, value_type y) {
 /* Direction(angle) of the current pixel from the center of the image,
    where d is an integer between -512 and 512 inclusive */
 
-value_type factory_d() {
+value_type factory_d(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1271,7 +1271,7 @@ value_type foundry_c2d_negated(int x, int y) {
 #endif
 }
 
-value_type foundry_d() {
+value_type foundry_d(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1284,7 +1284,7 @@ value_type foundry_d() {
 #endif
 }
 
-value_type ff_d() {
+value_type ff_d(void) {
 #ifdef use_filterfactory_implementation_d
 	// Output range: -512 ... 512
 	return factory_d();
@@ -1298,7 +1298,7 @@ value_type ff_d() {
 
 /* Range of magnitudes with the image, where M is one half the diagonal size of the image */
 
-value_type factory_M() {
+value_type factory_M(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1328,7 +1328,7 @@ value_type factory_M() {
 #endif
 }
 
-value_type foundry_M() {
+value_type foundry_M(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1336,7 +1336,7 @@ value_type foundry_M() {
 #endif
 }
 
-value_type ff_M() {
+value_type ff_M(void) {
 #ifdef use_filterfactory_implementation_M
 	return factory_M();
 #else
@@ -1348,7 +1348,7 @@ value_type ff_M() {
 
 /* Distance (magnitude) from the center of the image to the current pixel */
 
-value_type factory_m() {
+value_type factory_m(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1379,7 +1379,7 @@ value_type factory_m() {
 #endif
 }
 
-value_type foundry_m() {
+value_type foundry_m(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1387,7 +1387,7 @@ value_type foundry_m() {
 #endif
 }
 
-value_type ff_m() {
+value_type ff_m(void) {
 #ifdef use_filterfactory_implementation_m
 	return factory_m();
 #else
@@ -1399,7 +1399,7 @@ value_type ff_m() {
 
 /* "Y" value of the YUV color-space */
 
-value_type factory_i() {
+value_type factory_i(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1407,7 +1407,7 @@ value_type factory_i() {
 #endif
 }
 
-value_type foundry_i() {
+value_type foundry_i(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1416,7 +1416,7 @@ value_type foundry_i() {
 #endif
 }
 
-value_type ff_i() {
+value_type ff_i(void) {
 #ifdef use_filterfactory_implementation_i
 	return factory_i();
 #else
@@ -1428,7 +1428,7 @@ value_type ff_i() {
 
 /* "U" value of the YUV color-space */
 
-value_type factory_u() {
+value_type factory_u(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1436,7 +1436,7 @@ value_type factory_u() {
 #endif
 }
 
-value_type foundry_u() {
+value_type foundry_u(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1445,7 +1445,7 @@ value_type foundry_u() {
 #endif
 }
 
-value_type ff_u() {
+value_type ff_u(void) {
 #ifdef use_filterfactory_implementation_u
 	return factory_u();
 #else
@@ -1457,7 +1457,7 @@ value_type ff_u() {
 
 /* "V" value of the YUV color-space */
 
-value_type factory_v() {
+value_type factory_v(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1465,7 +1465,7 @@ value_type factory_v() {
 #endif
 }
 
-value_type foundry_v() {
+value_type foundry_v(void) {
 #ifdef PARSERTEST
 	return 0;
 #else
@@ -1474,7 +1474,7 @@ value_type foundry_v() {
 #endif
 }
 
-value_type ff_v() {
+value_type ff_v(void) {
 #ifdef use_filterfactory_implementation_v
 	return factory_v();
 #else

@@ -43,7 +43,7 @@ extern struct node *node_list;
 
 struct node *newnode(int kind);
 //void freenodes(struct node *p);
-void freeallnodes();
+void freeallnodes(void);
 
 void dumptree(struct node *root,int level);
 value_type eval(struct node *root);

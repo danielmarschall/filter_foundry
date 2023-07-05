@@ -1,19 +1,18 @@
 
 How to download the latest version of the SDK:
 
-1. Go to https://www.adobe.com/devnet/photoshop/sdk.html
+1. Go to https://developer.adobe.com/photoshop/
 
-2. At the section "C++ SDK", click "Download the SDK"
-
-3. You need to create a Adobe developer account now,
+2. You need to create a Adobe developer account now,
    or log in if you already have an account.
 
-4. At the top, click the tab "Downloads", then scroll down and and search for "Photoshop"
-   (NOT "Adobe Photoshop API (Trial)") and then click "View downloads".
+3. At the section "C++ SDK", click "Plug-in and Connection SDK"
+   which will lead to the following URL:
+   https://developer.adobe.com/console/servicesandapis/ps
 
-5. Download "Photoshop Plug-In and Connection SDK" for Windows.
+4. Download "Photoshop Plug-In and Connection SDK" for Windows.
 
-6. Once you have obtained the SDK, extract the SDK contents in the "photoshop_sdk" directory:
+5. Once you have obtained the SDK, extract the SDK contents in the "photoshop_sdk" directory:
    - connectionsdk/
    - images/
    - pluginsdk/
@@ -43,7 +42,7 @@ also distributed with Photoshop 6.0 and earlier.
 
 
 Compatibility:
-The source code has been built with SDK 6.0, CS2, CS3 beta, CC 2017, and 2021
+The source code has been built with SDK 6.0, CS2, CS3 beta, CC 2017, 2021, and 2023
 but older versions should work, too.
 (If building with SDK v4, edit 68k.r, carbon.r, classic.r, and PiMI_68k.r
 to remove references to "PIResDefines.h", "PiPL.r" and "PiMI.r" and replace

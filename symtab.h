@@ -47,6 +47,6 @@ unsigned long djb2(const char *str);
 struct sym_rec *lookup(const char *s);
 void init_symtab(struct sym_rec *);
 void insert(struct sym_rec *p);
-void dump_symbols();
+void dump_symbols(void);
 
 #endif

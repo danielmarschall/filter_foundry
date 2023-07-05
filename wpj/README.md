@@ -2,7 +2,7 @@
 Building FilterFoundry with OpenWatcom
 ======================================
 
-Tested with OpenWatcom 1.9 and OpenWatcom 2.0 together with Adobe Photoshop SDK 2021.
+Tested with OpenWatcom 1.9 and OpenWatcom 2.0 together with Adobe Photoshop SDK 2023.
 
 
 Prerequisites

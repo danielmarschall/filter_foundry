@@ -71,7 +71,7 @@
 #define TANTABSIZE 512
 #define COSTABSIZE 1024
 
-void init_trigtab();
+void init_trigtab(void);
 
 #define DEG2RAD(x) ((x)*M_PI/180.)
 #define RAD2DEG(x) ((x)*180./M_PI)
@@ -86,7 +86,7 @@ void init_trigtab();
 #define FFANGLE(v) ((v)*M_PI/512.)
 #define TO_FFANGLE(v) ((v)*512./M_PI)
 
-void initialize_rnd_variables();
+void initialize_rnd_variables(void);
 
 // Functions
 value_type ff_src(value_type x,value_type y,value_type z);
@@ -121,13 +121,13 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 value_type ff_rst(value_type seed);
 
 // Variables
-value_type ff_i();
-value_type ff_u();
-value_type ff_v();
-value_type ff_D();
-value_type ff_d();
-value_type ff_M();
-value_type ff_m();
+value_type ff_i(void);
+value_type ff_u(void);
+value_type ff_v(void);
+value_type ff_D(void);
+value_type ff_d(void);
+value_type ff_M(void);
+value_type ff_m(void);
 
 extern value_type min_val_i;
 extern value_type max_val_i;

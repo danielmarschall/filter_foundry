@@ -239,7 +239,7 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 
 }
 
-void Slider_Uninit_PluginDll() {
+void Slider_Uninit_PluginDll(void) {
 #ifndef use_plugin_dll_sliders
 	return;
 #else
@@ -300,7 +300,7 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 	}
 }
 
-void Slider_Uninit_MsTrackbar() {
+void Slider_Uninit_MsTrackbar(void) {
 	if (!gdata->comctlSliderInfo.initialized) return;
 
 	gdata->comctlSliderInfo.initialized = false;
@@ -325,7 +325,7 @@ Boolean Slider_Init_None(LPCTSTR targetClass) {
 	}
 }
 
-void Slider_Uninit_None() {
+void Slider_Uninit_None(void) {
 	if (!gdata->noneSliderInfo.initialized) return;
 
 	// Nothing here

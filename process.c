@@ -43,7 +43,7 @@ int state_changing_funcs_used;
 
 // minimum setup required when formulae have not changed,
 // and a new preview is to be generated. (Called by recalc_preview())
-void evalinit(){
+void evalinit(void){
 	int i;
 
 	initialize_rnd_variables();
@@ -112,7 +112,7 @@ Boolean setup(FilterRecordPtr pb){
     //     G = src(x+get(0),y+get(0),z)
     //     B = src(x+get(0),y+get(0),z)
 	state_changing_funcs_used = 0;
-	
+
 	evalinit();
 	return i==nplanes; /* all required expressions parse OK */
 }

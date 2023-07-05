@@ -78,7 +78,9 @@ void DisposePtr(Ptr ptr);
 
 enum{ ok = 1,cancel = 2 };
 
-ULONGLONG _GetTickCount64();
+Boolean Implements3264ResourceAPI(void);
+
+ULONGLONG _GetTickCount64(void);
 
 HANDLE _BeginUpdateResource(
 	LPCTSTR pFileName,

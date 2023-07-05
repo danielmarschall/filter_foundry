@@ -134,7 +134,7 @@ void DoStart(FilterRecordPtr epb);
 OSErr DoContinue(FilterRecordPtr epb);
 void DoFinish(FilterRecordPtr epb);
 void RequestNext(FilterRecordPtr epb);
-InternalState saveInternalState();
+InternalState saveInternalState(void);
 void restoreInternalState(InternalState state);
 
 // from read.c
@@ -169,11 +169,11 @@ size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
-uint64_t GetObfuscSeed();
+uint64_t GetObfuscSeed(void);
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
-uint64_t GetObfuscSeed2();
+uint64_t GetObfuscSeed2(void);
 #ifdef WIN_ENV
 Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uint64_t replace1, uint64_t replace2, int maxamount1, int maxamount2);
 #endif
@@ -186,15 +186,12 @@ Boolean loadfile(StandardFileReply *sfr, TCHAR**reason);
 Boolean readPARMresource(HMODULE hm, TCHAR**reason);
 
 // from main.c
-int64_t maxspace();
-Boolean maxspace_available();
-Boolean host_preserves_parameters();
+int64_t maxspace(void);
+Boolean maxspace_available(void);
+Boolean host_preserves_parameters(void);
 
 // from parser.y
 struct node *parseexpr(char *s);
-
-// from funcs.c
-void factory_initialize_rnd_variables();
 
 // Useful macros
 
