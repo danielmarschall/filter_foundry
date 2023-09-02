@@ -137,7 +137,7 @@ char* stristr(const char* str, const char* strSearch) {
 
 BOOL CalledFromRunDLL32(HINSTANCE hinst) {
 	char exename[MAX_PATH];
-	GetModuleFileNameA(hinst, exename, 100);
+	if (GetModuleFileNameA(hinst, exename, MAX_PATH) == 0) return false;
 	return stristr(exename, "rundll32") != NULL;
 }
 
