@@ -120,6 +120,27 @@ size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
 	return xstrlen(out);
 }
 
+char* stristr(const char* str, const char* strSearch) {
+	// Source: https://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
+	char *sors, *subs, *res = NULL;
+	if ((sors = _strdup(str)) != NULL) {
+		if ((subs = _strdup(strSearch)) != NULL) {
+			res = strstr(_strlwr(sors), _strlwr(subs));
+			if (res != NULL)
+				res = (char*)str + (res - sors);
+			free(subs);
+		}
+		free(sors);
+	}
+	return res;
+}
+
+BOOL CalledFromRunDLL32(HINSTANCE hinst) {
+	char exename[MAX_PATH];
+	GetModuleFileNameA(hinst, exename, 100);
+	return stristr(exename, "rundll32") != NULL;
+}
+
 void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
 	UNREFERENCED_PARAMETER(hwnd);
 	UNREFERENCED_PARAMETER(hinst);
@@ -225,33 +246,34 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	#endif
 
 	#ifdef WIN_ENV
-	if ((intptr_t)result == SW_SHOWDEFAULT) {
+	if ((intptr_t)result == SW_SHOWDEFAULT && CalledFromRunDLL32((HINSTANCE)pb)) {
 		// When the 8BF file is analyzed with VirusTotal.com, it will invoke each
 		// exported function by calling
 		// loaddll64.exe 'C:\Users\user\Desktop\attachment.dll'
 		//	  ==>  rundll32.exe C:\Users\user\Desktop\attachment.dll,PluginMain
 		//	     ==> C:\Windows\system32\WerFault.exe -u -p 6612 -s 480
 		//
-		// But RunDLL32 requires following signature:
+		// But RunDLL32 requires the following signature:
 		//    void __stdcall EntryPoint(HWND hwnd,      HINSTANCE hinst,    LPSTR lpszCmdLine, int nCmdShow);
 		// Our signature is:
 		//    void           PluginMain(short selector, FilterRecordPtr pb, intptr_t *data,    short *result);
 		// 
-		// Obviously, this will cause an Exception. (It crashes at *result=e because result is 0xA)
+		// Obviously, this will cause an Exception. (It crashes at *result=e because result is 0xA, which is SW_SHOWDEFAULT)
 		// Here is the problem: The crash will be handled by WerFault.exe inside the
 		// VirusTotal virtual machine. WerFault connects to various servers (9 DNS resolutions!) and does
 		// a lot of weird things, but VirusTotal thinks that our plugin does all that stuff,
 		// and so they mark our plugin as "malware"!
 		// This is a problem with VirusTotal! It shall not assume that WerFault.exe actions are our actions!
-		// Even processes like "MicrosoftEdgeUpdate.exe" and "SpeechRuntime.exe" are reported to be our
+		// Even actions from processes like "MicrosoftEdgeUpdate.exe" and "SpeechRuntime.exe" are reported to be our
 		// actions, although they have nothing to do with us!
 		// See https://www.virustotal.com/gui/file/1f1012c567208186be455b81afc1ee407ae6476c197d633c70cc70929113223a/behavior
 		//
-		// TODO: Usually, The first 64KB of address space are always invalid. However, in Win32s (Windows 3.11), the
-		//       variable "result" is <=0xFFFF ! Let's just hope that it is never 0x000A (SW_SHOWDEFAULT),
-		//       otherwise we have a problem here!
-		// I don't understand why this works! Aren't we __cdecl and rundll expected __stdcall? But why is the parameter order correct and not reversed?
+		// Note in re "*result": Usually, The first 64KB of address space are always invalid. However, in Win32s (Windows 3.11), the
+		// variable "result" is <=0xFFFF. So we cannot assume that result<=0xFFFF means that the call came from RunDLL32.
+
 		FakeRundll32((HWND)(intptr_t)selector, (HINSTANCE)pb, (LPSTR)data, (int)(intptr_t)result);
+		// (I don't understand why this works! Aren't we __cdecl and rundll expected __stdcall? But why is the parameter order correct and not reversed?)
+
 		goto endmain;
 	}
 	else {
