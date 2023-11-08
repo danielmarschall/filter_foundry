@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
@@ -220,7 +220,7 @@ void CreateDataPointer(intptr_t* data) {
 	*data = (intptr_t)NewPtrClear(sizeof(globals_t));
 }
 
-DLLEXPORT MACPASCAL 
+DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
@@ -257,7 +257,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		//    void __stdcall EntryPoint(HWND hwnd,      HINSTANCE hinst,    LPSTR lpszCmdLine, int nCmdShow);
 		// Our signature is:
 		//    void           PluginMain(short selector, FilterRecordPtr pb, intptr_t *data,    short *result);
-		// 
+		//
 		// Obviously, this will cause an Exception. (It crashes at *result=e because result is 0xA, which is SW_SHOWDEFAULT)
 		// Here is the problem: The crash will be handled by WerFault.exe inside the
 		// VirusTotal virtual machine. WerFault connects to various servers (9 DNS resolutions!) and does

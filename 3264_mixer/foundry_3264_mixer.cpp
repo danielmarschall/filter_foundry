@@ -1,6 +1,6 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
 	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
@@ -155,7 +155,7 @@ bool openWatcomCosmetics(LPCTSTR filename) {
 		// It is not required for DLLs, but everybody does it, and I think it is cosmetics to fill these fields, even if not required.
 		_set_pe_int32(fptr, /*0x0060*/offsetof(PE32, optHeader.SizeOfStackReserve), 0x00100000);
 		_set_pe_int32(fptr, /*0x0064*/offsetof(PE32, optHeader.SizeOfStackCommit),  0x00001000);
-		// Heap reserved can be changed with linker option "OPTION HEAP=1m" before beta 21 Dec 2021 
+		// Heap reserved can be changed with linker option "OPTION HEAP=1m" before beta 21 Dec 2021
 		_set_pe_int32(fptr, /*0x0068*/offsetof(PE32, optHeader.SizeOfHeapReserve),  0x00100000);
 		_set_pe_int32(fptr, /*0x006C*/offsetof(PE32, optHeader.SizeOfHeapCommit),   0x00001000);
 

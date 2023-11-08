@@ -14,7 +14,7 @@ Please read the document DOWNLOAD.txt in the directory "photoshop_sdk"
 for further information.
 
 The dependency "telegraphics_common" is available here
-https://www.telegraphics.com.au/svn/common/
+https://www.telegraphics.net/svn/common/
 Revision 84 (dated 9 October 2019) is included in this repository
 to simplify the build process. After the addition, the
 code there was updated.

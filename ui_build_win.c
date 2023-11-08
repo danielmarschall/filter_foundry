@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify

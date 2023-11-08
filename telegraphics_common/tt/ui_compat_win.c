@@ -1,6 +1,6 @@
 /*
     This file is part of a common library for Adobe(R) Photoshop(R) plugins
-    Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2002-2006 Toby Thain, toby@telegraphics.net
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -205,7 +205,7 @@ void _doMonitorAdjustments(LPRECT rcPlugin) {
 void centre_window(HWND hwnd) {
 	RECT rcParent, rcWindowOriginal, rcPlugin;
 	HWND hParent;
-	
+
 	hParent = GetParent(hwnd);
 	if (hParent == NULL) hParent = GetDesktopWindow();
 

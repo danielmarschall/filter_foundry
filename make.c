@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
@@ -180,7 +180,7 @@ size_t fixpipl(PIPropertyList *pipl, size_t origsize, char* title, char* compone
 	prop = (PIProperty*)p;
 
 	/* Important note about propertyLength:
-	 
+
 		In regards propertyLength, Adobe writes in SPPiPL.h:
 		"Number of characters in the data array. Rounded to a multiple of 4."
 

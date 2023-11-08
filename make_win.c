@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
@@ -96,7 +96,7 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 	name = (char*)malloc(40 + (2 * 256) * 5);
 	description = (char*)malloc(10 + (2 * 256)); // x4 because & becomes &amp;
 	if (name == NULL || description == NULL) return 0;
-	
+
 	// Description
 	tmpDescription = description;
 	for (i = 0; i < strlen(pparm->szCategory); i++) {

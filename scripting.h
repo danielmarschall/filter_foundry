@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
@@ -92,13 +92,13 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define	OpenReader(array) \
 	OpenReadDesc(DescParams->descriptor, array)
-	
+
 #define CloseReadDesc(token) \
 	Reader->closeReadDescriptorProc(token)
 
 #define CloseReader(token) \
 	HostCloseReader(DescParams, gpb->handleProcs, token)
-	
+
 #define OpenWriter() \
 	Writer->openWriteDescriptorProc()
 
@@ -112,13 +112,13 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIGetKey(token, key, type, flags) \
 	Reader->getKeyProc(token, key, type, flags)
-	
+
 #define PIGetEnum(token, value)	\
 	Reader->getEnumeratedProc(token, value)
-				
+
 #define PIPutEnum(token, key, type, value) \
 	Writer->putEnumeratedProc(token, key, type, value)
-	
+
 #define PIGetInt(token, value) \
 	Reader->getIntegerProc(token, value)
 
@@ -127,16 +127,16 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIPutInt(token, key, value) \
 	Writer->putIntegerProc(token, key, value)
-	
+
 #define PIGetFloat(token, value) \
 	Reader->getFloatProc(token, value)
-	
+
 #define PIGetPinFloat(token, min, max, value) \
 	Reader->getPinnedFloatProc(token, min, max, value)
 
 #define PIPutFloat(token, key, value) \
 	Writer->putFloatProc(token, key, value)
-	
+
 #define PIGetUnitFloat(token, unit, value) \
 	Reader->getUnitFloatProc(token, unit, value)
 
@@ -145,7 +145,7 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIPutUnitFloat(token, key, unit, value) \
 	Writer->putUnitFloatProc(token, key, unit, value)
-	
+
 #define PIGetBool(token, value) \
 	Reader->getBooleanProc(token, value)
 
@@ -154,13 +154,13 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIGetText(token, value) \
 	Reader->getTextProc(token, value)
-	
+
 #define PIPutText(token, key, value) \
 	Writer->putTextProc(token, key, value)
-	
+
 #define PIGetAlias(token, value) \
 	Reader->getAliasProc(token, value)
-	
+
 #define PIPutAlias(token, key, value) \
 	Writer->putAliasProc(token, key, value)
 
@@ -172,16 +172,16 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIGetClass(token, value) \
 	Reader->getClassProc(token, value)
-	
+
 #define PIPutClass(token, key, value) \
 	Writer->putClassProc(token, key, value)
-	
+
 #define PIGetRef(token, value) \
 	Reader->getSimpleReferenceProc(token,value)
-	
+
 #define PIPutRef(token, key, value) \
 	Writer->putSimpleReferenceProc(token, key, value)
-	
+
 #define PIGetObj(token, type, value) \
 	Reader->getObjectProc(token, type, value)
 
@@ -190,16 +190,16 @@ OSType getAeteKey(char c, PARM_T *parm);
 
 #define PIPutObjProc(token, key, type, value) \
 	Writer->putObjectProc(token, key, type, value)
-	
+
 #define PIGetCount(token, value) \
 	Reader->getCountProc(token, value)
-	
+
 #define PIPutCount(token, key, value) \
 	Writer->putCountProc(token, key, value)
-	
+
 #define PIGetStr(token, value) \
 	Reader->getStringProc(token, value)
-	
+
 #define PIPutStr(token, key, value) \
 	Writer->putStringProc(token, key, value)
 

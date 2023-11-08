@@ -1,6 +1,6 @@
 /*
     This file is part of a common library for Adobe(R) Photoshop(R) plugins
-    Copyright (C) 2002-6 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2002-2006 Toby Thain, toby@telegraphics.net
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ Ptr GetPixBaseAddr(PixMapHandle);
 PixMapHandle GetGWorldPixMap(GWorldPtr);
 
 Ptr NewPtrClear(size_t size);
-	
+
 //#define NewPtr malloc
 Ptr NewPtr(size_t size);
 

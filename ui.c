@@ -1,6 +1,6 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
     Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
@@ -423,7 +423,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			filters, gdata->hWndMainDlg
 #endif
 		);
-		
+
 		free(filters);
 		free(title);
 
@@ -496,7 +496,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			filters, 1, gdata->hWndMainDlg
 #endif
 		);
-		
+
 		free(filters);
 		free(title);
 
@@ -649,7 +649,7 @@ Boolean alertuser(TCHAR *err,TCHAR *more){
 
 	s = (TCHAR*)malloc((xstrlen(err) + xstrlen(more) + 3) * sizeof(TCHAR)); // 3=CR+LF+NUL
 	if (s == NULL) return false;
-	
+
 	q = s;
 
 	for (i = 0; i < xstrlen(err); i++) {

@@ -3,7 +3,7 @@
 
 Filter Foundry is a compatible replacement for Adobe Filter Factory.
 
-Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.com.au/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
+Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.net/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
 ### Windows version 1.7.0.19
@@ -15,7 +15,7 @@ To install the plugin to Photoshop, simply place the appropriate 8BF file into t
 
 ### Macintosh version 1.6b1
 
-The Macintosh version could not be taken over because Apple removed the "Carbon" API, and the new "Cocoa" API is not compatible with the current codebase. If you would like to help porting Filter Foundry to the latest OS X version, it would be highly appreciated! An old version of Filter Foundry for Mac 68k (requires 68020 or later CPU and FPU) and Mac Classic (PowerPC) can be obtained here: https://www.telegraphics.com.au/sw/
+The Macintosh version could not be taken over because Apple removed the "Carbon" API, and the new "Cocoa" API is not compatible with the current codebase. If you would like to help porting Filter Foundry to the latest OS X version, it would be highly appreciated! An old version of Filter Foundry for Mac 68k (requires 68020 or later CPU and FPU) and Mac Classic (PowerPC) can be obtained here: https://www.telegraphics.net/sw/
 
 
 ### Documentation

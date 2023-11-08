@@ -1,6 +1,6 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
 	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
@@ -303,12 +303,12 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 		)
 	{
 		// PICA Buffer Suite 2.0 (64 bit)
-		// 
+		//
 		// Note: Windows Photoshop 7 and CS 2 (Other Photoshop versions were not tested) accept
 		// kPSBufferSuiteVersion2, but dont't correctly implement it:
 		// Instead of returning a pointer to a PSBufferSuite2 structure,
 		// they return the pointer RecordPtr->bufferProcs (structure BufferProcs)!
-		// 
+		//
 		// Side note:  64-bit support for Windows was established in Photoshop CS 4,
 		//             PSBufferSuite2 was first documented in SDK CS 6,
 		//             pb->bufferProcs->allocateProc64 and spaceProc64 were documented in SDK CS 6,

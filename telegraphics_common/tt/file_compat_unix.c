@@ -1,9 +1,9 @@
 /*
     This file is part of a common library
-    Copyright (C) 2002-7 Toby Thain, toby@telegraphics.com.au
+    Copyright (C) 2002-2007 Toby Thain, toby@telegraphics.net
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by  
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License  
+    You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
@@ -50,7 +50,7 @@ OSErr SetFPos(FILEREF refNum, short posMode, long posOff){
 #if 0
 OSErr FSpOpenDF(const FSSpec *spec, int8 permission, FILEREF *refNum){
 	DWORD perm[] = {GENERIC_READ|GENERIC_WRITE,GENERIC_READ,GENERIC_WRITE,GENERIC_READ|GENERIC_WRITE};
-		
+
 	myp2cstr((StringPtr)spec->name);
 	*refNum = CreateFile((char*)spec->name,perm[permission],0,0,OPEN_EXISTING,0,0);
 //	sprintf(s,"FSpOpenDF(\"%s\",\"%s\"):%#x",spec->name,perm[permission],*refNum); dbg(s);
@@ -61,7 +61,7 @@ OSErr FSpOpenDF(const FSSpec *spec, int8 permission, FILEREF *refNum){
 OSErr FSpOpenDF(const FSSpec *spec, int8 permission, FILEREF *refNum){
 	char *perm[] = {"wb+","rb","wb","rwb"};
 	OSErr e;
-		
+
 	myp2cstr((unsigned char*)spec->name);
 	e = (*refNum = fopen(spec->name,perm[permission])) ? noErr : ioErr;
 	sprintf(s,"FSpOpenDF(\"%s\",\"%s\"):%#x",spec->name,perm[permission],*refNum); dbg(s);

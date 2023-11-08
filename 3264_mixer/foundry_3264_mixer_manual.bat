@@ -1,7 +1,7 @@
 @echo off
 
 rem  This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
-rem  Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.com.au
+rem  Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
 rem  Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
 rem  
 rem  This program is free software; you can redistribute it and/or modify
