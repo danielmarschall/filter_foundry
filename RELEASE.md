@@ -3,7 +3,7 @@ ViaThinkSoft release procedure
 ------------------------------
 
 1. Fix version information:
-	- version.h (3 times cleartext + MainComponentVersion)
+	- version.h (3 times cleartext + MainComponentVersion encoded + RELEASE_YEAR)
 	- manifest32.xml and manifest64.xml
 	- README.md
 	- CHANGELOG.md
@@ -22,9 +22,9 @@ ViaThinkSoft release procedure
 		- examples\                         => examples\
 		- LICENSE_GPLv2.txt                 => LICENSE_GPLv2.txt
 		- LICENSE_GPLv3.html                => LICENSE_GPLv3.html
-3. Verify that each 8BF files contains the hex sequence `17 05 83 52 2a 97 16 74` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
-4. Verify that each 8BF files contains the hex sequence `86 21 1f 3e f1 a2 87 ef` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
-5. Put release ZIP into "releases/" folder
+3. Verify that each 8BF file (32/64 bit) contains the hex sequence `17 05 83 52 2a 97 16 74` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
+4. Verify that each 8BF file (32/64 bit) contains the hex sequence `86 21 1f 3e f1 a2 87 ef` exactly three times (1 time in the code sequence, 2 times in the 32/64 template resources)
+5. Move the release ZIP into "releases/" folder and rename it. Also, extend the SFV file.
 6. Commit to SVN with commit message `=== RELEASE 1.7.0.x ===`
 7. Sync SVN with GitHub
 8. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)

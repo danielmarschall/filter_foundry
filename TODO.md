@@ -5,12 +5,8 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* Finish implementation of GUF format ( http://gimpuserfilter.sourceforge.net/ )
+None
 
-	saveparams_guf()
-	_gufReadProperty()
-	README.md
-	Documentation (DOCX, PDF)
 
 Known problems
 --------------

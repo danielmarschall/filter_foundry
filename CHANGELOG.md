@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.20 [21-Nov-2023]
+- Implemented "GIMP UserFilter" (GUF) file format.
+
 ## 1.7.0.19 [01-Jul-2022]
 - Fixed bug in Watcom (32 bit) build that prevented creation of protected filters.
 

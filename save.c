@@ -20,6 +20,8 @@
 
 #include "ff.h"
 
+#include "version.h"
+#include "time.h"
 #include "file_compat.h"
 #include "sprintf_tiny.h"
 
@@ -202,8 +204,100 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 }
 
 OSErr saveparams_guf(Handle h, Boolean useparm) {
-	// TODO: implement
-	return NULL;
+	extern int ctls[], maps[];
+
+	char* p, * start;
+	int i;
+	OSErr e;
+	size_t est;
+
+	if (!h) return nilHandleErr;
+
+	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	// do not be tempted to combine into one expression: 'est' is referenced below
+	est += 16000;
+
+	// TODO: Encode the file in UTF-8! (German Umlauts, etc.)
+
+	PIUNLOCKHANDLE(h); // should not be necessary
+	if (!(e = PISETHANDLESIZE(h, (int32)(est))) && (p = start = PILOCKHANDLE(h, false))) {
+		char strBuildDate[11/*strlen("0000-00-00") + 1*/];
+		time_t iBuildDate = time(0);
+		strftime(strBuildDate, 100, "%Y-%m-%d", localtime(&iBuildDate));
+
+		checksliders(4, ctls, maps);
+
+		// Metadata
+		p += sprintf(p, "# Created with Filter Foundry %s\r\n", VERSION_STR);
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "[GUF]\r\n");
+		p += sprintf(p, "Protocol=1\r\n");
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "[Info]\r\n");
+		p += sprintf(p, "Category=<Image>/Filter Factory/%s\r\n", useparm ? gdata->parm.szCategory : "...");
+		p += sprintf(p, "Title=%s\r\n", useparm ? gdata->parm.szTitle : "...");
+		p += sprintf(p, "Copyright=%s\r\n", useparm ? gdata->parm.szCopyright : "...");
+		p += sprintf(p, "Author=%s\r\n", useparm ? gdata->parm.szAuthor : "...");
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "[Version]\r\n");
+		p += sprintf(p, "Major=1\r\n");
+		p += sprintf(p, "Minor=0\r\n");
+		p += sprintf(p, "Micro=0\r\n");
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "[Filter Factory]\r\n");
+		p += sprintf(p, "8bf=%s\r\n", useparm ? "Untitled.8bf" : "Untitled.8bf"); // TODO: get .guf filename and change .guf to .8bf
+		p += sprintf(p, "\r\n");
+		p += sprintf(p, "[Gimp]\r\n");
+		p += sprintf(p, "Registered=false\r\n");
+		p += sprintf(p, "Description=%s\r\n", useparm ? gdata->parm.szTitle : "...");
+		p += sprintf(p, "EdgeMode=2\r\n");
+		p += sprintf(p, "Date=%s\r\n", strBuildDate);
+		p += sprintf(p, "\r\n");
+
+		if (useparm) {
+			for (i = 0; i < 8; i++) {
+				p += sprintf(p, "[Control %d]\r\n", i);
+				p += sprintf(p, "Enabled=%s\r\n", gdata->parm.ctl_used[i] ? "true" : "false");
+				p += sprintf(p, "Label=%s\r\n", gdata->parm.szCtl[i]);
+				p += sprintf(p, "Preset=%d\r\n", gdata->parm.val[i]);
+				p += sprintf(p, "Step=1\r\n");
+				p += sprintf(p, "\r\n");
+			}
+			for (i = 0; i < 4; i++) {
+				p += sprintf(p, "[Map %d]\r\n", i);
+				p += sprintf(p, "Enabled=%s\r\n", gdata->parm.map_used[i] ? "true" : "false");
+				p += sprintf(p, "Label=%s\r\n", gdata->parm.szMap[i]);
+				p += sprintf(p, "\r\n");
+			}
+		}
+		else {
+			for (i = 0; i < 8; i++) {
+				p += sprintf(p, "[Control %d]\r\n", i);
+				p += sprintf(p, "Enabled=%s\r\n", ctls[i] ? "true" : "false");
+				p += sprintf(p, "Label=%s\r\n", "...");
+				p += sprintf(p, "Preset=%d\r\n", slider[i]);
+				p += sprintf(p, "Step=1\r\n");
+				p += sprintf(p, "\r\n");
+			}
+			for (i = 0; i < 4; i++) {
+				p += sprintf(p, "[Map %d]\r\n", i);
+				p += sprintf(p, "Enabled=%s\r\n", maps[i] ? "true" : "false");
+				p += sprintf(p, "Label=%s\r\n", "...");
+				p += sprintf(p, "\r\n");
+			}
+		}
+	
+		p += sprintf(p, "[Code]\r\n");
+		p += sprintf(p, "R=%s\r\n", useparm ? gdata->parm.szFormula[0] : expr[0]);
+		p += sprintf(p, "G=%s\r\n", useparm ? gdata->parm.szFormula[1] : expr[1]);
+		p += sprintf(p, "B=%s\r\n", useparm ? gdata->parm.szFormula[2] : expr[2]);
+		p += sprintf(p, "A=%s\r\n", useparm ? gdata->parm.szFormula[3] : expr[3]);
+
+		PIUNLOCKHANDLE(h);
+		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
+	}
+
+	return e;
 }
 
 OSErr savehandleintofile(Handle h,FILEREF r){

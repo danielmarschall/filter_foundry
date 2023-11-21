@@ -6,7 +6,7 @@ Filter Foundry is a compatible replacement for Adobe Filter Factory.
 Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.net/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
 
 
-### Windows version 1.7.0.19
+### Windows version 1.7.0.20
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip) or from the [Releases folder](https://github.com/danielmarschall/filter_foundry/tree/master/releases).
 
@@ -58,7 +58,7 @@ Filter Foundry support a variety of different file formats:
 |PRM         |Adobe Premiere plugin created by Filter/Transaction Factory for Adobe Premiere.     |      |      |Yes   |
 |FFX         |"Filters Unlimited" file.                                                           |      |      |Yes(2)|
 |TXT         |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
-|GUF         |A filter file created by "GIMP UserFilter"                                          |      |TODO  |TODO(2)|
+|GUF         |A filter file created by "GIMP UserFilter".                                         |      |Yes   |Yes(2)|
 |BIN or RSRC |Standalone filter created by Filter Factory/Foundry for Mac.                        |      |      |Yes   |
 
 Currently not supported are FFL (Filter Library) files.

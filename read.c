@@ -62,11 +62,11 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 			if(p < dataend && c == CR && *p == LF)
 				++p;
 
-			linebuf[lineptr] = 0; /* add terminating NUL to line buffer */
+			linebuf[lineptr] = '\0'; /* add terminating NUL to line buffer */
 
 			/* process complete line */
 			if(linecnt==0){
-				if(strcmp(linebuf,"%RGB-1.0")){
+				if(strcmp(linebuf,"%RGB-1.0") != 0){
 					// Note: We don't set *reason, because we cannot be sure if it is a valid file in regards to a different data type
 					// We only set *Reason, if we are sure that it is an AFS file which is indeed wrong.
 					break;
@@ -90,7 +90,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 					/* it's an empty line: we've completed the expr string */
 					if(expr[exprcnt])
 						free(expr[exprcnt]);
-					*q = 0;
+					*q = '\0';
 					if(!(expr[exprcnt] = my_strdup(curexpr))){
 						if (reason) *reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID);
 						break;
@@ -187,7 +187,7 @@ char* _ffx_read_str(char** q) {
 	val = (char*)malloc((size_t)len + 1);
 	if (val != NULL) {
 		memcpy(val, (char*)*q, len);
-		val[len] = 0;
+		val[len] = '\0';
 	}
 	*q += len;
 	return val;
@@ -559,14 +559,14 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	svalue = NULL;
 	// Check parameters
 	if (maxOutput == 0) return false;
-	if (inputFile == 0) return false;
+	if (inputFile == NULL) return false;
 	// Let input memory be read-only, +1 for terminal zero
 	//char* inputwork = inputFile;
 	inputwork = (char*)malloc((size_t)maxInput + 1);
 	inputworkinitial = inputwork;
-	if (inputwork == 0) return false;
+	if (inputwork == NULL) return false;
 	memcpy(inputwork, inputFile, maxInput);
-	inputwork[maxInput] = 0; // otherwise strstr() will crash
+	inputwork[maxInput] = '\0'; // otherwise strstr() will crash
 
 	// Transform "FFDecomp" TXT file into the similar "PluginCommander" TXT file
 	if (strstr(inputwork, "Filter Factory Plugin Information:")) {
@@ -627,8 +627,8 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	}
 	// Replace all \r and \n with \0, so that we can parse easier
 	for (i = 0; i < maxInput; i++) {
-		if (inputworkinitial[i] == CR) inputworkinitial[i] = 0;
-		else if (inputworkinitial[i] == LF) inputworkinitial[i] = 0;
+		if (inputworkinitial[i] == CR) inputworkinitial[i] = '\0';
+		else if (inputworkinitial[i] == LF) inputworkinitial[i] = '\0';
 	}
 
 	// Find line that contains out key
@@ -636,7 +636,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	do {
 		if (inputwork > inputworkinitial + maxInput) {
 			// Key not found. Set output to empty string
-			outputwork[0] = 0;
+			outputwork[0] = '\0';
 			free(inputworkinitial);
 			return false;
 		}
@@ -645,7 +645,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 		if (inputwork - 1 > inputworkinitial + maxInput) {
 			// Key not found. Set output to empty string
 			// TODO: will that be ever called?
-			outputwork[0] = 0;
+			outputwork[0] = '\0';
 			free(inputworkinitial);
 			return false;
 		}
@@ -654,7 +654,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	// Read line(s) until we find a line with another key, or the line end
 	do {
 		while ((svalue[0] == ' ') || (svalue[0] == TAB)) svalue++; // Trim left
-		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == TAB)) svalue[strlen(svalue) - 1] = 0; // Trim right
+		while ((svalue[strlen(svalue) - 1] == ' ') || (svalue[strlen(svalue) - 1] == TAB)) svalue[strlen(svalue) - 1] = '\0'; // Trim right
 
 		if (strlen(svalue) > 0) {
 			if (outputwork + strlen(svalue) + (isFormula ? 3/*CRLF+NUL*/ : 2/*space+NUL*/) > outputFile + maxOutput) {
@@ -662,7 +662,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 				//printf("BUFFER FULL (remaining = %d)\n", remaining);
 				memcpy(outputwork, svalue, remaining);
 				outputwork += remaining;
-				outputwork[0] = 0;
+				outputwork[0] = '\0';
 				free(inputworkinitial);
 				return true;
 			}
@@ -682,7 +682,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 				}
 			}
 		}
-		outputwork[0] = 0;
+		outputwork[0] = '\0';
 
 		// Process next line
 		if (inputwork > inputworkinitial + maxInput) break;
@@ -694,7 +694,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	// Remove trailing whitespace
 	if (outputwork > outputFile) {
 		outputwork -= 1;
-		outputwork[0] = 0;
+		outputwork[0] = '\0';
 	}
 	free(inputworkinitial);
 	return true;
@@ -787,9 +787,82 @@ Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 	return res;
 }
 
-Boolean _gufReadProperty(char* inputFile, size_t maxInput, const char* section, const char* property, char* outputFile, size_t maxOutput) {
-	// TODO: Implement
-	return false;
+Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const char* section, const char* keyname, char* argOutput, size_t argMaxOutLength) {
+	size_t iTmp;
+	char* tmpFileContents, * tmpSection, * tmpStart, * tmpStart2, * tmpEnd, * tmpKeyname, * tmpStart3, * tmpStart4, * inputwork;
+
+	// Check parameters
+	if (argMaxOutLength == 0) return false;
+	if (fileContents == NULL) return false;
+
+	// Handle argMaxInputLength
+	//char* inputwork = fileContents;
+	inputwork = (char*)malloc((size_t)argMaxInputLength + 1);
+	if (inputwork == NULL) return false;
+	memcpy(inputwork, fileContents, argMaxInputLength);
+	inputwork[argMaxInputLength] = '\0';
+
+	// Prepare the input file contents to make it easier parse-able
+	iTmp = strlen(inputwork) + strlen("\n\n[");
+	tmpFileContents = (char*)malloc(iTmp + 1);
+	if (tmpFileContents == NULL) return false;
+	sprintf(tmpFileContents, "\n%s\n[", inputwork);
+	for (iTmp = 0; iTmp < strlen(tmpFileContents); iTmp++) {
+		if (tmpFileContents[iTmp] == '\r') tmpFileContents[iTmp] = '\n';
+	}
+
+	// Find the section begin
+	iTmp = strlen(section) + strlen("\n[]\n");
+	tmpSection = (char*)malloc(iTmp + 1);
+	if (tmpSection == NULL) return false;
+	sprintf(tmpSection, "\n[%s]\n", section);
+	tmpStart = strstr(tmpFileContents, tmpSection);
+	if (tmpStart == NULL) return false;
+	tmpStart += iTmp;
+
+	// Find the end of the section and set a NULL terminator to it
+	iTmp = strlen(tmpStart) + strlen("\n");
+	tmpStart2 = (char*)malloc(iTmp + 1/*NUL byte*/);
+	if (tmpStart2 == NULL) return false;
+	sprintf(tmpStart2, "\n%s", tmpStart);
+	tmpEnd = strstr(tmpStart2, "\n[");
+	if (tmpEnd == NULL) return false;
+	tmpEnd[0] = '\0';
+
+	// Find the start of the value
+	iTmp = strlen(keyname) + strlen("\n=");
+	tmpKeyname = (char*)malloc(iTmp + 1/*NUL byte*/);
+	if (tmpKeyname == NULL) return false;
+	sprintf(tmpKeyname, "\n%s=", keyname);
+	tmpStart3 = strstr(tmpStart2, tmpKeyname);
+	if (tmpStart3 == NULL) return false;
+	tmpStart3 += strlen("\n");
+	tmpStart4 = strstr(tmpStart3, "=");
+	if (tmpStart4 == NULL) return false;
+	tmpStart4 += strlen("=");
+
+	// Find the end of the value
+	tmpEnd = strstr(tmpStart4, "\n");
+	if (tmpEnd == NULL) return false;
+	tmpEnd[0] = '\0';
+
+	// Copy to output
+	if (strlen(tmpStart4) < argMaxOutLength + 1) argMaxOutLength = strlen(tmpStart4) + 1;
+	memcpy(argOutput, tmpStart4, argMaxOutLength);
+	argOutput[argMaxOutLength - 1] = '\0';
+
+	// Free all temporary stuff
+	//for (iTmp = 0; iTmp < strlen(tmpFileContents); iTmp++) tmpFileContents[iTmp] = '\0';
+	free(tmpFileContents);
+	//for (iTmp = 0; iTmp < strlen(tmpSection); iTmp++) tmpSection[iTmp] = '\0';
+	free(tmpSection);
+	//for (iTmp = 0; iTmp < strlen(tmpKeyname); iTmp++) tmpKeyname[iTmp] = '\0';
+	free(tmpKeyname);
+	//for (iTmp = 0; iTmp < strlen(tmpStart2); iTmp++) tmpStart2[iTmp] = '\0';
+	free(tmpStart2);
+
+	// Return success
+	return true;
 }
 
 Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
@@ -808,13 +881,19 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 
 			char out[256];
 			if (_gufReadProperty(q, count, "GUF", "Protocol", out, sizeof(out))) {
-				if (!strcmp(out, "1")) {
+				if (strcmp(out, "1") != 0) {
 					if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_GUF_FILE_ID);
+					PIUNLOCKHANDLE(h);
+					PIDISPOSEHANDLE(h);
+					FSClose(refnum);
 					return false;
 				}
 			}
 			else {
 				if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_GUF_FILE_ID);
+				PIUNLOCKHANDLE(h);
+				PIDISPOSEHANDLE(h);
+				FSClose(refnum);
 				return false;
 			}
 			if (_gufReadProperty(q, count, "Info", "Title", out, sizeof(out))) {
