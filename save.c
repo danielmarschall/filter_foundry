@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -223,7 +223,7 @@ OSErr saveparams_guf(Handle h, Boolean useparm) {
 	if (!(e = PISETHANDLESIZE(h, (int32)(est))) && (p = start = PILOCKHANDLE(h, false))) {
 		char strBuildDate[11/*strlen("0000-00-00") + 1*/];
 		time_t iBuildDate = time(0);
-		strftime(strBuildDate, 100, "%Y-%m-%d", localtime(&iBuildDate));
+		strftime(strBuildDate, 11, "%Y-%m-%d", localtime(&iBuildDate));
 
 		checksliders(4, ctls, maps);
 

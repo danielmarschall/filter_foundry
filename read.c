@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -219,18 +219,30 @@ Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 					simplewarning_id(MSG_FILTERS_UNLIMITED_WARNING_ID);
 
 					val = _ffx_read_str(&q);
+					if (strlen(val) >= sizeof(gdata->parm.szTitle)) {
+						val[sizeof(gdata->parm.szTitle) - 1] = '\0';
+					}
 					strcpy(gdata->parm.szTitle, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
+					if (strlen(val) >= sizeof(gdata->parm.szCategory)) {
+						val[sizeof(gdata->parm.szCategory) - 1] = '\0';
+					}
 					strcpy(gdata->parm.szCategory, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
+					if (strlen(val) >= sizeof(gdata->parm.szAuthor)) {
+						val[sizeof(gdata->parm.szAuthor) - 1] = '\0';
+					}
 					strcpy(gdata->parm.szAuthor, val);
 					free(val);
 
 					val = _ffx_read_str(&q);
+					if (strlen(val) >= sizeof(gdata->parm.szCopyright)) {
+						val[sizeof(gdata->parm.szCopyright) - 1] = '\0';
+					}
 					strcpy(gdata->parm.szCopyright, val);
 					free(val);
 
@@ -243,7 +255,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 								// "Intro channel" existing
 								// C++ wrong warning: Using uninitialized memory "val2" (C6001)
 								#pragma warning(suppress : 6001)
-								char* combined = (char*)malloc(strlen(val) + strlen(",") + strlen(val2) + 1);
+								char* combined = (char*)malloc(strlen(val) + strlen(",") + strlen(val2) + 1/*NUL byte*/);
 								if (combined != NULL) {
 									sprintf(combined, "%s,%s", val, val2);
 									free(val);
@@ -289,6 +301,9 @@ Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 							// Format FFX1.2 has prefixes {S} = Slider, {C} = Checkbox, none = Slider
 							if ((sliderName[0] == '{') && (sliderName[1] == 'S') && (sliderName[2] == '}')) sliderName += 3;
 							else if ((sliderName[0] == '{') && (sliderName[1] == 'C') && (sliderName[2] == '}')) sliderName += 3;
+						}
+						if (strlen(val) >= sizeof(gdata->parm.szCtl[i])) {
+							val[sizeof(gdata->parm.szCtl[i]) - 1] = '\0';
 						}
 						strcpy(gdata->parm.szCtl[i], sliderName);
 						free(val);
@@ -562,7 +577,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	if (inputFile == NULL) return false;
 	// Let input memory be read-only, +1 for terminal zero
 	//char* inputwork = inputFile;
-	inputwork = (char*)malloc((size_t)maxInput + 1);
+	inputwork = (char*)malloc((size_t)maxInput + 1/*NUL byte*/);
 	inputworkinitial = inputwork;
 	if (inputwork == NULL) return false;
 	memcpy(inputwork, inputFile, maxInput);
@@ -584,11 +599,11 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 		if (x) memcpy(x, "Author:", strlen("Author:"));
 		// Controls:
 		for (i = 0; i < 8; i++) {
-			k1 = (char*)malloc(strlen("Control X:") + 1);
+			k1 = (char*)malloc(strlen("Control X:") + 1/*NUL byte*/);
 			sprintf(k1, "Control %d:", (int)i);
 			x = strstr(inputwork, k1);
 			if (x) {
-				k2 = (char*)malloc(strlen("ctl[X]:   ") + 1);
+				k2 = (char*)malloc(strlen("ctl[X]:   ") + 1/*NUL byte*/);
 				sprintf(k2, "ctl[%d]:   ", (int)i);
 				memcpy(x, k2, strlen(k2));
 				x += strlen("ctl[X]");
@@ -599,11 +614,11 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 		}
 		// Maps:
 		for (i = 0; i < 4; i++) {
-			k1 = (char*)malloc(strlen("Map X:") + 1);
+			k1 = (char*)malloc(strlen("Map X:") + 1/*NUL byte*/);
 			sprintf(k1, "Map %d:", (int)i);
 			x = strstr(inputwork, k1);
 			if (x) {
-				k2 = (char*)malloc(strlen("map[X]:") + 1);
+				k2 = (char*)malloc(strlen("map[X]:") + 1/*NUL byte*/);
 				sprintf(k2, "map[%d]:", (int)i);
 				memcpy(x, k2, strlen(k2));
 				x += strlen("map[X]");
@@ -716,8 +731,8 @@ Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
 			char* q = PILOCKHANDLE(h, false);
 
-			char out[256];
-			if (_picoReadProperty(q, count, "Title", out, sizeof(out), false)) {
+			char dummy[256];
+			if (_picoReadProperty(q, count, "Title", dummy, sizeof(dummy), false)) {
 				int i;
 
 				// Plugin infos
@@ -743,7 +758,7 @@ Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 
 				for (i = 0; i < 8; i++) {
 					int v;
-					char keyname[7+1], tmp[5];
+					char keyname[6/*strlen("ctl[X]")*/ + 1/*strlen("\0")*/], tmp[5];
 
 					// Slider names
 					sprintf(keyname, "ctl[%d]", i);
@@ -765,7 +780,7 @@ Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 
 				// Map names
 				for (i = 0; i < 4; i++) {
-					char keyname[7+1];
+					char keyname[6/*strlen("map[X]")*/ + 1/*strlen("\0")*/];
 					sprintf(keyname, "map[%d]", i);
 					_picoReadProperty(q, count, keyname, gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]), false);
 				}
@@ -797,14 +812,14 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 
 	// Handle argMaxInputLength
 	//char* inputwork = fileContents;
-	inputwork = (char*)malloc((size_t)argMaxInputLength + 1);
+	inputwork = (char*)malloc((size_t)argMaxInputLength + 1/*NUL byte*/);
 	if (inputwork == NULL) return false;
 	memcpy(inputwork, fileContents, argMaxInputLength);
 	inputwork[argMaxInputLength] = '\0';
 
 	// Prepare the input file contents to make it easier parse-able
 	iTmp = strlen(inputwork) + strlen("\n\n[");
-	tmpFileContents = (char*)malloc(iTmp + 1);
+	tmpFileContents = (char*)malloc(iTmp + 1/*NUL byte*/);
 	if (tmpFileContents == NULL) return false;
 	sprintf(tmpFileContents, "\n%s\n[", inputwork);
 	for (iTmp = 0; iTmp < strlen(tmpFileContents); iTmp++) {
@@ -813,7 +828,7 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 
 	// Find the section begin
 	iTmp = strlen(section) + strlen("\n[]\n");
-	tmpSection = (char*)malloc(iTmp + 1);
+	tmpSection = (char*)malloc(iTmp + 1/*NUL byte*/);
 	if (tmpSection == NULL) return false;
 	sprintf(tmpSection, "\n[%s]\n", section);
 	tmpStart = strstr(tmpFileContents, tmpSection);
@@ -872,6 +887,8 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 	Boolean res = false;
 	FILEREF refnum;
 
+	// TODO: Decode UTF-8 to ANSI (or "?" for unknown characters)
+
 	if (!fileHasExtension(sfr, TEXT(".guf"))) return false;
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
@@ -898,10 +915,18 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 			}
 			if (_gufReadProperty(q, count, "Info", "Title", out, sizeof(out))) {
 				int i;
+				char tmp[256];
+				char* tmp2;
 
 				// Plugin infos
 				_gufReadProperty(q, count, "Info", "Title", gdata->parm.szTitle, sizeof(gdata->parm.szTitle));
-				_gufReadProperty(q, count, "Info", "Category", gdata->parm.szCategory, sizeof(gdata->parm.szCategory)); // TODO: only last part of "/"
+				_gufReadProperty(q, count, "Info", "Category", tmp, sizeof(tmp));
+				tmp2 = strrchr(tmp, '/');
+				if (tmp2 == NULL) {
+					strcpy(gdata->parm.szCategory, tmp);
+				} else {
+					strcpy(gdata->parm.szCategory, tmp2+1);
+				}
 				_gufReadProperty(q, count, "Info", "Author", gdata->parm.szAuthor, sizeof(gdata->parm.szAuthor));
 				_gufReadProperty(q, count, "Info", "Copyright", gdata->parm.szCopyright, sizeof(gdata->parm.szCopyright));
 				//_gufReadProperty(q, count, "Filter Factory", "8bf", gdata->parm.xxx, sizeof(gdata->parm.xxx));
@@ -922,7 +947,7 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 
 				for (i = 0; i < 8; i++) {
 					int v;
-					char keyname[10 + 1], tmp[5];
+					char keyname[9/*strlen("Control X")*/ + 1/*strlen("\0")*/], tmp[5];
 					sprintf(keyname, "Control %d", i);
 
 					// Slider names
@@ -940,7 +965,7 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 
 				// Map names
 				for (i = 0; i < 4; i++) {
-					char keyname[6 + 1];
+					char keyname[5/*strlen("Map X")*/ + 1/*strlen("\0")*/];
 					sprintf(keyname, "Map %d", i);
 					_gufReadProperty(q, count, keyname, "Label", gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]));
 				}
