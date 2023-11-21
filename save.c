@@ -201,6 +201,11 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 	return e;
 }
 
+OSErr saveparams_guf(Handle h, Boolean useparm) {
+	// TODO: implement
+	return NULL;
+}
+
 OSErr savehandleintofile(Handle h,FILEREF r){
 	Ptr p;
 	FILECOUNT n;
@@ -214,7 +219,7 @@ OSErr savehandleintofile(Handle h,FILEREF r){
 	return e;
 }
 
-Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
+Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean res = false;
@@ -227,7 +232,15 @@ Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr){
 			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_picotxt(h,false) || savehandleintofile(h, r));
+					res = !(saveparams_picotxt(h, false) || savehandleintofile(h, r));
+					PIDISPOSEHANDLE(h);
+				}
+			}
+
+			if (fileHasExtension(sfr, TEXT(".guf"))) {
+				// GIMP UserFilter file
+				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
+					res = !(saveparams_guf(h, false) || savehandleintofile(h, r));
 					PIDISPOSEHANDLE(h);
 				}
 			}

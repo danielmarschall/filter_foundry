@@ -421,7 +421,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 							expr[3] = _strdup("a");
 						}
 
-						savefile_afs_pff_picotxt(&sfr);
+						savefile_afs_pff_picotxt_guf(&sfr);
 
 						if (gdata->standalone) {
 							for (i = 0; i < 4; i++) {

@@ -144,14 +144,15 @@ Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason);
 Handle readfileintohandle(FILEREF r);
 Boolean readfile_afs_pff(StandardFileReply* sfr, TCHAR** reason);
 Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason);
-Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason);
+Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason);
+Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason);
 Boolean readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
 OSErr saveparams_afs_pff(Handle h);
 OSErr saveparams_picotxt(Handle h, Boolean useparm);
 OSErr savehandleintofile(Handle h,FILEREF r);
-Boolean savefile_afs_pff_picotxt(StandardFileReply *sfr);
+Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
 
 // from make_*.c
 OSErr make_standalone(StandardFileReply *sfr);

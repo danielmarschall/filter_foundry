@@ -1,0 +1,91 @@
+# Created with User Filter v0.9.7.
+
+[GUF]
+Protocol=1
+
+[Info]
+Category=<Image>/UserFilter/Alf's Filter Factory
+Title=Color Grid...
+Copyright=Copyright © 1995 Alfredo MateusAll Rights Reserved.
+Author=Alfredo Mateus
+
+[Version]
+Major=1
+Minor=0
+Micro=0
+
+[Filter Factory]
+8bf=11 COLGRID.8bf
+
+[Gimp]
+Registered=false
+Description=Imported 8BF filter.
+EdgeMode=2
+Date=1995-01-01
+
+[Control 0]
+Enabled=true
+Label=Horizontal Divisions
+Preset=5
+Step=1
+
+[Control 1]
+Enabled=true
+Label=Vertical Divisions
+Preset=5
+Step=1
+
+[Control 2]
+Enabled=false
+Preset=0
+Step=1
+Label=Control 2
+
+[Control 3]
+Enabled=true
+Label=Red
+Preset=0
+Step=1
+
+[Control 4]
+Enabled=true
+Label=Green
+Preset=0
+Step=1
+
+[Control 5]
+Enabled=true
+Label=Blue
+Preset=0
+Step=1
+
+[Control 6]
+Enabled=false
+Preset=0
+Step=1
+
+[Control 7]
+Enabled=false
+Preset=0
+Step=1
+
+[Map 0]
+Enabled=true
+Label=Map 0:
+
+[Map 1]
+Enabled=false
+Label=Map 1
+
+[Map 2]
+Enabled=true
+Label=Map 2:
+
+[Map 3]
+Enabled=false
+
+[Code]
+R=(y>0)&&(x>0)&(x%(X/ctl(0))==0)|(y%(Y/ctl(1))==0)?ctl(3):c
+G=(y>0)&&(x>0)&(x%(X/ctl(0))==0)|(y%(Y/ctl(1))==0)?ctl(4):c
+B=(y>0)&&(x>0)&(x%(X/ctl(0))==0)|(y%(Y/ctl(1))==0)?ctl(5):c
+A=a

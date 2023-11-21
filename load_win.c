@@ -131,7 +131,15 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 
 	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
-		if (readfile_picotxt(sfr, &reasonstr)) {
+		if (readfile_picotxt_or_ffdecomp(sfr, &reasonstr)) {
+			gdata->parmloaded = true;
+			return true;
+		}
+	}
+
+	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
+	if (reasonstr == NULL) {
+		if (readfile_guf(sfr, &reasonstr)) {
 			gdata->parmloaded = true;
 			return true;
 		}

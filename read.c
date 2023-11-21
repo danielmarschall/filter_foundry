@@ -700,7 +700,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 	return true;
 }
 
-Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason) {
+Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 	extern int ctls[], maps[];
 
 	Handle h;
@@ -741,17 +741,15 @@ Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason) {
 					expr[i] = my_strdup(gdata->parm.szFormula[i]);
 				}
 
-				// Slider names
 				for (i = 0; i < 8; i++) {
-					char keyname[7];
+					int v;
+					char keyname[7+1], tmp[5];
+
+					// Slider names
 					sprintf(keyname, "ctl[%d]", i);
 					_picoReadProperty(q, count, keyname, gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]), false);
-				}
 
-				// Slider values
-				for (i = 0; i < 8; i++) {
-					char keyname[7], tmp[5];
-					int v;
+					// Slider values
 					sprintf(keyname, "val[%d]", i);
 					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
 						sprintf(keyname, "def[%d]", i);
@@ -767,9 +765,105 @@ Boolean readfile_picotxt(StandardFileReply* sfr, TCHAR** reason) {
 
 				// Map names
 				for (i = 0; i < 4; i++) {
-					char keyname[7];
+					char keyname[7+1];
 					sprintf(keyname, "map[%d]", i);
 					_picoReadProperty(q, count, keyname, gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]), false);
+				}
+
+				//These will be set when the expressions are evaluated anyway. So this part is optional:
+				checksliders(4, ctls, maps);
+				for (i = 0; i < 8; i++) gdata->parm.ctl_used[i] = ctls[i];
+				for (i = 0; i < 4; i++) gdata->parm.map_used[i] = maps[i];
+
+				res = true;
+			}
+
+			PIUNLOCKHANDLE(h);
+			PIDISPOSEHANDLE(h);
+		}
+		FSClose(refnum);
+	}
+
+	return res;
+}
+
+Boolean _gufReadProperty(char* inputFile, size_t maxInput, const char* section, const char* property, char* outputFile, size_t maxOutput) {
+	// TODO: Implement
+	return false;
+}
+
+Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
+	extern int ctls[], maps[];
+
+	Handle h;
+	Boolean res = false;
+	FILEREF refnum;
+
+	if (!fileHasExtension(sfr, TEXT(".guf"))) return false;
+
+	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
+		if ((h = readfileintohandle(refnum))) {
+			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
+			char* q = PILOCKHANDLE(h, false);
+
+			char out[256];
+			if (_gufReadProperty(q, count, "GUF", "Protocol", out, sizeof(out))) {
+				if (!strcmp(out, "1")) {
+					if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_GUF_FILE_ID);
+					return false;
+				}
+			}
+			else {
+				if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_GUF_FILE_ID);
+				return false;
+			}
+			if (_gufReadProperty(q, count, "Info", "Title", out, sizeof(out))) {
+				int i;
+
+				// Plugin infos
+				_gufReadProperty(q, count, "Info", "Title", gdata->parm.szTitle, sizeof(gdata->parm.szTitle));
+				_gufReadProperty(q, count, "Info", "Category", gdata->parm.szCategory, sizeof(gdata->parm.szCategory)); // TODO: only last part of "/"
+				_gufReadProperty(q, count, "Info", "Author", gdata->parm.szAuthor, sizeof(gdata->parm.szAuthor));
+				_gufReadProperty(q, count, "Info", "Copyright", gdata->parm.szCopyright, sizeof(gdata->parm.szCopyright));
+				//_gufReadProperty(q, count, "Filter Factory", "8bf", gdata->parm.xxx, sizeof(gdata->parm.xxx));
+
+				// Expressions
+				if (!_gufReadProperty(q, count, "Code", "R", gdata->parm.szFormula[0], sizeof(gdata->parm.szFormula[0])))
+					strcpy(gdata->parm.szFormula[0], "r");
+				if (!_gufReadProperty(q, count, "Code", "G", gdata->parm.szFormula[1], sizeof(gdata->parm.szFormula[1])))
+					strcpy(gdata->parm.szFormula[1], "g");
+				if (!_gufReadProperty(q, count, "Code", "B", gdata->parm.szFormula[2], sizeof(gdata->parm.szFormula[2])))
+					strcpy(gdata->parm.szFormula[2], "b");
+				if (!_gufReadProperty(q, count, "Code", "A", gdata->parm.szFormula[3], sizeof(gdata->parm.szFormula[3])))
+					strcpy(gdata->parm.szFormula[3], "a");
+				for (i = 0; i < 4; i++) {
+					if (expr[i]) free(expr[i]);
+					expr[i] = my_strdup(gdata->parm.szFormula[i]);
+				}
+
+				for (i = 0; i < 8; i++) {
+					int v;
+					char keyname[10 + 1], tmp[5];
+					sprintf(keyname, "Control %d", i);
+
+					// Slider names
+					_gufReadProperty(q, count, keyname, "Label", gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]));
+
+					// Slider values
+					if (!_gufReadProperty(q, count, keyname, "Preset", tmp, sizeof(tmp))) {
+						strcpy(tmp, "0");
+					}
+					v = atoi(tmp);
+					if (v < 0) v = 0;
+					else if (v > 255) v = 255;
+					gdata->parm.val[i] = slider[i] = (uint8_t)v;
+				}
+
+				// Map names
+				for (i = 0; i < 4; i++) {
+					char keyname[6 + 1];
+					sprintf(keyname, "Map %d", i);
+					_gufReadProperty(q, count, keyname, "Label", gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]));
 				}
 
 				//These will be set when the expressions are evaluated anyway. So this part is optional:

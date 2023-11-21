@@ -18,10 +18,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Attention: Please save this file as UTF-8 without BOM!
-
 #ifndef LANGUAGE_H_
 #define LANGUAGE_H_
+
+// Attention: Please save this file as UTF-8 without BOM!
+// Also, if you extend this, please also extend language_win.rc!
 
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
@@ -251,6 +252,17 @@
 #define MSG_ABOUT_CONTACT_AUTHOR_ENUS "Please contact the author with any bug reports,\nsuggestions or comments.\nIf you use this program and like it, please consider\nmaking a donation."
 #define MSG_ABOUT_CONTACT_AUTHOR_DEDE "Bitte kontaktieren Sie den Autor für Fehlerberichte,\nAnregungen und Kommentare.\nWenn Sie dieses Programm mögen,\nerwägen Sie bitte eine kleine Spende."
 
+#define MSG_OPEN_GUF_ID 58
+#define MSG_OPEN_GUF_ENUS """GIMP UserFilter"" filter"
+#define MSG_OPEN_GUF_DEDE """GIMP UserFilter"" Filter"
+
+#define MSG_SAVE_GUF_ID 59
+#define MSG_SAVE_GUF_ENUS """GIMP UserFilter"" filter"
+#define MSG_SAVE_GUF_DEDE """GIMP UserFilter"" Filter"
+
+#define MSG_INCOMPATIBLE_GUF_FILE_ID 60
+#define MSG_INCOMPATIBLE_GUF_FILE_ENUS "Incompatible GIMP UserFilter File"
+#define MSG_INCOMPATIBLE_GUF_FILE_DEDE "Inkompatible GIMP UserFilter Datei"
 
 void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);

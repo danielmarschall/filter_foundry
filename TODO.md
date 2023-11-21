@@ -5,8 +5,12 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-(None)
+* Finish implementation of GUF format ( http://gimpuserfilter.sourceforge.net/ )
 
+	saveparams_guf()
+	_gufReadProperty()
+	README.md
+	Documentation (DOCX, PDF)
 
 Known problems
 --------------
@@ -29,8 +33,6 @@ Minor priority stuff or ideas
 -----------------------------
 
 * Import FFL format (but which filter to select?)
-
-* Import GUF format ( http://gimpuserfilter.sourceforge.net/ )
 
 * If controls are ambigous e.g. ctl(3+c), then you should be able to disable control in the "Make" dialog. Like in Filter Factory.
 

@@ -58,11 +58,14 @@ Filter Foundry support a variety of different file formats:
 |PRM         |Adobe Premiere plugin created by Filter/Transaction Factory for Adobe Premiere.     |      |      |Yes   |
 |FFX         |"Filters Unlimited" file.                                                           |      |      |Yes(2)|
 |TXT         |A text file created by "Plugin Commander" or "FFDecomp".                            |      |Yes(3)|Yes   |
+|GUF         |A filter file created by "GIMP UserFilter"                                          |      |TODO  |TODO(2)|
 |BIN or RSRC |Standalone filter created by Filter Factory/Foundry for Mac.                        |      |      |Yes   |
+
+Currently not supported are FFL (Filter Library) files.
 
 (1) Loading is only possible if the 8BF file was created by Filter Factory, or by Filter Foundry without protection.
 
-(2) Note that Filter Foundry only implements the basic Filter Factory commands. Therefore, most "Filters Unlimited" filters will not work with Filter Foundry.
+(2) Note that Filter Foundry only implements the basic Filter Factory commands. Therefore, most "Filters Unlimited" filters as well as some "GIMP UserFilter" filters will not work with Filter Foundry.
 
 (3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added using a text editor.
 

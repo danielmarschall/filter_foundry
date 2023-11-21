@@ -378,8 +378,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		FF_GetMsg(title, MSG_LOAD_FILTER_SETTINGS_TITLE_ID);
 
 		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
-		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx)")); tmp1++;
-		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx, *.guf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx;*.guf")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_OPEN_AFS_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs)")); tmp1++;
@@ -408,6 +408,10 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance_id(&tmp1, MSG_OPEN_FFX_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.ffx)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.ffx")); tmp1++;
+
+		strcpy_advance_id(&tmp1, MSG_OPEN_GUF_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.guf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.guf")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_ALL_FILES_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
@@ -462,8 +466,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		FF_GetMsg(title, MSG_SAVE_FILTER_SETTINGS_TITLE_ID);
 
 		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
-		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.pff, *.txt)")); tmp1++;
-		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.pff;*.txt")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.pff, *.txt, *.guf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.pff;*.txt;*.guf")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_SAVE_AFS_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs)")); tmp1++;
@@ -476,6 +480,10 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance_id(&tmp1, MSG_SAVE_TXT_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.txt)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.txt")); tmp1++;
+
+		strcpy_advance_id(&tmp1, MSG_SAVE_GUF_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.guf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.guf")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_ALL_FILES_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
@@ -501,7 +509,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		free(title);
 
 		if (saveDlgRet) {
-			if (savefile_afs_pff_picotxt(&sfr)) {
+			if (savefile_afs_pff_picotxt_guf(&sfr)) {
 				completesave(&reply);
 
 				if (fileHasExtension(&sfr, TEXT(".txt"))) {
