@@ -1,0 +1,26 @@
+%FFP
+
+Category   :"Sam's filters"
+Title      :"white spotlight"
+Copyright  :"studio Denkraam"
+Author     :"Greg"
+Filename   :"spotlite2s.8bf"
+Description:"spotje"
+Version    :"1.0"
+
+// Control definitions:
+
+ctl(0):"X - axis  L<-->R",val=128
+ctl(1):"Y - axis  U<-->D",val=128
+ctl(2):"Spotsize",val=10
+ctl(3):"Spotfocus",val=238
+ctl(4):"Inside ampl",val=208
+ctl(5):"Outside ampl",val=71
+
+R:put(c2m(x-val(0,0,X),y-val(1,0,Y)),0),put(val(2,0,M),1),put(get(1)+val(3,M,0),2),put(get(0)>get(2)?ctl(5):get(0)<get(1)?ctl(4):scl(get(0),get(1),get(2),ctl(4),ctl(5)),6),r*get(6)/128
+
+G:g*get(6)/128
+
+B:b*get(6)/128
+
+A:a

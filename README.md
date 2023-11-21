@@ -27,7 +27,9 @@ You can find more examples in the ["examples" directory](https://github.com/dani
 
 ### Compatibility
 
-Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters. Following hosts have been tested with Filter Foundry 1.7:
+Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters.
+
+The following hosts have been tested with Filter Foundry 1.7:
 
 -   Photoshop 3.0.0 (32 bit) through Photoshop 2024 (64 bit)
 -   IrfanView 4.53 (32/64 bit)
@@ -35,8 +37,11 @@ Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop f
 -   The Gimp 2.2 with [PSPI.exe](https://www.chip.de/downloads/PSPI-fuer-GIMP_37803068.html) extension to run Photoshop .8bf files
 -   Serif PhotoPlus 6
 -   PluginCommander 1.62 (Revision 2)
--   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn) to run Photoshop .8bf files
--   [pdn-filter-factory](https://github.com/0xC0000054/pdn-filter-factory), I.C.NET Plugin-Manager 2.x, Filters Unlimited, and Plugin Galaxy can load standalone filters created by Filter Foundry to emulate the Filter Factory code.
+-   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn)
+-   [pdn-filter-factory](https://github.com/0xC0000054/pdn-filter-factory) (code emulator)
+-   I.C.NET Plugin-Manager 2.x (code emulator)
+-   Filters Unlimited (code emulator)
+-   Plugin Galaxy (code emulator)
 
 Operating systems:
 

@@ -1,0 +1,17 @@
+%ffp 
+
+Title:"RGB Intensity Modulator" 
+Category:"My own plug-ins" 
+Author:"me" 
+Copyright:"none" 
+Description:"This filter allows the user " 
+            "to adjust the intensity of " 
+            "individual color channels." 
+
+Dialog:color=HunterGreen
+
+ctl(0):"Red intensity",range=(0,200),val=100 
+ctl(1):"Green intensity",range=(0,200),val=100 
+ctl(2):"Blue intensity",range=(0,200),val=100 
+
+R,G,B:c*ctl(z)/100 

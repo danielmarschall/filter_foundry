@@ -24,11 +24,15 @@ Known problems
 	"Duotone" => The preview background is white (TODO)
 	"Lab" => The preview background is red (TODO)
 
+* PluginCommander cannot generate FFL files using FilterFoundry 8BF files. Reason unknown.
+
 
 Minor priority stuff or ideas
 -----------------------------
 
-* Import FFL format (but which filter to select?)
+* Import/Export FFL format (but which filter to select? We would need to show a select dialog...)
+
+* Import/Export FFP format
 
 * If controls are ambigous e.g. ctl(3+c), then you should be able to disable control in the "Make" dialog. Like in Filter Factory.
 
