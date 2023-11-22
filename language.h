@@ -22,7 +22,7 @@
 #define LANGUAGE_H_
 
 // Attention: Please save this file as UTF-8 without BOM!
-// Also, if you extend this, please also extend language_win.rc!
+// Also, if you extend this, please also extend language_win.rc and language_mac.r!
 
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
