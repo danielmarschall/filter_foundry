@@ -1032,11 +1032,23 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
 			char* q = PILOCKHANDLE(h, false);
 
-			char* tmp_cur_filter_str[29];
-
+			char* q2, * tmp_cur_filter_str[29], *token;
 			int lineNumber = 0;
 			int countFilters = 0;
-			char* token = strtok(q, "\n");
+
+			// This is required to make strtok work, because q is not zero-terminated...
+			q2 = (char*)malloc(count + 1/*NUL byte*/);
+			if (q2 == NULL) {
+				PIUNLOCKHANDLE(h);
+				PIDISPOSEHANDLE(h);
+				FSClose(refnum);
+				if (reason) *reason = TEXT("Out of memory"); // TODO: translate
+				return false;
+			}
+			memcpy(q2, q, count);
+			q2[count] = '\0';
+
+			token = strtok(q2, "\n");
 			while (token != NULL) {
 				size_t i;
 				char* token2 = my_strdup(token);
@@ -1045,10 +1057,11 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 				}
 				if (lineNumber == 0) {
 					if (strcmp(token2,"FFL1.0") != 0) {
+						free(q2);
 						PIUNLOCKHANDLE(h);
 						PIDISPOSEHANDLE(h);
 						FSClose(refnum);
-						//if (reason) *reason = TEXT("Invalid file signature"); // TODO: translate
+						if (reason) *reason = TEXT("Invalid file signature"); // TODO: translate
 						return false;
 					}
 				}
@@ -1188,6 +1201,8 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 				lineNumber++;
 				token = strtok(NULL, "\n");
 			}
+
+			free(q2);
 
 			PIUNLOCKHANDLE(h);
 			PIDISPOSEHANDLE(h);
