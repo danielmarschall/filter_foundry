@@ -264,6 +264,14 @@
 #define MSG_INCOMPATIBLE_GUF_FILE_ENUS "Incompatible GIMP UserFilter File"
 #define MSG_INCOMPATIBLE_GUF_FILE_DEDE "Inkompatible GIMP UserFilter Datei"
 
+#define MSG_OPEN_FFL_ID 61
+#define MSG_OPEN_FFL_ENUS "Filter Library"
+#define MSG_OPEN_FFL_DEDE "Filter Bibliothek"
+
+#define MSG_FFL_CONVERTED_ID 62
+#define MSG_FFL_CONVERTED_ENUS "FFL file converted to TXT files. You can now open these TXT files."
+#define MSG_FFL_CONVERTED_DEDE "FFL Datei wurde in TXT Dateien extrahiert. Sie können diese TXT Dateien nun öffnen."
+
 void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);

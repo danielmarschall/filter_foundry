@@ -143,6 +143,7 @@ void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere)
 Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason);
 Handle readfileintohandle(FILEREF r);
 Boolean readfile_afs_pff(StandardFileReply* sfr, TCHAR** reason);
+Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason);
 Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason);
 Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason);
 Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason);

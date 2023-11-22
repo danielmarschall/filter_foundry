@@ -97,6 +97,15 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			}
 		}
 
+		// Try to read the file as FFL file
+		if (*reason == NULL) {
+			if (readfile_ffl(sfr,reason)) {
+				gdata->parmloaded = false;
+				gdata->obfusc = false;
+				return true;
+			}
+		}
+
 		// then try "Filters Unlimited" file (FFX)
 		if (*reason == NULL) {
 			if (readfile_ffx(sfr,reason)) {
@@ -111,6 +120,14 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 			if (readfile_picotxt(sfr,reason)) {
 				gdata->parmloaded = true;
 				gdata->obfusc = false;
+				return true;
+			}
+		}
+
+		// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
+		if (*reason == NULL) {
+			if (readfile_guf(sfr,reason)) {
+				gdata->parmloaded = true;
 				return true;
 			}
 		}

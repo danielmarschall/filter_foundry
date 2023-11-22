@@ -103,6 +103,15 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		}
 	}
 
+	// Try to read the file as FFL file
+	if (reasonstr == NULL) {
+		if (readfile_ffl(sfr, &reasonstr)) {
+			gdata->obfusc = false;
+			gdata->parmloaded = false;
+			return true;
+		}
+	}
+
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
 	if (reasonstr == NULL) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
@@ -121,7 +130,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		}
 	}
 
-	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
+	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
 		if (readfile_ffx(sfr, &reasonstr)) {
 			gdata->parmloaded = true;
@@ -129,7 +138,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		}
 	}
 
-	// Is it a "Filters Unlimited" filter? (Only partially compatible with Filter Factory!!!)
+	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
 		if (readfile_picotxt_or_ffdecomp(sfr, &reasonstr)) {
 			gdata->parmloaded = true;

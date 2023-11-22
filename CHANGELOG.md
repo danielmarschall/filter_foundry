@@ -3,6 +3,7 @@
 ## 1.7.0.21 [Work-In-Progress]
 - Read FFX file: Fixed buffer overflow when some strings (Title,Category,Author,Copyright,SliderNames) are too long
 - Read GUF file: Only the last part of the Category will be imported
+- Implemented reading of FFL files (actually, they will be only extracted, so they can be read afterwards)
 
 ## 1.7.0.20 [21-Nov-2023]
 - Implemented "GIMP UserFilter" (GUF) file format.

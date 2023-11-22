@@ -75,7 +75,7 @@ void updateglobals(DIALOGREF dp){
 
 	/*
 	int i;
-	char s[MAXEXPR+1];
+	char s[MAXEXPR];
 
 	for(i = 0; i < 8; ++i)
 		slider[i] = (value_type)(GETSLIDERVALUE(dp,FIRSTCTLITEM+i));
@@ -83,7 +83,7 @@ void updateglobals(DIALOGREF dp){
 	if(!gdata->standalone)
 		for(i = 0; i < 4; ++i){
 			// stash expression strings
-			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){
+			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){ // cchMax: NULL is included, so MAXEXPR is correct
 				if(expr[i])
 					free(expr[i]);
 				expr[i] = _strdup(s);
@@ -95,7 +95,7 @@ void updateglobals(DIALOGREF dp){
 }
 
 struct node *updateexpr(DIALOGREF dp,int item){
-	char s[MAXEXPR+1];
+	char s[MAXEXPR];
 	int i;
 
 	i = item - FIRSTEXPRITEM;
@@ -103,7 +103,7 @@ struct node *updateexpr(DIALOGREF dp,int item){
 	freetree(tree[i]);
 
 	if(!gdata->standalone){
-		GETCTLTEXT(dp,item,s,MAXEXPR);
+		GETCTLTEXT(dp,item,s,MAXEXPR); // cchMax: NULL is included, so MAXEXPR is correct
 
 		if(expr[i])
 			free(expr[i]);
@@ -378,8 +378,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		FF_GetMsg(title, MSG_LOAD_FILTER_SETTINGS_TITLE_ID);
 
 		strcpy_advance_id(&tmp1, MSG_ALL_SUPPORTED_FILES_ID);
-		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx, *.guf)")); tmp1++;
-		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx;*.guf")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs, *.8bf, *.pff, *.prm, *.bin, *.rsrc, *.txt, *.ffx, *.ffl, *.guf)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.afs;*.8bf;*.pff;*.prm;*.bin;*.rsrc;*.txt;*.ffx;*.ffl;*.guf")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_OPEN_AFS_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.afs)")); tmp1++;
@@ -408,6 +408,10 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance_id(&tmp1, MSG_OPEN_FFX_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.ffx)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.ffx")); tmp1++;
+
+		strcpy_advance_id(&tmp1, MSG_OPEN_FFL_ID);
+		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.ffl)")); tmp1++;
+		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.ffl")); tmp1++;
 
 		strcpy_advance_id(&tmp1, MSG_OPEN_GUF_ID);
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.guf)")); tmp1++;
