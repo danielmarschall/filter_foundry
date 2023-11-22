@@ -1118,7 +1118,7 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 						#ifdef WIN_ENV
 						sfrTmp.nFileExtension = (WORD)(xstrlen(curFileNameOrig) - strlen(".txt") + 1);
 						#endif
-						sfrTmp.sfScript = 0; // FIXME: is that ok?
+						sfrTmp.sfScript = smSystemScript;
 
 						est = 16000;
 

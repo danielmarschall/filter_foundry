@@ -34,14 +34,52 @@ typedef struct
 
 #include "PITypes.h"
 
+// Scripting system, see https://developer.apple.com/library/archive/documentation/mac/pdf/Text.pdf , PDF page 676
+// Not required for Windows
 typedef int16 ScriptCode;
+#define smSystemScript -1 // System script
+#define smCurrentScript -2 // Font script
+#define smRoman 0 // Roman
+#define smJapanese 1 // Japanese
+#define smTradChinese 2 // Traditional Chinese
+#define smKorean 3 // Korean
+#define smArabic 4 // Arabic
+#define smHebrew 5 // Hebrew
+#define smGreek 6 // Greek
+#define smCyrillic 7 // Cyrillic
+#define smRSymbol 8 // Right-to-left symbols
+#define smDevanagari 9 // Devanagari
+#define smGurmukhi 10 // Gurmukhi
+#define smGujarati 11 // Gujarati
+#define smOriya 12 // Oriya
+#define smBengali 13 // Bengali
+#define smTamil 14 // Tamil
+#define smTelugu 15 // Telugu
+#define smKannada 16 // Kannada / Kanarese
+#define smMalayalam 17 // Malayalam
+#define smSinhalese 18 // Sinhalese
+#define smBurmese 19 // Burmese
+#define smKhmer 20 // Khmer
+#define smThai 21 // Thai
+#define smLaotian 22 // Laotian
+#define smGeorgian 23 // Georgian
+#define smArmenian 24 // Armenian
+#define smSimpChinese 25 // Simplified Chinese
+#define smTibetan 26 // Tibetan
+#define smMongolian 27 // Mongolian
+#define smGeez 28 // Geez / Ethiopic
+#define smEthiopic 28 // = smGeez
+#define smEastEurRoman 29 // Extended Roman for Slavicand Baltic languages
+#define smVietnamese 30 // Extended Roman for Vietnamese
+#define smExtArabic 31 // Extended Arabic for Sindhi
+#define smUninterp 32 // Uninterpreted symbols
 
 typedef struct StandardFileReply {
 	Boolean     sfGood;
 	Boolean     sfReplacing;
 	OSType      sfType;
 	FSSpec      sfFile;
-	ScriptCode  sfScript;
+	ScriptCode  sfScript; 
 
 #ifdef WIN_ENV
 	WORD nFileExtension ;

@@ -596,7 +596,7 @@ Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, FSSpec* dst) {
 		&& (datap = (Ptr)LockResource(datah))) {
 
 		FSpDelete(dst);
-		if (FSpCreate(dst, kPhotoshopSignature, PS_FILTER_FILETYPE, 0/*sfr->sfScript*/) != noErr) return false;
+		if (FSpCreate(dst, kPhotoshopSignature, PS_FILTER_FILETYPE, smUninterp) != noErr) return false;
 
 		if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return false;
 

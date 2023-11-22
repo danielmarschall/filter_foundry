@@ -406,7 +406,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 						#ifdef WIN_ENV
 						sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
 						#endif
-						sfr.sfScript = 0; // FIXME: is that ok?
+						sfr.sfScript = smSystemScript;
 
 						// We only want the parameters (ctl,map) in the temporary .afs file
 						// It is important to remove the expressions, otherwise they would be
@@ -508,7 +508,7 @@ int checkandinitparams(Handle params){
 		#ifdef WIN_ENV
 		sfr.nFileExtension = (WORD)(xstrlen(outfilename) - strlen(".afs") + 1);
 		#endif
-		sfr.sfScript = 0; // FIXME: is that ok?
+		sfr.sfScript = smSystemScript;
 
 		// We only want the parameters (ctl,map) in the temporary .afs file
 		if (isStandalone) {
