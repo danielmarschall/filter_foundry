@@ -1165,7 +1165,7 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 										for (i = 0; i < 4; i++) {
 											char* tmp = tmp_cur_filter_str[5 + i];
 											if (strcmp(tmp, "") != 0) {
-												p += sprintf(p, "map[%d]: %s\n", i, tmp_cur_filter_str[5+i]);
+												p += sprintf(p, "map[%d]: %s\n", (int)i, tmp_cur_filter_str[5+i]);
 											}
 										}
 										p += sprintf(p, "\n");
@@ -1174,11 +1174,11 @@ Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason) {
 										for (i = 0; i < 8; i++) {
 											char* tmp = tmp_cur_filter_str[9 + i];
 											if (strcmp(tmp, "") != 0) {
-												p += sprintf(p, "ctl[%d]: %s\n", i, tmp_cur_filter_str[9 + i]);
+												p += sprintf(p, "ctl[%d]: %s\n", (int)i, tmp_cur_filter_str[9 + i]);
 											}
 											tmp = tmp_cur_filter_str[17 + i];
 											if (strcmp(tmp, "") != 0) {
-												p += sprintf(p, "val[%d]: %s\n", i, tmp_cur_filter_str[17 + i]);
+												p += sprintf(p, "val[%d]: %s\n", (int)i, tmp_cur_filter_str[17 + i]);
 											}
 										}
 										p += sprintf(p, "\n");

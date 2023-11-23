@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.21 [Work-In-Progress]
+## 1.7.0.21 [23-Nov-2023]
 - Read FFX file: Fixed buffer overflow when some strings (Title,Category,Author,Copyright,SliderNames) are too long
 - Read GUF file: Only the last part of the Category will be imported
 - Implemented reading of FFL files (actually, they will be only extracted, so they can be read afterwards)

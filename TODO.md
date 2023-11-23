@@ -26,6 +26,8 @@ Known problems
 
 * PluginCommander cannot generate FFL files using FilterFoundry 8BF files. Reason unknown.
 
+* Filter Foundry is slower than Filter Factory. Reason unknown.
+
 
 Minor priority stuff or ideas
 -----------------------------
