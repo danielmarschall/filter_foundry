@@ -44,10 +44,14 @@ This directory contains various standalone plugins to test if the current Filter
 | Import FF Prot+Obfsc "V6" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op6.8bf     | Locked OK       |
 | Import FF Prot+Obfsc "V7" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op7.8bf     | Locked OK       |
 
-### Filters Unlimited filters
+### Third party formats
 
 | FiltersUnlimited => FilterFoundry         | Ext.   | Sig.     | Testcase file(s)         | Import          |
 | ------------------------------------------| -------| ---------| -------------------------| ----------------|
 | Filters Unlimited FFX 1.0                 | .ffx   | FFX1.0   | ffx_10.ffx               | Works           |
 | Filters Unlimited FFX 1.1                 | .ffx   | FFX1.1   | ffx_11.ffx               | Works           |
 | Filters Unlimited FFX 1.2                 | .ffx   | FFX1.2   | ffx_12.ffx               | Works           |
+| GIMP User Filter                          | .guf   | n/a      | gimp_userfilter.guf      | Works           |
+| Filter Factory Library                    | .ffl   | FFL1.0   | example.ffl              | Works (extracts)|
+| FFDecomp TXT file                         | .txt   | n/a      | txt_ffdcomp.txt          | Works           |
+| Plugin Commander TXT file                 | .txt   | n/a      | txt_pico.txt             | Works           |
