@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// first try to read text parameters (AFS, TXT, PFF)
 		if (*reason == NULL) {
 			if (readfile_afs_pff(sfr,reason)) {
-				gdata->parmloaded = false;
+				parm_reset(true, false, true, false);
 				gdata->obfusc = false;
 				return true;
 			}
@@ -100,7 +100,7 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// Try to read the file as FFL file
 		if (*reason == NULL) {
 			if (readfile_ffl(sfr,reason)) {
-				gdata->parmloaded = false;
+				parm_reset(true, true, true, true);
 				gdata->obfusc = false;
 				return true;
 			}
@@ -109,7 +109,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// then try "Filters Unlimited" file (FFX)
 		if (*reason == NULL) {
 			if (readfile_ffx(sfr,reason)) {
-				gdata->parmloaded = true;
 				gdata->obfusc = false;
 				return true;
 			}
@@ -118,7 +117,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// then try "PluginCommander TXT" file (TXT)
 		if (*reason == NULL) {
 			if (readfile_picotxt(sfr,reason)) {
-				gdata->parmloaded = true;
 				gdata->obfusc = false;
 				return true;
 			}
@@ -127,7 +125,6 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
 		if (*reason == NULL) {
 			if (readfile_guf(sfr,reason)) {
-				gdata->parmloaded = true;
 				return true;
 			}
 		}
@@ -136,9 +133,9 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if (*reason == NULL) {
 			if (readmacplugin(sfr,reason)) {
 				if (gdata->parm.iProtected) {
+					parm_reset(true, true, true, true);
 					*reason = "The filter is protected.";
 				} else {
-					gdata->parmloaded = true;
 					return true;
 				}
 			}
@@ -149,9 +146,9 @@ Boolean loadfile(StandardFileReply *sfr,char **reason){
 		if (*reason == NULL) {
 			if (readfile_8bf(sfr,reason)) {
 				if (gdata->parm.iProtected) {
+					parm_reset(true, true, true, true);
 					*reason = "The filter is protected.";
 				} else {
-					gdata->parmloaded = true;
 					return true;
 				}
 			}

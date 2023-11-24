@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,59 +23,38 @@
 #include "ff.h"
 #include "compat_string.h"
 
-int ctls[8],maps[4];
 int checksliders_result;
 
 /* one-time initialisation of dialog box */
 
 void builddlginit(DIALOGREF dp){
 	int i;
-	char s[0x100];
 
-	if(gdata->parmloaded){
-		SETCTLTEXT(dp,CATEGORYITEM, gdata->parm.szCategory);
-		SETCTLTEXT(dp,TITLEITEM,    gdata->parm.szTitle);
-		SETCTLTEXT(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
-		SETCTLTEXT(dp,AUTHORITEM,   gdata->parm.szAuthor);
-		for(i=0;i<4;++i){
-			SETCTLTEXT(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
-		}
-		for(i=0;i<8;++i){
-			SETCTLTEXT(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
-		}
-	}else{
-		/* strictly speaking this is not needed on the Mac,
-		   we can set initial values statically in the rez description */
-		SETCTLTEXT(dp,CATEGORYITEM, "Filter Foundry");
-		SETCTLTEXT(dp,TITLEITEM,    "Untitled");
-		SETCTLTEXT(dp,COPYRIGHTITEM,""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
-		SETCTLTEXT(dp,AUTHORITEM,   "Anonymous");
-		strcpy(s,"Map X");
-		for(i = 0; i < 4; ++i){
-			s[4] = (char)('0' + i);
-			SETCTLTEXT(dp,FIRSTMAPNAMEITEM+i,s);
-		}
-		strcpy(s,"ctl(X)");
-		for(i = 0; i < 8; ++i){
-			s[4] = (char)('0' + i);
-			SETCTLTEXT(dp,FIRSTCTLNAMEITEM+i,s);
-		}
+	SETCTLTEXT(dp,CATEGORYITEM, gdata->parm.szCategory);
+	SETCTLTEXT(dp,TITLEITEM,    gdata->parm.szTitle);
+	SETCTLTEXT(dp,COPYRIGHTITEM,gdata->parm.szCopyright);
+	SETCTLTEXT(dp,AUTHORITEM,   gdata->parm.szAuthor);
+	for(i=0;i<4;++i){
+		SETCTLTEXT(dp,FIRSTMAPNAMEITEM+i,gdata->parm.szMap[i]);
+	}
+	for(i=0;i<8;++i){
+		SETCTLTEXT(dp,FIRSTCTLNAMEITEM+i,gdata->parm.szCtl[i]);
 	}
 
-	checksliders_result = checksliders(4,ctls,maps);
+	checksliders_result = checksliders(4);
 	for(i = 4; i--;){
 		DISABLEDLGITEM(dp,FIRSTMAPCHECKITEM+i);
-		if(maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
+		if(gdata->parm.map_used[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
 			CHECKDLGBUTTON(dp,FIRSTMAPCHECKITEM+i,true);
 		else
 			HideDialogItem(dp,FIRSTMAPNAMEITEM+i);
 	}
 	for(i = 8; i--;){
 		DISABLEDLGITEM(dp,FIRSTCTLCHECKITEM+i);
-		if((ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) &&
+		if((gdata->parm.ctl_used[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) &&
 		   // When map() is activated, we don't need ctl labels,
 		   // since the standalone filter will only show map labels
-		   !maps[i/2] &&
+		   !gdata->parm.map_used[i/2] &&
 		   (!(checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
 		   )
 			CHECKDLGBUTTON(dp,FIRSTCTLCHECKITEM+i,true);
@@ -132,6 +111,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 	Boolean unicode;
 	#endif
 	Boolean extCharset;
+	InternalState tmpState;
 
 	switch(item){
 #ifdef MAC_ENV
@@ -167,7 +147,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 
 		// The AETE structure does only define single byte charsets
 		for (i = 0; i < 8; ++i) {
-			if (ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) {
+			if (gdata->parm.ctl_used[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS)) {
 				#ifdef UNICODE
 				unicode |= containsUnicodeInput(dp, FIRSTCTLNAMEITEM + i);
 				#endif
@@ -175,7 +155,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			}
 		}
 		for (i = 0; i < 4; ++i) {
-			if (maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS)) {
+			if (gdata->parm.map_used[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS)) {
 				#ifdef UNICODE
 				unicode |= containsUnicodeInput(dp, FIRSTMAPNAMEITEM + i);
 				#endif
@@ -196,46 +176,27 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 		}
 
 		// Now begin
-		memset(&gdata->parm,0,sizeof(PARM_T));
 		GetDlgItemTextA(dp,CATEGORYITEM,gdata->parm.szCategory,MAXFIELD-4/*ProtectFlag*/);
 		GetDlgItemTextA(dp,TITLEITEM,gdata->parm.szTitle,MAXFIELD);
 		GetDlgItemTextA(dp,COPYRIGHTITEM,gdata->parm.szCopyright,MAXFIELD);
 		GetDlgItemTextA(dp,AUTHORITEM,gdata->parm.szAuthor,MAXFIELD);
-		gdata->parm.cbSize = PARM_SIZE;
-		gdata->parm.standalone = 1;  //0=original FF, 1=standalone filter
 		needui = 0;
 		// Sliders
 		for(i = 0; i < 8; ++i){
-			gdata->parm.val[i] = slider[i];
-			gdata->parm.ctl_used[i] = ctls[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
+			gdata->parm.ctl_used[i] = gdata->parm.ctl_used[i] || (checksliders_result & CHECKSLIDERS_CTL_AMBIGUOUS);
 			needui |= gdata->parm.ctl_used[i];
-			GetDlgItemTextA(dp,FIRSTCTLNAMEITEM+i, gdata->parm.szCtl[i],MAXFIELD);
+			GetDlgItemTextA(dp, FIRSTCTLNAMEITEM + i, gdata->parm.szCtl[i], MAXFIELD);
 		}
 		// Maps
 		for (i = 0; i < 4; ++i) {
-			gdata->parm.map_used[i] = maps[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
+			gdata->parm.map_used[i] = gdata->parm.map_used[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS);
 			needui |= gdata->parm.map_used[i];
 			GetDlgItemTextA(dp, FIRSTMAPNAMEITEM + i, gdata->parm.szMap[i], MAXFIELD);
 		}
-		// Expressions
-		for (i = 0; i < 4; ++i) {
-			if (strlen(expr[i]) >= sizeof(gdata->parm.szFormula[i])) {
-				if (i == 0) {
-					simplealert_id(MSG_FORMULA_R_1023_TRUNCATED_ID);
-				}
-				else if (i == 1) {
-					simplealert_id(MSG_FORMULA_G_1023_TRUNCATED_ID);
-				}
-				else if (i == 2) {
-					simplealert_id(MSG_FORMULA_B_1023_TRUNCATED_ID);
-				}
-				else if (i == 3) {
-					simplealert_id(MSG_FORMULA_A_1023_TRUNCATED_ID);
-				}
-				expr[i][sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
-			}
-			strcpy(gdata->parm.szFormula[i], expr[i]);
-		}
+
+		tmpState = saveInternalState(); // the standalone flag and obfuscation must not be preserved, otherwise we cannot continue editing the filter
+
+		gdata->parm.standalone = 1;
 		gdata->parm.popDialog = needui; //true if need to pop a parameter dialog
 		gdata->parm.unknown1 = gdata->parm.unknown2 = gdata->parm.unknown3 = 0;
 		gdata->parm.iProtected = ISDLGBUTTONCHECKED(dp,PROTECTITEM); // == 1 means protected
@@ -290,12 +251,12 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			free(title);
 
 			if (makeDlgRet) {
+				parm_cleanup();
 				make_standalone(&sfr);
 			}
-			else {
-				return true; // keep going. Let the user correct their input
-			}
 		}
+
+		restoreInternalState(tmpState);
 
 		return false; // end dialog
 #ifdef MAC_ENV

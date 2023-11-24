@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -81,15 +81,13 @@ typedef struct plugin_dll_slider_info_ {
 // The "gdata" structure contains all values which MUST be kept between filter invocations.
 // All other working-data (which automatically gets calculated etc.) are NOT part of this structure.
 // To increase performance, the lookup tables *tantab and *costab have been included here, so that
-// they only need to be calculated one.
+// they only need to be calculated once.
 // size: 0x2098 (8344 Bytes) for 32-bit
 // size: 0x20AC (8364 Bytes) for 64-bit
 typedef struct globals_t_ {
 	PARM_T parm;
-	Boolean standalone;
-	Boolean parmloaded; // this means that the filter is loaded, but without PARM (title, author, etc.)
 	Boolean obfusc;
-	// (padding of 1 byte here)
+	// (padding of 3 bytes here)
 	OSType lastKnownBufferVersion;
 	OSType lastKnownHandleVersion;
 	double* tantab;
@@ -109,9 +107,7 @@ extern globals_t *gdata;
 extern struct node *tree[4];
 extern TCHAR *err[4];
 extern int errpos[4],errstart[4];//,nplanes;
-extern uint8_t slider[8];
 extern value_type cell[NUM_CELLS];
-extern char *expr[4];
 
 extern int tokpos,tokstart,varused[];
 extern TCHAR *errstr;
@@ -119,16 +115,11 @@ extern TCHAR *errstr;
 //#define DEBUG
 
 typedef struct InternalState_ {
-	Boolean bak_obfusc;
-	Boolean bak_standalone;
-	Boolean bak_parmloaded;
-	char* bak_expr[4];
-	uint8_t bak_slider[8];
 	PARM_T bak_parm;
+	Boolean bak_obfusc;
 } InternalState;
 
 // from main.c
-unsigned long get_parm_hash(PARM_T *parm);
 void DoPrepare(FilterRecordPtr epb);
 void DoStart(FilterRecordPtr epb);
 OSErr DoContinue(FilterRecordPtr epb);
@@ -136,6 +127,9 @@ void DoFinish(FilterRecordPtr epb);
 void RequestNext(FilterRecordPtr epb);
 InternalState saveInternalState(void);
 void restoreInternalState(InternalState state);
+unsigned long parm_hash(PARM_T* parm);
+void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetSliderNames, Boolean resetFormulas);
+void parm_cleanup();
 
 // from read.c
 Boolean readparams_afs_pff(Handle h, TCHAR**reason);
@@ -151,7 +145,7 @@ Boolean readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
 OSErr saveparams_afs_pff(Handle h);
-OSErr saveparams_picotxt(Handle h, Boolean useparm);
+OSErr saveparams_picotxt(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
 Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
 

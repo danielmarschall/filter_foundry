@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -80,8 +80,8 @@ Boolean setup(FilterRecordPtr pb){
 		varused[i] = 0;
 	needall = srcrad = cnvused = state_changing_funcs_used = 0;
 	for(i = 0; i < nplanes; ++i){
-		//char s[100];sprintf(s,"expr[%d]=%#x",i,expr[i]);dbg(s);
-		if( tree[i] || (tree[i] = parseexpr(expr[i])) )
+		//char s[100];sprintf(s,"gdata->parm.szFormula[%d]=%#x",i,gdata->parm.szFormula[i]);dbg(s);
+		if( tree[i] || (tree[i] = parseexpr(gdata->parm.szFormula[i])) )
 			// if src() and rad() is used => needall=1, since we need arbitary access to all pixels
 			checkvars(tree[i],varused,&cnvused,&srcrad,&state_changing_funcs_used);
 		else

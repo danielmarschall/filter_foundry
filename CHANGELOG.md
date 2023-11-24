@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0.22 [Work-In-Progress]
+- Simplified source code (expressions, slider names, etc. are now loaded directly in the PARM resource).
+- As side effect: The slider positions will be preserved when a filter is made
+
 ## 1.7.0.21 [23-Nov-2023]
 - Read FFX file: Fixed buffer overflow when some strings (Title,Category,Author,Copyright,SliderNames) are too long
 - Read GUF file: Only the last part of the Category will be imported

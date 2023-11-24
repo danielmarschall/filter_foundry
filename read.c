@@ -76,7 +76,7 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 				v = atoi(linebuf);
 				if (v < 0) v = 0;
 				else if (v > 255) v = 255;
-				slider[linecnt-1] = (uint8_t)v;
+				gdata->parm.val[linecnt-1] = (uint8_t)v;
 			}else{
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
@@ -87,13 +87,8 @@ Boolean readparams_afs_pff(Handle h, TCHAR**reason){
 					q = cat(q,linebuf);
 				}else{
 					/* it's an empty line: we've completed the expr string */
-					if(expr[exprcnt])
-						free(expr[exprcnt]);
 					*q = '\0';
-					if(!(expr[exprcnt] = my_strdup(curexpr))){
-						if (reason) *reason = FF_GetMsg_Cpy(MSG_EXPRESSION_OOM_ID);
-						break;
-					}
+					strcpy(gdata->parm.szFormula[exprcnt], curexpr);
 
 					if(++exprcnt == 4){
 						res = true;
@@ -284,8 +279,6 @@ Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 							#pragma warning(suppress : 6386)
 							val[sizeof(gdata->parm.szFormula[i]) - 1] = '\0';
 						}
-						if (expr[i]) free(expr[i]);
-						expr[i] = my_strdup(val);
 						strcpy(gdata->parm.szFormula[i], val);
 						free(val);
 					}
@@ -312,7 +305,7 @@ Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason) {
 						v = *((uint32_t*)q);
 						if (v < 0) v = 0;
 						else if (v > 255) v = 255;
-						slider[i] = (uint8_t)v;
+						gdata->parm.val[i] = (uint8_t)v;
 						q += sizeof(uint32_t);
 					}
 
@@ -474,26 +467,6 @@ Boolean readPARM(PARM_T* pparm, Ptr p){
 		// all the rest are bool_t flags which (if we're careful) will work in either ordering
 		for (i = 0; i < 8; ++i)
 			pparm->val[i] = EndianS32_LtoN(pparm->val[i]);
-	}
-
-	// Now set the values in pparm into the working variables expr[] and slider[], so that they are visible in the GUI
-	{
-		int i;
-		for (i = 0; i < 4; ++i) {
-			if (expr[i]) free(expr[i]);
-			expr[i] = my_strdup(pparm->szFormula[i]);
-		}
-
-		for (i = 0; i < 8; ++i) {
-			slider[i] = (uint8_t)pparm->val[i];
-			/*
-			if (slider[i] > 0xFF) {
-				// Wrong endianess (e.g. reading a Mac rsrc on Windows)
-				// Should not happen since we did the stuff above
-				slider[i] = (uint8_t)EndianS32_LtoN(slider[i]);
-			}
-			*/
-		}
 	}
 
 	return true;
@@ -715,8 +688,6 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 }
 
 Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
-	extern int ctls[], maps[];
-
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
@@ -750,44 +721,39 @@ Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason) {
 					strcpy(gdata->parm.szFormula[2], "b");
 				if (!_picoReadProperty(q, count, "A", gdata->parm.szFormula[3], sizeof(gdata->parm.szFormula[3]), true))
 					strcpy(gdata->parm.szFormula[3], "a");
-				for (i = 0; i < 4; i++) {
-					if (expr[i]) free(expr[i]);
-					expr[i] = my_strdup(gdata->parm.szFormula[i]);
-				}
 
 				for (i = 0; i < 8; i++) {
-					int v;
-					char keyname[6/*strlen("ctl[X]")*/ + 1/*strlen("\0")*/], tmp[5];
+					if (gdata->parm.ctl_used[i]) {
+						int v;
+						char keyname[6/*strlen("ctl[X]")*/ + 1/*strlen("\0")*/], tmp[5];
 
-					// Slider names
-					sprintf(keyname, "ctl[%d]", i);
-					_picoReadProperty(q, count, keyname, gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]), false);
+						// Slider names
+						sprintf(keyname, "ctl[%d]", i);
+						_picoReadProperty(q, count, keyname, gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]), false);
 
-					// Slider values
-					sprintf(keyname, "val[%d]", i);
-					if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
-						sprintf(keyname, "def[%d]", i);
+						// Slider values
+						sprintf(keyname, "val[%d]", i);
 						if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
-							strcpy(tmp,"0");
+							sprintf(keyname, "def[%d]", i);
+							if (!_picoReadProperty(q, count, keyname, tmp, sizeof(tmp), false)) {
+								strcpy(tmp, "0");
+							}
 						}
+						v = atoi(tmp);
+						if (v < 0) v = 0;
+						else if (v > 255) v = 255;
+						gdata->parm.val[i] = gdata->parm.val[i] = (uint8_t)v;
 					}
-					v = atoi(tmp);
-					if (v < 0) v = 0;
-					else if (v > 255) v = 255;
-					gdata->parm.val[i] = slider[i] = (uint8_t)v;
 				}
 
 				// Map names
 				for (i = 0; i < 4; i++) {
-					char keyname[6/*strlen("map[X]")*/ + 1/*strlen("\0")*/];
-					sprintf(keyname, "map[%d]", i);
-					_picoReadProperty(q, count, keyname, gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]), false);
+					if (gdata->parm.map_used[i]) {
+						char keyname[6/*strlen("map[X]")*/ + 1/*strlen("\0")*/];
+						sprintf(keyname, "map[%d]", i);
+						_picoReadProperty(q, count, keyname, gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]), false);
+					}
 				}
-
-				//These will be set when the expressions are evaluated anyway. So this part is optional:
-				checksliders(4, ctls, maps);
-				for (i = 0; i < 8; i++) gdata->parm.ctl_used[i] = ctls[i];
-				for (i = 0; i < 4; i++) gdata->parm.map_used[i] = maps[i];
 
 				res = true;
 			}
@@ -880,8 +846,6 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 }
 
 Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
-	extern int ctls[], maps[];
-
 	Handle h;
 	Boolean res = false;
 	FILEREF refnum;
@@ -939,40 +903,35 @@ Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason) {
 					strcpy(gdata->parm.szFormula[2], "b");
 				if (!_gufReadProperty(q, count, "Code", "A", gdata->parm.szFormula[3], sizeof(gdata->parm.szFormula[3])))
 					strcpy(gdata->parm.szFormula[3], "a");
-				for (i = 0; i < 4; i++) {
-					if (expr[i]) free(expr[i]);
-					expr[i] = my_strdup(gdata->parm.szFormula[i]);
-				}
 
 				for (i = 0; i < 8; i++) {
-					int v;
-					char keyname[9/*strlen("Control X")*/ + 1/*strlen("\0")*/], tmp[5];
-					sprintf(keyname, "Control %d", i);
+					if (gdata->parm.ctl_used[i]) {
+						int v;
+						char keyname[9/*strlen("Control X")*/ + 1/*strlen("\0")*/], tmp[5];
+						sprintf(keyname, "Control %d", i);
 
-					// Slider names
-					_gufReadProperty(q, count, keyname, "Label", gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]));
+						// Slider names
+						_gufReadProperty(q, count, keyname, "Label", gdata->parm.szCtl[i], sizeof(gdata->parm.szCtl[i]));
 
-					// Slider values
-					if (!_gufReadProperty(q, count, keyname, "Preset", tmp, sizeof(tmp))) {
-						strcpy(tmp, "0");
+						// Slider values
+						if (!_gufReadProperty(q, count, keyname, "Preset", tmp, sizeof(tmp))) {
+							strcpy(tmp, "0");
+						}
+						v = atoi(tmp);
+						if (v < 0) v = 0;
+						else if (v > 255) v = 255;
+						gdata->parm.val[i] = gdata->parm.val[i] = (uint8_t)v;
 					}
-					v = atoi(tmp);
-					if (v < 0) v = 0;
-					else if (v > 255) v = 255;
-					gdata->parm.val[i] = slider[i] = (uint8_t)v;
 				}
 
 				// Map names
 				for (i = 0; i < 4; i++) {
-					char keyname[5/*strlen("Map X")*/ + 1/*strlen("\0")*/];
-					sprintf(keyname, "Map %d", i);
-					_gufReadProperty(q, count, keyname, "Label", gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]));
+					if (gdata->parm.map_used[i]) {
+						char keyname[5/*strlen("Map X")*/ + 1/*strlen("\0")*/];
+						sprintf(keyname, "Map %d", i);
+						_gufReadProperty(q, count, keyname, "Label", gdata->parm.szMap[i], sizeof(gdata->parm.szMap[i]));
+					}
 				}
-
-				//These will be set when the expressions are evaluated anyway. So this part is optional:
-				checksliders(4, ctls, maps);
-				for (i = 0; i < 8; i++) gdata->parm.ctl_used[i] = ctls[i];
-				for (i = 0; i < 4; i++) gdata->parm.map_used[i] = maps[i];
 
 				res = true;
 			}
@@ -994,15 +953,13 @@ Boolean readfile_afs_pff(StandardFileReply *sfr, TCHAR**reason){
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
 			if( (res = readparams_afs_pff(h,reason)) ) {
-				gdata->standalone = false; // so metadata fields will default, if user chooses Make...
-
 				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					// We just swap the pointers!
-					char* tmp;
-					tmp = expr[0];
-					expr[0] = expr[2];
-					expr[2] = tmp;
+					char tmp[MAXEXPR];
+					strcpy(tmp, gdata->parm.szFormula[0]);
+					strcpy(gdata->parm.szFormula[0], gdata->parm.szFormula[2]);
+					strcpy(gdata->parm.szFormula[2], tmp);
 				}
 			}
 

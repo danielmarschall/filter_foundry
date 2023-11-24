@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,8 +42,6 @@
 struct node *tree[4];
 TCHAR *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
-uint8_t slider[8]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
-char* expr[4]; // this is the "working data". We cannot always use gdata->parm, because parm will not be loaded if a AFS file is read
 value_type cell[NUM_CELLS];
 
 // this is the only memory area that keeps preserved by Photoshop:
@@ -68,7 +66,7 @@ int checkandinitparams(Handle params);
 DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector,FilterRecordPtr pb,intptr_t *data,short *result);
 
-unsigned long get_parm_hash(PARM_T *parm) {
+unsigned long parm_hash(PARM_T *parm) {
 	unsigned long hash;
 	int i;
 
@@ -103,7 +101,7 @@ size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
 	if (xstrlen(out) > 0) xstrcat(out, TEXT("/"));
 	#endif
 
-	hash = (isStandalone) ? get_parm_hash(parm) : 0;
+	hash = (isStandalone) ? parm_hash(parm) : 0;
 
 	// sprintf(outfilename, "%sFilterFoundry%d.afs", atempdir, hash);
 	xstrcat(out, TEXT("FilterFoundry"));
@@ -314,7 +312,6 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 	if (selector != filterSelectorAbout && !*data) {
 		// The filter was never called before. We allocate (zeroed) memory now.
-		// Note: gdata->standalone and gdata->parmloaded will be set later
 		CreateDataPointer(data);
 		if (!*data) {
 			*result = memFullErr;
@@ -329,13 +326,16 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	switch (selector){
 	case filterSelectorAbout:
 		if (!gdata) {
+			Boolean parmReadOk;
 			// This is a temporary gdata structure just for the About dialog!
 			// Not to be confused with the "real" gdata during the filter invocation (containing more data).
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
-			gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance, NULL);
-			if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+			parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+			if (!parmReadOk) gdata->parm.standalone = false;
+			if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+				parm_reset(true, true, true, true);
 				if (gdata->obfusc) {
 					simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 				}
@@ -381,7 +381,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			wantdialog |= checkandinitparams(pb->parameters);
 
 			/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
-			if (wantdialog && (!gdata->standalone || gdata->parm.popDialog)) {
+			if (wantdialog && (!gdata->parm.standalone || gdata->parm.popDialog)) {
 				if (maindialog(pb)) {
 					if (!host_preserves_parameters()) {
 						/* Workaround for GIMP/PSPI, to avoid that formulas vanish when you re-open the main window.
@@ -393,14 +393,13 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 						   // Workaround: Save settings in "FilterFoundryXX.afs" if the host does not preserve pb->parameters
 						TCHAR outfilename[MAX_PATH + 1];
 						StandardFileReply sfr;
-						char* bakexpr[4];
-						int i;
+						InternalState tmpState;
 
 						sfr.sfGood = true;
 						sfr.sfReplacing = true;
 						sfr.sfType = PS_FILTER_FILETYPE;
 
-						get_temp_afs(&outfilename[0], gdata->standalone, &gdata->parm);
+						get_temp_afs(&outfilename[0], gdata->parm.standalone, &gdata->parm);
 
 						xstrcpy(sfr.sfFile.szName, outfilename);
 						#ifdef WIN_ENV
@@ -410,24 +409,16 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 						// We only want the parameters (ctl,map) in the temporary .afs file
 						// It is important to remove the expressions, otherwise they would be
-						// revealed in the temporary files.
-						for (i = 0; i < 4; i++) {
-							bakexpr[i] = expr[i]; // moved out of the if-definition to make the compiler happy
-						}
-						if (gdata->standalone) {
-							expr[0] = _strdup("r");
-							expr[1] = _strdup("g");
-							expr[2] = _strdup("b");
-							expr[3] = _strdup("a");
+						// revealed in the temporary files (That might be bad for obfuscated filters).
+						if (gdata->parm.standalone) {
+							tmpState = saveInternalState();
+							parm_reset(false, false, false, true);
 						}
 
 						savefile_afs_pff_picotxt_guf(&sfr);
 
-						if (gdata->standalone) {
-							for (i = 0; i < 4; i++) {
-								if (expr[i]) free(expr[i]);
-								expr[i] = bakexpr[i];
-							}
+						if (gdata->parm.standalone) {
+							restoreInternalState(tmpState);
 						}
 					}
 					else {
@@ -471,38 +462,124 @@ endmain:
 	ExitCodeResource();
 }
 
+void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetSliderNames, Boolean resetFormulas) {
+	gdata->parm.cbSize = PARM_SIZE;
+	if (resetMetadata) {
+		strcpy(gdata->parm.szCategory, "Filter Foundry");
+		strcpy(gdata->parm.szTitle, "Untitled");
+		strcpy(gdata->parm.szCopyright, ""); //"Filter Foundry Copyright (C) 2003-2009 Toby Thain, 2018-" RELEASE_YEAR " Daniel Marschall"
+		strcpy(gdata->parm.szAuthor, "Anonymous");
+	}
+	if (resetSliderValues) {
+		int i;
+		for (i = 0; i < 8; ++i) {
+			gdata->parm.val[i] = (uint8_t)(i * 10 + 100);
+		}
+	}
+	if (resetSliderNames) {
+		int i;
+		for (i = 0; i < 8; ++i) {
+			strcpy(gdata->parm.szCtl[i], "ctl(X)");
+			gdata->parm.szCtl[i][4] = '0' + i;
+		}
+		for (i = 0; i < 4; ++i) {
+			strcpy(gdata->parm.szMap[i], "Map X");
+			gdata->parm.szMap[i][4] = '0' + i;
+		}
+	}
+	if (resetFormulas) {
+		if (gpb->imageMode == plugInModeRGBColor) {
+			strcpy(gdata->parm.szFormula[0], "r");
+			strcpy(gdata->parm.szFormula[1], "g");
+			strcpy(gdata->parm.szFormula[2], "b");
+			strcpy(gdata->parm.szFormula[3], "a");
+		}
+		else {
+			strcpy(gdata->parm.szFormula[0], "c");
+			strcpy(gdata->parm.szFormula[1], "c");
+			strcpy(gdata->parm.szFormula[2], "c");
+			strcpy(gdata->parm.szFormula[3], "c");
+		}
+	}
+}
+
+void parm_cleanup() {
+	// Cleanup "PARM" resource by removing stuff after the null terminators, to avoid that parts of confidential formulas are leaked
+	int i;
+
+	{
+		char tmp[256];
+
+		strcpy(tmp, gdata->parm.szCategory);
+		memset(gdata->parm.szCategory, 0, sizeof(gdata->parm.szCategory));
+		strcpy(gdata->parm.szCategory, tmp);
+
+		strcpy(tmp, gdata->parm.szTitle);
+		memset(gdata->parm.szTitle, 0, sizeof(gdata->parm.szTitle));
+		strcpy(gdata->parm.szTitle, tmp);
+
+		strcpy(tmp, gdata->parm.szCopyright);
+		memset(gdata->parm.szCopyright, 0, sizeof(gdata->parm.szCopyright));
+		strcpy(gdata->parm.szCopyright, tmp);
+
+		strcpy(tmp, gdata->parm.szAuthor);
+		memset(gdata->parm.szAuthor, 0, sizeof(gdata->parm.szAuthor));
+		strcpy(gdata->parm.szAuthor, tmp);
+	}
+
+	for (i = 0; i < 4; i++) {
+		char tmp[256];
+		strcpy(tmp, gdata->parm.szMap[i]);
+		memset(gdata->parm.szMap[i], 0, sizeof(gdata->parm.szMap[i]));
+		strcpy(gdata->parm.szMap[i], tmp);
+	}
+
+	for (i = 0; i < 8; i++) {
+		char tmp[256];
+		strcpy(tmp, gdata->parm.szCtl[i]);
+		memset(gdata->parm.szCtl[i], 0, sizeof(gdata->parm.szCtl[i]));
+		strcpy(gdata->parm.szCtl[i], tmp);
+	}
+
+	for (i = 0; i < 4; i++) {
+		char tmp[1024];
+		strcpy(tmp, gdata->parm.szFormula[i]);
+		memset(gdata->parm.szFormula[i], 0, sizeof(gdata->parm.szFormula[i]));
+		strcpy(gdata->parm.szFormula[i], tmp);
+	}
+}
+
 int checkandinitparams(Handle params){
 	int i;
 	Boolean bUninitializedParams;
 	Boolean showdialog;
+	InternalState tmpState;
 
 	if (!host_preserves_parameters()) {
 		// Workaround: Load settings in "FilterFoundryXX.afs" if host does not preserve pb->parameters
 		TCHAR outfilename[MAX_PATH + 1];
-		Boolean isStandalone;
+		Boolean parmReadOk;
 		StandardFileReply sfr;
-		char* bakexpr[4];
+		char bakexpr[4][MAXEXPR];
 
 		sfr.sfGood = true;
 		sfr.sfReplacing = true;
 		sfr.sfType = PS_FILTER_FILETYPE;
 
-		// We need to set gdata->standalone after loadfile(), but we must call readPARMresource() before loadfile()
-		// Reason: readPARMresource() reads parameters from the DLL while loadfile() reads parameters from the AFS file
-		// But loadfile() will reset gdata->standalone ...
-		isStandalone = readPARMresource((HMODULE)hDllInstance, NULL);
-		if (isStandalone && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+		parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+		if (!parmReadOk) gdata->parm.standalone = false;
+		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+			parm_reset(true, true, true, true);
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 			}
 			else {
 				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
-			gdata->parmloaded = false;
 			return false;
 		}
 
-		get_temp_afs(&outfilename[0], isStandalone, &gdata->parm);
+		get_temp_afs(&outfilename[0], parmReadOk, &gdata->parm);
 
 		xstrcpy(sfr.sfFile.szName, outfilename);
 		#ifdef WIN_ENV
@@ -510,20 +587,20 @@ int checkandinitparams(Handle params){
 		#endif
 		sfr.sfScript = smSystemScript;
 
-		// We only want the parameters (ctl,map) in the temporary .afs file
-		if (isStandalone) {
-			for (i = 0; i < 4; i++) {
-				bakexpr[i] = my_strdup(expr[i]);
-			}
+		if (parmReadOk) {
+			tmpState = saveInternalState();
 		}
 
 		if (loadfile(&sfr, NULL)) {
-			gdata->standalone = gdata->parmloaded = isStandalone;
-
-			if (isStandalone) {
+			if (parmReadOk) {
+				// In the standalone filter, we only want the parameters (ctl,map) in the temporary .afs file, not the formulas
+				// We do not need to care about the metadata, because the AFS does not touch the metadata anyway
 				for (i = 0; i < 4; i++) {
-					if (expr[i]) free(expr[i]);
-					expr[i] = bakexpr[i];
+					strcpy(bakexpr[i], gdata->parm.szFormula[i]);
+				}
+				restoreInternalState(tmpState);
+				for (i = 0; i < 4; i++) {
+					strcpy(gdata->parm.szFormula[i],bakexpr[i]);
 				}
 			}
 
@@ -535,37 +612,25 @@ int checkandinitparams(Handle params){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
+		Boolean parmReadOk;
+
 		// see if saved parameters exist
-		gdata->standalone = gdata->parmloaded = readPARMresource((HMODULE)hDllInstance, NULL);
-		if (gdata->parmloaded && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+		parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+		if (!parmReadOk) gdata->parm.standalone = false;
+		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
+			parm_reset(true, true, true, true);
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 			}
 			else {
 				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
-			gdata->parmloaded = false;
 			return false;
 		}
 
-		if(!gdata->standalone){
+		if(!gdata->parm.standalone){
 			// no saved settings (not standalone)
-			for(i = 0; i < 8; ++i)
-				slider[i] = (uint8_t)(i*10+100);
-			for(i = 0; i < 4; ++i)
-				if(expr[i])
-					free(expr[i]);
-			if(gpb->imageMode == plugInModeRGBColor){
-				expr[0] = _strdup("r");
-				expr[1] = _strdup("g");
-				expr[2] = _strdup("b");
-				expr[3] = _strdup("a");
-			}else{
-				expr[0] = _strdup("c");
-				expr[1] = _strdup("c");
-				expr[2] = _strdup("c");
-				expr[3] = _strdup("c");
-			}
+			parm_reset(true, true, true, true);
 		}
 	}
 
@@ -639,7 +704,6 @@ void DoPrepare(FilterRecordPtr pb){
 	int i;
 
 	for(i = 4; i--;){
-		expr[i] = NULL;
 		tree[i] = NULL;
 		err[i] = NULL;
 	}
@@ -838,35 +902,18 @@ void DoFinish(FilterRecordPtr pb){
 
 	for(i = 4; i--;){
 		freetree(tree[i]);
-		if(expr[i]) free(expr[i]);
 	}
 }
 
 InternalState saveInternalState(void) {
 	InternalState ret;
-	int i;
-
 	ret.bak_obfusc = gdata->obfusc;
-	ret.bak_standalone = gdata->standalone;
-	ret.bak_parmloaded = gdata->parmloaded;
 	memcpy(&ret.bak_parm, &gdata->parm, sizeof(PARM_T));
-	for (i = 0; i < 4; i++) ret.bak_expr[i] = my_strdup(expr[i]);
-	for (i = 0; i < 8; i++) ret.bak_slider[i] = slider[i];
 
 	return ret;
 }
 
 void restoreInternalState(InternalState state) {
-	int i;
 	gdata->obfusc = state.bak_obfusc;
-	gdata->standalone = state.bak_standalone;
-	gdata->parmloaded = state.bak_parmloaded;
 	memcpy(&gdata->parm, &state.bak_parm, sizeof(PARM_T));
-	for (i = 0; i < 4; i++) {
-		if (expr[i]) free(expr[i]);
-		expr[i] = state.bak_expr[i];
-	}
-	for (i = 0; i < 8; i++) {
-		slider[i] = state.bak_slider[i];
-	}
 }

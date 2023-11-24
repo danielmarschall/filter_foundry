@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -480,10 +480,10 @@ void recalc_preview(FilterRecordPtr pb, DIALOGREF dp) {
 	// TODO? When a formula has an error, the preview should not be changeable
 	// (This code does not work because you can still try to zoom)
 	/*
-	if (!gdata->standalone) {
+	if (!gdata->parm.standalone) {
 		int i;
 		for (i = 0; i < 4; i++)
-			if (!parseexpr(expr[i])) return;
+			if (!parseexpr(gdata->parm.szFormula[i])) return;
 	}
 	*/
 

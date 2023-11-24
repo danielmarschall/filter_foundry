@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -253,7 +253,6 @@ const uint16_t FACTORY_C2M_LOOKUP[1024] = {
 
 // -------------------------------------------------------------------------------------------
 
-extern uint8_t slider[];
 extern value_type cell[], var[];
 extern unsigned char* image_ptr;
 
@@ -487,7 +486,7 @@ value_type ff_ctl(value_type i) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	return i >= 0 && i <= 7 ? slider[i] : 0;
+	return i >= 0 && i <= 7 ? gdata->parm.val[i] : 0;
 #endif
 }
 
@@ -500,7 +499,7 @@ value_type val_factory(value_type i, value_type a, value_type b) {
 	return 0;
 #else
 	if (i < 0 || i > 7) return 0;
-	return ((long)slider[i] * (b - a)) / 255 + a;
+	return ((long)(gdata->parm.val[i]) * (b - a)) / 255 + a;
 #endif
 }
 
@@ -536,8 +535,8 @@ value_type ff_map(value_type i, value_type n) {
 	// This is how Filter Factory for Windows implements it:
 	if (i < 0) return 0;
 	if (i > 3) return 0;
-	H = slider[i2]; // ctl(2i)
-	L = slider[i2 + 1]; // ctl(2i+1)
+	H = gdata->parm.val[i2]; // ctl(2i)
+	L = gdata->parm.val[i2 + 1]; // ctl(2i+1)
 	if (n < 0) n = 0;
 	if (n > 255) n = 255; // Note: MacFF probably does "return 255" if n>255 (see testcases/map1_factory_win.png)
 

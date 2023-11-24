@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void DoAbout(AboutRecordPtr pb){
 	memset(filters, 0, 4096);
 	tmp1 = filters;
 
-	if (gdata && gdata->standalone) {
+	if (gdata && gdata->parm.standalone) {
 		// strcpy(gdata->parm.szTitle, "TestTitle");
 		// strcpy(gdata->parm.szAuthor, "TestAuthor");
 		// strcpy(gdata->parm.szCopyright, "TestCopyright");
@@ -90,7 +90,7 @@ void DoAbout(AboutRecordPtr pb){
 Boolean simplealert(TCHAR* s){
 	HWND hwnd;
 	TCHAR title[256] = { 0 };
-	if (gdata && gdata->standalone) {
+	if (gdata && gdata->parm.standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
 		#else
@@ -107,7 +107,7 @@ Boolean simplealert(TCHAR* s){
 Boolean simplewarning(TCHAR* s) {
 	HWND hwnd;
 	TCHAR title[256] = { 0 };
-	if (gdata && gdata->standalone) {
+	if (gdata && gdata->parm.standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
 		#else
@@ -123,7 +123,7 @@ Boolean simplewarning(TCHAR* s) {
 Boolean showmessage(TCHAR *s) {
 	HWND hwnd;
 	TCHAR title[256] = { 0 };
-	if (gdata && gdata->standalone) {
+	if (gdata && gdata->parm.standalone) {
 		#ifdef UNICODE
 		mbstowcs(&title[0], (const char*)gdata->parm.szTitle, 256);
 		#else
@@ -195,8 +195,8 @@ LRESULT CALLBACK ControlTextWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		if (hWnd == GetDlgItem(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum)) {
 			if ((uMsg == WM_KEYDOWN) && (wParam == VK_UP) && doupdates)
 			{
-				uint8_t sliderVal = slider[sliderNum] < 255 ? slider[sliderNum] + 1 : slider[sliderNum];
-				slider[sliderNum] = sliderVal;
+				uint8_t sliderVal = gdata->parm.val[sliderNum] < 255 ? gdata->parm.val[sliderNum] + 1 : gdata->parm.val[sliderNum];
+				gdata->parm.val[sliderNum] = sliderVal;
 
 				SETCTLTEXTINT(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
 				REPAINTCTL(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum);
@@ -207,8 +207,8 @@ LRESULT CALLBACK ControlTextWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			}
 			if ((uMsg == WM_KEYDOWN) && (wParam == VK_DOWN) && doupdates)
 			{
-				uint8_t sliderVal = slider[sliderNum] > 0 ? slider[sliderNum] - 1 : slider[sliderNum];
-				slider[sliderNum] = sliderVal;
+				uint8_t sliderVal = gdata->parm.val[sliderNum] > 0 ? gdata->parm.val[sliderNum] - 1 : gdata->parm.val[sliderNum];
+				gdata->parm.val[sliderNum] = sliderVal;
 
 				SETCTLTEXTINT(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
 				REPAINTCTL(gdata->hWndMainDlg, FIRSTCTLTEXTITEM + sliderNum);
@@ -244,7 +244,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			int sliderVal = (lParam & 0xFFFF);
 			if (sliderVal < 0) sliderVal = 0;
 			else if (sliderVal > 255) sliderVal = 255;
-			slider[sliderNum] = (uint8_t)sliderVal;
+			gdata->parm.val[sliderNum] = (uint8_t)sliderVal;
 
 			SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
 			REPAINTCTL(hDlg, FIRSTCTLTEXTITEM + sliderNum);
@@ -267,7 +267,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		gdata->hWndMainDlg = hDlg;
 
-		if(gdata->standalone){
+		if(gdata->parm.standalone){
 			SetWindowTextA(hDlg,gdata->parm.szTitle); // window title bar
 		}
 		centre_window(hDlg);
@@ -442,7 +442,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	p = (PlatformData*)pb->platformData;
 
 	// Note: "Invalid Cursor Handle" is the error when an unrecognized control class is detected
-	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG),
+	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->parm.standalone ? ID_PARAMDLG : ID_MAINDLG),
 	                     (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
 		simplealert((TCHAR*)TEXT("DialogBoxParam invalid parent window handle")); // TODO (Not so important): TRANSLATE

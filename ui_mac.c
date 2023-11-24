@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item);
 void DoAbout(AboutRecordPtr prec){
 	ModalFilterUPP filterproc_UPP = NewModalFilterUPP(aboutfilter);
 
-	if(gdata && gdata->standalone){
+	if(gdata && gdata->parm.standalone){
 		ParamText(myc2pstr(_strdup(gdata->parm.szTitle)), myc2pstr(_strdup(gdata->parm.szAuthor)), myc2pstr(_strdup(gdata->parm.szCopyright)), NULL);
 		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
 	}else
@@ -197,9 +197,9 @@ Boolean maindialog(FilterRecordPtr pb){
 
 	action_UPP = NewControlActionUPP(slideraction);
 
-	dp = thedialog = GetNewDialog(gdata->standalone ? ID_PARAMDLG : ID_MAINDLG,nil,(WindowPtr)-1);
+	dp = thedialog = GetNewDialog(gdata->parm.standalone ? ID_PARAMDLG : ID_MAINDLG,nil,(WindowPtr)-1);
 
-	if(gdata->standalone)
+	if(gdata->parm.standalone)
 		SetWTitle(GetDialogWindow(dp), myc2pstr(_strdup(gdata->parm.szTitle)));
 
 	GetDialogItem(dp,PREVIEWITEM,&itemType,&itemHdl,&preview_rect);
@@ -211,7 +211,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	SetDialogCancelItem(dp,cancel);
 	SetDialogTracksCursor(dp,true);
 
-	if(!gdata->standalone)
+	if(!gdata->parm.standalone)
 		for(i = 0; i < 4; ++i)
 			GetDialogItemAsControl(dp,FIRSTEXPRITEM+i,&exprctls[i]);
 

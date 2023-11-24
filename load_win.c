@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	if (reasonstr == NULL) {
 		if (readfile_afs_pff(sfr, &reasonstr)) {
 			gdata->obfusc = false;
-			gdata->parmloaded = false;
+			parm_reset(true, false, true, false);
 			return true;
 		}
 	}
@@ -107,7 +107,7 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	if (reasonstr == NULL) {
 		if (readfile_ffl(sfr, &reasonstr)) {
 			gdata->obfusc = false;
-			gdata->parmloaded = false;
+			parm_reset(true, true, true, true);
 			return true;
 		}
 	}
@@ -116,12 +116,12 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	if (reasonstr == NULL) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
 			if (readPARMresource(hm, &reasonstr)) {
+				gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 				if (gdata->parm.iProtected) {
+					parm_reset(true, true, true, true);
 					reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
-					//gdata->parmloaded = false;
 				}
 				else {
-					gdata->parmloaded = true;
 					FreeLibrary(hm);
 					return true;
 				}
@@ -133,7 +133,6 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
 		if (readfile_ffx(sfr, &reasonstr)) {
-			gdata->parmloaded = true;
 			return true;
 		}
 	}
@@ -141,7 +140,6 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
 		if (readfile_picotxt_or_ffdecomp(sfr, &reasonstr)) {
-			gdata->parmloaded = true;
 			return true;
 		}
 	}
@@ -149,7 +147,6 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
 	if (reasonstr == NULL) {
 		if (readfile_guf(sfr, &reasonstr)) {
-			gdata->parmloaded = true;
 			return true;
 		}
 	}
@@ -160,10 +157,10 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 		if (readfile_8bf(sfr, &reasonstr)) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
+				parm_reset(true, true, true, true);
 				reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
 			}
 			else {
-				gdata->parmloaded = true;
 				return true;
 			}
 		}

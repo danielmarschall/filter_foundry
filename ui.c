@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,18 +47,18 @@ void updatedialog(DIALOGREF dp){
 	doupdates = false;
 
 	for(i = 0; i < 8; ++i){
-		SETSLIDERVALUE(dp,FIRSTCTLITEM+i,slider[i]);
-		SETCTLTEXTINT(dp,FIRSTCTLTEXTITEM+i,slider[i],false);
+		SETSLIDERVALUE(dp,FIRSTCTLITEM+i, gdata->parm.val[i]);
+		SETCTLTEXTINT(dp,FIRSTCTLTEXTITEM+i, gdata->parm.val[i],false);
 	}
 
 	for(i = 0; i < 4; ++i){
-		if(!gdata->standalone)
-			SETCTLTEXT(dp,FIRSTEXPRITEM+i,expr[i] ? expr[i] : "");
+		if(!gdata->parm.standalone)
+			SETCTLTEXT(dp,FIRSTEXPRITEM+i, gdata->parm.szFormula[i]);
 		if(i < nplanes)
 			updateexpr(dp,FIRSTEXPRITEM+i);
 	}
 
-	if(!gdata->standalone)
+	if(!gdata->parm.standalone)
 		SELECTCTLTEXT(dp,FIRSTEXPRITEM,0,-1);
 
 	doupdates = true;
@@ -70,28 +70,6 @@ void updateglobals(DIALOGREF dp){
 
 	UNREFERENCED_PARAMETER(dp);
 
-	// DM 28 Nov 2021: Removed this function. It makes no sense! The internal state is in the memory
-	// and the dialog is only the view!
-
-	/*
-	int i;
-	char s[MAXEXPR];
-
-	for(i = 0; i < 8; ++i)
-		slider[i] = (value_type)(GETSLIDERVALUE(dp,FIRSTCTLITEM+i));
-
-	if(!gdata->standalone)
-		for(i = 0; i < 4; ++i){
-			// stash expression strings
-			if(GETCTLTEXT(dp,FIRSTEXPRITEM+i,s,MAXEXPR)){ // cchMax: NULL is included, so MAXEXPR is correct
-				if(expr[i])
-					free(expr[i]);
-				expr[i] = _strdup(s);
-			}
-			if(!expr[i])
-				expr[i] = _strdup("c");
-		}
-	*/
 }
 
 struct node *updateexpr(DIALOGREF dp,int item){
@@ -102,17 +80,14 @@ struct node *updateexpr(DIALOGREF dp,int item){
 
 	freetree(tree[i]);
 
-	if(!gdata->standalone){
+	if(!gdata->parm.standalone){
 		GETCTLTEXT(dp,item,s,MAXEXPR); // cchMax: NULL is included, so MAXEXPR is correct
-
-		if(expr[i])
-			free(expr[i]);
-		expr[i] = _strdup(s);
+		strcpy(gdata->parm.szFormula[i], s);
 	}
 
-	tree[i] = parseexpr(expr[i]);
+	tree[i] = parseexpr(gdata->parm.szFormula[i]);
 
-	if(!gdata->standalone){
+	if(!gdata->parm.standalone){
 		if(tree[i])
 			HideDialogItem(dp,FIRSTICONITEM+i);
 		else{
@@ -172,18 +147,18 @@ static int _checksl(struct node*p,int ctlflags[],int mapflags[]){
 	return result;
 }
 
-int checksliders(int exprs,int ctlflags[],int mapflags[]){
+int checksliders(int exprs){
 	int i, result;
 
 	result = 0;
 
 	for(i = 4; i--;)
-		mapflags[i] = 0;
+		gdata->parm.map_used[i] = 0;
 	for(i = 8; i--;)
-		ctlflags[i] = 0;
+		gdata->parm.ctl_used[i] = 0;
 
 	for(i = 0; i < exprs; i++)
-		result |= _checksl(tree[i],ctlflags,mapflags);
+		result |= _checksl(tree[i], gdata->parm.ctl_used, gdata->parm.map_used);
 
 	return result;
 }
@@ -193,7 +168,7 @@ void slidermoved(DIALOGREF dp,int i){
 	if (v < 0) v = 0;
 	else if (v > 255) v = 255;
 	i -= FIRSTCTLITEM;
-	slider[i] = (uint8_t)v;
+	gdata->parm.val[i] = (uint8_t)v;
 	SETCTLTEXTINT(dp,i+FIRSTCTLTEXTITEM,v,false);
 }
 
@@ -203,16 +178,16 @@ void slidertextchanged(DIALOGREF dp,int i){
 	else if (v > 255) v = 255;
 	i -= FIRSTCTLTEXTITEM;
 	SETSLIDERVALUE(dp,i+FIRSTCTLITEM,v);
-	slider[i] = (uint8_t)v;
+	gdata->parm.val[i] = (uint8_t)v;
 }
 
 void maindlgupdate(DIALOGREF dp){
-	int i,unknown,ctls[8],maps[4];
+	int i,unknown;
 
-	unknown = checksliders(nplanes,ctls,maps);
+	unknown = checksliders(nplanes);
 
 	for(i = 0; i < 8; i++)
-		if(unknown || ctls[i]){
+		if(unknown || gdata->parm.ctl_used[i]){
 			ENABLEDLGITEM(dp,FIRSTCTLITEM+i); // TODO: slider is still shown as disabled
 			REPAINTCTL(dp, FIRSTCTLITEM+i); // required for PLUGIN.DLL sliders
 			ENABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
@@ -228,7 +203,7 @@ void maindlgupdate(DIALOGREF dp){
 		if(!tree[i]){
 			/* uh oh, couldn't parse one of the saved expressions...this is fatal */
 			DISABLEDLGITEM(dp,IDOK);
-			if(gdata->standalone){
+			if(gdata->parm.standalone){
 				// TODO: But before this happens, we get filterBadParameters in filterSelectorStart, since setup() failed
 				//       so, do we need this message here at all?
 				simplealert_id(MSG_SAVED_EXPR_ERR_ID);
@@ -245,7 +220,7 @@ void maindlgupdate(DIALOGREF dp){
 		recalc_preview(gpb,dp);
 
 	ENABLEDLGITEM(dp,IDOK);
-	if(!gdata->standalone){
+	if(!gdata->parm.standalone){
 		ENABLEDLGITEM(dp,SAVEITEM);
 		ENABLEDLGITEM(dp,MAKEITEM);
 		ENABLEDLGITEM(dp,HELPITEM);
@@ -264,7 +239,7 @@ void maindlginit(DIALOGREF dp){
 	};
 
 	/* hide unused expression items */
-	if(gdata->standalone){
+	if(gdata->parm.standalone){
 		strcpy_win_replace_ampersand(&s[0], &gdata->parm.szAuthor[0]);
 		SETCTLTEXT(dp,PARAMAUTHORITEM,s);
 		strcpy_win_replace_ampersand(&s[0], &gdata->parm.szCopyright[0]);
@@ -421,7 +396,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
-		loadDlgRet = !gdata->standalone && choosefiletypes(
+		loadDlgRet = !gdata->parm.standalone && choosefiletypes(
 #ifdef MAC_ENV
 			"\pChoose filter settings", // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			&sfr, &reply, types, 2,
@@ -493,7 +468,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		strcpy_advance(&tmp1, (TCHAR*)TEXT(" (*.*)")); tmp1++;
 		strcpy_advance(&tmp1, (TCHAR*)TEXT("*.*")); tmp1++;
 
-		saveDlgRet = !gdata->standalone && putfile(
+		saveDlgRet = !gdata->parm.standalone && putfile(
 #ifdef MAC_ENV
 			"\pSave filter settings", // "\p" means "Pascal string" // TODO (Not important yet): TRANSLATE
 			"\0",
@@ -550,7 +525,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		break;
 	}
 	case MAKEITEM:
-		if (gdata->standalone) return true; // should not happen since the button should be grayed out
+		if (gdata->parm.standalone) return true; // should not happen since the button should be grayed out
 
 		builddialog(gpb);
 

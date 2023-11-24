@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -123,30 +123,34 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 		token = OpenReader(array);
 		if (token) {
 			while (PIGetKey(token, &key, &type, &flags)) {
-				if (key == getAeteKey('R', gdata->standalone ? &gdata->parm : NULL)) {
-					if (expr[0]) free(expr[0]);
-					expr[0] = get_cstring(token);
+				if (key == getAeteKey('R', gdata->parm.standalone ? &gdata->parm : NULL)) {
+					char *tmp = get_cstring(token);
+					strcpy(gdata->parm.szFormula[0], tmp);
+					free(tmp);
 				}
-				else if (key == getAeteKey('G', gdata->standalone ? &gdata->parm : NULL)) {
-					if (expr[1]) free(expr[1]);
-					expr[1] = get_cstring(token);
+				else if (key == getAeteKey('G', gdata->parm.standalone ? &gdata->parm : NULL)) {
+					char* tmp = get_cstring(token);
+					strcpy(gdata->parm.szFormula[1], tmp);
+					free(tmp);
 				}
-				else if (key == getAeteKey('B', gdata->standalone ? &gdata->parm : NULL)) {
-					if (expr[2]) free(expr[2]);
-					expr[2] = get_cstring(token);
+				else if (key == getAeteKey('B', gdata->parm.standalone ? &gdata->parm : NULL)) {
+					char* tmp = get_cstring(token);
+					strcpy(gdata->parm.szFormula[2], tmp);
+					free(tmp);
 				}
-				else if (key == getAeteKey('A', gdata->standalone ? &gdata->parm : NULL)) {
-					if (expr[3]) free(expr[3]);
-					expr[3] = get_cstring(token);
+				else if (key == getAeteKey('A', gdata->parm.standalone ? &gdata->parm : NULL)) {
+					char* tmp = get_cstring(token);
+					strcpy(gdata->parm.szFormula[3], tmp);
+					free(tmp);
 				}
 				else {
 					int i;
 					for (i = 0; i <= 7; ++i) {
-						if (key == getAeteKey((char)('0'+i), gdata->standalone ? &gdata->parm : NULL)) {
+						if (key == getAeteKey((char)('0'+i), gdata->parm.standalone ? &gdata->parm : NULL)) {
 							PIGetInt(token, &v);
 							if (v < 0) v = 0;
 							else if (v > 255) v = 255;
-							slider[i] = (uint8_t)v;
+							gdata->parm.val[i] = (uint8_t)v;
 						}
 					}
 				}
@@ -169,7 +173,7 @@ OSErr WriteScriptParamsOnRead(void)
 {
 	PIWriteDescriptor token;
 	OSErr gotErr = noErr;
-	extern int ctls[], maps[], nplanes;
+	extern int nplanes;
 	int i, allctls;
 
 	if (DescriptorAvailable(NULL)) { /* recording.  Do our thing. */
@@ -179,18 +183,18 @@ OSErr WriteScriptParamsOnRead(void)
 			// 2. Call various Put routines such as PutIntegerProc, PutFloatProc, etc., to add key/value pairs to writeToken. The keys and value types must correspond to those in your terminology resource.
 
 			// write keys here
-			if (!gdata->standalone) {
-				if (nplanes > 0) put_cstring(token, getAeteKey('R', gdata->standalone ? &gdata->parm : NULL), expr[0]);
-				if (nplanes > 1) put_cstring(token, getAeteKey('G', gdata->standalone ? &gdata->parm : NULL), expr[1]);
-				if (nplanes > 2) put_cstring(token, getAeteKey('B', gdata->standalone ? &gdata->parm : NULL), expr[2]);
-				if (nplanes > 3) put_cstring(token, getAeteKey('A', gdata->standalone ? &gdata->parm : NULL), expr[3]);
+			if (!gdata->parm.standalone) {
+				if (nplanes > 0) put_cstring(token, getAeteKey('R', gdata->parm.standalone ? &gdata->parm : NULL), gdata->parm.szFormula[0]);
+				if (nplanes > 1) put_cstring(token, getAeteKey('G', gdata->parm.standalone ? &gdata->parm : NULL), gdata->parm.szFormula[1]);
+				if (nplanes > 2) put_cstring(token, getAeteKey('B', gdata->parm.standalone ? &gdata->parm : NULL), gdata->parm.szFormula[2]);
+				if (nplanes > 3) put_cstring(token, getAeteKey('A', gdata->parm.standalone ? &gdata->parm : NULL), gdata->parm.szFormula[3]);
 			}
 
 			/* only write values for the sliders that are actually used! */
-			allctls = checksliders(4, ctls, maps);
-			for (i = 0; i <= 7; ++i) {
-				if (allctls || ctls[i]) {
-					PIPutInt(token, getAeteKey((char)('0'+i), gdata->standalone ? &gdata->parm : NULL), slider[i]);
+			allctls = checksliders(4);
+			for (i = 0; i < 8; ++i) {
+				if (allctls || gdata->parm.ctl_used[i]) {
+					PIPutInt(token, getAeteKey((char)('0'+i), gdata->parm.standalone ? &gdata->parm : NULL), gdata->parm.val[i]);
 				}
 			}
 

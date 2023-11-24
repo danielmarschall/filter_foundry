@@ -58,7 +58,7 @@ OSErr saveparams_afs_pff(Handle h){
 
 	if (!h) return nilHandleErr;
 
-	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
 	est += strlen(afs_sig) + est/CHOPLINES + 4 + 8*6 + 64 /*slop*/ ;
 
@@ -69,11 +69,11 @@ OSErr saveparams_afs_pff(Handle h){
 
 		/* then slider values, one per line */
 		for( i=0 ; i<8 ; ++i )
-			p += sprintf(p, "%d\r", slider[i]);
+			p += sprintf(p, "%d\r", gdata->parm.val[i]);
 
 		/* expressions, broken into lines no longer than CHOPLINES characters */
 		for( i=0 ; i<4 ; ++i ){
-			if ((r = expr[i])) {
+			if ((r = gdata->parm.szFormula[i])) {
 				chunk = 0; // to avoid that compiler complains
 				for (n = strlen(r); n; n -= chunk) {
 					chunk = n > (int)CHOPLINES ? (int)CHOPLINES : n;
@@ -110,9 +110,7 @@ OSErr saveparams_afs_pff(Handle h){
 	return e;
 }
 
-OSErr saveparams_picotxt(Handle h, Boolean useparm) {
-	extern int ctls[], maps[];
-
+OSErr saveparams_picotxt(Handle h) {
 	char * p, *start;
 	int i;
 	OSErr e;
@@ -120,81 +118,53 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 
 	if (!h) return nilHandleErr;
 
-	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
 	est += 16000;
 
 	PIUNLOCKHANDLE(h); // should not be necessary
 	if (!(e = PISETHANDLESIZE(h, (int32)(est))) && (p = start = PILOCKHANDLE(h, false))) {
-		checksliders(4, ctls, maps);
+		checksliders(4);
 
 		// Metadata
-		p += sprintf(p, "Category: %s\r\n", useparm ? gdata->parm.szCategory : "...");
-		p += sprintf(p, "Title: %s\r\n", useparm ? gdata->parm.szTitle : "...");
-		p += sprintf(p, "Copyright: %s\r\n", useparm ? gdata->parm.szCopyright : "...");
-		p += sprintf(p, "Author: %s\r\n", useparm ? gdata->parm.szAuthor : "...");
-		p += sprintf(p, "Filename: %s\r\n", useparm ? "Untitled.8bf" : "Untitled.8bf"); // TODO: get .txt filename and change .txt to .8bf
+		p += sprintf(p, "Category: %s\r\n", gdata->parm.szCategory);
+		p += sprintf(p, "Title: %s\r\n", gdata->parm.szTitle);
+		p += sprintf(p, "Copyright: %s\r\n", gdata->parm.szCopyright);
+		p += sprintf(p, "Author: %s\r\n", gdata->parm.szAuthor);
+		p += sprintf(p, "Filename: %s\r\n", "Untitled.8bf"); // TODO: get .txt filename and change .txt to .8bf
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "R: %s\r\n", useparm ? gdata->parm.szFormula[0] : expr[0]);
+		p += sprintf(p, "R: %s\r\n", gdata->parm.szFormula[0]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "G: %s\r\n", useparm ? gdata->parm.szFormula[1] : expr[1]);
+		p += sprintf(p, "G: %s\r\n", gdata->parm.szFormula[1]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "B: %s\r\n", useparm ? gdata->parm.szFormula[2] : expr[2]);
+		p += sprintf(p, "B: %s\r\n", gdata->parm.szFormula[2]);
 		p += sprintf(p, "\r\n");
-		p += sprintf(p, "A: %s\r\n", useparm ? gdata->parm.szFormula[3] : expr[3]);
+		p += sprintf(p, "A: %s\r\n", gdata->parm.szFormula[3]);
 		p += sprintf(p, "\r\n");
-		if (useparm) {
-			for (i = 0; i < 8; i++) {
-				if (gdata->parm.ctl_used[i]) {
-					p += sprintf(p, "ctl[%d]: %s\r\n", i, gdata->parm.szCtl[i]);
-				}
+		for (i = 0; i < 8; i++) {
+			if (gdata->parm.ctl_used[i]) {
+				p += sprintf(p, "ctl[%d]: %s\r\n", i, gdata->parm.szCtl[i]);
 			}
-			for (i = 0; i < 4; i++) {
-				if (gdata->parm.map_used[i]) {
-					p += sprintf(p, "map[%d]: %s\r\n", i, gdata->parm.szMap[i]);
-				}
-			}
-			p += sprintf(p, "\r\n");
-			for (i = 0; i < 8; i++) {
-				if (gdata->parm.ctl_used[i]) {
-					p += sprintf(p, "val[%d]: %d\r\n", i, gdata->parm.val[i]);
-				}
-			}
-			/*
-			p += sprintf(p, "\r\n");
-			for (i = 0; i < 8; i++) {
-				if (gdata->parm.ctl_used[i]) {
-					p += sprintf(p, "def[%d]: %d\r\n", i, gdata->parm.val[i]);
-				}
-			}
-			*/
 		}
-		else {
-			for (i = 0; i < 8; i++) {
-				if (ctls[i]) {
-					p += sprintf(p, "ctl[%d]: %s\r\n", i, "...");
-				}
+		for (i = 0; i < 4; i++) {
+			if (gdata->parm.map_used[i]) {
+				p += sprintf(p, "map[%d]: %s\r\n", i, gdata->parm.szMap[i]);
 			}
-			for (i = 0; i < 4; i++) {
-				if (maps[i]) {
-					p += sprintf(p, "map[%d]: %s\r\n", i, "...");
-				}
-			}
-			p += sprintf(p, "\r\n");
-			for (i = 0; i < 8; i++) {
-				if (ctls[i]) {
-					p += sprintf(p, "val[%d]: %d\r\n", i, slider[i]);
-				}
-			}
-			/*
-			p += sprintf(p, "\r\n");
-			for (i = 0; i < 8; i++) {
-				if (ctls[i]) {
-					p += sprintf(p, "def[%d]: %s\r\n", i, "...");
-				}
-			}
-			*/
 		}
+		p += sprintf(p, "\r\n");
+		for (i = 0; i < 8; i++) {
+			if (gdata->parm.ctl_used[i]) {
+				p += sprintf(p, "val[%d]: %d\r\n", i, gdata->parm.val[i]);
+			}
+		}
+		/*
+		p += sprintf(p, "\r\n");
+		for (i = 0; i < 8; i++) {
+			if (gdata->parm.ctl_used[i]) {
+				p += sprintf(p, "def[%d]: %d\r\n", i, gdata->parm.val[i]);
+			}
+		}
+		*/
 
 		PIUNLOCKHANDLE(h);
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
@@ -203,9 +173,7 @@ OSErr saveparams_picotxt(Handle h, Boolean useparm) {
 	return e;
 }
 
-OSErr saveparams_guf(Handle h, Boolean useparm) {
-	extern int ctls[], maps[];
-
+OSErr saveparams_guf(Handle h) {
 	char* p, * start;
 	int i;
 	OSErr e;
@@ -213,7 +181,7 @@ OSErr saveparams_guf(Handle h, Boolean useparm) {
 
 	if (!h) return nilHandleErr;
 
-	est = strlen(expr[0]) + strlen(expr[1]) + strlen(expr[2]) + strlen(expr[3]);
+	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
 	est += 16000;
 
@@ -225,7 +193,7 @@ OSErr saveparams_guf(Handle h, Boolean useparm) {
 		time_t iBuildDate = time(0);
 		strftime(strBuildDate, 11, "%Y-%m-%d", localtime(&iBuildDate));
 
-		checksliders(4, ctls, maps);
+		checksliders(4);
 
 		// Metadata
 		p += sprintf(p, "# Created with Filter Foundry %s\r\n", VERSION_STR);
@@ -234,10 +202,10 @@ OSErr saveparams_guf(Handle h, Boolean useparm) {
 		p += sprintf(p, "Protocol=1\r\n");
 		p += sprintf(p, "\r\n");
 		p += sprintf(p, "[Info]\r\n");
-		p += sprintf(p, "Category=<Image>/Filter Factory/%s\r\n", useparm ? gdata->parm.szCategory : "...");
-		p += sprintf(p, "Title=%s\r\n", useparm ? gdata->parm.szTitle : "...");
-		p += sprintf(p, "Copyright=%s\r\n", useparm ? gdata->parm.szCopyright : "...");
-		p += sprintf(p, "Author=%s\r\n", useparm ? gdata->parm.szAuthor : "...");
+		p += sprintf(p, "Category=<Image>/Filter Factory/%s\r\n", gdata->parm.szCategory);
+		p += sprintf(p, "Title=%s\r\n", gdata->parm.szTitle);
+		p += sprintf(p, "Copyright=%s\r\n", gdata->parm.szCopyright);
+		p += sprintf(p, "Author=%s\r\n", gdata->parm.szAuthor);
 		p += sprintf(p, "\r\n");
 		p += sprintf(p, "[Version]\r\n");
 		p += sprintf(p, "Major=1\r\n");
@@ -245,53 +213,35 @@ OSErr saveparams_guf(Handle h, Boolean useparm) {
 		p += sprintf(p, "Micro=0\r\n");
 		p += sprintf(p, "\r\n");
 		p += sprintf(p, "[Filter Factory]\r\n");
-		p += sprintf(p, "8bf=%s\r\n", useparm ? "Untitled.8bf" : "Untitled.8bf"); // TODO: get .guf filename and change .guf to .8bf
+		p += sprintf(p, "8bf=%s\r\n", "Untitled.8bf"); // TODO: get .guf filename and change .guf to .8bf
 		p += sprintf(p, "\r\n");
 		p += sprintf(p, "[Gimp]\r\n");
 		p += sprintf(p, "Registered=false\r\n");
-		p += sprintf(p, "Description=%s\r\n", useparm ? gdata->parm.szTitle : "...");
+		p += sprintf(p, "Description=%s\r\n", gdata->parm.szTitle);
 		p += sprintf(p, "EdgeMode=2\r\n");
 		p += sprintf(p, "Date=%s\r\n", strBuildDate);
 		p += sprintf(p, "\r\n");
 
-		if (useparm) {
-			for (i = 0; i < 8; i++) {
-				p += sprintf(p, "[Control %d]\r\n", i);
-				p += sprintf(p, "Enabled=%s\r\n", gdata->parm.ctl_used[i] ? "true" : "false");
-				p += sprintf(p, "Label=%s\r\n", gdata->parm.szCtl[i]);
-				p += sprintf(p, "Preset=%d\r\n", gdata->parm.val[i]);
-				p += sprintf(p, "Step=1\r\n");
-				p += sprintf(p, "\r\n");
-			}
-			for (i = 0; i < 4; i++) {
-				p += sprintf(p, "[Map %d]\r\n", i);
-				p += sprintf(p, "Enabled=%s\r\n", gdata->parm.map_used[i] ? "true" : "false");
-				p += sprintf(p, "Label=%s\r\n", gdata->parm.szMap[i]);
-				p += sprintf(p, "\r\n");
-			}
+		for (i = 0; i < 8; i++) {
+			p += sprintf(p, "[Control %d]\r\n", i);
+			p += sprintf(p, "Enabled=%s\r\n", gdata->parm.ctl_used[i] ? "true" : "false");
+			p += sprintf(p, "Label=%s\r\n", gdata->parm.szCtl[i]);
+			p += sprintf(p, "Preset=%d\r\n", gdata->parm.val[i]);
+			p += sprintf(p, "Step=1\r\n");
+			p += sprintf(p, "\r\n");
 		}
-		else {
-			for (i = 0; i < 8; i++) {
-				p += sprintf(p, "[Control %d]\r\n", i);
-				p += sprintf(p, "Enabled=%s\r\n", ctls[i] ? "true" : "false");
-				p += sprintf(p, "Label=%s\r\n", "...");
-				p += sprintf(p, "Preset=%d\r\n", slider[i]);
-				p += sprintf(p, "Step=1\r\n");
-				p += sprintf(p, "\r\n");
-			}
-			for (i = 0; i < 4; i++) {
-				p += sprintf(p, "[Map %d]\r\n", i);
-				p += sprintf(p, "Enabled=%s\r\n", maps[i] ? "true" : "false");
-				p += sprintf(p, "Label=%s\r\n", "...");
-				p += sprintf(p, "\r\n");
-			}
+		for (i = 0; i < 4; i++) {
+			p += sprintf(p, "[Map %d]\r\n", i);
+			p += sprintf(p, "Enabled=%s\r\n", gdata->parm.map_used[i] ? "true" : "false");
+			p += sprintf(p, "Label=%s\r\n", gdata->parm.szMap[i]);
+			p += sprintf(p, "\r\n");
 		}
 	
 		p += sprintf(p, "[Code]\r\n");
-		p += sprintf(p, "R=%s\r\n", useparm ? gdata->parm.szFormula[0] : expr[0]);
-		p += sprintf(p, "G=%s\r\n", useparm ? gdata->parm.szFormula[1] : expr[1]);
-		p += sprintf(p, "B=%s\r\n", useparm ? gdata->parm.szFormula[2] : expr[2]);
-		p += sprintf(p, "A=%s\r\n", useparm ? gdata->parm.szFormula[3] : expr[3]);
+		p += sprintf(p, "R=%s\r\n", gdata->parm.szFormula[0]);
+		p += sprintf(p, "G=%s\r\n", gdata->parm.szFormula[1]);
+		p += sprintf(p, "B=%s\r\n", gdata->parm.szFormula[2]);
+		p += sprintf(p, "A=%s\r\n", gdata->parm.szFormula[3]);
 
 		PIUNLOCKHANDLE(h);
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
@@ -326,7 +276,7 @@ Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_picotxt(h, false) || savehandleintofile(h, r));
+					res = !(saveparams_picotxt(h) || savehandleintofile(h, r));
 					PIDISPOSEHANDLE(h);
 				}
 			}
@@ -334,7 +284,7 @@ Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			if (fileHasExtension(sfr, TEXT(".guf"))) {
 				// GIMP UserFilter file
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_guf(h, false) || savehandleintofile(h, r));
+					res = !(saveparams_guf(h) || savehandleintofile(h, r));
 					PIDISPOSEHANDLE(h);
 				}
 			}
@@ -343,10 +293,10 @@ Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// If it is a Premiere settings file, we need to swap the channels red and blue
 					// We just swap the pointers!
-					char* tmp;
-					tmp = expr[0];
-					expr[0] = expr[2];
-					expr[2] = tmp;
+					char tmp[MAXEXPR];
+					strcpy(tmp, gdata->parm.szFormula[0]);
+					strcpy(gdata->parm.szFormula[0], gdata->parm.szFormula[2]);
+					strcpy(gdata->parm.szFormula[2], tmp);
 				}
 
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
@@ -356,10 +306,10 @@ Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 
 				if (fileHasExtension(sfr, TEXT(".pff"))) {
 					// Swap back so that the other program stuff will work normally again
-					char* tmp;
-					tmp = expr[0];
-					expr[0] = expr[2];
-					expr[2] = tmp;
+					char tmp[MAXEXPR];
+					strcpy(tmp, gdata->parm.szFormula[0]);
+					strcpy(gdata->parm.szFormula[0], gdata->parm.szFormula[2]);
+					strcpy(gdata->parm.szFormula[2], tmp);
 				}
 			}
 
