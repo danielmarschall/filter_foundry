@@ -275,6 +275,7 @@
 // TODO: Give own IDs and Translate
 #define MSG_OUT_OF_MEMORY_ID 14
 #define MSG_INVALID_FILE_SIGNATURE_ID 6
+#define MSG_FFL_NO_FILTERS_DETECTED_ID 6
 
 void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);

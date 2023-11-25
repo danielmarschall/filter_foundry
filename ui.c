@@ -341,6 +341,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		TCHAR* filters, *title;
 		Boolean loadDlgRet;
 
+		showDialogAgain:
+
 		title = (TCHAR*)malloc(1024);
 		if (title == NULL) return false;
 
@@ -425,6 +427,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 				if (res == MSG_FFL_CONVERTED_ID) {
 					showmessage_id(res);
+					//return maindlgitem(dp, item); // call open Dialog again
+					goto showDialogAgain;
 				}
 				else {
 					TCHAR* reason = FF_GetMsg_Cpy(res);

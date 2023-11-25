@@ -134,7 +134,7 @@ void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetS
 void parm_cleanup();
 
 // from read.c
-FFLoadingResult readparams_afs_pff(Handle h);
+FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
 FFLoadingResult readfile_8bf(StandardFileReply *sfr);
 Handle readfileintohandle(FILEREF r);
