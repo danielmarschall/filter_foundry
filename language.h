@@ -272,6 +272,10 @@
 #define MSG_FFL_CONVERTED_ENUS "FFL file converted to TXT files. You can now open these TXT files."
 #define MSG_FFL_CONVERTED_DEDE "FFL Datei wurde in TXT Dateien extrahiert. Sie können diese TXT Dateien nun öffnen."
 
+// TODO: Give own IDs and Translate
+#define MSG_OUT_OF_MEMORY_ID 14
+#define MSG_INVALID_FILE_SIGNATURE_ID 6
+
 void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);
 TCHAR* FF_GetMsg_Cpy(int MsgId);

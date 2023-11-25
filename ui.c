@@ -322,7 +322,6 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 	StandardFileReply sfr;
 	NavReplyRecord reply;
 	static OSType types[] = {TEXT_FILETYPE,PS_FILTER_FILETYPE};
-	TCHAR*reason = NULL;
 	HINSTANCE hShellRes;
 	InternalState bakState;
 
@@ -411,20 +410,28 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		free(title);
 
 		if (loadDlgRet) {
+			FFLoadingResult res;
+
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
-			if (loadfile(&sfr, &reason)) {
+			if (0 == (res = loadfile(&sfr))) {
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}
 			else {
-				alertuser_id(MSG_CANNOT_LOAD_SETTINGS_ID, reason);
-
 				// Restore
 				restoreInternalState(bakState);
+
+				if (res == MSG_FFL_CONVERTED_ID) {
+					showmessage_id(res);
+				}
+				else {
+					TCHAR* reason = FF_GetMsg_Cpy(res);
+					alertuser_id(MSG_CANNOT_LOAD_SETTINGS_ID, reason);
+					FF_GetMsg_Free(reason);
+				}
 			}
-			if (reason) FF_GetMsg_Free(reason);
 		}
 		break;
 	}

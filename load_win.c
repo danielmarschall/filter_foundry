@@ -38,7 +38,7 @@ static BOOL CALLBACK enum_find_resname(HMODULE hModule, LPCTSTR lpszType,
 	else return true;
 }
 
-Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
+FFLoadingResult readPARMresource(HMODULE hm) {
 	HRSRC resinfo;
 	HANDLE h;
 	Ptr pparm;
@@ -49,7 +49,7 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 	// load first PARM resource
 	if ((resinfo = FindResource(hm, MAKEINTRESOURCE(parm_id), PARM_TYPE))) {
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
-			Boolean res = readPARM(&gdata->parm, pparm);
+			FFLoadingResult res = readPARM(&gdata->parm, pparm);
 			gdata->obfusc = false;
 			return res;
 		}
@@ -62,15 +62,12 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 			// We need to copy the information, because the resource data is read-only
 			DWORD resSize = SizeofResource(hm, resinfo);
 			if (resSize == sizeof(PARM_T)) {
-				Boolean res;
+				FFLoadingResult res;
 				PARM_T* copy = (PARM_T*)malloc(resSize);
-				if (!copy) return false;
+				if (!copy) return MSG_OUT_OF_MEMORY_ID;
 				memcpy(copy, pparm, resSize);
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
-				if (!res) {
-					if (reason) *reason = FF_GetMsg_Cpy(MSG_INCOMPATIBLE_OBFUSCATION_ID);
-				}
 				free(copy);
 				gdata->obfusc = true;
 				return res;
@@ -78,52 +75,47 @@ Boolean readPARMresource(HMODULE hm, TCHAR** reason) {
 			else {
 				// Obfuscationed PARM has wrong size. It is probably a file with different RCDATA
 				gdata->obfusc = false;
-				return false;
+				return MSG_INVALID_PARAMETER_DATA_ID;
 			}
 		}
 	}
-	return false;
+	return MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 }
 
-Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
+FFLoadingResult loadfile(StandardFileReply* sfr) {
 	HMODULE hm;
-	TCHAR* reasonstr;
-
-	// The different read-functions will return true if the resource was successfully loaded,
-	// or false otherwise. If *reason is set, then the answer is clearly "No". If the result
-	// is just false, it means that the program should continue with the next read-function.
-	reasonstr = NULL;
+	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 
 	// First, try to read the file as AFS/PFF/TXT file
-	if (reasonstr == NULL) {
-		if (readfile_afs_pff(sfr, &reasonstr)) {
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_afs_pff(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, false, true, false);
-			return true;
+			return 0;
 		}
 	}
 
 	// Try to read the file as FFL file
-	if (reasonstr == NULL) {
-		if (readfile_ffl(sfr, &reasonstr)) {
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_ffl(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, true, true, true);
-			return true;
+			return 0;
 		}
 	}
 
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
-	if (reasonstr == NULL) {
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
-			if (readPARMresource(hm, &reasonstr)) {
+			if (0 == (res = readPARMresource(hm))) {
 				gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
+					res = MSG_FILTER_PROTECTED_ID;
 				}
 				else {
 					FreeLibrary(hm);
-					return true;
+					return 0;
 				}
 			}
 			FreeLibrary(hm);
@@ -131,48 +123,40 @@ Boolean loadfile(StandardFileReply* sfr, TCHAR** reason) {
 	}
 
 	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
-	if (reasonstr == NULL) {
-		if (readfile_ffx(sfr, &reasonstr)) {
-			return true;
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_ffx(sfr))) {
+			return 0;
 		}
 	}
 
 	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
-	if (reasonstr == NULL) {
-		if (readfile_picotxt_or_ffdecomp(sfr, &reasonstr)) {
-			return true;
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_picotxt_or_ffdecomp(sfr))) {
+			return 0;
 		}
 	}
 
 	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
-	if (reasonstr == NULL) {
-		if (readfile_guf(sfr, &reasonstr)) {
-			return true;
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_guf(sfr))) {
+			return 0;
 		}
 	}
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or 64 bit 8BF on Win32 OS)
 	// Note that we cannot detect obfuscated filters here!
-	if (reasonstr == NULL) {
-		if (readfile_8bf(sfr, &reasonstr)) {
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_8bf(sfr))) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);
-				reasonstr = FF_GetMsg_Cpy(MSG_FILTER_PROTECTED_ID);
+				res = MSG_FILTER_PROTECTED_ID;
 			}
 			else {
-				return true;
+				return 0;
 			}
 		}
 	}
 
-	// We didn't had success. If we have a clear reason, return false and the reason.
-	// If we don't have a clear reason, set a generic reason and return false.
-	if (reasonstr == NULL) {
-		reasonstr = FF_GetMsg_Cpy(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
-	}
-
-	if (reason) *reason = reasonstr;
-
-	return false;
+	return res;
 }

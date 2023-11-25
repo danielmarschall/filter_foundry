@@ -332,7 +332,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
-			parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+			parmReadOk = (0 == readPARMresource((HMODULE)hDllInstance));
 			if (!parmReadOk) gdata->parm.standalone = false;
 			if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				parm_reset(true, true, true, true);
@@ -566,7 +566,7 @@ int checkandinitparams(Handle params){
 		sfr.sfReplacing = true;
 		sfr.sfType = PS_FILTER_FILETYPE;
 
-		parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+		parmReadOk = (0 == readPARMresource((HMODULE)hDllInstance));
 		if (!parmReadOk) gdata->parm.standalone = false;
 		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			parm_reset(true, true, true, true);
@@ -591,7 +591,7 @@ int checkandinitparams(Handle params){
 			tmpState = saveInternalState();
 		}
 
-		if (loadfile(&sfr, NULL)) {
+		if (0 == loadfile(&sfr)) {
 			if (parmReadOk) {
 				// In the standalone filter, we only want the parameters (ctl,map) in the temporary .afs file, not the formulas
 				// We do not need to care about the metadata, because the AFS does not touch the metadata anyway
@@ -608,14 +608,14 @@ int checkandinitparams(Handle params){
 		}
 	}
 
-	if( (bUninitializedParams = !(params && readparams_afs_pff(params, NULL))) ){
+	if( (bUninitializedParams = !(params && (0 == readparams_afs_pff(params)))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
 		Boolean parmReadOk;
 
 		// see if saved parameters exist
-		parmReadOk = readPARMresource((HMODULE)hDllInstance, NULL);
+		parmReadOk = (0 == readPARMresource((HMODULE)hDllInstance));
 		if (!parmReadOk) gdata->parm.standalone = false;
 		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			parm_reset(true, true, true, true);

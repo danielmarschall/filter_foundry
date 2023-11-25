@@ -112,6 +112,8 @@ extern value_type cell[NUM_CELLS];
 extern int tokpos,tokstart,varused[];
 extern TCHAR *errstr;
 
+typedef int FFLoadingResult;
+
 //#define DEBUG
 
 typedef struct InternalState_ {
@@ -132,16 +134,16 @@ void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetS
 void parm_cleanup();
 
 // from read.c
-Boolean readparams_afs_pff(Handle h, TCHAR**reason);
+FFLoadingResult readparams_afs_pff(Handle h);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
-Boolean readfile_8bf(StandardFileReply *sfr, TCHAR**reason);
+FFLoadingResult readfile_8bf(StandardFileReply *sfr);
 Handle readfileintohandle(FILEREF r);
-Boolean readfile_afs_pff(StandardFileReply* sfr, TCHAR** reason);
-Boolean readfile_ffl(StandardFileReply* sfr, TCHAR** reason);
-Boolean readfile_ffx(StandardFileReply* sfr, TCHAR** reason);
-Boolean readfile_picotxt_or_ffdecomp(StandardFileReply* sfr, TCHAR** reason);
-Boolean readfile_guf(StandardFileReply* sfr, TCHAR** reason);
-Boolean readPARM(PARM_T* parm,Ptr h);
+FFLoadingResult readfile_afs_pff(StandardFileReply* sfr);
+FFLoadingResult readfile_ffl(StandardFileReply* sfr);
+FFLoadingResult readfile_ffx(StandardFileReply* sfr);
+FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr);
+FFLoadingResult readfile_guf(StandardFileReply* sfr);
+FFLoadingResult readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
 OSErr saveparams_afs_pff(Handle h);
@@ -178,8 +180,8 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 void deobfusc(PARM_T* pparm);
 
 // from loadfile_*.c
-Boolean loadfile(StandardFileReply *sfr, TCHAR**reason);
-Boolean readPARMresource(HMODULE hm, TCHAR**reason);
+FFLoadingResult loadfile(StandardFileReply *sfr);
+FFLoadingResult readPARMresource(HMODULE hm);
 
 // from main.c
 int64_t maxspace(void);

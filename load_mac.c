@@ -24,8 +24,8 @@
 
 #include "file_compat.h"
 
-Boolean readPARMresource(HMODULE hm,char **reason){
-	Boolean res = false;
+FFLoadingResult readPARMresource(HMODULE hm){
+	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 	Handle h;
 
 	if( (h = Get1Resource(PARM_TYPE,PARM_ID_NEW)) ||
@@ -33,14 +33,14 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	{
 		HLock(h);
 		if(GetHandleSize(h) == sizeof(PARM_T)) {
-			res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
+			res = readPARM(&gdata->parm, *h, 0 /*Mac format resource*/);
 			gdata->obfusc = false;
 			ReleaseResource(h);
 		} else {
 			// PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return false;
+			return MSG_INVALID_FILE_SIGNATURE_ID;
 		}
 	}
 	else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
@@ -49,14 +49,14 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 		HLock(h);
 		if(GetHandleSize(h) == sizeof(PARM_T)) {
 			deobfusc((PARM_T*)*h);
-			res = readPARM(*h, &gdata->parm, reason, 0 /*Mac format resource*/);
+			res = readPARM(&gdata->parm, *h, 0 /*Mac format resource*/);
 			gdata->obfusc = true;
 			ReleaseResource(h);
 		} else {
 			// Obfuscated PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return false;
+			return MSG_INCOMPATIBLE_OBFUSCATION_ID;
 		}
 	}
 	if (!res) {
@@ -65,103 +65,93 @@ Boolean readPARMresource(HMODULE hm,char **reason){
 	return res;
 }
 
-static Boolean readmacplugin(StandardFileReply *sfr,char **reason){
-	Boolean res = false;
+FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
+	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 
 	if(rrn != -1){
-		if(readPARMresource(NULL,reason))
-			res = true;
+		res = readPARMresource(NULL);
 		CloseResFile(rrn);
-	}else
-		*reason = "Could not open file.";
+	}
+	else
+		res = MSG_CANNOT_OPEN_FILE_ID;
 	return res;
 }
 
-Boolean loadfile(StandardFileReply *sfr,char **reason){
+FFLoadingResult loadfile(StandardFileReply *sfr){
 	Boolean readok = false;
 	FInfo fndrInfo;
-
-	// The different read-functions will return true if the resource was successfully loaded,
-	// or false otherwise. If *reason is set, then the answer is clearly "No". If the result
-	// is just false, it means that the program should continue with the next read-function.
-	*reason = NULL;
+	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
-		if (*reason == NULL) {
-			if (readfile_afs_pff(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = readfile_afs_pff(sfr))) {
 				parm_reset(true, false, true, false);
 				gdata->obfusc = false;
-				return true;
+				return 0;
 			}
 		}
 
 		// Try to read the file as FFL file
-		if (*reason == NULL) {
-			if (readfile_ffl(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readfile_ffl(sfr)))) {
 				parm_reset(true, true, true, true);
 				gdata->obfusc = false;
-				return true;
+				return 0;
 			}
 		}
 
 		// then try "Filters Unlimited" file (FFX)
-		if (*reason == NULL) {
-			if (readfile_ffx(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readfile_ffx(sfr)))) {
 				gdata->obfusc = false;
-				return true;
+				return 0;
 			}
 		}
 
 		// then try "PluginCommander TXT" file (TXT)
-		if (*reason == NULL) {
-			if (readfile_picotxt(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readfile_picotxt(sfr)))) {
 				gdata->obfusc = false;
-				return true;
+				return 0;
 			}
 		}
 
 		// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
-		if (*reason == NULL) {
-			if (readfile_guf(sfr,reason)) {
-				return true;
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readfile_guf(sfr)))) {
+				return 0;
 			}
 		}
 
 		// Try Mac plugin resource
-		if (*reason == NULL) {
-			if (readmacplugin(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readmacplugin(sfr)))) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					*reason = "The filter is protected.";
+					res = MSG_FILTER_PROTECTED_ID;
 				} else {
-					return true;
+					return 0;
 				}
 			}
 		}
 
 		// Try Windows resources (we need to do a binary scan)
 		// Note that we cannot detect obfuscated filters here!
-		if (*reason == NULL) {
-			if (readfile_8bf(sfr,reason)) {
+		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+			if (0 == (res = (readfile_8bf(sfr)))) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					*reason = "The filter is protected.";
+					res = MSG_FILTER_PROTECTED_ID;
 				} else {
-					return true;
+					return 0;
 				}
 			}
 		}
 
-		// We didn't had success. If we have a clear reason, return false and the reason.
-		// If we don't have a clear reason, set a generic reason and return false.
-		if (*reason == NULL) {
-			*reason = "It is not a text parameter file, nor a standalone Mac/PC filter created by Filter Factory/Filter Foundry.";
-		}
-		return false;
+		return res;
 	} else {
-		*reason = "File cannot be opened";
-		return false;
+		return MSG_CANNOT_OPEN_FILE_ID;
 	}
 }
