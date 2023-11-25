@@ -93,6 +93,12 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			parm_reset(true, false, true, false);
 			return 0;
 		}
+		if (!fileHasExtension(sfr, TEXT(".afs")) && !fileHasExtension(sfr, TEXT(".pff"))) {
+			// If .afs and .pff files have an invalid signature, then it is a hard error.
+			// If any other file has no "%RGB1.0" signature, then it is OK and
+			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+		}
 	}
 
 	// Try to read the file as FFL file
@@ -101,6 +107,25 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			gdata->obfusc = false;
 			parm_reset(true, true, true, true);
 			return 0;
+		}
+		if (!fileHasExtension(sfr, TEXT(".ffl"))) {
+			// If .ffl files have an invalid signature, then it is a hard error.
+			// If any other file has no "FFL1.0" signature, then it is OK and
+			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+		}
+	}
+
+	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
+	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (0 == (res = readfile_ffx(sfr))) {
+			return 0;
+		}
+		if (!fileHasExtension(sfr, TEXT(".ffx"))) {
+			// If .ffx files have an invalid signature, then it is a hard error.
+			// If any other file has no "FFX1.0", "FFX1.1", or "FFX1.2" signature, then it is OK and
+			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 		}
 	}
 
@@ -122,24 +147,21 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 		}
 	}
 
-	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_ffx(sfr))) {
-			return 0;
-		}
-	}
-
 	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_picotxt_or_ffdecomp(sfr))) {
-			return 0;
+		if (fileHasExtension(sfr, TEXT(".txt"))) {
+			if (0 == (res = readfile_picotxt_or_ffdecomp(sfr))) {
+				return 0;
+			}
 		}
 	}
 
 	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_guf(sfr))) {
-			return 0;
+		if (fileHasExtension(sfr, TEXT(".guf"))) {
+			if (0 == (res = readfile_guf(sfr))) {
+				return 0;
+			}
 		}
 	}
 

@@ -91,6 +91,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return 0;
 			}
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 		}
 
 		// Try to read the file as FFL file
@@ -100,6 +101,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return 0;
 			}
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 		}
 
 		// then try "Filters Unlimited" file (FFX)
@@ -108,6 +110,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return 0;
 			}
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 		}
 
 		// then try "PluginCommander TXT" file (TXT)

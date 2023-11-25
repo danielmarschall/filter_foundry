@@ -208,13 +208,17 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 			char* q = (char*)PILOCKHANDLE(h, false);
 
 			len = *((uint32_t*)q);
-			if (len == 6) {
+			if (len != 6) {
+				res = MSG_INVALID_FILE_SIGNATURE_ID;
+			} else {
 				val = _ffx_read_str(&q);
 				if (strcmp(val, "FFX1.0") == 0) format_version = 10;
 				else if (strcmp(val, "FFX1.1") == 0) format_version = 11;
 				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
-				if (format_version > 0) {
+				if (format_version < 0) {
+					res = MSG_INVALID_FILE_SIGNATURE_ID;
+				} else {
 					simplewarning_id(MSG_FILTERS_UNLIMITED_WARNING_ID);
 
 					val = _ffx_read_str(&q);
@@ -328,7 +332,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 		FSClose(refnum);
 	}
 
-	if (res) gdata->obfusc = false;
+	if (res == 0) gdata->obfusc = false;
 	return res;
 }
 
@@ -352,7 +356,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
 					{
 						res = readPARM(&gdata->parm, (Ptr)q);
-						if (res) break;
+						if (res == 0) break;
 					}
 
 					PIDISPOSEHANDLE(h);
@@ -363,7 +367,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 	}else
 		res = MSG_CANNOT_OPEN_FILE_ID;
 
-	if (res) gdata->obfusc = false;
+	if (res == 0) gdata->obfusc = false;
 	return res;
 }
 
@@ -697,8 +701,6 @@ FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr) {
 	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
 	FILEREF refnum;
 
-	if (!fileHasExtension(sfr, TEXT(".txt"))) return MSG_LOADFILE_UNKNOWN_FORMAT_ID;
-
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
@@ -855,8 +857,6 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 
 	// TODO: Decode UTF-8 to ANSI (or "?" for unknown characters)
 
-	if (!fileHasExtension(sfr, TEXT(".guf"))) return MSG_LOADFILE_UNKNOWN_FORMAT_ID;
-
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
@@ -945,15 +945,10 @@ FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
-			if( 0 != (res = readparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff")))) ) {
-				// If .afs and .pff files are not recognized, then it is a hard error.
-				// If a .txt file has no "%RGB1.0" signature, then it is OK and
-				// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID to inform the caller that they shall continue trying formats.
-				if (!fileHasExtension(sfr, TEXT(".afs")) && !fileHasExtension(sfr, TEXT(".pff"))) {
-					if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
-				}
-			}
-
+			// Note in re fileHasExtension(): Mac does not have file extensions like Windows,
+			// so, the detection if the channel order is BGRA (Premiere *.pff) or RGBA (Photoshop *.afs)
+			// is not possible, except if the file has an extension (e.g. when it was copied from a Windows system)
+			res = readparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff")));
 			PIDISPOSEHANDLE(h);
 		}
 		FSClose(r);
@@ -974,9 +969,6 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 	size_t est;
 	int foundFilters = 0;
 
-	// TODO: sollte von außerhalb gesteuert werden [auch bei anderen]
-	if (!fileHasExtension(sfr, TEXT(".ffl"))) return MSG_LOADFILE_UNKNOWN_FORMAT_ID;
-
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
@@ -984,169 +976,180 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 
 			char* q2, * tmp_cur_filter_str[29], *token;
 			int lineNumber = 0;
-			int countFilters = 0;
 
-			// This is required to make strtok work, because q is not zero-terminated...
-			q2 = (char*)malloc(count + 1/*NUL byte*/);
-			if (q2 == NULL) {
-				res = MSG_OUT_OF_MEMORY_ID;
+			if (strstr(q, "FFL1.0") != q) {
+				res = MSG_INVALID_FILE_SIGNATURE_ID;
 			}
 			else {
-				memcpy(q2, q, count);
-				q2[count] = '\0';
 
-				token = strtok(q2, "\n");
-				while (token != NULL) {
-					size_t i;
-					char* token2 = my_strdup(token);
-					for (i = 0; i < strlen(token2); i++) {
-						if (token2[i] == '\r') token2[i] = '\0';
-					}
-					if (lineNumber == 0) {
-						if (strcmp(token2, "FFL1.0") != 0) {
-							res = MSG_INVALID_FILE_SIGNATURE_ID;
-							break;
+				// This is required to make strtok work, because q is not zero-terminated...
+				q2 = (char*)malloc(count + 1/*NUL byte*/);
+				if (q2 == NULL) {
+					res = MSG_OUT_OF_MEMORY_ID;
+				}
+				else {
+					memcpy(q2, q, count);
+					q2[count] = '\0';
+
+					token = strtok(q2, "\n");
+					while (token != NULL) {
+						size_t i;
+						char* token2 = my_strdup(token);
+						for (i = 0; i < strlen(token2); i++) {
+							if (token2[i] == '\r') token2[i] = '\0';
 						}
-					}
-					else if (lineNumber == 1) {
-						countFilters = atoi(token2);
-					}
-					else
-					{
-						/*
-						* 0 filter_file1.8bf
-						* 1 Category 1 here
-						* 2 Filter Name 1 here
-						* 3 Autor 1 here
-						* 4 Copyright 1 here
-						* 5 Map1 name or empty line to disable map
-						* 6 Map2 name or empty line to disable map
-						* 7 Map3 name or empty line to disable map
-						* 8 Map4 name or empty line to disable map
-						* 9 Slider 1
-						* 10 Slider 2
-						* 11 Slider 3
-						* 12 Slider 4
-						* 13 Slider 5
-						* 14 Slider 6
-						* 15 Slider 7
-						* 16 Slider 8
-						* 17 100
-						* 18 110
-						* 19 120
-						* 20 130
-						* 21 140
-						* 22 150
-						* 23 160
-						* 24 170
-						* 25 r
-						* 26 g
-						* 27 b
-						* 28 a
-						*/
-						int filterLineNumber = (lineNumber - 2) % 29;
-						tmp_cur_filter_str[filterLineNumber] = token2;
-						if (filterLineNumber == 28) {
-							TCHAR* curFileNameOrig;
-							TCHAR* curFileName;
+						if (lineNumber == 0) {
+							// We already checked it above (in order to avoid an unnecessary memory copy)
+							/*
+							if (strcmp(token2, "FFL1.0") != 0) {
+								res = MSG_INVALID_FILE_SIGNATURE_ID;
+								break;
+							}
+							*/
+						}
+						else if (lineNumber > 1) {
+							// We don't check that. We just stop at every 28th line of each filter
+							/*
+							countFilters = atoi(token2);
+							*/
+						}
+						else
+						{
+							/*
+							* 0 filter_file1.8bf
+							* 1 Category 1 here
+							* 2 Filter Name 1 here
+							* 3 Autor 1 here
+							* 4 Copyright 1 here
+							* 5 Map1 name or empty line to disable map
+							* 6 Map2 name or empty line to disable map
+							* 7 Map3 name or empty line to disable map
+							* 8 Map4 name or empty line to disable map
+							* 9 Slider 1
+							* 10 Slider 2
+							* 11 Slider 3
+							* 12 Slider 4
+							* 13 Slider 5
+							* 14 Slider 6
+							* 15 Slider 7
+							* 16 Slider 8
+							* 17 100
+							* 18 110
+							* 19 120
+							* 20 130
+							* 21 140
+							* 22 150
+							* 23 160
+							* 24 170
+							* 25 r
+							* 26 g
+							* 27 b
+							* 28 a
+							*/
+							int filterLineNumber = (lineNumber - 2) % 29;
+							tmp_cur_filter_str[filterLineNumber] = token2;
+							if (filterLineNumber == 28) {
+								TCHAR* curFileNameOrig;
+								TCHAR* curFileName;
 
-							curFileNameOrig = curFileName = (TCHAR*)malloc(MAX_PATH * sizeof(TCHAR));
+								curFileNameOrig = curFileName = (TCHAR*)malloc(MAX_PATH * sizeof(TCHAR));
 
-							strcpy_advance(&curFileName, sfr->sfFile.szName);
-							curFileName -= 4; // remove ".ffl" extension
-							*curFileName = (TCHAR)0;
+								strcpy_advance(&curFileName, sfr->sfFile.szName);
+								curFileName -= 4; // remove ".ffl" extension
+								*curFileName = (TCHAR)0;
 
-							xstrcat(curFileNameOrig, TEXT("__"));
-							curFileName += strlen("__");
+								xstrcat(curFileNameOrig, TEXT("__"));
+								curFileName += strlen("__");
 
-							strcpy_advance_a(&curFileName, tmp_cur_filter_str[0]);
-							curFileName -= 4; // remove ".8bf" extension
-							*curFileName = (TCHAR)0;
+								strcpy_advance_a(&curFileName, tmp_cur_filter_str[0]);
+								curFileName -= 4; // remove ".8bf" extension
+								*curFileName = (TCHAR)0;
 
 #ifdef WIN_ENV
-							xstrcat(curFileNameOrig, TEXT(".txt"));
+								xstrcat(curFileNameOrig, TEXT(".txt"));
 #endif
 
-							sfrTmp.sfGood = true;
-							sfrTmp.sfReplacing = true;
-							sfrTmp.sfType = TEXT_FILETYPE;
-							xstrcpy(sfrTmp.sfFile.szName, curFileNameOrig);
+								sfrTmp.sfGood = true;
+								sfrTmp.sfReplacing = true;
+								sfrTmp.sfType = TEXT_FILETYPE;
+								xstrcpy(sfrTmp.sfFile.szName, curFileNameOrig);
 #ifdef WIN_ENV
-							sfrTmp.nFileExtension = (WORD)(xstrlen(curFileNameOrig) - strlen(".txt") + 1);
+								sfrTmp.nFileExtension = (WORD)(xstrlen(curFileNameOrig) - strlen(".txt") + 1);
 #endif
-							sfrTmp.sfScript = smSystemScript;
+								sfrTmp.sfScript = smSystemScript;
 
-							est = 16000;
+								est = 16000;
 
-							FSpDelete(&sfrTmp.sfFile);
-							if (FSpCreate(&sfrTmp.sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr)
-								if (FSpOpenDF(&sfrTmp.sfFile, fsWrPerm, &rTmp) == noErr) {
-									if ((hTmp = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-										PIUNLOCKHANDLE(hTmp); // should not be necessary
-										if (!(e = PISETHANDLESIZE(hTmp, (int32)(est))) && (p = start = PILOCKHANDLE(hTmp, false))) {
+								FSpDelete(&sfrTmp.sfFile);
+								if (FSpCreate(&sfrTmp.sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr)
+									if (FSpOpenDF(&sfrTmp.sfFile, fsWrPerm, &rTmp) == noErr) {
+										if ((hTmp = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
+											PIUNLOCKHANDLE(hTmp); // should not be necessary
+											if (!(e = PISETHANDLESIZE(hTmp, (int32)(est))) && (p = start = PILOCKHANDLE(hTmp, false))) {
 
-											p += sprintf(p, "Category: %s\n", tmp_cur_filter_str[1]);
-											p += sprintf(p, "Title: %s\n", tmp_cur_filter_str[2]);
-											p += sprintf(p, "Copyright: %s\n", tmp_cur_filter_str[4]);
-											p += sprintf(p, "Author: %s\n", tmp_cur_filter_str[3]);
-											p += sprintf(p, "Filename: %s\n", tmp_cur_filter_str[0]);
-											p += sprintf(p, "\n");
-											p += sprintf(p, "R:\n");
-											p += sprintf(p, "%s\n", tmp_cur_filter_str[25]);
-											p += sprintf(p, "\n");
-											p += sprintf(p, "G:\n");
-											p += sprintf(p, "%s\n", tmp_cur_filter_str[26]);
-											p += sprintf(p, "\n");
-											p += sprintf(p, "B:\n");
-											p += sprintf(p, "%s\n", tmp_cur_filter_str[27]);
-											p += sprintf(p, "\n");
-											p += sprintf(p, "A:\n");
-											p += sprintf(p, "%s\n", tmp_cur_filter_str[28]);
-											p += sprintf(p, "\n");
+												p += sprintf(p, "Category: %s\n", tmp_cur_filter_str[1]);
+												p += sprintf(p, "Title: %s\n", tmp_cur_filter_str[2]);
+												p += sprintf(p, "Copyright: %s\n", tmp_cur_filter_str[4]);
+												p += sprintf(p, "Author: %s\n", tmp_cur_filter_str[3]);
+												p += sprintf(p, "Filename: %s\n", tmp_cur_filter_str[0]);
+												p += sprintf(p, "\n");
+												p += sprintf(p, "R:\n");
+												p += sprintf(p, "%s\n", tmp_cur_filter_str[25]);
+												p += sprintf(p, "\n");
+												p += sprintf(p, "G:\n");
+												p += sprintf(p, "%s\n", tmp_cur_filter_str[26]);
+												p += sprintf(p, "\n");
+												p += sprintf(p, "B:\n");
+												p += sprintf(p, "%s\n", tmp_cur_filter_str[27]);
+												p += sprintf(p, "\n");
+												p += sprintf(p, "A:\n");
+												p += sprintf(p, "%s\n", tmp_cur_filter_str[28]);
+												p += sprintf(p, "\n");
 
-											// Maps
-											for (i = 0; i < 4; i++) {
-												char* tmp = tmp_cur_filter_str[5 + i];
-												if (strcmp(tmp, "") != 0) {
-													p += sprintf(p, "map[%d]: %s\n", (int)i, tmp_cur_filter_str[5 + i]);
+												// Maps
+												for (i = 0; i < 4; i++) {
+													char* tmp = tmp_cur_filter_str[5 + i];
+													if (strcmp(tmp, "") != 0) {
+														p += sprintf(p, "map[%d]: %s\n", (int)i, tmp_cur_filter_str[5 + i]);
+													}
 												}
+												p += sprintf(p, "\n");
+
+												// Controls
+												for (i = 0; i < 8; i++) {
+													char* tmp = tmp_cur_filter_str[9 + i];
+													if (strcmp(tmp, "") != 0) {
+														p += sprintf(p, "ctl[%d]: %s\n", (int)i, tmp_cur_filter_str[9 + i]);
+													}
+													tmp = tmp_cur_filter_str[17 + i];
+													if (strcmp(tmp, "") != 0) {
+														p += sprintf(p, "val[%d]: %s\n", (int)i, tmp_cur_filter_str[17 + i]);
+													}
+												}
+												p += sprintf(p, "\n");
+
+												PIUNLOCKHANDLE(hTmp);
+												e = PISETHANDLESIZE(hTmp, (int32)(p - start)); // could ignore this error, maybe
 											}
-											p += sprintf(p, "\n");
-
-											// Controls
-											for (i = 0; i < 8; i++) {
-												char* tmp = tmp_cur_filter_str[9 + i];
-												if (strcmp(tmp, "") != 0) {
-													p += sprintf(p, "ctl[%d]: %s\n", (int)i, tmp_cur_filter_str[9 + i]);
-												}
-												tmp = tmp_cur_filter_str[17 + i];
-												if (strcmp(tmp, "") != 0) {
-													p += sprintf(p, "val[%d]: %s\n", (int)i, tmp_cur_filter_str[17 + i]);
-												}
-											}
-											p += sprintf(p, "\n");
-
-											PIUNLOCKHANDLE(hTmp);
-											e = PISETHANDLESIZE(hTmp, (int32)(p - start)); // could ignore this error, maybe
+											savehandleintofile(hTmp, rTmp);
+											PIDISPOSEHANDLE(hTmp);
 										}
-										savehandleintofile(hTmp, rTmp);
-										PIDISPOSEHANDLE(hTmp);
+										FSClose(rTmp);
 									}
-									FSClose(rTmp);
-								}
 
-							free(curFileNameOrig);
-							for (i = 0; i < 29; i++) {
-								free(tmp_cur_filter_str[i]); // free all "token2"
+								free(curFileNameOrig);
+								for (i = 0; i < 29; i++) {
+									free(tmp_cur_filter_str[i]); // free all "token2"
+								}
 							}
 						}
+						lineNumber++;
+						token = strtok(NULL, "\n");
 					}
-					lineNumber++;
-					token = strtok(NULL, "\n");
 				}
-			}
 
-			free(q2);
+				free(q2);
+			}
 
 			PIUNLOCKHANDLE(h);
 			PIDISPOSEHANDLE(h);
