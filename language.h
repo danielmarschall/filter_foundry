@@ -23,6 +23,9 @@
 
 // Attention: Please save this file as UTF-8 without BOM!
 // Also, if you extend this, please also extend language_win.rc and language_mac.r!
+// The ID numbers must be continuous, otherwise the MAC stringlist (*r) does not work
+
+// TODO: Name the constants MSGID_* and not MSG_*_ID
 
 #define MSG_PREMIERE_COMPAT_ID 1
 #define MSG_PREMIERE_COMPAT_ENUS "This version of Filter Foundry is not compatible with Adobe Premiere!";
@@ -76,9 +79,9 @@
 #define MSG_EXPRESSION1024_FOUND_ENUS "Found an expression longer than 1024 characters."
 #define MSG_EXPRESSION1024_FOUND_DEDE "Es wurde eine Formel gefunden, die länger als 1024 Zeichen ist."
 
-#define MSG_EXPRESSION_OOM_ID 14
-#define MSG_EXPRESSION_OOM_ENUS "Could not get memory for expression."
-#define MSG_EXPRESSION_OOM_DEDE "Kann nicht genügend Speicher für die Formel erhalten."
+#define MSG_OUT_OF_MEMORY_ID 14
+#define MSG_OUT_OF_MEMORY_ENUS "Not enough free memory to continue."
+#define MSG_OUT_OF_MEMORY_DEDE "Nicht genügend Arbeitsspeicher zum Ausführen der Aktion."
 
 #define MSG_FILTERS_UNLIMITED_WARNING_ID 15
 #define MSG_FILTERS_UNLIMITED_WARNING_ENUS "Attention! You are loading a ""Filters Unlimited"" file. Please note that Filter Foundry only implements the basic Filter Factory functions. Therefore, most ""Filters Unlimited"" filters won't work with Filter Foundry."
@@ -269,13 +272,24 @@
 #define MSG_OPEN_FFL_DEDE "Filter Bibliothek"
 
 #define MSG_FFL_CONVERTED_ID 62
-#define MSG_FFL_CONVERTED_ENUS "FFL file converted to TXT files. You can now open these TXT files."
-#define MSG_FFL_CONVERTED_DEDE "FFL Datei wurde in TXT Dateien extrahiert. Sie können diese TXT Dateien nun öffnen."
+#define MSG_FFL_CONVERTED_ENUS "The FFL file was split to single TXT files. You can now open these TXT files."
+#define MSG_FFL_CONVERTED_DEDE "Die FFL Datei wurde in einzelne TXT Dateien aufgesplitet. Sie können diese TXT Dateien nun öffnen."
 
-// TODO: Give own IDs and Translate
-#define MSG_OUT_OF_MEMORY_ID 14
-#define MSG_INVALID_FILE_SIGNATURE_ID 6
-#define MSG_FFL_NO_FILTERS_DETECTED_ID 6
+#define MSG_INVALID_FILE_SIGNATURE_ID 63
+#define MSG_INVALID_FILE_SIGNATURE_ENUS "Invalid file signature"
+#define MSG_INVALID_FILE_SIGNATURE_DEDE "Ungültiger Dateianfang"
+
+#define MSG_FFL_NO_FILTERS_DETECTED_ID 64
+#define MSG_FFL_NO_FILTERS_DETECTED_DEDE "In this FFL file there are no filters"
+#define MSG_FFL_NO_FILTERS_DETECTED_ENUS "In dieser FFL Datei befinden sich keine Filter"
+
+#define MSG_ERROR_GENERATING_DATA_ID 65
+#define MSG_ERROR_GENERATING_DATA_ENUS "Error generating the file contents"
+#define MSG_ERROR_GENERATING_DATA_DEDE "Fehler beim Erstellen der Datei-Inhalte"
+
+#define MSG_UNSUPPORTED_FILE_FORMAT_ID 66
+#define MSG_UNSUPPORTED_FILE_FORMAT_DEDE "Not supported file format. Please take care to choose a valid filename extension"
+#define MSG_UNSUPPORTED_FILE_FORMAT_ENUS "Nicht unterstütztes Dateiformat. Bitte achten Sie auf die korrekte Dateinamens-Erweiterung"
 
 void strcpy_advance_id(TCHAR** str, int msgid);
 int FF_GetMsg(TCHAR* ret, int MsgId);

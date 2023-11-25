@@ -394,6 +394,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 						TCHAR outfilename[MAX_PATH + 1];
 						StandardFileReply sfr;
 						InternalState tmpState;
+						FFSavingResult saveres;
 
 						sfr.sfGood = true;
 						sfr.sfReplacing = true;
@@ -415,16 +416,23 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 							parm_reset(false, false, false, true);
 						}
 
-						savefile_afs_pff_picotxt_guf(&sfr);
+						saveres = savefile_afs_pff_picotxt_guf(&sfr);
 
 						if (gdata->parm.standalone) {
 							restoreInternalState(tmpState);
+						}
+
+						if (saveres != 0) {
+							TCHAR* reason = FF_GetMsg_Cpy(saveres);
+							alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
+							FF_GetMsg_Free(reason);
+							*result = filterBadParameters;
 						}
 					}
 					else {
 						/* update stored parameters from new user settings */
 						if (pb->parameters)
-							saveparams_afs_pff(pb->parameters);
+							saveparams_afs_pff(pb->parameters, false);
 					}
 				}
 				else
@@ -649,7 +657,7 @@ int checkandinitparams(Handle params){
 		break;
 	}
 
-	if (params) saveparams_afs_pff(params);
+	if (params) saveparams_afs_pff(params, false);
 
 	return showdialog;
 }

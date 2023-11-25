@@ -499,7 +499,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		free(title);
 
 		if (saveDlgRet) {
-			if (savefile_afs_pff_picotxt_guf(&sfr)) {
+			FFSavingResult saveres = savefile_afs_pff_picotxt_guf(&sfr);
+			if (saveres != 0) {
+				TCHAR* reason = FF_GetMsg_Cpy(saveres);
+				alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
+				FF_GetMsg_Free(reason);
+			}
+			else {
 				completesave(&reply);
 
 				if (fileHasExtension(&sfr, TEXT(".txt"))) {

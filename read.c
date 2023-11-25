@@ -88,7 +88,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 					/* it's an empty line: we've completed the expr string */
 					*q = '\0';
 					if (premiereOrder) {
-						// Premiere has the order BGRA , while Photoshop (and our internal order) is RGBA
+						// Premiere has the order BGRA, while Photoshop (and our internal order) is RGBA
 						if (exprcnt == 0) strcpy(gdata->parm.szFormula[2], curexpr);
 						else if (exprcnt == 2) strcpy(gdata->parm.szFormula[0], curexpr);
 						else strcpy(gdata->parm.szFormula[exprcnt], curexpr);
@@ -1081,7 +1081,7 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 								est = 16000;
 
 								FSpDelete(&sfrTmp.sfFile);
-								if (FSpCreate(&sfrTmp.sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr)
+								if (FSpCreate(&sfrTmp.sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr) {
 									if (FSpOpenDF(&sfrTmp.sfFile, fsWrPerm, &rTmp) == noErr) {
 										if ((hTmp = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 											PIUNLOCKHANDLE(hTmp); // should not be necessary
@@ -1134,8 +1134,12 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 											savehandleintofile(hTmp, rTmp);
 											PIDISPOSEHANDLE(hTmp);
 										}
+										else res = MSG_OUT_OF_MEMORY_ID;
 										FSClose(rTmp);
 									}
+									else res = MSG_CANNOT_OPEN_FILE_ID;
+								}
+								else res = MSG_CANNOT_CREATE_FILE_ID;
 
 								free(curFileNameOrig);
 								for (i = 0; i < 29; i++) {

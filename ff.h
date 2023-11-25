@@ -112,7 +112,10 @@ extern value_type cell[NUM_CELLS];
 extern int tokpos,tokstart,varused[];
 extern TCHAR *errstr;
 
+// FFLoadingResult = 0 : Success
+// FFLoadingResult > 0 : Error, message ID as described in language.h
 typedef int FFLoadingResult;
+typedef int FFSavingResult;
 
 //#define DEBUG
 
@@ -146,10 +149,10 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr);
 FFLoadingResult readPARM(PARM_T* parm,Ptr h);
 
 // from save.c
-OSErr saveparams_afs_pff(Handle h);
+OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder);
 OSErr saveparams_picotxt(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
-Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
+FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
 
 // from make_*.c
 OSErr make_standalone(StandardFileReply *sfr);

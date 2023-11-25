@@ -47,11 +47,11 @@ OSErr putstr(Handle h,char *s){
 	return e;
 }
 
-OSErr saveparams_afs_pff(Handle h){
+OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder){
 	char outbuf[CHOPLINES * 2 + 2] = "";
 	char *q, * p, * r, * start;
 	size_t n, chunk, j;
-	int i;
+	int i, k;
 	OSErr e;
 	size_t est;
 	static char afs_sig[] = "%RGB-1.0\r";
@@ -72,7 +72,13 @@ OSErr saveparams_afs_pff(Handle h){
 			p += sprintf(p, "%d\r", gdata->parm.val[i]);
 
 		/* expressions, broken into lines no longer than CHOPLINES characters */
-		for( i=0 ; i<4 ; ++i ){
+		for( k=0 ; k<4 ; ++k ){
+			i = k;
+			if (premiereOrder) {
+				// Premiere has the order BGRA, while Photoshop (and our internal order) is RGBA
+				if (k == 0) i = 2;
+				else if (k == 2) i = 0;
+			}
 			if ((r = gdata->parm.szFormula[i])) {
 				chunk = 0; // to avoid that compiler complains
 				for (n = strlen(r); n; n -= chunk) {
@@ -263,65 +269,51 @@ OSErr savehandleintofile(Handle h,FILEREF r){
 	return e;
 }
 
-Boolean savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
+FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
-	Boolean res = false;
-	TCHAR* reasonstr = NULL;
+	Boolean bres = false;
+	FFSavingResult res = 0;
 
 	FSpDelete(&sfr->sfFile);
-	if(FSpCreate(&sfr->sfFile,SIG_SIMPLETEXT,TEXT_FILETYPE,sfr->sfScript) == noErr)
-		if(FSpOpenDF(&sfr->sfFile,fsWrPerm,&r) == noErr){
+	if (FSpCreate(&sfr->sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr) {
+		if (FSpOpenDF(&sfr->sfFile, fsWrPerm, &r) == noErr) {
 
 			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_picotxt(h) || savehandleintofile(h, r));
+					bres = !(saveparams_picotxt(h) || savehandleintofile(h, r));
+					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}
+				else res = MSG_OUT_OF_MEMORY_ID;
 			}
-
-			if (fileHasExtension(sfr, TEXT(".guf"))) {
+			else if (fileHasExtension(sfr, TEXT(".guf"))) {
 				// GIMP UserFilter file
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_guf(h) || savehandleintofile(h, r));
+					bres = !(saveparams_guf(h) || savehandleintofile(h, r));
+					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}
+				else res = MSG_OUT_OF_MEMORY_ID;
 			}
-
-			if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
-				if (fileHasExtension(sfr, TEXT(".pff"))) {
-					// If it is a Premiere settings file, we need to swap the channels red and blue
-					// We just swap the pointers!
-					char tmp[MAXEXPR];
-					strcpy(tmp, gdata->parm.szFormula[0]);
-					strcpy(gdata->parm.szFormula[0], gdata->parm.szFormula[2]);
-					strcpy(gdata->parm.szFormula[2], tmp);
-				}
-
+			else if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					res = !(saveparams_afs_pff(h) || savehandleintofile(h, r));
+					bres = !(saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff"))) || savehandleintofile(h, r));
+					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}
-
-				if (fileHasExtension(sfr, TEXT(".pff"))) {
-					// Swap back so that the other program stuff will work normally again
-					char tmp[MAXEXPR];
-					strcpy(tmp, gdata->parm.szFormula[0]);
-					strcpy(gdata->parm.szFormula[0], gdata->parm.szFormula[2]);
-					strcpy(gdata->parm.szFormula[2], tmp);
-				}
+				else res = MSG_OUT_OF_MEMORY_ID;
+			}
+			else {
+				res = MSG_UNSUPPORTED_FILE_FORMAT_ID;
 			}
 
 			FSClose(r);
-		}else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_OPEN_FILE_ID);
-	else reasonstr = FF_GetMsg_Cpy(MSG_CANNOT_CREATE_FILE_ID);
-
-	if (!res) {
-		alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reasonstr);
+		}
+		else res = MSG_CANNOT_OPEN_FILE_ID;
 	}
-
-	if (reasonstr) FF_GetMsg_Free(reasonstr);
+	else res = MSG_CANNOT_CREATE_FILE_ID;
 
 	return res;
 }
