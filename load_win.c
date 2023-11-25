@@ -88,7 +88,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 
 	// First, try to read the file as AFS/PFF/TXT file
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_afs_pff(sfr))) {
+		if (LOADING_OK == (res = readfile_afs_pff(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, false, true, false);
 			return 0;
@@ -103,7 +103,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 
 	// Try to read the file as FFL file
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_ffl(sfr))) {
+		if (LOADING_OK == (res = readfile_ffl(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, true, true, true);
 			return 0;
@@ -118,7 +118,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 
 	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_ffx(sfr))) {
+		if (LOADING_OK == (res = readfile_ffx(sfr))) {
 			return 0;
 		}
 		if (!fileHasExtension(sfr, TEXT(".ffx"))) {
@@ -132,7 +132,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
-			if (0 == (res = readPARMresource(hm))) {
+			if (LOADING_OK == (res = readPARMresource(hm))) {
 				gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
@@ -150,7 +150,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".txt"))) {
-			if (0 == (res = readfile_picotxt_or_ffdecomp(sfr))) {
+			if (LOADING_OK == (res = readfile_picotxt_or_ffdecomp(sfr))) {
 				return 0;
 			}
 		}
@@ -159,7 +159,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".guf"))) {
-			if (0 == (res = readfile_guf(sfr))) {
+			if (LOADING_OK == (res = readfile_guf(sfr))) {
 				return 0;
 			}
 		}
@@ -168,7 +168,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or 64 bit 8BF on Win32 OS)
 	// Note that we cannot detect obfuscated filters here!
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (0 == (res = readfile_8bf(sfr))) {
+		if (LOADING_OK == (res = readfile_8bf(sfr))) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);

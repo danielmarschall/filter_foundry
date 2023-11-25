@@ -116,7 +116,7 @@ void updatezoom(DIALOGREF dp){
 
 /* traverse expression tree, looking for constant references to sliders/maps */
 
-static int _checksl(struct node*p,int ctlflags[],int mapflags[]){
+static int _checksl(struct node*p,bool32_t ctlflags[], bool32_t mapflags[]){
 	int s, i, result;
 
 	result = 0;
@@ -417,7 +417,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
-			if (0 == (res = loadfile(&sfr))) {
+			if (LOADING_OK == (res = loadfile(&sfr))) {
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}
@@ -500,7 +500,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 		if (saveDlgRet) {
 			FFSavingResult saveres = savefile_afs_pff_picotxt_guf(&sfr);
-			if (saveres != 0) {
+			if (saveres != SAVING_OK) {
 				TCHAR* reason = FF_GetMsg_Cpy(saveres);
 				alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
 				FF_GetMsg_Free(reason);

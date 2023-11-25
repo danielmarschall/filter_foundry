@@ -273,7 +273,7 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean bres = false;
-	FFSavingResult res = 0;
+	FFSavingResult res = SAVING_OK;
 
 	FSpDelete(&sfr->sfFile);
 	if (FSpCreate(&sfr->sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr) {

@@ -114,7 +114,9 @@ extern TCHAR *errstr;
 
 // FFLoadingResult = 0 : Success
 // FFLoadingResult > 0 : Error, message ID as described in language.h
+#define LOADING_OK 0
 typedef int FFLoadingResult;
+#define SAVING_OK 0
 typedef int FFSavingResult;
 
 //#define DEBUG

@@ -98,7 +98,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 					}
 
 					if(++exprcnt == 4){
-						res = 0;
+						res = LOADING_OK;
 						break; /* got everything we want */
 					}
 
@@ -324,7 +324,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 					strcpy(gdata->parm.szMap[2], "Map 2:");
 					strcpy(gdata->parm.szMap[3], "Map 3:");
 
-					res = 0;
+					res = LOADING_OK;
 				}
 			}
 			PIDISPOSEHANDLE(h);
@@ -332,7 +332,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 		FSClose(refnum);
 	}
 
-	if (res == 0) gdata->obfusc = false;
+	if (res == LOADING_OK) gdata->obfusc = false;
 	return res;
 }
 
@@ -356,7 +356,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 					for( count /= 4 ; count >= PARM_SIZE/4 ; --count, ++q )
 					{
 						res = readPARM(&gdata->parm, (Ptr)q);
-						if (res == 0) break;
+						if (res == LOADING_OK) break;
 					}
 
 					PIDISPOSEHANDLE(h);
@@ -367,7 +367,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 	}else
 		res = MSG_CANNOT_OPEN_FILE_ID;
 
-	if (res == 0) gdata->obfusc = false;
+	if (res == LOADING_OK) gdata->obfusc = false;
 	return res;
 }
 
@@ -760,7 +760,7 @@ FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr) {
 					}
 				}
 
-				res = 0;
+				res = LOADING_OK;
 			}
 
 			PIUNLOCKHANDLE(h);
@@ -793,7 +793,7 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 	if (tmpFileContents == NULL) return false;
 	sprintf(tmpFileContents, "\n%s\n[", inputwork);
 	for (iTmp = 0; iTmp < strlen(tmpFileContents); iTmp++) {
-		if (tmpFileContents[iTmp] == '\r') tmpFileContents[iTmp] = '\n';
+		if (tmpFileContents[iTmp] == CR) tmpFileContents[iTmp] = LF;
 	}
 
 	// Find the section begin
@@ -926,7 +926,7 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 					}
 				}
 
-				res = 0;
+				res = LOADING_OK;
 			}
 
 			PIUNLOCKHANDLE(h);
@@ -962,7 +962,7 @@ FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 	FILEREF rTmp, refnum;
 	Handle h, hTmp;
-	FFLoadingResult res = 0;
+	FFLoadingResult res = LOADING_OK;
 	StandardFileReply sfrTmp;
 	OSErr e;
 	char* p, * start;
@@ -1002,7 +1002,7 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 							size_t i;
 							char* token2 = my_strdup(token);
 							for (i = 0; i < strlen(token2); i++) {
-								if (token2[i] == '\r') token2[i] = '\0';
+								if (token2[i] == CR) token2[i] = '\0';
 							}
 							if (lineNumber == 0) {
 								// We already checked it above (in order to avoid an unnecessary memory copy)
@@ -1177,7 +1177,7 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 		FSClose(refnum);
 	}
 
-	if (res == 0) {
+	if (res == LOADING_OK) {
 		res = foundFilters == 0 ? MSG_FFL_NO_FILTERS_DETECTED_ID : MSG_FFL_CONVERTED_ID;
 	}
 	return res;
