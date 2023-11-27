@@ -24,11 +24,13 @@
 #ifndef STR_H_
 #define STR_H_
 
-#ifdef MAC_ENV
+#ifndef WIN_ENV
 #ifdef UNICODE
-#define TCHAR wchar_t
+//#define TCHAR wchar_t
+typedef wchar_t TCHAR;
 #else
-#define TCHAR char
+//#define TCHAR char
+typedef char TCHAR;
 #endif
 #endif
 

@@ -81,7 +81,7 @@ unsigned long parm_hash(PARM_T *parm) {
 	return hash;
 }
 
-size_t get_temp_afs(LPTSTR outfilename, Boolean isStandalone, PARM_T *parm) {
+size_t get_temp_afs(TCHAR* outfilename, Boolean isStandalone, PARM_T *parm) {
 	char* atempdir;
 	int hash;
 	size_t i, j;
@@ -133,12 +133,15 @@ char* stristr(const char* str, const char* strSearch) {
 	return res;
 }
 
+#ifdef WIN_ENV
 BOOL CalledFromRunDLL32(HINSTANCE hinst) {
 	char exename[MAX_PATH];
 	if (GetModuleFileNameA(hinst, exename, MAX_PATH) == 0) return false;
 	return stristr(exename, "rundll32") != NULL;
 }
+#endif
 
+#ifdef WIN_ENV
 void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
 	UNREFERENCED_PARAMETER(hwnd);
 	UNREFERENCED_PARAMETER(hinst);
@@ -158,6 +161,7 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 
 	return;
 }
+#endif
 
 void CreateDataPointer(intptr_t* data) {
 	// Register "gdata" that contains the PARM information and other things which need to be persistant
@@ -274,11 +278,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 		goto endmain;
 	}
-	else {
-		// will be changed if an error happens
-		*result = noErr;
-	}
 	#endif
+
+	// will be changed if an error happens
+	*result = noErr;
 
 	#ifdef SHOW_HOST_DEBUG
 	tmp = (char*)malloc(512);

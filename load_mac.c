@@ -59,7 +59,7 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			return MSG_INCOMPATIBLE_OBFUSCATION_ID;
 		}
 	}
-	if (!res) {
+	if (res != LOADING_OK) {
 		gdata->obfusc = false;
 	}
 	return res;

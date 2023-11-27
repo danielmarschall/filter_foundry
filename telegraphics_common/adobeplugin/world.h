@@ -35,6 +35,19 @@
 	typedef long intptr_t;
 #endif
 
+#ifndef WIN_ENV
+#ifdef UNICODE
+typedef wchar_t TCHAR;
+#else
+typedef char TCHAR;
+#endif
+#endif
+
+#ifndef WIN_ENV
+// ???
+#define MAX_PATH 255
+#endif
+
 #include "dbg.h"
 #include "str.h"
 
@@ -119,13 +132,5 @@
 	#define strcasecmp _stricmp
 	#define snprintf _snprintf
 #endif /* _MSC_VER */
-
-#ifndef WIN_ENV
-#ifdef UNICODE
-typedef wchar_t TCHAR;
-#else
-typedef char TCHAR;
-#endif
-#endif
 
 #endif
