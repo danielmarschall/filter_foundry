@@ -29,7 +29,7 @@ You can find more examples in the ["examples" directory](https://github.com/dani
 
 Filter Foundry works with nearly all programs that can handle ".8bf" Photoshop filters.
 
-The following hosts have been tested with Filter Foundry 1.7:
+The following hosts and/or code emulators have been tested with Filter Foundry 1.7:
 
 -   Photoshop 3.0.0 (32 bit) through Photoshop 2024 (64 bit)
 -   IrfanView 4.53 (32/64 bit)
@@ -75,14 +75,14 @@ Currently not supported are FFP (FilterMeister) files.
 
 (3) Title, Category, Author, Copyright, and Slider/Map names are left empty and must be added using a text editor.
 
-(4) The FFL files only be extracted, so they can be read afterwards.
+(4) The FFL files are automatically extracted into TXT files, so that you can read the TXT files in the next step.
 
 
 ### Donation
 
 If you use this program and like it, the original author Toby Thain asks to donate to his PayPal (5 USD suggested or what you think it is worth):
 
-[![](https://www.paypal.com/images/x-click-but04.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=toby%40telegraphics.com.au&item_name=FilterFoundry+plugin&item_number=filterfoundry&amount=5.00&image_url=http%3A%2F%2Fwww.telegraphics.com.au%2Fimg%2Ftlogo-paypal.gif&no_shipping=1&return=http%3A%2F%2Fwww.telegraphics.com.au%2Fsw%2Fthankyou.html&cn=Message+to+developer&currency_code=USD&tax=0)
+[![](https://www.paypal.com/images/x-click-but04.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=toby%40telegraphics.net&item_name=FilterFoundry+plugin&item_number=filterfoundry&amount=5.00&image_url=http%3A%2F%2Fwww.telegraphics.net%2Fimg%2Ftlogo-paypal.gif&no_shipping=1&return=http%3A%2F%2Fwww.telegraphics.net%2Fsw%2Fthankyou.html&cn=Message+to+developer&currency_code=USD&tax=0)
 
 
 ### License

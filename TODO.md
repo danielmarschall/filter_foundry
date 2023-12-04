@@ -7,8 +7,6 @@ ToDo for the next release
 
 * VERY carefully test all the save-file and load-file procedures, because the code has been changed
 
-* FFX decoder: "<ffxname>__0001_<8bfname>.txt" filenames
-
 
 Known problems
 --------------
