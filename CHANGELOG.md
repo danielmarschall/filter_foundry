@@ -1,9 +1,8 @@
 # Changelog
 
 ## 1.7.0.22 [Work-In-Progress]
-- Simplified source code:
-  * expressions, slider names, etc. are now loaded directly in the PARM resource).
-	* Load-methods and Save-methods don't return boolean and a reason string. Instead they return 0 (success) or a error message ID otherwise.
+- Simplified source code: Expressions, slider names, etc. are now loaded directly in the PARM resource).
+- Simplified source code: Load-methods and Save-methods don't return boolean and a reason string. Instead they return 0 (success) or a error message ID otherwise.
 - The slider positions will be preserved when a filter is made
 
 ## 1.7.0.21 [23-Nov-2023]
