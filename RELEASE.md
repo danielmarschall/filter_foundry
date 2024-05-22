@@ -13,6 +13,7 @@ ViaThinkSoft release procedure
 	  (This step is done because we want Win9x compatibility and therefore, the 32-bit 8BF must be built with OpenWatcom 2.0.
 	  MSVC++ 32bit needs at least Windows XP (tested with SP3). MingW 32bit build needs a newer version of the MSVCRT which implements `___mb_cur_max_func`.
 	  To build for Windows NT 3.1, we need OpenWatcom 2.0, becauase OpenWatcom 1.9 is not compatible with it)
+	- Code sign the 8BF files
 	- Build a zip with following contents by running **make_zip.bat** :
 		- wpj/FilterFoundry.8bf             => FilterFoundry.8bf
 		- visual_studio/FilterFoundry64.8bf => FilterFoundry64.8bf

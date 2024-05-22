@@ -1,5 +1,8 @@
 echo off
 
+setlocal
+set PATH=%PATH%;c:\watcom\binnt
+
 cd /d "%~dp0"
 
 rem Call before.bat now, otherwise we might get the error message that y.tab.h is missing
@@ -20,5 +23,5 @@ rem dir *.8bf
 echo.
 echo.
 echo.
-echo Finished. Please check console output.
+echo Finished compiling 32bit using WATCOM. Please check console output.
 pause.
