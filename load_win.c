@@ -169,6 +169,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// Note that we cannot detect obfuscated filters here!
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (LOADING_OK == (res = readfile_8bf(sfr))) {
+			gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);
