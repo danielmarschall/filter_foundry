@@ -157,7 +157,7 @@ int rand_openwatcom(unsigned int* seed) {
 	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
 }
 
-void xorshift(unsigned char** p, uint32_t* x32, size_t num) {
+void xorshift32(unsigned char** p, uint32_t* x32, size_t num) {
 	size_t i;
 	unsigned char* x = *p;
 	for (i = 0; i < num; i++) {
@@ -191,7 +191,7 @@ uint64_t rol_u64(uint64_t value, uint64_t by) {
 	return value << by | value >> ((uint64_t)sizeof(uint64_t) * CHAR_BIT - by);
 }
 
-void rolshift(unsigned char** p, uint64_t* x64, size_t num) {
+void rolshift64(unsigned char** p, uint64_t* x64, size_t num) {
 	size_t i;
 	unsigned char* x = *p;
 	for (i = 0; i < num; i++) {
@@ -351,7 +351,8 @@ int obfuscation_version(PARM_T* pparm) {
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
 		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
 		// Version 7 obfuscation (Filter Foundry 1.7.0.17)
-		// Future: Version 8, 9, ..., 255
+		// Version 8 obfuscation (Filter Foundry 1.7.0.22)
+		// Future: Version 9, 10, ..., 255
 		return obfusc_info;
 	}
 	else {
@@ -397,17 +398,20 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T));
 
 	xorseed = initial_seed & 0xFFFFFFFF;
+	xorseed ^= 0x43884215ul;
 	p = (unsigned char*)pparm;
-	xorshift(&p, &xorseed, sizeof(PARM_T));
+	xorshift32(&p, &xorseed, sizeof(PARM_T));
 
 	rolseed = initial_seed;
+	rolseed ^= 0x885BD98DB3F02A61ull;
 	p = (unsigned char*)pparm;
-	rolshift(&p, &rolseed, sizeof(PARM_T));
+	rolshift64(&p, &rolseed, sizeof(PARM_T));
 
-	rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+	rand_iters = 0x4FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
 	if (rand_iters < 0) rand_iters = 0;
 	for (j = rand_iters; j >= 0; j--) {
 		uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+		rand_seed ^= 0x53814591ul;
 		p = (unsigned char*)pparm;
 		for (i = 0; i < 10; i++) {
 			rand_msvcc(&rand_seed);
@@ -418,10 +422,11 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	}
 
 	xorseed2 = initial_seed2;
+	xorseed2 ^= 0xF3DAB64ED52F97D0ul;
 	p = (unsigned char*)pparm;
 	xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
-	pparm->unknown2 = 7; // current obfusc version
+	pparm->unknown2 = 8; // current obfusc version
 
 	*out_initial_seed = initial_seed;
 	*out_initial_seed2 = initial_seed2;
@@ -526,10 +531,10 @@ void deobfusc(PARM_T* pparm) {
 			}
 
 			p = (unsigned char*)pparm;
-			xorshift(&p, &seed, version_position);
+			xorshift32(&p, &seed, version_position);
 			*((uint32_t*)p) = 0; // here was the version info (pparm->unknown2). Fill it with 0x00000000, since the original data was lost
 			p += 4; // jump to the next DWORD
-			xorshift(&p, &seed, size - version_position - 4);
+			xorshift32(&p, &seed, size - version_position - 4);
 
 			if (obfusc_version == 5) {
 				pparm->unknown2 = 0; // make sure crc32b matches always
@@ -542,9 +547,11 @@ void deobfusc(PARM_T* pparm) {
 			break;
 		}
 		case 6:
-		case 7: {
+		case 7:
+		case 8: {
 			// Version 6 obfuscation (Filter Foundry 1.7.0.10)
 			// Version 7 obfuscation (Filter Foundry 1.7.0.17)
+			// Version 8 obfuscation (Filter Foundry 1.7.0.22)
 			// Not compiler dependent, but individual for each standalone filter
 			// It is important that this code works for both x86 and x64 indepdently from the used compiler,
 			// otherwise, the cross-make x86/x64 won't work!
@@ -561,13 +568,19 @@ void deobfusc(PARM_T* pparm) {
 
 				initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
 				xorseed2 = initial_seed2;
+				if (obfusc_version >= 8) xorseed2 ^= 0xF3DAB64ED52F97D0ul;
 				p = (unsigned char*)pparm;
 				xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
-				rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+				if (obfusc_version == 7) {
+					rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+				} else {
+					rand_iters = 0x4FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+				}
 				if (rand_iters < 0) rand_iters = 0;
 				for (j = 0; j <= rand_iters; j++) {
 					uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+					if (obfusc_version >= 8) rand_seed ^= 0x53814591ul;
 					p = (unsigned char*)pparm;
 					for (i = 0; i < 10; i++) {
 						rand_msvcc(&rand_seed);
@@ -579,12 +592,14 @@ void deobfusc(PARM_T* pparm) {
 			}
 
 			rolseed = initial_seed;
+			if (obfusc_version >= 8) rolseed ^= 0x885BD98DB3F02A61ull;
 			p = (unsigned char*)pparm;
-			rolshift(&p, &rolseed, sizeof(PARM_T));
+			rolshift64(&p, &rolseed, sizeof(PARM_T));
 
 			xorseed = initial_seed & 0xFFFFFFFF;
+			if (obfusc_version >= 8) xorseed ^= 0x43884215ul;
 			p = (unsigned char*)pparm;
-			xorshift(&p, &xorseed, sizeof(PARM_T));
+			xorshift32(&p, &xorseed, sizeof(PARM_T));
 
 			checksum = pparm->unknown1;
 
