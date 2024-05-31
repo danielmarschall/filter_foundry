@@ -89,8 +89,8 @@ typedef struct {             // structure of FF PARM resource
 	uint32_t val[8];         // initial values of controls
 	bool32_t popDialog;      // 1 if need to pop a parameter dialog
 	uint32_t unknown1;       // This field is used for the obfuscation (checksum for obfusc v6+)
-	uint32_t unknown2;       // This field is used for the obfuscation (obfusc version info for obfusc v2+)
-	uint32_t unknown3;       // This field is reserved for future use
+	uint32_t unknown2;       // This field is used for the obfuscation (seed for obfusc v3, and version for obfusc v4+)
+	uint32_t unknown3;       // This field is reserved for future use for the obfuscation (it is set to 0 for obfusc v6+)
 	bool32_t map_used[4];    // true if map(n) is used
 	bool32_t ctl_used[8];    // true if ctl(n) is used
 	char szCategory[252];    // Category name

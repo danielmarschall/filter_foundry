@@ -377,11 +377,12 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	initial_seed = GetObfuscSeed();
 	initial_seed2 = GetObfuscSeed2();
 #else
-	// Give always the same seed if the parameters are the same. No random values.
-	// This initial seed will be returned and built into the executable code by make_win.c
+	// Give always the same seed if the parameters are the same. No random values. Hence we use the CRC64 as seed.
+	// The information in pparm->unknown1,2,3 will be lost due to the obfuscation.
 	pparm->unknown1 = 0;
 	pparm->unknown2 = 0;
 	pparm->unknown3 = 0;
+	// The initial seeds will be returned and built into the executable code by make_win.c
 	initial_seed = crc64((unsigned char*)pparm, sizeof(PARM_T));
 	pparm->unknown3 = crc32b((char*)pparm, sizeof(PARM_T)); // make sure that the second seed is different
 	pparm->unknown2 = crc32b((char*)pparm, sizeof(PARM_T)); // make sure that the second seed is different
@@ -420,7 +421,7 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	p = (unsigned char*)pparm;
 	xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
-	pparm->unknown2 = 7; // obfusc version
+	pparm->unknown2 = 7; // current obfusc version
 
 	*out_initial_seed = initial_seed;
 	*out_initial_seed2 = initial_seed2;
@@ -493,7 +494,7 @@ void deobfusc(PARM_T* pparm) {
 			for (i = 0; i < seed_position; i++) {
 				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
 			}
-			*((uint32_t*)p) = 0; // here was the seed. Fill it with 0x00000000
+			*((uint32_t*)p) = 0; // here was the seed (pparm->unknown2). Fill it with 0x00000000, since the original data was lost
 			p += 4; // jump to the next DWORD
 			for (i = 0; i < size - seed_position - 4; i++) {
 				*p++ ^= (int)(rand() * 1.0 / ((double)RAND_MAX + 1) * 256);
@@ -511,13 +512,13 @@ void deobfusc(PARM_T* pparm) {
 			// Version 5 contains a seed requirement (checksum).
 
 			unsigned char* p;
-			size_t seed_position;
+			size_t version_position;
 			uint32_t seed, initial_seed;
 
 			initial_seed = GetObfuscSeed() & 0xFFFFFFFF; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			seed = initial_seed;
-			seed_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
+			version_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
 
 			if (obfusc_version == 5) {
 				// make v4 and v5 intentionally incompatible to avoid a downgrade-attack
@@ -525,10 +526,10 @@ void deobfusc(PARM_T* pparm) {
 			}
 
 			p = (unsigned char*)pparm;
-			xorshift(&p, &seed, seed_position);
-			*((uint32_t*)p) = 0; // here was the version info (4 or 5). Fill it with 0x00000000
+			xorshift(&p, &seed, version_position);
+			*((uint32_t*)p) = 0; // here was the version info (pparm->unknown2). Fill it with 0x00000000, since the original data was lost
 			p += 4; // jump to the next DWORD
-			xorshift(&p, &seed, size - seed_position - 4);
+			xorshift(&p, &seed, size - version_position - 4);
 
 			if (obfusc_version == 5) {
 				pparm->unknown2 = 0; // make sure crc32b matches always
@@ -587,6 +588,8 @@ void deobfusc(PARM_T* pparm) {
 
 			checksum = pparm->unknown1;
 
+			// The basis for the checksum requires unknown1,2,3 to be 0.
+			// The information in pparm->unknown1,2,3 was lost due to the obfuscation
 			pparm->unknown1 = 0;
 			pparm->unknown2 = 0;
 			pparm->unknown3 = 0;
@@ -626,15 +629,5 @@ void deobfusc(PARM_T* pparm) {
 		// of throwing the error "Incompatible obfuscation".
 		pparm->cbSize = PARM_SIZE;
 		pparm->standalone = 1;
-	}
-
-	if (obfusc_version >= 1) {
-		// information was lost due to obfuscation. Make sure it is zero.
-		pparm->unknown2 = 0;
-	}
-
-	if (obfusc_version >= 6) {
-		// information was lost due to checksum. Make sure it is zero.
-		pparm->unknown1 = 0;
 	}
 }
