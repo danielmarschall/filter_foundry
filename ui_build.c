@@ -25,8 +25,9 @@
 
 int checksliders_result;
 
-/* one-time initialisation of dialog box */
-
+/**
+one-time initialisation of dialog box
+*/
 void builddlginit(DIALOGREF dp){
 	int i;
 
@@ -99,8 +100,9 @@ Boolean containsExtCharset(DIALOGREF dp, int item) {
 	return false;
 }
 
-/* process an item hit. return false if the dialog is finished; otherwise return true. */
-
+/**
+process an item hit. return false if the dialog is finished; otherwise return true.
+*/
 Boolean builddlgitem(DIALOGREF dp,int item){
 	char s[MAXFIELD+1];
 	int i,needui;

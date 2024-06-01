@@ -81,9 +81,12 @@ type PARM_TYPE {
 
 typedef uint32_t bool32_t;
 
-// Photoshop's Filter Factory has PARM:16
-// Filter Foundry has PARM:16000 (old) or PARM:16 (new)
-typedef struct {             // structure of FF PARM resource
+/**
+Structure of FF PARM resource
+Photoshop's Filter Factory has PARM:16
+Filter Foundry has PARM:16000 (old) or PARM:16 (new)
+*/
+typedef struct {             
 	uint32_t cbSize;         // size of this structure = 0x2068 (or 0x1C68 for Filter Foundry <1.7 and Mac OS Filter Factory)
 	bool32_t standalone;     // 0=original FF, 1=standalone filter
 	uint32_t val[8];         // initial values of controls
@@ -103,8 +106,11 @@ typedef struct {             // structure of FF PARM resource
 	char szFormula[4][1024]; // 4 channel formulas; in Photoshop: (r,g,b,a)
 } PARM_T/*_PHOTOSHOP*/;
 
-// Premiere's Transition/Filter Factory has PARM:16000
-typedef struct {             // structure of Premiere FF/TF PARM resource
+/**
+Structure of Premiere FF/TF PARM resource
+Premiere's Transition/Filter Factory has PARM:16000
+*/
+typedef struct {
 	uint32_t cbSize;         // size of this structure = 0x206C
 	bool32_t standalone;     // 0=original FF, 1=standalone filter
 	bool32_t singleExpression; // 1 if "single expression" is checked (member only available in Premiere)

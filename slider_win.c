@@ -24,9 +24,11 @@
 // More information about the PLUGIN.DLL sliders:
 // https://misc.daniel-marschall.de/projects/filter_factory/sliders.html
 
-// PLUGIN.DLL Sliders: This method will register the "slider" class used in dialogs.
 #ifdef use_plugin_dll_sliders
 typedef BOOL(__cdecl* f_RegisterSlider)(HINSTANCE hInstanceDll, DWORD* MessageID);
+/**
+PLUGIN.DLL Sliders : This method will register the "slider" class used in dialogs.
+*/
 BOOL PluginDll_RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 	f_RegisterSlider fRegisterSlider;
 	BOOL res;
@@ -38,9 +40,11 @@ BOOL PluginDll_RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID) {
 }
 #endif
 
-// PLUGIN.DLL Sliders: This method will unregister the "slider" class used in dialogs.
 #ifdef use_plugin_dll_sliders
 typedef BOOL(__cdecl* f_UnRegisterSlider)(HINSTANCE hInstanceDll);
+/**
+PLUGIN.DLL Sliders : This method will unregister the "slider" class used in dialogs.
+*/
 BOOL PluginDll_UnRegisterSlider(HINSTANCE hInstanceDll) {
 	f_UnRegisterSlider fUnRegisterSlider;
 	BOOL res;
@@ -52,9 +56,11 @@ BOOL PluginDll_UnRegisterSlider(HINSTANCE hInstanceDll) {
 }
 #endif
 
-// PLUGIN.DLL Sliders: Set slider range (min/max)
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_SetSliderRange)(HWND hWnd, int nMin, int nMax);
+/**
+PLUGIN.DLL Sliders: Set slider range (min/max)
+*/
 int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax) {
 	f_SetSliderRange fSetSliderRange;
 	int res;
@@ -66,9 +72,11 @@ int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax) {
 }
 #endif
 
-// PLUGIN.DLL Sliders : Sets slider position
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
+/**
+PLUGIN.DLL Sliders : Sets slider position
+*/
 int PluginDll_SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 	f_SetSliderPos fSetSliderPos;
 	int res;
@@ -80,9 +88,11 @@ int PluginDll_SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint) {
 }
 #endif
 
-// PLUGIN.DLL Sliders : Get slider position
 #ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_GetSliderPos)(HWND hWnd, BOOL bPixelPosition);
+/**
+PLUGIN.DLL Sliders : Get slider position
+*/
 int PluginDll_GetSliderPos(HWND hWnd, BOOL bPixelPosition) {
 	f_GetSliderPos fGetSliderPos;
 	int res;
@@ -311,8 +321,10 @@ void Slider_Uninit_MsTrackbar(void) {
 	}
 }
 
+/**
+Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
+*/
 Boolean Slider_Init_None(LPCTSTR targetClass) {
-	// Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
 
 	if (gdata->noneSliderInfo.initialized) return true;
 

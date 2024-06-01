@@ -198,9 +198,9 @@ void _doMonitorAdjustments(LPRECT rcPlugin) {
 	OffsetRect(rcPlugin, nXAdjust, nYAdjust);
 }
 
-/*
-* Centers a window to the center of its parent form but avoids
-* being spread across two screens.
+/**
+Centers a window to the center of its parent form but avoids
+being spread across two screens.
 */
 void centre_window(HWND hwnd) {
 	RECT rcParent, rcWindowOriginal, rcPlugin;

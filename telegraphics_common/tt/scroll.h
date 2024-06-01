@@ -24,7 +24,9 @@
 
 enum{ SCROLL_BAR_WIDTH = 16 };
 
-// provided by application
+/**
+provided by application
+*/
 void draw_window(WindowPtr w,RgnHandle r);
 
 void fix_scrollers(ControlHandle hb,ControlHandle vb,short oldh,short oldv);

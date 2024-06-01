@@ -66,11 +66,14 @@ char* get_cstring(PIReadDescriptor token) {
 	return str;
 }
 
-// If parm is NULL, then it is standalone, otherwise it is the main plugin
+/**
+To make our plugin compatible with AppleScript, each key must
+be unique, since the namespace is global!
+Furthermore, the "uniqueID/scope" hstm-field in the PIPL must be empty.
+@param c R, G, B, A for the channels and 0..9 for the controls
+@param parm If parm is NULL, then it is standalone, otherwise it is the main plugin
+*/
 OSType getAeteKey(char c, PARM_T* parm) {
-	// To make our plugin compatible with AppleScript, each key must
-	// be unique, since the namespace is global!
-	// Furthermore, the "uniqueID/scope" hstm-field in the PIPL must be empty.
 
 	if (parm != NULL) {
 		unsigned long hash;
@@ -108,7 +111,9 @@ OSType getAeteKey(char c, PARM_T* parm) {
 	}
 }
 
-/* return true if dialog should be shown */
+/**
+return true if dialog should be shown
+*/
 enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 {
 	PIReadDescriptor token;
@@ -205,21 +210,14 @@ OSErr WriteScriptParamsOnRead(void)
 	return gotErr;
 }
 
-
-//-------------------------------------------------------------------------------
-//
-//      HostDescriptorAvailable
-//
-//      Determines whether the PIDescriptorParameters callback is available.
-//
-//      Check for valid suite version, routine suite version, and routine count.
-//      Also check that the subset of routines we actually use is actually present.
-//
-//-------------------------------------------------------------------------------
-
+/**
+Determines whether the PIDescriptorParameters callback is available.
+Check for valid suite version, routine suite version, and routine count.
+Also check that the subset of routines we actually use is actually present.
+*/
 Boolean HostDescriptorAvailable(PIDescriptorParameters* procs, Boolean* outNewerVersion)
 {
-	if (procs == NULL) return FALSE; // Photoshop < 4.0 don't has scripting
+	if (procs == NULL) return FALSE; // Photoshop < 4.0 has no scripting
 
 	if (outNewerVersion)
 		*outNewerVersion = procs->descriptorParametersVersion > kCurrentDescriptorParametersVersion
@@ -247,35 +245,19 @@ Boolean HostDescriptorAvailable(PIDescriptorParameters* procs, Boolean* outNewer
 		&& procs->writeDescriptorProcs->putIntegerProc != NULL;
 }
 
+/**
+Closes a read token, disposes its handle, sets the token to NULL, and
+sets the parameter blocks' descriptor to NULL.
 
-//-------------------------------------------------------------------------------
-//
-//      HostCloseReader
-//
-//      Closes a read token, disposes its handle, sets the token to NULL, and
-//      sets the parameter blocks' descriptor to NULL.
-//
-//      The Descriptor Parameters suite are callbacks designed for
-//      scripting and automation.  See PIActions.h.
-//
-//      Inputs:
-//              PIDescriptorParameters *procs   Pointer to Descriptor Parameters suite.
-//
-//              HandleProcs *hProcs                             Pointer to HandleProcs callback.
-//
-//              PIReadDescriptor *token                 Pointer to token to close.
-//
-//              procs->descriptor                               Pointer to original read handle.
-//
-//      Outputs:
-//              PIReadDescriptor *token                 Set to NULL.
-//
-//              procs->descriptor                               Disposed then set to NULL.
-//
-//              returns OSErr                                   noErr or error if one occurred.
-//
-//-------------------------------------------------------------------------------
+The Descriptor Parameters suite are callbacks designed for
+scripting and automation.  See PIActions.h.
 
+@param   PIDescriptorParameters *procs              Pointer to Descriptor Parameters suite.
+@param   PIDescriptorHandle     procs->descriptor   Pointer to original read handle. This method disposes it and sets it to NULL.
+@param   HandleProcs            *hProcs             Pointer to HandleProcs callback.
+@param   PIReadDescriptor       *token              Pointer to token to close. This method sets it to NULL.
+@return  OSErr                                      noErr or error if one occurred.
+*/
 OSErr HostCloseReader(PIDescriptorParameters* procs,
 	HandleProcs* hProcs,
 	PIReadDescriptor* token)
@@ -292,38 +274,22 @@ OSErr HostCloseReader(PIDescriptorParameters* procs,
 
 	return err;
 
-} // end HostCloseReader
+}
 
-//-------------------------------------------------------------------------------
-//
-//      HostCloseWriter
-//
-//      Closes a write token, stores its handle in the global parameter block for
-//      the host to use, sets the token to NULL, and sets the recordInfo to
-//      plugInDialogOptional (the default).
-//
-//      The Descriptor Parameters suite are callbacks designed for
-//      scripting and automation.  See PIActions.h.
-//
-//      Inputs:
-//              PIDescriptorParameters *procs   Pointer to Descriptor Parameters suite.
-//
-//              HandleProcs *hProcs                             Pointer to HandleProcs callback.
-//
-//              PIWriteDescriptor *token                Pointer to token to close and pass on.
-//
-//              procs->descriptor                               Should be NULL.  If not, its contents
-//                                                                              will be disposed and replaced.
-//
-//      Outputs:
-//              PIWriteDescriptor *token                Set to NULL.
-//
-//              procs->descriptor                               Set to descriptor handle.
-//
-//              returns OSErr                                   noErr or error if one occurred.
-//
-//-------------------------------------------------------------------------------
+/**
+Closes a write token, stores its handle in the global parameter block for
+the host to use, sets the token to NULL, and sets the recordInfo to
+plugInDialogOptional (the default).
 
+The Descriptor Parameters suite are callbacks designed for
+scripting and automation.  See PIActions.h.
+
+@param   PIDescriptorParameters   *procs                Pointer to Descriptor Parameters suite.
+@param   HandleProcs              *hProcs               Pointer to HandleProcs callback.
+@param   PIWriteDescriptor        *token                Pointer to token to close and pass on. This method sets it to NULL.
+@param   PIDescriptorHandle       procs->descriptor     Should be NULL. If not, its contents will be disposed and replaced. This method sets it to the descriptor handle.
+@return  OSErr                                          noErr or error if one occurred.
+*/
 OSErr   HostCloseWriter(PIDescriptorParameters* procs,
 	HandleProcs* hProcs,
 	PIWriteDescriptor* token)
@@ -347,5 +313,4 @@ OSErr   HostCloseWriter(PIDescriptorParameters* procs,
 	*token = NULL;
 
 	return err;
-
-} // end HostCloseWriter
+}

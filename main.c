@@ -39,13 +39,13 @@
 //#define SHOW_HOST_DEBUG
 
 // Here are working variables:
+
 struct node *tree[4];
 TCHAR *err[4];
 int errpos[4],errstart[4],nplanes,cnvused,chunksize,toprow;
 value_type cell[NUM_CELLS];
 
-// this is the only memory area that keeps preserved by Photoshop:
-globals_t *gdata;
+globals_t *gdata; // this is the only memory area that keeps preserved by Photoshop:
 FilterRecordPtr gpb;
 
 #ifdef MAC_ENV
@@ -163,13 +163,14 @@ void CALLBACK FakeRundll32(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nC
 }
 #endif
 
+/**
+Register the global variable `gdata` that contains the PARM information and other things which need to be persistant
+and preserve them in `*data`.
+This memory allocation is never freed, because the filter can always be invoked again.
+The memory allocation will be kept for the lifetime of the Photoshop process and
+freed together with the application termination.
+*/
 void CreateDataPointer(intptr_t* data) {
-	// Register "gdata" that contains the PARM information and other things which need to be persistant
-	// and preserve them in *data
-	// This memory allocation is never freed, because the filter can always be invoked again.
-	// The memory allocation will be kept for the lifetime of the Photoshop process and
-	// freed together with the application termination.
-
 	// We have at least 5 options to allocate memory:
 
 	// (Method 1)
@@ -465,7 +466,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 endmain:
 
-	// TODO: Question: Is that OK to call this every invocation, or should it be only around UI stuff?
+	// TODO: Question: Is that OK to call this at every invocation, or should it be only around UI stuff?
 	#ifdef WIN_ENV
 	if (activationContextUsed) DeactivateManifest(&manifestVars);
 	#endif
@@ -514,8 +515,10 @@ void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetS
 	}
 }
 
+/**
+Cleanup "PARM" resource by removing stuff after the null terminators, to avoid that parts of confidential formulas are leaked
+*/
 void parm_cleanup() {
-	// Cleanup "PARM" resource by removing stuff after the null terminators, to avoid that parts of confidential formulas are leaked
 	int i;
 
 	{
@@ -677,8 +680,10 @@ Boolean host_preserves_parameters(void) {
 	return true;
 }
 
+/**
+Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
+*/
 int64_t maxspace(void){
-	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
 
 	// Plugins that don't support MaxSpace64 shall set the field to zero; then we will use MaxSpace instead.
 	// Also check "gpb->bufferProcs->numBufferProcs" to see if 64 bit API is available
@@ -698,9 +703,10 @@ int64_t maxspace(void){
 	}
 }
 
+/**
+Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
+*/
 Boolean maxspace_available(void) {
-	// Please see "Hosts.md" for details about the MaxSpace implementations of tested plugins
-
 	// GIMP PSPI sets MaxSpace to hardcoded 100 MB
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 
@@ -743,8 +749,10 @@ void DoPrepare(FilterRecordPtr pb){
 	}
 }
 
+/**
+Request next block of the image
+*/
 void RequestNext(FilterRecordPtr pb){
-	/* Request next block of the image */
 
 	pb->inLoPlane = pb->outLoPlane = 0;
 	pb->inHiPlane = pb->outHiPlane = nplanes-1;
@@ -824,7 +832,7 @@ void RequestNext(FilterRecordPtr pb){
 }
 
 void DoStart(FilterRecordPtr pb){
-	/* Global variable "needall": if src() or rad() functions are used, random access to the image data is required,
+	/* Note about global variable "needall": if src() or rad() functions are used, random access to the image data is required,
 	   so we must request the entire image in a single chunk, otherwise we will use chunksize "CHUNK_ROWS". */
 	if (HAS_BIG_DOC(pb)) {
 		chunksize = needall ? (BIGDOC_FILTER_RECT(pb).bottom - BIGDOC_FILTER_RECT(pb).top) : CHUNK_ROWS;

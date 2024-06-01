@@ -23,15 +23,17 @@
 
 #include "ff.h"
 
-// Random seed for obfuscation "17 05 83 52 2a 97 16 74"
-// During the standalone-make process, this value will be changed by manipulating the 8BF file.
-// Therefore, the 32/64 bit 8BF files *MUST* contain the key contiguous and preferrpreferablyibly 4-aligned
-// Why do I use GetObfuscSeed?
-// 1. Because I prefer the key in side code segment so that it is better hidden than if it was in a data segment.
-// 2. Since the code segment is closer to the 8BF file start, the search+replace of the key is faster
-// Please also note:
-// The 8BF file *MUST* only contain the seed A SINGLE TIME
-// (In the Non-Standalone filter actually 3 times, because we have 2 resourced containing the 32/64 template DLLs)
+/**
+Random seed for obfuscation "17 05 83 52 2a 97 16 74"
+During the standalone-make process, this value will be changed by manipulating the 8BF file.
+Therefore, the 32/64 bit 8BF files *MUST* contain the key contiguous and preferably 4-aligned
+Why do I use GetObfuscSeed?
+1. Because I prefer the key in side `.text` segment (code) so that it is better hidden than if it was in a `.data` segment.
+2. Since the `.text` segment is closer to the 8BF file start, the search+replace of the key is faster
+Please also note:
+The 8BF file *MUST* only contain the seed A SINGLE TIME
+(In the Non-Standalone filter actually 3 times, because we have 2 resources containing the 32/64 template DLLs)
+*/
 #if defined(__WATCOMC__)
 	uint64_t GetObfuscSeed(void) {
 		// Due to "volatile", this value will only exist a single time in the binary file.
@@ -90,15 +92,17 @@
 	}
 #endif
 
-// Random seed #2 for obfuscation "86 21 1f 3e f1 a2 87 ef"
-// Lies in the data segment. Same rules like for the random seed #1.
+/**
+Random seed #2 for obfuscation "86 21 1f 3e f1 a2 87 ef"
+Lies in the data segment. Same rules like for the random seed #1.
+*/
 const volatile uint64_t obfusc_seed2 = 0xef87a2f13e1f2186ull;
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
 uint64_t GetObfuscSeed2(void) {
-	// Additional seed for Obfusc V7. It is always in the data segment,
-	// while obfusc seed 1 is in the code segment (if the compiler allows it)
+	// Additional seed for Obfusc V7+. It is always in the `.data` segment,
+	// while obfusc seed 1 is in the `.text` (code) segment (if the compiler allows it)
 	return obfusc_seed2;
 }
 
@@ -110,7 +114,7 @@ Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uin
 	FILEREF fptr;
 	FILECOUNT cnt;
 
-	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return -1;
+	if (FSpOpenDF(dst, fsRdWrPerm, &fptr) != noErr) return false;
 
 	cnt = sizeof(srecord);
 	while (FSRead(fptr, &cnt, &srecord) == noErr)
@@ -310,9 +314,9 @@ static const uint64_t crc64_tab[256] = {
 	0x9AFCE626CE85B507ULL
 };
 
-/*
- * ECMA 182 CRC64, taken from https://searchcode.com/file/68313281/lib/crc64.c/
- */
+/**
+ECMA 182 CRC64, taken from https://searchcode.com/file/68313281/lib/crc64.c/
+*/
 uint64_t crc64(const unsigned char* data, size_t len)
 {
 	uint64_t crc = 0;
@@ -362,9 +366,10 @@ int obfuscation_version(PARM_T* pparm) {
 	}
 }
 
+/**
+Version 8 obfuscation (Introduced in Filter Foundry 1.7.0.22)
+*/
 void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2) {
-	// Version 7 obfuscation (Introduced in Filter Foundry 1.7.0.17)
-
 	unsigned char* p;
 	uint64_t initial_seed, initial_seed2, rolseed;
 	uint32_t xorseed;
@@ -407,7 +412,7 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	p = (unsigned char*)pparm;
 	rolshift64(&p, &rolseed, sizeof(PARM_T));
 
-	rand_iters = 0x4FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+	rand_iters = 0x2FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
 	if (rand_iters < 0) rand_iters = 0;
 	for (j = rand_iters; j >= 0; j--) {
 		uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
@@ -432,6 +437,9 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	*out_initial_seed2 = initial_seed2;
 }
 
+/**
+Version 1-8 de-obfuscation
+*/
 void deobfusc(PARM_T* pparm) {
 	uint32_t obfusc_version;
 	size_t size = sizeof(PARM_T);
@@ -573,9 +581,11 @@ void deobfusc(PARM_T* pparm) {
 				xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
 				if (obfusc_version == 7) {
+					// Version 7 has between 766 and 4095 rounds
 					rand_iters = 0xFFF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
 				} else {
-					rand_iters = 0x4FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
+					// Version 8+ has between 257 and 767 rounds (less than V7, to make it faster)
+					rand_iters = 0x2FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
 				}
 				if (rand_iters < 0) rand_iters = 0;
 				for (j = 0; j <= rand_iters; j++) {

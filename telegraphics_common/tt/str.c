@@ -83,8 +83,10 @@ int xstrcmp(const char* a, const char* b) {
 }
 #endif
 
-// convert C (null-terminated) to Pascal (length byte) string
-// no bounds checking
+/**
+Convert C(null - terminated) to Pascal(length byte) string.
+No bounds checking
+*/
 unsigned char *myc2pstr(char *s){
 	size_t n = strlen(s);
 	memmove(s+1,s,n);
@@ -92,8 +94,10 @@ unsigned char *myc2pstr(char *s){
 	return (unsigned char*)s;
 }
 
-// convert Pascal string to C string
-// no bounds checking
+/**
+Convert Pascal string to C string.
+No bounds checking
+*/
 char *myp2cstr(unsigned char *s){
 	int n = *s;
 	memmove(s,s+1,n);
@@ -101,15 +105,19 @@ char *myp2cstr(unsigned char *s){
 	return (char*)s;
 }
 
-// copy Pascal string to C string
-// no bounds checking
+/**
+Copy Pascal string to C string.
+No bounds checking
+*/
 char *myp2cstrcpy(char *dst,const unsigned char *src){
 	memcpy(dst,src+1,src[0]);
 	dst[src[0]] = 0;
 	return dst;
 }
 
-// copy C string to Pascal string
+/**
+Copy C string to Pascal string
+*/
 unsigned char *myc2pstrcpy(unsigned char *dst,const char *src){
 	size_t n = strlen(src);
 	*dst = n <= 255 ? (unsigned char)n : 255;
@@ -117,8 +125,10 @@ unsigned char *myc2pstrcpy(unsigned char *dst,const char *src){
 	return dst;
 }
 
-// copy null-terminated string;
-// returns pointer after last character copied
+/**
+Copy null - terminated string;
+@return returns pointer after last character copied
+*/
 char *cat(char *d,char *s){
 	while( (*d = *s++) )
 		d++;
@@ -134,7 +144,9 @@ void *my_memset(void *dst, int val, size_t len){
 }
 */
 
-// my_strdup() is like _strdup(), with the difference that it accepts "char*" instead of "const char*" as argument
+/**
+my_strdup() is like _strdup(), with the difference that it accepts "char*" instead of "const char*" as argument
+*/
 char *my_strdup(char *s){
 	size_t n = strlen(s);
 	char *p = (char*)malloc(n+1);

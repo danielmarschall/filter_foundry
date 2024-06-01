@@ -72,8 +72,7 @@ Boolean choosefile(PString prompt,StandardFileReply *sfr,
 );
 
 /* http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/CommonDialogBoxLibrary/CommonDialogBoxReference/CommonDialogBoxStructures/OPENFILENAME.asp
-lpstrFilter
-Pointer to a buffer containing pairs of null-terminated filter strings.
+@param lpstrFilter Pointer to a buffer containing pairs of null-terminated filter strings.
 The last string in the buffer must be terminated by two NULL characters.
 The first string in each pair is a display string that describes the filter
 (for example, "Text Files"), and the second string specifies the filter pattern
@@ -82,7 +81,6 @@ use a semicolon to separate the patterns (for example, "*.TXT;*.DOC;*.BAK").
 A pattern string can be a combination of valid file name characters
 and the asterisk (*) wildcard character. Do not include spaces in the pattern string.
 */
-
 Boolean putfile(PString prompt, PString fname,OSType fileType,OSType fileCreator,
                 NavReplyRecord *reply,StandardFileReply *sfr,
                 const TCHAR *lpstrDefExt, const TCHAR *lpstrFilter,int nFilterIndex

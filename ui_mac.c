@@ -82,7 +82,7 @@ Boolean showmessage(char *s){
 	return i == ok;
 }
 
-/*
+/**
     NOTE ON CONTROL ACTION PROCS
 
     When using the TrackControl() call when tracking an indicator, the actionProc parameter
@@ -93,7 +93,6 @@ Boolean showmessage(char *s){
     must pass a ControlActionUPP in when tracking the indicator as well. This functionality
     is available in Appearance 1.0 or later.
 */
-
 pascal void slideraction(ControlRef theControl,short partCode){
 	int old,delta = 0;
 

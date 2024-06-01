@@ -274,11 +274,13 @@ Boolean update_pe_timestamp(const FSSpec* dst, __time32_t timestamp) {
 	return res == noErr; // res=0 means everything was noErr, res=1 means something was !=noErr
 }
 
+/**
+Calculate checksum of image
+Taken from "PE Bliss" Cross-Platform Portable Executable C++ Library
+https://github.com/mrexodia/portable-executable-library/blob/master/pe_lib/pe_checksum.cpp
+Converted from C++ to C by Daniel Marschall
+*/
 uint32_t calculate_checksum(FSSpec* dst) {
-	//Calculate checksum of image
-	// Taken from "PE Bliss" Cross-Platform Portable Executable C++ Library
-	// https://github.com/mrexodia/portable-executable-library/blob/master/pe_lib/pe_checksum.cpp
-	// Converted from C++ to C by Daniel Marschall
 
 	FILEREF fptr;
 	unsigned long long checksum = 0;
@@ -474,7 +476,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					parm_id = PARM_ID_NEW;
 				}
 
-				// ====== Save AETE, PIPL, Manifest and PARM/RCDATA
+				// ====== Save AETE, PIPL, Manifest and PARM/OBFS
 
 				/* Attention: The resource we have found using FindResource() might have a different
 				   language than the resource we are saving (Neutral), so we might end up having
@@ -498,6 +500,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					&& (gdata->obfusc || _UpdateResource(hupdate, TEXT("FUNC"), MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_func, sizeof(dummy_func)))
 					&& (gdata->obfusc || _UpdateResource(hupdate, TEXT("SYNM"), MAKEINTRESOURCE(16000), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &dummy_symn, sizeof(dummy_symn)))
 					&& _UpdateResource(hupdate, RT_MANIFEST, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newmanifest, (DWORD)manifestsize)
+					// Here, either PARM (un-obfuscated) or OBFS (obfuscated) parameter block is saved
 					&& _UpdateResource(hupdate, parm_type,parm_id, MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),pparm,sizeof(PARM_T)) )
 				{
 					discard = false;
@@ -511,10 +514,8 @@ Boolean doresources(FSSpec* dst, int bits){
 			// Here, the file will be saved
 			if (_EndUpdateResource(hupdate, discard)) {
 				if (gdata->obfusc) {
-					// We modify the binary code to replace the deobfuscate-seed from <cObfuscSeed> to <obfuscseed>
+					// We modify the binary code to replace the deobfuscate-seed from `GetObfuscSeed` to `obfuscseed` and `GetObfuscSeed2` to `obfuscseed2`
 
-					// First try with alignment "4" (this should be the usual case),
-					// and if that failed, try without alignment ("1").
 					// We only need to set maxamount to "1", because "const volatile" makes sure that
 					// the compiler won't place (inline) it at several locations in the code.
 					if (!obfusc_seed_replace(dst, GetObfuscSeed(), GetObfuscSeed2(), obfuscseed, obfuscseed2, 1, 1))
@@ -524,11 +525,11 @@ Boolean doresources(FSSpec* dst, int bits){
 					}
 				}
 
-				if (!update_pe_timestamp(dst, (__time32_t)time(0))) {
+				if (!discard && !update_pe_timestamp(dst, (__time32_t)time(0))) {
 					simplewarning((TCHAR*)TEXT("update_pe_timestamp failed")); // TODO (Not so important): TRANSLATE
 				}
 
-				if (!repair_pe_checksum(dst)) {
+				if (!discard && !repair_pe_checksum(dst)) {
 					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed")); // TODO (Not so important): TRANSLATE
 				}
 			}else showLastError((TCHAR*)TEXT("EndUpdateResource"));
@@ -543,9 +544,10 @@ Boolean doresources(FSSpec* dst, int bits){
 	return !discard;
 }
 
+/**
+This converts foobar.8bf to foobar.8bf and foobar64.8bf to foobar.8bf
+*/
 Boolean remove_64_filename_prefix(LPTSTR dstname) {
-	// foobar.8bf => foobar.8bf
-	// foobar64.8bf => foobar.8bf
 	size_t i;
 	for (i = xstrlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {
@@ -560,8 +562,10 @@ Boolean remove_64_filename_prefix(LPTSTR dstname) {
 	return false;
 }
 
+/**
+This converts foobar.8bf to foobar64.8bf
+*/
 Boolean add_64_filename_prefix(LPTSTR dstname) {
-	// foobar.8bf => foobar64.8bf
 	size_t i;
 	for (i = xstrlen(dstname); i > 2; i--) {
 		if (dstname[i] == '.') {

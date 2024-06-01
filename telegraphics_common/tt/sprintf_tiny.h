@@ -30,13 +30,19 @@
 */
 #include <stdarg.h>
 
-// integer exponentiation
+/**
+integer exponentiation
+*/
 long int_exp(long b,int n);
 
-// format a signed integer as a string
+/**
+format a signed integer as a string
+*/
 char *int_str(char *dst,long x,int base);
 
-// quick and dirty way to format a double value as a string
+/**
+quick and dirty way to format a double value as a string
+*/
 char *float_str(char *dst,double x,int decplaces);
 
 char *udigits(char *p,unsigned long x,int base);

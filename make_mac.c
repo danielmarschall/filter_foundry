@@ -159,9 +159,10 @@ static int copyletters(char *dst,char* src){
 	return n;
 }
 
-// Info.plist in new standalone copy needs to be edited -
-// at least the CFBundleIdentifier property must be unique
-
+/**
+Info.plist in new standalone copy needs to be edited -
+at least the CFBundleIdentifier property must be unique
+*/
 static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 	static char *key = "com.telegraphics.FilterFoundry";
 	static unsigned char *fname="\pInfo.plist";

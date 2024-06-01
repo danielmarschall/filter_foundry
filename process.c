@@ -29,20 +29,22 @@ extern value_type var[];
 extern int nplanes,varused[],cnvused;
 extern struct node *tree[];
 
-// points to first row, first column of selection image data
-// this is used by src() and cnv() functions to access pixels
+/**
+points to first row, first column of selection image data
+this is used by src() and cnv() functions to access pixels
+*/
 unsigned char *image_ptr;
 
 extern int needinput;
 int state_changing_funcs_used;
 
-/* get prepared to evaluate expression trees--
-   this assumes that tree[] array is already set up
-   return TRUE if we're ready to go
+/**
+get prepared to evaluate expression trees--
+this assumes that tree[] array is already set up
+return TRUE if we're ready to go.
+minimum setup required when formulae have not changed,
+and a new preview is to be generated. (Called by recalc_preview())
 */
-
-// minimum setup required when formulae have not changed,
-// and a new preview is to be generated. (Called by recalc_preview())
 void evalinit(void){
 	int i;
 
@@ -53,7 +55,9 @@ void evalinit(void){
 	}
 }
 
-// full setup for evaluation, called when formulae have changed.
+/**
+full setup for evaluation, called when formulae have changed.
+*/
 Boolean setup(FilterRecordPtr pb){
 	int srcrad;
 	int i;
@@ -154,25 +158,24 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 	}
 }
 
-/* Zoom and filter image.
- * Parameters:  pb          - Photoshop Filter parameter block
- *              progress    - whether to use Photoshop's progress bar
- *                            (not appropriate during preview)
- *              filterRect  - rectangle (within pb->inRect)
- *                            of area to be filtered. This may not correspond
- *                            to pb->filterRect, it may be just a piece.
- *              outPiece    - rectangle defining scaled output buffer.
- *                            In case of zoomed preview, this is physically
- *                            scaled FROM filterRect (or equal to filterRect
- *                            for unscaled 1:1 filtering).
- *              outData     - pointer to output data buffer
- *              outRowBytes - row stride of output data buffer
- *              zoom        - pixel scale factor (both horiz & vert)
- *                            e.g. 2.0 means 1 output pixel per 2 input pixels.
- */
-
 //#define PROCESS_SCALED_GAP_DEBUG 1
 
+/**
+Zoom and filter image.
+@param pb          Photoshop Filter parameter block
+@param progress    whether to use Photoshop's progress bar
+                   (not appropriate during preview)
+@param filterRect  rectangle (within pb->inRect)
+                   of area to be filtered. This may not correspond
+                   to pb->filterRect, it may be just a piece.
+@param outPiece    rectangle defining scaled output buffer.
+                   In case of zoomed preview, this is physically
+                   scaled FROM filterRect (or equal to filterRect
+                   for unscaled 1:1 filtering).
+@param outData     pointer to output data buffer
+@param outRowBytes row stride of output data buffer
+@param zoom        pixel scale factor (both horiz & vert) e.g. 2.0 means 1 output pixel per 2 input pixels.
+*/
 OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 			  VRect filterPiece, VRect outPiece,
 			  void *outData, long outRowBytes, double zoom){

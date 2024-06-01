@@ -63,8 +63,10 @@ struct node *newnode(int k){
 	return p;
 }
 
+/**
+undo recorded allocations
+*/
 void freenodes(struct node *p){
-	/* undo recorded allocations */
 	if(p){
 		freenodes(p->next);
 		free(p);
@@ -74,13 +76,18 @@ void freenodes(struct node *p){
 		#endif
 	}
 }
+
+/**
+undo recorded allocations
+*/
 void freeallnodes(void){
 	freenodes(node_list);
 	node_list = 0;
 }
 
-/* pretty-print the tree */
-
+/**
+pretty-print the tree
+*/
 void dumptree(struct node *root,int level){
 	int i;
 
@@ -124,8 +131,9 @@ void dumptree(struct node *root,int level){
 
 }
 
-/* evaluate the expression tree (using current values of variables) */
-
+/**
+evaluate the expression tree (using current values of variables)
+*/
 value_type eval(struct node *root){
 	value_type t;
 	if(root){
@@ -201,8 +209,9 @@ value_type eval(struct node *root){
 	#endif
 }
 
-/* free the memory for a tree's nodes */
-
+/**
+free the memory for a tree's nodes
+*/
 void freetree(struct node *root){
 	int i;
 
@@ -213,8 +222,9 @@ void freetree(struct node *root){
 	}
 }
 
-/* tabulate usage of special variables, or any invocations of src()/rad()/cnv(), in the tree */
-
+/**
+tabulate usage of special variables, or any invocations of src()/rad()/cnv(), in the tree
+*/
 void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */, int *state_changing_funcs_used ){
 	int i;
 

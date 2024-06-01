@@ -78,12 +78,14 @@ typedef struct plugin_dll_slider_info_ {
 } plugin_dll_slider_info;
 #endif
 
-// The "gdata" structure contains all values which MUST be kept between filter invocations.
-// All other working-data (which automatically gets calculated etc.) are NOT part of this structure.
-// To increase performance, the lookup tables *tantab and *costab have been included here, so that
-// they only need to be calculated once.
-// size: 0x2098 (8344 Bytes) for 32-bit
-// size: 0x20AC (8364 Bytes) for 64-bit
+/**
+The "gdata" structure contains all values which MUST be kept between filter invocations.
+All other working-data (which automatically gets calculated etc.) are NOT part of this structure.
+To increase performance, the lookup tables *tantab and *costab have been included here, so that
+they only need to be calculated once.
+size: 0x2098 (8344 Bytes) for 32-bit
+size: 0x20AC (8364 Bytes) for 64-bit
+*/
 typedef struct globals_t_ {
 	PARM_T parm;
 	Boolean obfusc;
@@ -112,11 +114,18 @@ extern value_type cell[NUM_CELLS];
 extern int tokpos,tokstart,varused[];
 extern TCHAR *errstr;
 
-// FFLoadingResult = 0 : Success
-// FFLoadingResult > 0 : Error, message ID as described in language.h
 #define LOADING_OK 0
+/**
+FFLoadingResult = 0 : Success
+FFLoadingResult > 0 : Error, message ID as described in language.h
+*/
 typedef int FFLoadingResult;
+
 #define SAVING_OK 0
+/**
+FFSavingResult = 0 : Success
+FFSavingResult > 0 : Error, message ID as described in language.h
+*/
 typedef int FFSavingResult;
 
 //#define DEBUG
@@ -126,7 +135,8 @@ typedef struct InternalState_ {
 	Boolean bak_obfusc;
 } InternalState;
 
-// from main.c
+// from main.c:
+
 void DoPrepare(FilterRecordPtr epb);
 void DoStart(FilterRecordPtr epb);
 OSErr DoContinue(FilterRecordPtr epb);
@@ -138,7 +148,8 @@ unsigned long parm_hash(PARM_T* parm);
 void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetSliderNames, Boolean resetFormulas);
 void parm_cleanup();
 
-// from read.c
+// from read.c:
+
 FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder);
 void convert_premiere_to_photoshop(PARM_T* photoshop, PARM_T_PREMIERE* premiere);
 FFLoadingResult readfile_8bf(StandardFileReply *sfr);
@@ -150,25 +161,30 @@ FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr);
 FFLoadingResult readfile_guf(StandardFileReply* sfr);
 FFLoadingResult readPARM(PARM_T* parm,Ptr h);
 
-// from save.c
+// from save.c:
+
 OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder);
 OSErr saveparams_picotxt(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
 FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
 
-// from make_*.c
+// from make_*.c:
+
 OSErr make_standalone(StandardFileReply *sfr);
 
-// from process.c
+// from process.c:
+
 Boolean setup(FilterRecordPtr pb);
 void evalpixel(unsigned char *outp,unsigned char *inp);
 
-// from make.c
+// from make.c:
+
 unsigned long printablehash(unsigned long hash);
 size_t fixpipl(PIPropertyList *pipl,size_t origsize,char* title, char* component, char* category, long *event_id);
 size_t aete_generate(void* aeteptr, PARM_T *pparm, long event_id);
 
-// from obfusc.c
+// from obfusc.c:
+
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
@@ -184,21 +200,25 @@ int obfuscation_version(PARM_T* pparm);
 void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_seed2);
 void deobfusc(PARM_T* pparm);
 
-// from loadfile_*.c
+// from loadfile_*.c:
+
 FFLoadingResult loadfile(StandardFileReply *sfr);
 FFLoadingResult readPARMresource(HMODULE hm);
 
-// from main.c
+// from main.c:
+
 int64_t maxspace(void);
 Boolean maxspace_available(void);
 Boolean host_preserves_parameters(void);
 
-// from parser.y
+// from parser.y:
+
 struct node *parseexpr(char *s);
 
 // Useful macros
 
 // Note: "bigDocumentData->PluginUsing32BitCoordinates" will be set by filterSelectorStart, if HAS_BIG_DOC(pb) is true
+
 #define HAS_BIG_DOC(x) ((x)->bigDocumentData != NULL)
 
 #define BIGDOC_IMAGE_SIZE(x) ((x)->bigDocumentData->imageSize32)

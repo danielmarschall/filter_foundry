@@ -64,8 +64,9 @@ void updatedialog(DIALOGREF dp){
 	doupdates = true;
 }
 
-/* copy dialog settings to global variables (sliders, expressions) */
-
+/**
+copy dialog settings to global variables (sliders, expressions)
+*/
 void updateglobals(DIALOGREF dp){
 
 	UNREFERENCED_PARAMETER(dp);
@@ -114,8 +115,9 @@ void updatezoom(DIALOGREF dp){
 		DISABLEDLGITEM(dp, ZOOMOUTITEM); // HideDialogItem(dp,ZOOMOUTITEM);
 }
 
-/* traverse expression tree, looking for constant references to sliders/maps */
-
+/**
+traverse expression tree, looking for constant references to sliders/maps
+*/
 static int _checksl(struct node*p,bool32_t ctlflags[], bool32_t mapflags[]){
 	int s, i, result;
 
@@ -227,8 +229,9 @@ void maindlgupdate(DIALOGREF dp){
 	}
 }
 
-/* one-time initialisation of dialog box */
-
+/**
+one-time initialisation of dialog box
+*/
 void maindlginit(DIALOGREF dp){
 	char s[0x100];
 	int i;
@@ -314,8 +317,9 @@ void maindlginit(DIALOGREF dp){
 }
 
 
-/* process an item hit. return false if the dialog is finished; otherwise return true. */
-
+/**
+process an item hit. return false if the dialog is finished; otherwise return true.
+*/
 Boolean maindlgitem(DIALOGREF dp,int item){
 	extern int previewerr;
 

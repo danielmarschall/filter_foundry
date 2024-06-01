@@ -35,7 +35,7 @@
 //#define PRINTABLE_HASH_FF16
 #define ENABLE_APPLESCRIPT
 
-/*
+/**
 Find a printable 4-character key, remembering (see Photoshop API guide):
 - All IDs starting with an uppercase letter are reserved by Adobe.
 - All IDs that are all uppercase are reserved by Apple.

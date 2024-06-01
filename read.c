@@ -541,8 +541,10 @@ void _ffdcomp_removebrackets(char* x, char* maxptr) {
 	}
 }
 
-// isFormula=false => outputFile is C string. TXT linebreaks become spaces.
-// isFormula=true  => outputFile is C string. TXT line breaks become CRLF line breaks
+/**
+isFormula = false = > outputFile is C string.TXT linebreaks become spaces.
+isFormula=true  => outputFile is C string. TXT line breaks become CRLF line breaks.
+*/
 Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property, char* outputFile, size_t maxOutput, Boolean isFormula) {
 	size_t i;
 	char* outputwork;

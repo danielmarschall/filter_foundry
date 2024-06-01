@@ -62,7 +62,9 @@ int FF_GetMsg(TCHAR* ret, int MsgId) {
 #endif
 }
 
-// Attention: Requires FF_GetMsg_Free(), otherwise memory is leaked
+/**
+Attention: Requires FF_GetMsg_Free(), otherwise memory is leaked
+*/
 TCHAR* FF_GetMsg_Cpy(int MsgId) {
 #ifdef WIN_ENV
     int len;

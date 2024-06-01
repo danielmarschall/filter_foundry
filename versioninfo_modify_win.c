@@ -309,10 +309,12 @@ PVOID NodeStore(RsrcNode* node, PVOID buf, ULONG* pcb) {
 	return x.pv;
 }
 
-// Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0....."
-// You can CHANGE values for any given name
-// You can DELETE entries by setting the value to "\b" (0x08 backspace character)
-// You cannot (yet) ADD entries.
+/**
+Format of argument "PCWSTR changes" is "<name>\0<value>\0<name>\0<value>\0.....".
+You can CHANGE values for any given name.
+You can DELETE entries by setting the value to "\b" (0x08 backspace character).
+You cannot (yet) ADD entries.
+*/
 BOOL UpdateVersionRaw(PVOID pvVersion, ULONG cbVersion, PVOID* pvNewVersion, ULONG* cbNewVersion, PCWSTR changes) {
 	BOOL fOk = FALSE;
 	BOOL changesMade = FALSE;

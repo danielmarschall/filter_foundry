@@ -33,9 +33,11 @@ unsigned long djb2(const char *str);
 struct sym_rec *hash_table[TABLE_SIZE];
 extern struct sym_rec predefs[];
 
-// hash function recommended by Ozan Yigit
-// http://www.cs.yorku.ca/~oz/hash.html
-// "this algorithm (k=33) was first reported by dan bernstein"
+/**
+hash function recommended by Ozan Yigit
+http://www.cs.yorku.ca/~oz/hash.html
+"this algorithm (k=33) was first reported by dan bernstein"
+*/
 unsigned long djb2(const char *str){
 	unsigned long hash = 5381;
 	int c;

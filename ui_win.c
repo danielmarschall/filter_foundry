@@ -139,15 +139,13 @@ Boolean showmessage(TCHAR *s) {
 
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
-// Description:
-//   Creates a tooltip for an item in a dialog box.
-// Parameters:
-//   idTool - identifier of an dialog box item.
-//   nDlg - window handle of the dialog box.
-//   pszText - string to use as the tooltip text.
-// Returns:
-//   The handle to the tooltip.
-//
+/**
+Creates a tooltip for an item in a dialog box.
+@param idTool   identifier of an dialog box item.
+@param nDlg     window handle of the dialog box.
+@param pszText  string to use as the tooltip text.
+@return         The handle to the tooltip.
+*/
 HWND CreateToolTip(int toolID, HWND hDlg, LPTSTR pszText) {
 	// Source: https://docs.microsoft.com/en-us/windows/win32/controls/create-a-tooltip-for-a-control (modified)
 

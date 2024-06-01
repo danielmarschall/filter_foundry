@@ -294,8 +294,10 @@ void init_trigtab(void) {
 
 // -------------------------------------------------------------------------------------------
 
-/* Channel z for the input pixel at coordinates x,y.
- * Coordinates are relative to the input image data (pb->inData) */
+/**
+Channel z for the input pixel at coordinates x,y.
+Coordinates are relative to the input image data (pb->inData)
+*/
 static value_type rawsrc(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
@@ -328,9 +330,10 @@ static value_type rawsrc(value_type x, value_type y, value_type z) {
 
 // -------------------------------------------------------------------------------------------
 
-/* src(x,y,z) Channel z for the pixel at coordinates x,y.
- * Coordinates are relative to filtered area (selection). */
-
+/**
+src(x, y, z) Channel z for the pixel at coordinates x, y.
+Coordinates are relative to filtered area (selection).
+*/
 value_type ff_src(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
@@ -349,9 +352,6 @@ value_type ff_src(value_type x, value_type y, value_type z) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* r2x(d,m) x displacement of the pixel m units away, at an angle of d,
-   from an arbitrary center */
 
 value_type factory_r2x(value_type d, value_type m) {
 	// https://misc.daniel-marschall.de/projects/filter_factory/function_r2x.html
@@ -374,6 +374,10 @@ value_type foundry_r2x(value_type d, value_type m) {
 #endif
 }
 
+/**
+r2x(d,m) x displacement of the pixel m units away, at an angle of d,
+from an arbitrary center
+*/
 value_type ff_r2x(value_type d, value_type m) {
 #ifdef use_filterfactory_implementation_r2x
 	return factory_r2x(d, m);
@@ -383,9 +387,6 @@ value_type ff_r2x(value_type d, value_type m) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* r2y(d,m) y displacement of the pixel m units away, at an angle of d,
-   from an arbitrary center */
 
 value_type factory_r2y(value_type d, value_type m) {
 #ifdef PARSERTEST
@@ -404,6 +405,10 @@ value_type foundry_r2y(value_type d, value_type m) {
 #endif
 }
 
+/**
+r2y(d,m) y displacement of the pixel m units away, at an angle of d,
+from an arbitrary center
+*/
 value_type ff_r2y(value_type d, value_type m) {
 #ifdef use_filterfactory_implementation_r2y
 	return factory_r2y(d, m);
@@ -413,9 +418,6 @@ value_type ff_r2y(value_type d, value_type m) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* rad(d,m,z) Channel z in the source image, which is m units away,
-	at an angle of d, from the center of the image */
 
 value_type factory_rad(value_type d, value_type m, value_type z) {
 #ifdef PARSERTEST
@@ -471,6 +473,10 @@ value_type foundry_rad(value_type d, value_type m, value_type z) {
 #endif
 }
 
+/**
+rad(d,m,z) Channel z in the source image, which is m units away,
+at an angle of d, from the center of the image
+*/
 value_type ff_rad(value_type d, value_type m, value_type z) {
 #ifdef use_filterfactory_implementation_rad
 	return factory_rad(d, m, z);
@@ -481,7 +487,9 @@ value_type ff_rad(value_type d, value_type m, value_type z) {
 
 // -------------------------------------------------------------------------------------------
 
-/* ctl(i) Value of slider i, where i is an integer between 0 and 7, inclusive */
+/**
+ctl(i) Value of slider i, where i is an integer between 0 and 7, inclusive
+*/
 value_type ff_ctl(value_type i) {
 #ifdef PARSERTEST
 	return 0;
@@ -492,8 +500,6 @@ value_type ff_ctl(value_type i) {
 
 // -------------------------------------------------------------------------------------------
 
-/* val(i,a,b) Value of slider i, mapped onto the range a to b */
-
 value_type val_factory(value_type i, value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
@@ -503,6 +509,9 @@ value_type val_factory(value_type i, value_type a, value_type b) {
 #endif
 }
 
+/**
+The only difference between `val_factory()` and `val_foundry()` is the handling of invalid values of "i"
+*/
 value_type val_foundry(value_type i, value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
@@ -511,8 +520,10 @@ value_type val_foundry(value_type i, value_type a, value_type b) {
 #endif
 }
 
+/*
+val(i,a,b) Value of slider i, mapped onto the range a to b
+*/
 value_type ff_val(value_type i, value_type a, value_type b) {
-	// The only difference is the handling of invalid values of "i"
 #ifdef use_filterfactory_implementation_val
 	return val_factory(i, a, b);
 #else
@@ -522,9 +533,11 @@ value_type ff_val(value_type i, value_type a, value_type b) {
 
 // -------------------------------------------------------------------------------------------
 
-/* map(i,n) Item n from mapping table i, where i is an integer between
-	0 and 3, inclusive, and n is and integer between 0 and 255,
-	inclusive */
+/*
+map(i,n) Item n from mapping table i, where i is an integer between
+0 and 3, inclusive, and n is and integer between 0 and 255,
+inclusive
+*/
 value_type ff_map(value_type i, value_type n) {
 #ifdef PARSERTEST
 	return 0;
@@ -567,7 +580,9 @@ value_type ff_map(value_type i, value_type n) {
 
 // -------------------------------------------------------------------------------------------
 
-/* min(a,b) Lesser of a and b */
+/**
+min(a,b) Lesser of a and b
+*/
 value_type ff_min(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
@@ -578,7 +593,9 @@ value_type ff_min(value_type a, value_type b) {
 
 // -------------------------------------------------------------------------------------------
 
-/* max(a,b) Greater of a and b */
+/**
+max(a,b) Greater of a and b
+*/
 value_type ff_max(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
@@ -589,7 +606,9 @@ value_type ff_max(value_type a, value_type b) {
 
 // -------------------------------------------------------------------------------------------
 
-/* abs(a) Absolute value of a */
+/**
+abs(a) Absolute value of a
+*/
 value_type ff_abs(value_type a) {
 #ifdef PARSERTEST
 	return 0;
@@ -600,7 +619,9 @@ value_type ff_abs(value_type a) {
 
 // -------------------------------------------------------------------------------------------
 
-/* add(a,b,c) Sum of a and b, or c, whichever is lesser */
+/**
+add(a,b,c) Sum of a and b, or c, whichever is lesser
+*/
 value_type ff_add(value_type a, value_type b, value_type c) {
 #ifdef PARSERTEST
 	return 0;
@@ -611,7 +632,9 @@ value_type ff_add(value_type a, value_type b, value_type c) {
 
 // -------------------------------------------------------------------------------------------
 
-/* sub(a,b,c) Difference of a and b, or c, whichever is greater */
+/**
+sub(a,b,c) Difference of a and b, or c, whichever is greater
+*/
 value_type ff_sub(value_type a, value_type b, value_type c) {
 #ifdef PARSERTEST
 	return 0;
@@ -622,7 +645,9 @@ value_type ff_sub(value_type a, value_type b, value_type c) {
 
 // -------------------------------------------------------------------------------------------
 
-/* dif(a,b) Absolute value of the difference of a and b */
+/**
+dif(a,b) Absolute value of the difference of a and b
+*/
 value_type ff_dif(value_type a, value_type b) {
 #ifdef PARSERTEST
 	return 0;
@@ -632,8 +657,6 @@ value_type ff_dif(value_type a, value_type b) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* rnd(a,b) Random number between a and b, inclusive */
 
 struct factoryRngState {
 	uint16_t index1;
@@ -751,6 +774,9 @@ value_type foundry_rnd(value_type a, value_type b) {
 #endif
 }
 
+/**
+rnd(a,b) Random number between a and b, inclusive
+*/
 value_type ff_rnd(value_type a, value_type b) {
 #ifdef use_filterfactory_implementation_rnd
 	return factory_rnd(a, b, &gFactoryRngState);
@@ -760,9 +786,6 @@ value_type ff_rnd(value_type a, value_type b) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
-   Added by DM, 18 Dec 2018 */
 
 int32_t factory_rst(uint32_t seed, struct factoryRngState* state) {
 #ifdef PARSERTEST
@@ -801,6 +824,10 @@ value_type foundry_rst(value_type seed) {
 #endif
 }
 
+/**
+rst(i) sets a random seed and returns 0. (undocumented Filter Factory function).
+Added by Daniel Marschall, 18 Dec 2018
+*/
 value_type ff_rst(value_type seed) {
 #ifdef use_filterfactory_implementation_rnd
 	return factory_rst(seed, &gFactoryRngState);
@@ -838,7 +865,9 @@ void initialize_rnd_variables(void) {
 
 // -------------------------------------------------------------------------------------------
 
-/* mix(a,b,n,d) Mixture of a and b by fraction n/d, a*n/d+b*(d-n)/d */
+/**
+mix(a,b,n,d) Mixture of a and b by fraction n/d, a*n/d+b*(d-n)/d
+*/
 value_type ff_mix(value_type a, value_type b, value_type n, value_type d) {
 #ifdef PARSERTEST
 	return 0;
@@ -850,8 +879,9 @@ value_type ff_mix(value_type a, value_type b, value_type n, value_type d) {
 
 // -------------------------------------------------------------------------------------------
 
-/* scl(a,il,ih,ol,oh) Scale a from input range (il to ih)
-					  to output range (ol to oh) */
+/**
+scl(a,il,ih,ol,oh) Scale a from input range (il to ih)
+to output range (ol to oh) */
 value_type ff_scl(value_type a, value_type il, value_type ih,
 	value_type ol, value_type oh) {
 #ifdef PARSERTEST
@@ -863,8 +893,10 @@ value_type ff_scl(value_type a, value_type il, value_type ih,
 
 // -------------------------------------------------------------------------------------------
 
-/* pow(b,e) Calculates the base to the exponent power, that is, b^e. */
-
+/**
+pow(b,e) Calculates the base to the exponent power, that is, b^e.
+Added by Daniel Marschall.
+*/
 value_type ff_pow(value_type b, value_type e) {
 #ifdef PARSERTEST
 	return 0;
@@ -878,8 +910,6 @@ value_type ff_pow(value_type b, value_type e) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* sqr(x) Square root of x */
 
 static uint32_t isqrt(uint32_t x) {
 #ifdef PARSERTEST
@@ -957,6 +987,9 @@ value_type foundry_sqr(value_type x) {
 #endif
 }
 
+/**
+sqr(x) Square root of x
+*/
 value_type ff_sqr(value_type x) {
 #ifdef use_filterfactory_implementation_sqr
 	return factory_sqr(x);
@@ -966,11 +999,6 @@ value_type ff_sqr(value_type x) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* cos(x) Cosine function of x, where x is an integer between 0 and
-   1024, inclusive, and the value returned is an integer
-   between -512 and 512, inclusive (Windows) or -1024 and
-   1024, inclusive (Mac OS) */
 
 value_type factory_cos(value_type x) {
 #ifdef PARSERTEST
@@ -994,6 +1022,12 @@ value_type foundry_cos(value_type x) {
 #endif
 }
 
+/**
+cos(x) Cosine function of x, where x is an integer between 0 and
+1024, inclusive, and the value returned is an integer
+between -512 and 512, inclusive (Windows) or -1024 and
+1024, inclusive (Mac OS)
+*/
 value_type ff_cos(value_type x) {
 #ifdef use_filterfactory_implementation_cos
 	return factory_cos(x);
@@ -1003,11 +1037,6 @@ value_type ff_cos(value_type x) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* sin(x) Sine function of x, where x is an integer between 0 and
-   1024, inclusive, and the value returned is an integer
-   between -512 and 512, inclusive (Windows) or -1024 and
-   1024, inclusive (Mac OS) */
 
 value_type factory_sin(value_type x) {
 #ifdef PARSERTEST
@@ -1027,6 +1056,12 @@ value_type foundry_sin(value_type x) {
 #endif
 }
 
+/**
+sin(x) Sine function of x, where x is an integer between 0 and
+1024, inclusive, and the value returned is an integer
+between -512 and 512, inclusive (Windows) or -1024 and
+1024, inclusive (Mac OS)
+*/
 value_type ff_sin(value_type x) {
 #ifdef use_filterfactory_implementation_sin
 	return factory_sin(x);
@@ -1036,11 +1071,6 @@ value_type ff_sin(value_type x) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* tan(x) Tangent function of x, where x is an integer
-   between -256 and 256, inclusive. Althought the Filter Factory manual
-   stated that the return value is bounded to -512 and 512, inclusive (Windows) or
-   -1024 and 1024, inclusive (Mac OS), the output is actually NOT bounded! */
 
 value_type factory_tan(value_type x) {
 #ifdef PARSERTEST
@@ -1065,7 +1095,7 @@ value_type foundry_tan(value_type x) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	// Following filter shows that the Filter Factory manual differs from the implementation.
+	// The following filter shows that the Filter Factory manual differs from the implementation.
 	//     R = cos(x) > 1024 || cos(x) < -1024 || cos(-x) > 1024 || cos(-x) < -1024 ? 255 : 0
 	//     G = tan(x) > 1024 || tan(x) < -1024 || tan(-x) > 1024 || tan(-x) < -1024 ? 255 : 0
 	//     B = sin(x) > 1024 || sin(x) < -1024 || sin(-x) > 1024 || sin(-x) < -1024 ? 255 : 0
@@ -1077,6 +1107,12 @@ value_type foundry_tan(value_type x) {
 #endif
 }
 
+/**
+tan(x) Tangent function of x, where x is an integer
+between -256 and 256, inclusive. Althought the Filter Factory manual
+stated that the return value is bounded to -512 and 512, inclusive (Windows) or
+-1024 and 1024, inclusive (Mac OS), the output is actually NOT bounded!
+*/
 value_type ff_tan(value_type x) {
 #ifdef use_filterfactory_implementation_tan
 	return factory_tan(x);
@@ -1086,8 +1122,6 @@ value_type ff_tan(value_type x) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* c2d(x,y) Angle displacement of the pixel at coordinates x,y */
 
 value_type factory_c2d(value_type x, value_type y) {
 #ifdef PARSERTEST
@@ -1149,6 +1183,9 @@ value_type foundry_c2d(value_type x, value_type y) {
 #endif
 }
 
+/**
+c2d(x,y) Angle displacement of the pixel at coordinates x,y
+*/
 value_type ff_c2d(value_type x, value_type y) {
 #ifdef use_filterfactory_implementation_c2d
 	return factory_c2d(x, y);
@@ -1158,8 +1195,6 @@ value_type ff_c2d(value_type x, value_type y) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* c2m(x,y) Magnitude displacement of the pixel at coordinates x,y */
 
 value_type factory_c2m(value_type x, value_type y) {
 #ifdef PARSERTEST
@@ -1196,6 +1231,9 @@ value_type foundry_c2m(value_type x, value_type y) {
 #endif
 }
 
+/**
+c2m(x,y) Magnitude displacement of the pixel at coordinates x,y
+*/
 value_type ff_c2m(value_type x, value_type y) {
 #ifdef use_filterfactory_implementation_c2m
 	return factory_c2m(x, y);
@@ -1205,9 +1243,6 @@ value_type ff_c2m(value_type x, value_type y) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* Direction(angle) of the current pixel from the center of the image,
-   where d is an integer between -512 and 512 inclusive */
 
 value_type factory_d(void) {
 #ifdef PARSERTEST
@@ -1283,6 +1318,10 @@ value_type foundry_d(void) {
 #endif
 }
 
+/**
+Direction(angle) of the current pixel from the center of the image,
+where d is an integer between -512 and 512 inclusive
+*/
 value_type ff_d(void) {
 #ifdef use_filterfactory_implementation_d
 	// Output range: -512 ... 512
@@ -1294,8 +1333,6 @@ value_type ff_d(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* Range of magnitudes with the image, where M is one half the diagonal size of the image */
 
 value_type factory_M(void) {
 #ifdef PARSERTEST
@@ -1335,6 +1372,9 @@ value_type foundry_M(void) {
 #endif
 }
 
+/**
+Range of magnitudes with the image, where M is one half the diagonal size of the image
+*/
 value_type ff_M(void) {
 #ifdef use_filterfactory_implementation_M
 	return factory_M();
@@ -1344,8 +1384,6 @@ value_type ff_M(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* Distance (magnitude) from the center of the image to the current pixel */
 
 value_type factory_m(void) {
 #ifdef PARSERTEST
@@ -1386,6 +1424,9 @@ value_type foundry_m(void) {
 #endif
 }
 
+/**
+Distance (magnitude) from the center of the image to the current pixel
+*/
 value_type ff_m(void) {
 #ifdef use_filterfactory_implementation_m
 	return factory_m();
@@ -1395,8 +1436,6 @@ value_type ff_m(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* "Y" value of the YUV color-space */
 
 value_type factory_i(void) {
 #ifdef PARSERTEST
@@ -1415,6 +1454,9 @@ value_type foundry_i(void) {
 #endif
 }
 
+/**
+"Y" value of the YUV color-space
+*/
 value_type ff_i(void) {
 #ifdef use_filterfactory_implementation_i
 	return factory_i();
@@ -1424,8 +1466,6 @@ value_type ff_i(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* "U" value of the YUV color-space */
 
 value_type factory_u(void) {
 #ifdef PARSERTEST
@@ -1444,6 +1484,9 @@ value_type foundry_u(void) {
 #endif
 }
 
+/**
+"U" value of the YUV color-space
+*/
 value_type ff_u(void) {
 #ifdef use_filterfactory_implementation_u
 	return factory_u();
@@ -1453,8 +1496,6 @@ value_type ff_u(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* "V" value of the YUV color-space */
 
 value_type factory_v(void) {
 #ifdef PARSERTEST
@@ -1473,6 +1514,9 @@ value_type foundry_v(void) {
 #endif
 }
 
+/**
+"V" value of the YUV color-space
+*/
 value_type ff_v(void) {
 #ifdef use_filterfactory_implementation_v
 	return factory_v();
@@ -1482,8 +1526,6 @@ value_type ff_v(void) {
 }
 
 // -------------------------------------------------------------------------------------------
-
-/* get(i) Returns the current cell value at i */
 
 value_type factory_get(value_type i) {
 #ifdef PARSERTEST
@@ -1501,6 +1543,9 @@ value_type foundry_get(value_type i) {
 #endif
 }
 
+/**
+get(i) Returns the current cell value at i
+*/
 value_type ff_get(value_type i) {
 	// The only difference is the handling of invalid values of "i"
 #ifdef use_filterfactory_implementation_get
@@ -1512,7 +1557,9 @@ value_type ff_get(value_type i) {
 
 // -------------------------------------------------------------------------------------------
 
-/* put(v,i) Puts the new value v into cell i */
+/**
+put(v,i) Puts the new value v into cell i
+*/
 value_type ff_put(value_type v, value_type i) {
 #ifdef PARSERTEST
 	return 0;
@@ -1525,7 +1572,9 @@ value_type ff_put(value_type v, value_type i) {
 
 // -------------------------------------------------------------------------------------------
 
-/* Convolve. Applies a convolution matrix and divides with d. */
+/**
+Convolve. Applies a convolution matrix and divides with d.
+*/
 value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 	value_type m21, value_type m22, value_type m23,
 	value_type m31, value_type m32, value_type m33,
@@ -1612,7 +1661,9 @@ value_type val_D = 1024;
 value_type val_D = 1024; // max_val_d - min_val_d;
 #endif
 
-/* predefined symbols */
+/**
+predefined symbols
+*/
 struct sym_rec predefs[] = {
 	/* functions */
 

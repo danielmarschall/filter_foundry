@@ -88,7 +88,8 @@ void init_trigtab(void);
 
 void initialize_rnd_variables(void);
 
-// Functions
+// Functions:
+
 value_type ff_src(value_type x,value_type y,value_type z);
 value_type ff_rad(value_type d,value_type m,value_type z);
 value_type ff_ctl(value_type i);
@@ -120,7 +121,8 @@ value_type ff_cnv(value_type m11,value_type m12,value_type m13,
 				  value_type d );
 value_type ff_rst(value_type seed);
 
-// Variables
+// Variables:
+
 value_type ff_i(void);
 value_type ff_u(void);
 value_type ff_v(void);
