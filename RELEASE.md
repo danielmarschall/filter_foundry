@@ -28,4 +28,5 @@ ViaThinkSoft release procedure
 5. Move the release ZIP into "releases/" folder and rename it. Also, extend the SFV file.
 6. Commit to SVN with commit message `=== RELEASE 1.7.0.x ===`
 7. Sync SVN with GitHub
-8. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)
+8. Release release.zip to [GitHub](https://github.com/danielmarschall/filter_foundry/releases/)
+9. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)

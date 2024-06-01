@@ -141,3 +141,13 @@ Note: 32-bit and 64-bit don't need to be compiled using the same compiler.
 It is fine to compile 64-bit using Visual C++ and 32-bit using OpenWatcom
 (this is done by ViaThinkSoft to achieve Windows 9x compatibility).
 
+
+Notes about debugging
+---------------------
+
+Run Photoshop through Visual Studio in order to debug the plugin.
+Old versions of Photoshop could specify an additional plugin directory which
+you can set to `.../visual_studio`. Newer versions of Photoshop don't have this
+option; however, you can simply place a shortcut to FilterFoundry64.8bf in the folder
+**C:\Program Files\Adobe\Adobe Photoshop 2024\Plug-ins** and Photoshop will follow
+the shortcut.
