@@ -1,6 +1,7 @@
 
 Please download the Windows "bison" and "flex" tools here:
-https://sourceforge.net/projects/winflexbison/
+https://github.com/lexxmark/winflexbison/releases
+( old versions also available here https://sourceforge.net/projects/winflexbison/ )
 
 Place the contents of the ZIP file in this directory:
 - win_bison.exe

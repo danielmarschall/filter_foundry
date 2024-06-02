@@ -9,19 +9,21 @@ Most recently tested with Visual Studio 2022 and Adobe Photoshop SDK 2023.
 Prerequisites
 -------------
 
-1) Visual Studio (Visual C++)
+1) Flex and Bison
+   Download the tools here:
+   https://github.com/lexxmark/winflexbison/releases
+   Extract the contents of the package in the directory "..\win_flex_bison"
+   (see more details at the ../win_flex_bison/DOWNLOAD.txt)
+
+2) Adobe Photoshop SDK
+   Available on some Photoshop CDs, or can be downloaded at
+   https://developer.adobe.com/console/servicesandapis/ps
+   Extract the contents of the package in the directory "..\photoshop_sdk"
+   (see more details at the ../photoshop_sdk/DOWNLOAD.txt)
+
+3) Visual Studio (Visual C++)
    There is a free "Community Edition" available here:
    https://visualstudio.microsoft.com/de/vs/community/
-
-2) Flex and Bison
-   Download the tools here:
-   https://sourceforge.net/projects/winflexbison/
-   Extract the contents of the package in the directory "..\win_flex_bison"
-
-3) Adobe Photoshop SDK
-   Available on some Photoshop CDs, or can be downloaded at
-   https://www.adobe.com/devnet/photoshop/sdk.html
-   Extract the contents of the package in the directory "..\photoshop_sdk"
 
 4) Windows SDK
    Download the Windows SDK here:

@@ -9,12 +9,15 @@ Prerequisites
 -------------
 
 1) Flex and Bison
-   Available here:
-   https://sourceforge.net/projects/winflexbison/
+   Download the tools here:
+   https://github.com/lexxmark/winflexbison/releases
+   Extract the contents of the package in the directory "..\win_flex_bison"
+   (see more details at the ../win_flex_bison/DOWNLOAD.txt)
 
 2) Adobe Photoshop SDK
    Available on some Photoshop CDs, or can be downloaded at
-   https://developer.adobe.com/photoshop/
+   https://developer.adobe.com/console/servicesandapis/ps
+   Extract the contents of the package in the directory "..\photoshop_sdk"
    (see more details at the ../photoshop_sdk/DOWNLOAD.txt)
 
 3) Watcom 1.6beta RC1 or later
