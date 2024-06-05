@@ -221,6 +221,15 @@ LRESULT CALLBACK ControlTextWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return 0; // should not happen
 }
 
+#define SLIDER_EVENT(lParam) (((lParam) >> 16) & 0xFFFF)
+#define SLIDER_POS(lParam) ((lParam) & 0xFFFF)
+typedef enum PluginDllSliderEventType_ {
+	SliderEventMoved = 0x7FFB,
+	SliderEventReleased = 0x7FFC,
+	SliderEventIdle = 0x7FFD,
+	SliderEventIdleOnce = 0x7FFE
+} PluginDllSliderEventType;
+
 INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
 	static POINT origpos;
 	static Point origscroll;
@@ -238,16 +247,20 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	if ((gdata->pluginDllSliderInfo.initialized) && (wMsg == gdata->pluginDllSliderInfo.messageId)) {
 		// This is for the PLUGIN.DLL sliders only
 		if (doupdates) {
-			int sliderNum = (int)wParam - FIRSTCTLITEM;
-			int sliderVal = (lParam & 0xFFFF);
-			if (sliderVal < 0) sliderVal = 0;
-			else if (sliderVal > 255) sliderVal = 255;
-			gdata->parm.val[sliderNum] = (uint8_t)sliderVal;
+			if (SLIDER_EVENT(lParam) == SliderEventMoved) {
+				int sliderNum = (int)wParam - FIRSTCTLITEM;
+				int sliderVal = SLIDER_POS(lParam);
+				if (sliderVal < 0) sliderVal = 0;
+				else if (sliderVal > 255) sliderVal = 255;
+				if (gdata->parm.val[sliderNum] != (uint8_t)sliderVal) {
+					gdata->parm.val[sliderNum] = (uint8_t)sliderVal;
 
-			SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
-			REPAINTCTL(hDlg, FIRSTCTLTEXTITEM + sliderNum);
+					SETCTLTEXTINT(hDlg, FIRSTCTLTEXTITEM + sliderNum, sliderVal, false);
+					REPAINTCTL(hDlg, FIRSTCTLTEXTITEM + sliderNum);
 
-			recalc_preview(gpb, hDlg);
+					recalc_preview(gpb, hDlg);
+				}
+			}
 		}
 		return true;
 	}

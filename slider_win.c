@@ -73,6 +73,28 @@ int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax) {
 #endif
 
 #ifdef use_plugin_dll_sliders
+#define FLAG_AUTOSNAP 0x40000000
+typedef enum BitMode_ {
+	UnsetBits = -1,
+	SetExplicit = 0,
+	SetBits = 1
+} BitMode;
+typedef void(__cdecl* f_SetSliderFlags)(HWND hWnd, BitMode bitMode, int bits);
+/**
+PLUGIN.DLL Sliders: Set flags
+*/
+void __cdecl PluginDll_SetSliderFlags(HWND hWnd, BitMode bitMode, int bits) {
+	f_SetSliderFlags fSetSliderFlags;
+
+	if (!gdata->pluginDllSliderInfo.hLib) return;
+	fSetSliderFlags = (f_SetSliderFlags)(void*)GetProcAddress(gdata->pluginDllSliderInfo.hLib, "SetSliderFlags");
+	if (fSetSliderFlags != 0) {
+		fSetSliderFlags(hWnd, bitMode, bits);
+	}
+}
+#endif
+
+#ifdef use_plugin_dll_sliders
 typedef int(__cdecl* f_SetSliderPos)(HWND hWnd, int nPos, BOOL bRepaint);
 /**
 PLUGIN.DLL Sliders : Sets slider position
@@ -116,6 +138,7 @@ void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max) {
 		// PLUGIN.DLL sliders
 		#ifdef use_plugin_dll_sliders
 		PluginDll_SetSliderRange(GetDlgItem(hDlg, nIDDlgItem), min, max);
+		PluginDll_SetSliderFlags(GetDlgItem(hDlg, nIDDlgItem), SetBits, FLAG_AUTOSNAP);
 		#endif
 	}
 }
