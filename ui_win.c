@@ -222,7 +222,7 @@ LRESULT CALLBACK ControlTextWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 }
 
 #define SLIDER_EVENT(lParam) (((lParam) >> 16) & 0xFFFF)
-#define SLIDER_POS(lParam) ((lParam) & 0xFFFF)
+#define SLIDER_POS(lParam) ((int16_t)((lParam) & 0xFFFF))
 typedef enum PluginDllSliderEventType_ {
 	SliderEventMoved = 0x7FFB,
 	SliderEventReleased = 0x7FFC,
