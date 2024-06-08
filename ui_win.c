@@ -40,6 +40,15 @@ HICON hIconCautionSign;
 
 extern HINSTANCE hDllInstance;
 
+// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) slider(1) }
+#define OID_SLIDER_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.1"
+
+// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) preview(2) }
+#define OID_PREVIEW_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.2"
+
+// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) caution(3) }
+#define OID_CAUTION_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.3"
+
 void DoAbout(AboutRecordPtr pb){
 	TCHAR* tmp1;
 	TCHAR* filters = (TCHAR*)malloc(4096);
@@ -427,14 +436,11 @@ Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	INT_PTR res;
 	
-	// "1.3.6.1.4.1.37476.2.72.2.1" is the class name of the slider control. It is the Object Identifier.
-	// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) slider(1) }
-
 	// First try to use the sliders from PLUGIN.DLL (only Photoshop)
-	if (!Slider_Init_PluginDll(TEXT("1.3.6.1.4.1.37476.2.72.2.1"))) {
+	if (!Slider_Init_PluginDll(TEXT(OID_SLIDER_WNDCLASS))) {
 		// If we couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop),
 		// then try the Microsoft Trackbar Control instead
-		if (!Slider_Init_MsTrackbar(TEXT("1.3.6.1.4.1.37476.2.72.2.1"))) {
+		if (!Slider_Init_MsTrackbar(TEXT(OID_SLIDER_WNDCLASS))) {
 			// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32).
 			// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32.
 			// It is included in Windows NT 3.5x.
@@ -444,13 +450,13 @@ Boolean maindialog(FilterRecordPtr pb){
 
 			// We simply hide the sliders and let the user enter the numeric values in the edit-box.
 			simplewarning_id(MSG_SLIDER_UNAVAILABLE_ID);
-			Slider_Init_None(TEXT("1.3.6.1.4.1.37476.2.72.2.1"));
+			Slider_Init_None(TEXT(OID_SLIDER_WNDCLASS));
 		}
 	}
 
 	// For the preview image and caution symbols, we register subclasses, so that we can assign a mouse cursor to this class.
-	MakeSimpleSubclass(TEXT("Preview"), WC_STATIC);
-	MakeSimpleSubclass(TEXT("Caution"), WC_BUTTON);
+	MakeSimpleSubclass(TEXT(OID_PREVIEW_WNDCLASS), WC_STATIC);
+	MakeSimpleSubclass(TEXT(OID_CAUTION_WNDCLASS), WC_BUTTON);
 
 	// Now show the dialog
 	p = (PlatformData*)pb->platformData;
@@ -469,9 +475,9 @@ Boolean maindialog(FilterRecordPtr pb){
 	}
 
 	// Clean up after the dialog has been closed
-	UnregisterClass(TEXT("Preview"), hDllInstance);
-	UnregisterClass(TEXT("Caution"), hDllInstance);
-	UnregisterClass(TEXT("1.3.6.1.4.1.37476.2.72.2.1"), hDllInstance);
+	UnregisterClass(TEXT(OID_PREVIEW_WNDCLASS), hDllInstance);
+	UnregisterClass(TEXT(OID_CAUTION_WNDCLASS), hDllInstance);
+	UnregisterClass(TEXT(OID_SLIDER_WNDCLASS), hDllInstance);
 	Slider_Uninit_PluginDll();
 	Slider_Uninit_MsTrackbar();
 	Slider_Uninit_None();
