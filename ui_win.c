@@ -426,12 +426,15 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 Boolean maindialog(FilterRecordPtr pb){
 	PlatformData *p;
 	INT_PTR res;
+	
+	// "1.3.6.1.4.1.37476.2.72.2.1" is the class name of the slider control. It is the Object Identifier.
+	// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) slider(1) }
 
 	// First try to use the sliders from PLUGIN.DLL (only Photoshop)
-	if (!Slider_Init_PluginDll(TEXT("FoundrySlider"))) {
+	if (!Slider_Init_PluginDll(TEXT("1.3.6.1.4.1.37476.2.72.2.1"))) {
 		// If we couldn't get the sliders from PLUGIN.DLL (probably not running in Photoshop),
 		// then try the Microsoft Trackbar Control instead
-		if (!Slider_Init_MsTrackbar(TEXT("FoundrySlider"))) {
+		if (!Slider_Init_MsTrackbar(TEXT("1.3.6.1.4.1.37476.2.72.2.1"))) {
 			// This will happen if we neither have PLUGIN.DLL, nor the Microsoft Trackbar Control (msctls_trackbar32).
 			// "msctls_trackbar32" is not included in Windows NT 3.1, and since there is no OCX or RegSvr32.
 			// It is included in Windows NT 3.5x.
@@ -441,7 +444,7 @@ Boolean maindialog(FilterRecordPtr pb){
 
 			// We simply hide the sliders and let the user enter the numeric values in the edit-box.
 			simplewarning_id(MSG_SLIDER_UNAVAILABLE_ID);
-			Slider_Init_None(TEXT("FoundrySlider"));
+			Slider_Init_None(TEXT("1.3.6.1.4.1.37476.2.72.2.1"));
 		}
 	}
 
@@ -468,7 +471,7 @@ Boolean maindialog(FilterRecordPtr pb){
 	// Clean up after the dialog has been closed
 	UnregisterClass(TEXT("Preview"), hDllInstance);
 	UnregisterClass(TEXT("Caution"), hDllInstance);
-	UnregisterClass(TEXT("FoundrySlider"), hDllInstance);
+	UnregisterClass(TEXT("1.3.6.1.4.1.37476.2.72.2.1"), hDllInstance);
 	Slider_Uninit_PluginDll();
 	Slider_Uninit_MsTrackbar();
 	Slider_Uninit_None();

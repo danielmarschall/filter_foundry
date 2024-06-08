@@ -9,10 +9,10 @@ FFX (Filters Unlimited) file format
         FFXString         copyright
         FFXString[5]      channels           // I (Intro), R (Red), G (Green), B (Blue), A (Alpha)
         FFXSliderInfo[8]  sliders
-        int32_t           gradientIndex
-        int32_t           bitmapInfoSize     // only in FFX >= 1.2, otherwise not present
+        uint32_t          gradientIndex
+        uint32_t          bitmapInfoSize     // only in FFX >= 1.2, otherwise not present
         FFXBitmapInfo     bitmapInfo         // only in FFX >= 1.2, otherwise not present
-        int32_t           numPresets         // only in FFX >= 1.1, otherwise not present
+        uint32_t          numPresets         // only in FFX >= 1.1, otherwise not present
         FFXPreset[]       presets            // only in FFX >= 1.1, otherwise not present
     }
     
@@ -22,12 +22,12 @@ FFX (Filters Unlimited) file format
     }
     
     FFXString = {
-        int32_t           length
+        uint32_t          length
         char[]            value
     }
     
     FFXSliderInfo = {
-        int32_t           nameLength
+        uint32_t          nameLength
         char[]            name               // In FFX >= 1.2: Slider can have names prefixes:
                                              // {C} = Checkbox
                                              // {S} or none = Slider

@@ -254,8 +254,8 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 	}
 
 	if (gdata->pluginDllSliderInfo.hLib && PluginDll_RegisterSlider(hDllInstance, &gdata->pluginDllSliderInfo.messageId)) {
-		// Make "FoundrySlider" a subclass of "slider" then
-		if (MakeSimpleSubclass(targetClass, TEXT("slider"))) {
+		// Make "1.3.6.1.4.1.37476.2.72.2.1" a subclass of "Slider" (defined by Plugin.dll) then
+		if (MakeSimpleSubclass(targetClass, TEXT("Slider"))) {
 			gdata->pluginDllSliderInfo.initialized = true;
 			return true;
 		}
@@ -319,7 +319,7 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 			}
 		}
 
-		// Make "FoundrySlider" a subclass of "msctls_trackbar32" then
+		// Make "1.3.6.1.4.1.37476.2.72.2.1" a subclass of "msctls_trackbar32" then
 		if (MakeSimpleSubclass(targetClass, TEXT("msctls_trackbar32"))) {
 			gdata->comctlSliderInfo.initialized = true;
 			return true;
@@ -345,7 +345,7 @@ void Slider_Uninit_MsTrackbar(void) {
 }
 
 /**
-Make "FoundrySlider" a subclass of "STATIC" (making it invisible)
+Make "1.3.6.1.4.1.37476.2.72.2.1" a subclass of "STATIC" (making it invisible)
 */
 Boolean Slider_Init_None(LPCTSTR targetClass) {
 
