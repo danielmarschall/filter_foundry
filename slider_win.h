@@ -23,21 +23,13 @@
 
 #include <Windows.h>
 
+// If use_plugin_dll_sliders switch enabled:
+//    The sliders will use PLUGIN.DLL if it is available,
+//    otherwise (e.g. if the host is non-Adobe), it will use the Windows common control sliders.
+// If use_plugin_dll_sliders switch disabled:
+//    Only Windows common control sliders will be used (requires Win95+)
 #define use_plugin_dll_sliders
 
-#ifdef use_plugin_dll_sliders
-
-// PLUGIN.DLL Sliders:
-
-BOOL PluginDll_RegisterSlider(HINSTANCE hInstanceDll, DWORD* MessageID);
-BOOL PluginDll_UnRegisterSlider(HINSTANCE hInstanceDll);
-int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax);
-int PluginDll_SetSliderPos(HWND hWnd, int nPos, BOOL bRepaint);
-int PluginDll_GetSliderPos(HWND hWnd, BOOL bPixelPosition);
-
-#endif
-
-// Use these functions ONLY:
 
 void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max);
 int FF_GetSliderPos(HWND hDlg, int nIDDlgItem);

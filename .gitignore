@@ -48,11 +48,11 @@ visual_studio/*.idb
 visual_studio/*.8bf.manifest
 visual_studio/*.intermediate.manifest
 
-
 win_flex_bison/custom_build_rules
 win_flex_bison/data/
 win_flex_bison/FlexLexer.h
 win_flex_bison/README.txt
+win_flex_bison/README.md
 win_flex_bison/UNISTD_ERROR.readme
 win_flex_bison/win_bison.exe
 win_flex_bison/win_flex.exe

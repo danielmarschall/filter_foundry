@@ -30,6 +30,7 @@
 #include "ff.h"
 #include "slider_win.h"
 #include "version.h"
+#include "ui_win.h"
 
 HWND preview_hwnd;
 HCURSOR hCurHandOpen;
@@ -39,15 +40,6 @@ HCURSOR hCurHandQuestion;
 HICON hIconCautionSign;
 
 extern HINSTANCE hDllInstance;
-
-// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) slider(1) }
-#define OID_SLIDER_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.1"
-
-// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) preview(2) }
-#define OID_PREVIEW_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.2"
-
-// { iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 37476 products(2) filter-foundry(72) controls(2) caution(3) }
-#define OID_CAUTION_WNDCLASS "1.3.6.1.4.1.37476.2.72.2.3"
 
 void DoAbout(AboutRecordPtr pb){
 	TCHAR* tmp1;

@@ -77,7 +77,7 @@ all : parser lexer $(EXEC).8bf
 clean :
 	-del *.obj *.asm *.cod win_res.res $(EXEC).8bf $(EXEC).exp $(EXEC).lib $(EXEC).map
 
-win_res.res : ..\win_res.rc ..\Scripting.rc ..\PiPL.rc ..\PiPL_body.rc ..\manifest.rc ..\version_win.rc ..\ui_win.rc ..\caution.ico ..\ui.h ..\version.h
+win_res.res : ..\win_res.rc ..\Scripting.rc ..\PiPL.rc ..\PiPL_body.rc ..\manifest.rc ..\version_win.rc ..\ui_win.rc ..\caution.ico ..\ui.h ..\ui_win.h ..\version.h
 	$(RC) $(RFLAGS) $(CPPFLAGS) -fowin_res.res ..\win_res.rc
 	
 parser : ..\parser.y

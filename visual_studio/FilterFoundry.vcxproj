@@ -274,6 +274,7 @@ foundry_3264_mixer.bat
     <ClInclude Include="..\telegraphics_common\tt\str.h" />
     <ClInclude Include="..\telegraphics_common\tt\ui_compat.h" />
     <ClInclude Include="..\ui.h" />
+    <ClInclude Include="..\ui_win.h" />
     <ClInclude Include="..\unistd.h" />
     <ClInclude Include="..\version.h" />
     <ClInclude Include="..\versioninfo_modify_win.h" />
