@@ -149,5 +149,5 @@ Run Photoshop through Visual Studio in order to debug the plugin.
 Old versions of Photoshop could specify an additional plugin directory which
 you can set to `.../visual_studio`. Newer versions of Photoshop don't have this
 option; however, you can simply place a shortcut to FilterFoundry64.8bf in the folder
-**C:\Program Files\Adobe\Adobe Photoshop 2024\Plug-ins** and Photoshop will follow
+**C:\Program Files\Adobe\Adobe Photoshop 2025\Plug-ins** and Photoshop will follow
 the shortcut.
