@@ -23,5 +23,5 @@ rem dir *.8bf
 echo.
 echo.
 echo.
-echo Finished compiling 32bit using WATCOM. Please check console output.
+echo Finished compiling 32bit using WATCOM. Please check the console output.
 pause.

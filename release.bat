@@ -13,7 +13,7 @@ call authenticode_sign.bat visual_studio\FilterFoundry64.8bf
 echo.
 echo.
 echo.
-echo Finished signing files. Please check console output.
+echo Finished signing files. Please check the console output.
 pause.
 
 cd /d "%~dp0"

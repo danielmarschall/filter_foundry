@@ -1,6 +1,8 @@
 
+"Bison" and "Flex" is required for the Windows build (Visual Studio, OpenWatcom, ...)
+
 Please download the Windows "bison" and "flex" tools here:
-https://github.com/lexxmark/winflexbison/releases
+https://github.com/danielmarschall/winflexbison/releases
 ( old versions also available here https://sourceforge.net/projects/winflexbison/ )
 
 Place the contents of the ZIP file in this directory:
@@ -9,4 +11,5 @@ Place the contents of the ZIP file in this directory:
 - data/
 - ...
 
-This is required for the Windows build (Visual Studio, OpenWatcom, ...)
+In case you only find bison.exe and flex.exe, then please rename
+them to win_bison.exe and win_flex.exe, respectively.

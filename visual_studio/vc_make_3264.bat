@@ -44,5 +44,5 @@ call foundry_3264_mixer.bat
 cd /d "%~dp0"
 rem dir *.8bf
 
-echo Finished compiling 32+64bit using VISUAL STUDIO. Please check console output.
+echo Finished compiling 32+64bit using VISUAL STUDIO. Please check the console output.
 pause.
