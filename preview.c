@@ -180,18 +180,50 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			if (i%nplanes == 1) p[i] = (uint8_t)(255 - m * 255);
 			if (i%nplanes == 2) p[i] = (uint8_t)(255 - y * 255);
 			if (i%nplanes == 3) p[i] = (uint8_t)(255 - k * 255);
+		} else if (gpb->imageMode == plugInModeLabColor || gpb->imageMode == plugInModeLab48) {
+			double r, g, b, X, Y, Z;
+
+			// D65 reference white point
+			const double X_ref = 95.047;
+			const double Y_ref = 100.000;
+			const double Z_ref = 108.883;
+
+			// Convert RGB (0-255) to Lab
+			r = GetRValue(color) / 255.0;
+			g = GetGValue(color) / 255.0;
+			b = GetBValue(color) / 255.0;
+
+			// Convert to linear RGB
+			r = (r > 0.04045) ? pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+			g = (g > 0.04045) ? pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+			b = (b > 0.04045) ? pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+			// Convert linear RGB to XYZ
+			X = r * 41.24 + g * 35.76 + b * 18.05;
+			Y = r * 21.26 + g * 71.52 + b * 7.22;
+			Z = r * 1.93 + g * 11.92 + b * 95.05;
+
+			// Normalize XYZ values
+			X /= X_ref;
+			Y /= Y_ref;
+			Z /= Z_ref;
+
+			// Apply the f(t) function
+			X = (X > 0.008856) ? pow(X, 1.0 / 3.0) : (7.787 * X) + (16.0 / 116.0);
+			Y = (Y > 0.008856) ? pow(Y, 1.0 / 3.0) : (7.787 * Y) + (16.0 / 116.0);
+			Z = (Z > 0.008856) ? pow(Z, 1.0 / 3.0) : (7.787 * Z) + (16.0 / 116.0);
+
+			if (i % nplanes == 0) p[i] = (unsigned char)(((116.0 * Y) - 16.0) * 255.0);    // L is 0..255
+			if (i % nplanes == 1) p[i] = (unsigned char)((500.0 * (X - Y)) * 255.0) + 128; // a is -128..127
+			if (i % nplanes == 2) p[i] = (unsigned char)((200.0 * (Y - Z)) * 255.0) + 128; // b is -128..127
+			if (i % nplanes == 3) p[i] = 255; // alpha channel
 		} else {
 			// This case happens for:
 			// - Multichannel
 			// - Duotone
-			// - Lab
 			// - HSB, HSL (these color modes do not exist in PS?)
 			// - Bitmap, IndexedColor (no filter gets enabled, even if 'mode' and 'enbl' says so)
-
-			// FIXME: If we are in such a non supported color mode, then
-			//        these color codes would be all wrong!
-			//        Just to be safe use (what is probably) white
-			p[i] = 0xFF;
+			p[i] = 0x80; // choose "middle" color which is hopefully grayish
 		}
 		#else
 		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)
