@@ -1615,51 +1615,23 @@ value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 value_type zero_val = 0;
 value_type one_val = 1;
 
-value_type min_val_i = 0;
-value_type max_val_i = 255;
-value_type val_I = 255;
+value_type min_val_i; // will be set by process.c (setup)
+value_type max_val_i; // will be set by process.c (setup)
 
-#ifdef use_filterfactory_implementation_u_minmax
-value_type min_val_u = 0;
-value_type max_val_u = 255;
-#else
-value_type min_val_u = -55;
-value_type max_val_u = 55;
-#endif
+value_type min_val_u_factory = 0;
+value_type max_val_u_factory = 255;
+value_type min_val_u; // will be set by process.c (setup)
+value_type max_val_u; // will be set by process.c (setup)
 
-#ifdef use_filterfactory_implementation_U
-value_type val_U = 255;
-#else
-value_type val_U = 110; // max_val_u - min_val_u;
-#endif
+value_type min_val_v_factory = 0;
+value_type max_val_v_factory = 255;
+value_type min_val_v; // will be set by process.c (setup)
+value_type max_val_v; // will be set by process.c (setup)
 
-#ifdef use_filterfactory_implementation_v_minmax
-value_type min_val_v = 0;
-value_type max_val_v = 255;
-#else
-value_type min_val_v = -78;
-value_type max_val_v = 78;
-#endif
-
-#ifdef use_filterfactory_implementation_V
-value_type val_V = 255;
-#else
-value_type val_V = 156; // max_val_v - min_val_v;
-#endif
-
-#ifdef use_filterfactory_implementation_d_minmax
-value_type min_val_d = 0;
-value_type max_val_d = 1024;
-#else
+value_type min_val_d_factory = 0;
+value_type max_val_d_factory = 1024;
 value_type min_val_d = -512;
 value_type max_val_d = 512;
-#endif
-
-#ifdef use_filterfactory_implementation_D
-value_type val_D = 1024;
-#else
-value_type val_D = 1024; // max_val_d - min_val_d;
-#endif
 
 /**
 predefined symbols
@@ -1706,9 +1678,25 @@ struct sym_rec predefs[] = {
 	{0,TOK_VAR,"amax",0, &var['A']}, // alias of A (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"cmax",0, &var['C']}, // alias of C (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"imax",0, &max_val_i},
+
+#ifdef use_filterfactory_implementation_u_minmax
+	{0,TOK_VAR,"umax",0, &max_val_u_factory},
+#else
 	{0,TOK_VAR,"umax",0, &max_val_u},
+#endif
+
+#ifdef use_filterfactory_implementation_v_minmax
+	{0,TOK_VAR,"vmax",0, &max_val_v_factory},
+#else
 	{0,TOK_VAR,"vmax",0, &max_val_v},
+#endif
+
+#ifdef use_filterfactory_implementation_d_minmax
+	{0,TOK_VAR,"dmax",0, &max_val_d_factory},
+#else
 	{0,TOK_VAR,"dmax",0, &max_val_d},
+#endif
+
 	{0,TOK_VAR,"mmax",0, &var['M']}, // alias of M (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"pmax",0, &var['Z']}, // alias of P (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"xmax",0, &var['X']}, // alias of X (defined in lexer.l and set by process.c)
@@ -1721,9 +1709,25 @@ struct sym_rec predefs[] = {
 	{0,TOK_VAR,"amin",0, &zero_val},
 	{0,TOK_VAR,"cmin",0, &zero_val},
 	{0,TOK_VAR,"imin",0, &min_val_i},
+
+#ifdef use_filterfactory_implementation_u_minmax
+	{0,TOK_VAR,"umin",0, &min_val_u_factory},
+#else
 	{0,TOK_VAR,"umin",0, &min_val_u},
+#endif
+
+#ifdef use_filterfactory_implementation_v_minmax
+	{0,TOK_VAR,"vmin",0, &min_val_v_factory},
+#else
 	{0,TOK_VAR,"vmin",0, &min_val_v},
+#endif
+
+#ifdef use_filterfactory_implementation_d_minmax
+	{0,TOK_VAR,"dmin",0, &min_val_d_factory},
+#else
 	{0,TOK_VAR,"dmin",0, &min_val_d},
+#endif
+
 	{0,TOK_VAR,"mmin",0, &zero_val},
 	{0,TOK_VAR,"pmin",0, &zero_val},
 	{0,TOK_VAR,"xmin",0, &zero_val},

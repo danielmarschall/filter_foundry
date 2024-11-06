@@ -68,27 +68,24 @@ Boolean setup(FilterRecordPtr pb){
 	int i;
 
 	switch (pb->depth) {
-	case 0:
-		// Photoshop <4.0 does not support this property. Use 8 bits
-		bytesPerPixelChannelIn = 1;
-		bytesPerPixelChannelOut = 1;
-		maxChannelValueIn = 255;
-		maxChannelValueOut = 255;
-		break;
 	case 1:
 		// 1 bit (not supported)
-		// TODO: is this correct for 1bit mode???
-		bytesPerPixelChannelIn = 1;
-		bytesPerPixelChannelOut = 1;
-		maxChannelValueIn = 1;
-		maxChannelValueOut = 1;
 		break;
+	case 0:
 	case 8:
-		// 8 bits
+		// value 0: Photoshop <4.0 does not define pb->depth. Use 8 bits.
+		// value 8: 8 bits
 		bytesPerPixelChannelIn = 1;
 		bytesPerPixelChannelOut = 1;
 		maxChannelValueIn = 255;
 		maxChannelValueOut = 255;
+		// Smallest and largest possible values of ff_i(), ff_u(), ff_v()
+		min_val_i = 0;
+		max_val_i = 255;
+		min_val_u = -55;
+		max_val_u = 55;
+		min_val_v = -78;
+		max_val_v = 78;
 		break;
 	case 16:
 		// 16 bits
@@ -96,6 +93,13 @@ Boolean setup(FilterRecordPtr pb){
 		bytesPerPixelChannelOut = 2;
 		maxChannelValueIn = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
 		maxChannelValueOut = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
+		// Smallest and largest possible values of ff_i(), ff_u(), ff_v()
+		min_val_i = 0;
+		max_val_i = 32768;
+		min_val_u = -7156;
+		max_val_u = 7156;
+		min_val_v = -10072;
+		max_val_v = 10072;
 		break;
 	case 32:
 		// 32 bits
@@ -108,6 +112,13 @@ Boolean setup(FilterRecordPtr pb){
 		// TODO: For some reason, we can only use approx. 16 bit as max channel value, otherwise we get wrong canvas input?!
 		maxChannelValueIn = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
 		maxChannelValueOut = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		// Smallest and largest possible values of ff_i(), ff_u(), ff_v()
+		min_val_i = 0;
+		max_val_i = 65535;
+		min_val_u = -14312;
+		max_val_u = 14312;
+		min_val_v = -20144;
+		max_val_v = 20144;
 		break;
 	}
 
@@ -120,13 +131,34 @@ Boolean setup(FilterRecordPtr pb){
 		var['Y'] = FILTER_RECT(pb).bottom - FILTER_RECT(pb).top;
 	}
 	var['Z'] = nplanes;
-	var['D'] = val_D;
+
+#ifdef use_filterfactory_implementation_D
+	var['D'] = 1024;
+#else
+	var['D'] = max_val_d - min_val_d;
+#endif
+
 	var['M'] = ff_M();
 
 	var['R'] = var['G'] = var['B'] = var['A'] = var['C'] = maxChannelValueOut;
-	var['I'] = val_I;
-	var['U'] = val_U;
-	var['V'] = val_V;
+
+#ifdef use_filterfactory_implementation_I
+	var['I'] = 255;
+#else
+	var['I'] = max_val_i - min_val_i;
+#endif
+
+#ifdef use_filterfactory_implementation_U
+	var['U'] = 255;
+#else
+	var['U'] = max_val_u - min_val_u;
+#endif
+
+#ifdef use_filterfactory_implementation_V
+	var['V'] = 255;
+#else
+	var['V'] = max_val_v - min_val_v;
+#endif
 
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)

@@ -11,23 +11,19 @@ ToDo for the next release
 
 	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
 	- Fix compiler warnings (float convert)
+	- Gray and Duotone: It would be great if alpha could be channel 4 ("a") instead of channel 2 ("g")! If done, change documentation.
+	- Duotone: The preview background is white
+	- Lab: The preview background is red
+	- In non-RGB modes, the variables iuv make no sense, as they use rgb, which is not RGB! (Mentioned in the documentation at 2 places)
 
 
 Known problems
 --------------
 
-* The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area!
+* The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area! (Do we need something with `maskData`?)
 	see wishlist\bug_rectangle.png
 
 * When you receive the error "Could not build preview at chosen zoom level..." because you zoomed out too far, you cannot recover from it, even if you zoom in again!
-
-* In regards color modes...
-	"Bitmap" => what is this mode and why isn't it supported?
-	"IndexedColor" => enabled in PiPL 'mode' and 'enbl', but is still not enabled. disabled in 1.7.0.17, as it makes no sense.
-	"HSL" => how do you set this color space in Photoshop?! It is a sub-space of RGB, so why is it a thing in the PiPL `mode` resource?
-	"HSB" => how do you set this color space in Photoshop?! It is a sub-space of RGB, so why is it a thing in the PiPL `mode` resource?
-	"Duotone" => The preview background is white (TODO)
-	"Lab" => The preview background is red (TODO)
 
 * PluginCommander cannot generate FFL files using FilterFoundry 8BF files. Reason unknown.
 

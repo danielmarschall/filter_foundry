@@ -139,9 +139,5 @@ extern value_type min_val_v;
 extern value_type max_val_v;
 extern value_type min_val_d;
 extern value_type max_val_d;
-extern value_type val_D;
-extern value_type val_I;
-extern value_type val_U;
-extern value_type val_V;
 
 #endif
