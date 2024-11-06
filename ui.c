@@ -237,11 +237,11 @@ void maindlginit(DIALOGREF dp) {
 	int i;
 	const char* channelsuffixes[] = {
 		// ImagesMode according to PIGeneral.h:
-		"",     // plugInModeBitmap
+		"I",    // plugInModeBitmap (not supported)
 		"KA",   // plugInModeGrayScale
-		"I",    // plugInModeIndexedColor
+		"I",    // plugInModeIndexedColor (not supported)
 		"RGBA", // plugInModeRGBColor
-		"CMYK", // plugInModeCMYKColor (unfortunately without transparency)
+		"CMYK", // plugInModeCMYKColor
 		"HSL",  // plugInModeHSLColor
 		"HSB",  // plugInModeHSBColor
 		"1234", // plugInModeMultichannel
@@ -250,7 +250,7 @@ void maindlginit(DIALOGREF dp) {
 		"KA",   // plugInModeGray16
 		"RGBA", // plugInModeRGB48
 		"LabA", // plugInModeLab48
-		"CMYK", // plugInModeCMYK64 (unfortunately without transparency)
+		"CMYK", // plugInModeCMYK64
 		"1234", // plugInModeDeepMultichannel
 		"DA",   // plugInModeDuotone16
 		"RGBA", // plugInModeRGB96

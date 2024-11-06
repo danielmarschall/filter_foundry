@@ -264,10 +264,10 @@ Zoom and filter image.
 OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 			  VRect filterPiece, VRect outPiece,
 			  void *outData, long outRowBytes, double zoom){
-	char*inrow,*outrow,*outp;
-	int j,i;
+	unsigned char *inrow, *outrow, *outp;
+	int i, j;
 	int64_t t, ticks = TICKCOUNT();
-	double x,y,k;
+	double x, y, k;
 
 	#ifdef PROCESS_SCALED_GAP_DEBUG
 	char s[0x200];
