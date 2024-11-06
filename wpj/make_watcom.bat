@@ -1,7 +1,15 @@
 echo off
 
 setlocal
-set PATH=%PATH%;c:\watcom\binnt
+
+REM Please adjust this variable to your OpenWatcom installation path
+set WATCOM=C:\WATCOM
+
+set PATH=%PATH%;%WATCOM%\BINNT64;%WATCOM%\BINNT
+set INCLUDE=%WATCOM%\H;%WATCOM%\H\NT;%WATCOM%\H\NT\DIRECTX;%WATCOM%\H\NT\DDK
+set EDPATH=%WATCOM%\EDDAT
+set WHTMLHELP=%WATCOM%\BINNT\HELP
+set WIPFC=%WATCOM%\WIPFC
 
 cd /d "%~dp0"
 
