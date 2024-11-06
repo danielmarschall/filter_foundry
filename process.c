@@ -207,21 +207,25 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 	int k;
 
 	if(needinput){
-		if (bytesPerPixelChannelIn == 1) {
+		switch (bytesPerPixelChannelIn) {
+		case 1:
 			var['r'] = inp[0];
 			var['g'] = nplanes > 1 ? inp[1] : 0;
 			var['b'] = nplanes > 2 ? inp[2] : 0;
 			var['a'] = nplanes > 3 ? inp[3] : 0;
-		} else if (bytesPerPixelChannelIn == 2) {
+			break;
+		case 2:
 			var['r'] = (nplanes > 0) ? *((uint16_t*)(inp)) : 0;
 			var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) : 0;
 			var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) : 0;
 			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 6)) : 0;
-		} else if (bytesPerPixelChannelIn == 4) {
+			break;
+		case 4:
 			var['r'] = (nplanes > 0) ? (float)maxChannelValueIn * *((float*)(inp)) : 0;
 			var['g'] = (nplanes > 1) ? (float)maxChannelValueIn * *((float*)(inp + 4)) : 0;
 			var['b'] = (nplanes > 2) ? (float)maxChannelValueIn * *((float*)(inp + 8)) : 0;
 			var['a'] = (nplanes > 3) ? (float)maxChannelValueIn * *((float*)(inp + 12)) : 0;
+			break;
 		}
 
 		// For Y, the definition is Y := 0.299R + 0.587G + 0.114B
@@ -243,12 +247,16 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 
 	for (k = 0; k < nplanes; ++k) {
 		if (needinput) {
-			if (bytesPerPixelChannelIn == 1) {
+			switch (bytesPerPixelChannelIn) {
+			case 1:
 				var['c'] = inp[k];
-			} else if (bytesPerPixelChannelIn == 2) {
+				break;
+			case 2:
 				var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
-			} else if (bytesPerPixelChannelIn == 4) {
+				break;
+			case 4:
 				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) : 0;
+				break;
 			}
 		}
 		var['z'] = k;
@@ -258,12 +266,16 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 			if (maxChannelValueOut != maxChannelValueIn) {
 				f = f * maxChannelValueOut / maxChannelValueIn; // if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
 			}
-			if (bytesPerPixelChannelOut == 1) {
+			switch (bytesPerPixelChannelOut) {
+			case 1:
 				outp[k] = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
-			} else if (bytesPerPixelChannelOut == 2) {
+				break;
+			case 2:
 				*((uint16_t*)(outp + k * 2)) = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
-			} else if (bytesPerPixelChannelOut == 4) {
+				break;
+			case 4:
 				*((float*)(outp + k * 4)) = f < 0 ? 0.0 : (f > maxChannelValueOut ? 1.0 : (float)f / maxChannelValueOut); // clamp channel value
+				break;
 			}
 		}
 	}
