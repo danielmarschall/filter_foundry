@@ -33,7 +33,6 @@ int bytesPerPixelChannelIn;
 int bytesPerPixelChannelOut;
 value_type maxChannelValueIn;
 value_type maxChannelValueOut;
-int valueFactorOut; // TODO: change the funcs.c methods instead of doing this!
 
 /**
 points to first row, first column of selection image data
@@ -75,15 +74,14 @@ Boolean setup(FilterRecordPtr pb){
 		bytesPerPixelChannelOut = 1;
 		maxChannelValueIn = 255;
 		maxChannelValueOut = 255;
-		valueFactorOut = 1;
 		break;
 	case 1:
 		// 1 bit (not supported)
-		bytesPerPixelChannelIn = 1; // TODO: is this correct for 1bit mode???
-		bytesPerPixelChannelOut = 1; // TODO: is this correct for 1bit mode???
-		maxChannelValueIn = 1; // TODO: is this correct for 1bit mode???
-		maxChannelValueOut = 1; // TODO: is this correct for 1bit mode???
-		valueFactorOut = 1;
+		// TODO: is this correct for 1bit mode???
+		bytesPerPixelChannelIn = 1;
+		bytesPerPixelChannelOut = 1;
+		maxChannelValueIn = 1;
+		maxChannelValueOut = 1;
 		break;
 	case 8:
 		// 8 bits
@@ -91,7 +89,6 @@ Boolean setup(FilterRecordPtr pb){
 		bytesPerPixelChannelOut = 1;
 		maxChannelValueIn = 255;
 		maxChannelValueOut = 255;
-		valueFactorOut = 1;
 		break;
 	case 16:
 		// 16 bits
@@ -99,7 +96,6 @@ Boolean setup(FilterRecordPtr pb){
 		bytesPerPixelChannelOut = 2;
 		maxChannelValueIn = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
 		maxChannelValueOut = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
-		valueFactorOut = 128; // 32768/255
 		break;
 	case 32:
 		// 32 bits
@@ -108,12 +104,10 @@ Boolean setup(FilterRecordPtr pb){
 		/*
 		maxChannelValueIn = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
 		maxChannelValueOut = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
-		valueFactorOut = 8421504; // INT_MAX/255
 		*/
 		// TODO: For some reason, we can only use approx. 16 bit as max channel value, otherwise we get wrong canvas input?!
 		maxChannelValueIn = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
 		maxChannelValueOut = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
-		valueFactorOut = 255; // 65535/255
 		break;
 	}
 
@@ -199,21 +193,21 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		}
 
 		// For Y, the definition is Y := 0.299R + 0.587G + 0.114B
-		if(varused['i']) var['i'] = ff_i() * valueFactorOut;
+		if(varused['i']) var['i'] = ff_i();
 
 		// For U, the definition is U := (B-Y) * 0.493; the range would be [-111..111]
 		// Filter Factory divided it by 2, resulting in a range of [-55..55].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['u']) var['u'] = ff_u() * valueFactorOut;
+		if(varused['u']) var['u'] = ff_u();
 
 		// For V, the definition is V := (R-Y) * 0.877; the range would be [-156..156]
 		// Filter Factory divided it by 2, resulting in a range of [-78..78].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['v']) var['v'] = ff_v() * valueFactorOut;
+		if(varused['v']) var['v'] = ff_v();
 	}
 
-	if(varused['d']) var['d'] = ff_d() * valueFactorOut;
-	if(varused['m']) var['m'] = ff_m() * valueFactorOut;
+	if(varused['d']) var['d'] = ff_d();
+	if(varused['m']) var['m'] = ff_m();
 
 	for (k = 0; k < nplanes; ++k) {
 		if (needinput) {

@@ -3,7 +3,7 @@
 
 Filter Foundry is a compatible replacement for Adobe Filter Factory.
 
-Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.net/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, and a 64-bit Windows version was created.
+Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.net/sw/)) in 2003 - 2009, the development has been continued by [Daniel Marschall](https://www.daniel-marschall.de/) ([ViaThinkSoft](https://www.viathinksoft.com/)) since 2018. Several advancements and improvements have been made, such as support for 64-bit Windows, and additional color modes including 16-bit color and 32-bit color.
 
 
 ## Screenshot

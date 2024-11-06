@@ -118,7 +118,6 @@ extern int bytesPerPixelChannelIn;
 extern int bytesPerPixelChannelOut;
 extern value_type maxChannelValueIn;
 extern value_type maxChannelValueOut;
-extern int valueFactorOut;
 
 #define LOADING_OK 0
 /**
