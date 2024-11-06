@@ -232,13 +232,29 @@ void maindlgupdate(DIALOGREF dp){
 /**
 one-time initialisation of dialog box
 */
-void maindlginit(DIALOGREF dp){
+void maindlginit(DIALOGREF dp) {
 	char s[0x100];
 	int i;
-	const char *channelsuffixes[] = {
-		"", "KA", "I", "RGBA",
-		"CMYK", "HSL", "HSB", "1234",
-		"DA", "LabA"
+	const char* channelsuffixes[] = {
+		// ImagesMode according to PIGeneral.h:
+		"",     // plugInModeBitmap
+		"KA",   // plugInModeGrayScale
+		"I",    // plugInModeIndexedColor
+		"RGBA", // plugInModeRGBColor
+		"CMYK", // plugInModeCMYKColor (unfortunately without transparency)
+		"HSL",  // plugInModeHSLColor
+		"HSB",  // plugInModeHSBColor
+		"1234", // plugInModeMultichannel
+		"DA",   // plugInModeDuotone
+		"LabA", // plugInModeLabColor
+		"KA",   // plugInModeGray16
+		"RGBA", // plugInModeRGB48
+		"LabA", // plugInModeLab48
+		"CMYK", // plugInModeCMYK64 (unfortunately without transparency)
+		"1234", // plugInModeDeepMultichannel
+		"DA",   // plugInModeDuotone16
+		"RGBA", // plugInModeRGB96
+		"KA"    // plugInModeGray32
 	};
 
 	/* hide unused expression items */

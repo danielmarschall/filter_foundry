@@ -25,7 +25,7 @@ Priority { 0 }, /* default */
 SupportedModes {
 	noBitmap,
 	doesSupportGrayScale,
-	noIndexedColor, /* changed in 1.7.0.17, since it probably never worked */
+	noIndexedColor,
 	doesSupportRGBColor,
 	doesSupportCMYKColor,
 	doesSupportHSLColor,
@@ -47,7 +47,7 @@ FilterLayerSupport { 0x80L },
 
 /* Enable info */
 /* "Plug-in Resource Guide.pdf", pages 61-62 */
-EnableInfo { "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)" },
+EnableInfo { "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode, Gray16Mode, RGB48Mode, Lab48Mode, CMYK64Mode, DeepMultichannelMode, Duotone16Mode, RGB96Mode, Gray32Mode) || PSHOP_ImageDepth == 16 || PSHOP_ImageDepth == 32" },
 
 /* MonitorScalingAware */
 /* TODO: Do we support it? For now, commented out */

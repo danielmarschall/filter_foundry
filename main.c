@@ -500,7 +500,7 @@ void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetS
 		}
 	}
 	if (resetFormulas) {
-		if (gpb->imageMode == plugInModeRGBColor) {
+		if ((gpb->imageMode == plugInModeRGBColor) || (gpb->imageMode == plugInModeRGB48) || (gpb->imageMode == plugInModeRGB96)) {
 			strcpy(gdata->parm.szFormula[0], "r");
 			strcpy(gdata->parm.szFormula[1], "g");
 			strcpy(gdata->parm.szFormula[2], "b");

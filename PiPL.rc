@@ -31,6 +31,7 @@
 
 #define NULLID 0L
 
+// Byte 1+2 (Big Endian)
 #define doesSupportBitmap           128 // flagSupportsBitmap
 #define doesSupportGrayScale         64 // flagSupportsGrayScale
 #define doesSupportIndexedColor      32 // flagSupportsIndexedColor
@@ -41,6 +42,34 @@
 #define doesSupportMultichannel       1 // flagSupportsMultichannel
 #define doesSupportDuotone        32768 // (flagSupportsDuotone << 8)    RC doesn't know <<8, nor *256 !
 #define doesSupportLABColor       16384 // (flagSupportsLABColor << 8)   RC doesn't know <<8, nor *256 !
+#define doesSupportGray16          8192 // undocumented!
+#define doesSupportRGB48           4096 // undocumented!
+#define doesSupportLab48           2048 // undocumented!
+#define doesSupportCMYK64          1024 // undocumented!
+#define doesSupportDeepMultichannel 512 // undocumented!
+#define doesSupportDuotone16        256 // undocumented!
+// Byte 3+4 (Big Endian)
+#define doesSupportRGB96            128 // undocumented!
+#define doesSupportGray32            64 // undocumented!
+
+#define noBitmap           0
+#define noGrayScale        0
+#define noIndexedColor     0
+#define noRGBColor         0
+#define noCMYKColor        0
+#define noHSLColor         0
+#define noHSBColor         0
+#define noMultichannel     0
+#define noDuotone          0
+#define noLABColor         0
+#define noGray16           0
+#define noRGB48            0
+#define noLab48            0
+#define noCMYK64           0
+#define noDeepMultichannel 0
+#define noDuotone16        0
+#define noRGB96            0
+#define noGray32           0
 
 /* Note: make_win.c writes language 0. So, this should be language 0, too,
    otherwise the standalone filter would have 2 languages for this resource. */

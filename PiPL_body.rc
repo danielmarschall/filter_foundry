@@ -34,17 +34,24 @@ VENDORID, LC(v,e,r,s), NULLID, 4L, latestFilterSubVersion, latestFilterVersion,
 VENDORID, LC(p,r,t,y), NULLID, 4L, NULLID,
 
 /* Supported modes */
-VENDORID, LC(m,o,d,e), NULLID, 4L, /* First byte:     */ /*doesSupportBitmap|*/
+VENDORID, LC(m,o,d,e), NULLID, 4L, /* 1st & 2nd byte: */ noBitmap| /* Even if doesSupportBitmap is chosen, the filter is not enabled. Weird. */
                                                          doesSupportGrayScale|
-                                                         /*doesSupportIndexedColor|*/
+                                                         noIndexedColor| /* Even if doesSupportIndexedColor is chosen, the filter is not enabled. Weird. */
                                                          doesSupportRGBColor|
                                                          doesSupportCMYKColor|
                                                          doesSupportHSLColor|
                                                          doesSupportHSBColor|
                                                          doesSupportMultichannel|
-                                   /* Second byte: */    doesSupportDuotone|
-                                                         doesSupportLABColor,
-                                   /* 3rd & 4th byte: */ 0,
+                                                         doesSupportDuotone|
+                                                         doesSupportLABColor|
+                                                         doesSupportGray16|
+                                                         doesSupportRGB48|
+                                                         doesSupportLab48|
+                                                         doesSupportCMYK64|
+                                                         doesSupportDeepMultichannel|
+                                                         doesSupportDuotone16,
+                                   /* 3rd & 4th byte: */ doesSupportRGB96|
+                                                         doesSupportGray32,
 
 /* We need this to enable the plugin for BigDocuments */
 VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
@@ -58,9 +65,9 @@ VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,
 VENDORID, LC(f,l,l,y), NULLID, 4L, 0x80L,
 
 /* Enable info */
-/* Note: Length 116 must be divisible by 4 */
+/* Note: Length 272 must be divisible by 4, otherwise it must be padded with zeros */
 /* "Plug-in Resource Guide.pdf", pages 61-62 */
-VENDORID, LC(e,n,b,l), NULLID, 116L, "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode)\0\0\0\0",
+VENDORID, LC(e,n,b,l), NULLID, 272L, "in (PSHOP_ImageMode, GrayScaleMode, RGBMode, CMYKMode, HSLMode, HSBMode, MultichannelMode, DuotoneMode, LabMode, Gray16Mode, RGB48Mode, Lab48Mode, CMYK64Mode, DeepMultichannelMode, Duotone16Mode, RGB96Mode, Gray32Mode) || PSHOP_ImageDepth == 16 || PSHOP_ImageDepth == 32\0\0",
 
 /* MonitorScalingAware */
 /* TODO: Do we support it? For now, commented out */

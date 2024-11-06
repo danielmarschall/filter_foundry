@@ -29,6 +29,12 @@ extern value_type var[];
 extern int nplanes,varused[],cnvused;
 extern struct node *tree[];
 
+int bytesPerPixelChannelIn;
+int bytesPerPixelChannelOut;
+value_type maxChannelValueIn;
+value_type maxChannelValueOut;
+int valueFactorOut; // TODO: change the funcs.c methods instead of doing this!
+
 /**
 points to first row, first column of selection image data
 this is used by src() and cnv() functions to access pixels
@@ -62,6 +68,55 @@ Boolean setup(FilterRecordPtr pb){
 	int srcrad;
 	int i;
 
+	switch (pb->depth) {
+	case 0:
+		// Photoshop <4.0 does not support this property. Use 8 bits
+		bytesPerPixelChannelIn = 1;
+		bytesPerPixelChannelOut = 1;
+		maxChannelValueIn = 255;
+		maxChannelValueOut = 255;
+		valueFactorOut = 1;
+		break;
+	case 1:
+		// 1 bit (not supported)
+		bytesPerPixelChannelIn = 1; // TODO: is this correct for 1bit mode???
+		bytesPerPixelChannelOut = 1; // TODO: is this correct for 1bit mode???
+		maxChannelValueIn = 1; // TODO: is this correct for 1bit mode???
+		maxChannelValueOut = 1; // TODO: is this correct for 1bit mode???
+		valueFactorOut = 1;
+		break;
+	case 8:
+		// 8 bits
+		bytesPerPixelChannelIn = 1;
+		bytesPerPixelChannelOut = 1;
+		maxChannelValueIn = 255;
+		maxChannelValueOut = 255;
+		valueFactorOut = 1;
+		break;
+	case 16:
+		// 16 bits
+		bytesPerPixelChannelIn = 2;
+		bytesPerPixelChannelOut = 2;
+		maxChannelValueIn = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
+		maxChannelValueOut = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
+		valueFactorOut = 128; // 32768/255
+		break;
+	case 32:
+		// 32 bits
+		bytesPerPixelChannelIn = 4;
+		bytesPerPixelChannelOut = 4;
+		/*
+		maxChannelValueIn = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		maxChannelValueOut = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		valueFactorOut = 8421504; // INT_MAX/255
+		*/
+		// TODO: For some reason, we can only use approx. 16 bit as max channel value, otherwise we get wrong canvas input?!
+		maxChannelValueIn = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		maxChannelValueOut = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		valueFactorOut = 255; // 65535/255
+		break;
+	}
+
 	// Attention: If you introduce new variables, please define them also in lexer.l
 	if (HAS_BIG_DOC(pb)) {
 		var['X'] = BIGDOC_FILTER_RECT(pb).right - BIGDOC_FILTER_RECT(pb).left;
@@ -74,7 +129,7 @@ Boolean setup(FilterRecordPtr pb){
 	var['D'] = val_D;
 	var['M'] = ff_M();
 
-	var['R'] = var['G'] = var['B'] = var['A'] = var['C'] = 255;
+	var['R'] = var['G'] = var['B'] = var['A'] = var['C'] = maxChannelValueOut;
 	var['I'] = val_I;
 	var['U'] = val_U;
 	var['V'] = val_V;
@@ -122,39 +177,69 @@ Boolean setup(FilterRecordPtr pb){
 }
 
 void evalpixel(unsigned char *outp,unsigned char *inp){
-	int f,k;
+	value_type f;
+	int k;
 
 	if(needinput){
-		var['r'] = inp[0];
-		var['g'] = nplanes > 1 ? inp[1] : 0;
-		var['b'] = nplanes > 2 ? inp[2] : 0;
-		var['a'] = nplanes > 3 ? inp[3] : 0;
+		if (bytesPerPixelChannelIn == 1) {
+			var['r'] = inp[0];
+			var['g'] = nplanes > 1 ? inp[1] : 0;
+			var['b'] = nplanes > 2 ? inp[2] : 0;
+			var['a'] = nplanes > 3 ? inp[3] : 0;
+		} else if (bytesPerPixelChannelIn == 2) {
+			var['r'] = (nplanes > 0) ? *((uint16_t*)(inp)) : 0;
+			var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) : 0;
+			var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) : 0;
+			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 6)) : 0;
+		} else if (bytesPerPixelChannelIn == 4) {
+			var['r'] = (nplanes > 0) ? (float)maxChannelValueIn * *((float*)(inp)) : 0;
+			var['g'] = (nplanes > 1) ? (float)maxChannelValueIn * *((float*)(inp + 4)) : 0;
+			var['b'] = (nplanes > 2) ? (float)maxChannelValueIn * *((float*)(inp + 8)) : 0;
+			var['a'] = (nplanes > 3) ? (float)maxChannelValueIn * *((float*)(inp + 12)) : 0;
+		}
 
 		// For Y, the definition is Y := 0.299R + 0.587G + 0.114B
-		if(varused['i']) var['i'] = ff_i();
+		if(varused['i']) var['i'] = ff_i() * valueFactorOut;
 
 		// For U, the definition is U := (B-Y) * 0.493; the range would be [-111..111]
 		// Filter Factory divided it by 2, resulting in a range of [-55..55].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['u']) var['u'] = ff_u();
+		if(varused['u']) var['u'] = ff_u() * valueFactorOut;
 
 		// For V, the definition is V := (R-Y) * 0.877; the range would be [-156..156]
 		// Filter Factory divided it by 2, resulting in a range of [-78..78].
 		// Due to compatibility reasons, we adopt that behavior.
-		if(varused['v']) var['v'] = ff_v();
+		if(varused['v']) var['v'] = ff_v() * valueFactorOut;
 	}
 
-	if(varused['d']) var['d'] = ff_d();
-	if(varused['m']) var['m'] = ff_m();
+	if(varused['d']) var['d'] = ff_d() * valueFactorOut;
+	if(varused['m']) var['m'] = ff_m() * valueFactorOut;
 
-	for(k = 0; k < nplanes; ++k){
-		if(needinput)
-			var['c'] = inp[k];
+	for (k = 0; k < nplanes; ++k) {
+		if (needinput) {
+			if (bytesPerPixelChannelIn == 1) {
+				var['c'] = inp[k];
+			} else if (bytesPerPixelChannelIn == 2) {
+				var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
+			} else if (bytesPerPixelChannelIn == 4) {
+				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) : 0;
+			}
+		}
 		var['z'] = k;
 		var['p'] = k; // undocumented alias of z
 		f = eval(tree[k]);
-		if (outp)
-			outp[k] = f<0 ? 0 : (f>255 ? 255 : f); // clamp channel value to 0-255
+		if (outp) {
+			if (maxChannelValueOut != maxChannelValueIn) {
+				f = f * maxChannelValueOut / maxChannelValueIn; // if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
+			}
+			if (bytesPerPixelChannelOut == 1) {
+				outp[k] = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
+			} else if (bytesPerPixelChannelOut == 2) {
+				*((uint16_t*)(outp + k * 2)) = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
+			} else if (bytesPerPixelChannelOut == 4) {
+				*((float*)(outp + k * 4)) = f < 0 ? 0.0 : (f > maxChannelValueOut ? 1.0 : (float)f / maxChannelValueOut); // clamp channel value
+			}
+		}
 	}
 }
 
@@ -179,7 +264,7 @@ Zoom and filter image.
 OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 			  VRect filterPiece, VRect outPiece,
 			  void *outData, long outRowBytes, double zoom){
-	unsigned char *inrow,*outrow,*outp;
+	char*inrow,*outrow,*outp;
 	int j,i;
 	int64_t t, ticks = TICKCOUNT();
 	double x,y,k;
@@ -210,7 +295,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 	// find base pointer to selection image data
 	image_ptr = (unsigned char*)pb->inData
 				+ (long)pb->inRowBytes*(filterRect.top - inRect.top)
-				+ (long)nplanes*(filterRect.left - inRect.left);
+				+ (long)nplanes*(filterRect.left - inRect.left) * bytesPerPixelChannelIn;
 
 	if (state_changing_funcs_used) {
 		// Fill gap between selection/filter top border and top preview zoomed border
@@ -232,7 +317,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 				#endif
 
 				var['x'] = (value_type)x;
-				evalpixel(NULL,inrow + (long)(x)*nplanes);
+				evalpixel(NULL,inrow + (long)(x)*nplanes * bytesPerPixelChannelIn);
 			}
 
 			#ifdef PROCESS_SCALED_GAP_DEBUG
@@ -264,20 +349,20 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 				#endif
 
 				var['x'] = (value_type)x;
-				evalpixel(NULL,inrow + (long)(x)*nplanes);
+				evalpixel(NULL,inrow + (long)(x)*nplanes * bytesPerPixelChannelIn);
 			}
 		}
 
 		// i indexes scaled output columns
 		for( outp = outrow, i = outPiece.left, x = (double)filterPiece.left - (double)filterRect.left ;
-			 i < outPiece.right ; ++i, outp += nplanes, x += zoom )
+			 i < outPiece.right ; ++i, outp += nplanes*bytesPerPixelChannelOut, x += zoom )
 		{
 			#ifdef PROCESS_SCALED_GAP_DEBUG
 			if (state_changing_funcs_used && last_good_x != (int)floor(x-1)) { sprintf(s, "Non calculated X gap, type 2b: %f, last good %d, zoom %f\n", x, last_good_x, zoom); simplealert(s); } last_good_x = (int)floor(x);
 			#endif
 
 			var['x'] = (value_type)x;  // index of corresponding *input* column, left of selection == 0
-			evalpixel(outp,inrow + (long)(x)*nplanes); /* var['x'] & var['y'] are implicit parameters */
+			evalpixel(outp,inrow + (long)(x)*nplanes * bytesPerPixelChannelIn); /* var['x'] & var['y'] are implicit parameters */
 
 			if (state_changing_funcs_used) {
 				// Fill gap between each X-preview-pixel (discarded pixels due to zoom level)
@@ -288,7 +373,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 
 					var['x'] = (value_type)k;
 					if (var['x'] >= var['X']) break;
-					evalpixel(NULL,inrow + (long)(k)*nplanes);
+					evalpixel(NULL,inrow + (long)(k)*nplanes * bytesPerPixelChannelIn);
 				}
 			}
 		}
@@ -302,7 +387,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 				#endif
 
 				var['x'] = (value_type)x;
-				evalpixel(NULL,inrow + (long)(x)*nplanes);
+				evalpixel(NULL,inrow + (long)(x)*nplanes * bytesPerPixelChannelIn);
 			}
 
 			#ifdef PROCESS_SCALED_GAP_DEBUG
@@ -330,7 +415,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 					#endif
 
 					var['x'] = (value_type)x;
-					evalpixel(NULL,inrow + (long)(x)*nplanes);
+					evalpixel(NULL,inrow + (long)(x)*nplanes * bytesPerPixelChannelIn);
 				}
 
 				#ifdef PROCESS_SCALED_GAP_DEBUG

@@ -7,6 +7,13 @@ ToDo for the next release
 
 * VERY carefully test all the save-file and load-file procedures, because the code has been changed
 
+* Regarding 16-bit and 32-bit color mode support:
+
+	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
+	- Instead of multiply by `valueFactorOut`, change ALL functions ff_i(), ff_u(), ff_v(), ... so that they show correct 16bit values. Otherwise, nothing is smooth. Also check and/or change all other methods like sine, cosine, etc.
+	- Extend the manual and README.md telling that 16-bit and 32-bit is now supported
+	- Fix compiler warnings (float convert)
+
 
 Known problems
 --------------

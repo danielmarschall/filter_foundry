@@ -91,9 +91,15 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		preview_pmap.mat = NULL;
 
 		if( (pb->imageMode == plugInModeRGBColor && nplanes == 4)
+		 || (pb->imageMode == plugInModeRGB48 && nplanes == 4)
+		 || (pb->imageMode == plugInModeRGB96 && nplanes == 4)
 		 || (pb->imageMode == plugInModeLabColor && nplanes == 4)
+		 || (pb->imageMode == plugInModeLab48 && nplanes == 4)
 		 || (pb->imageMode == plugInModeGrayScale && nplanes == 2)
-		 || (pb->imageMode == plugInModeDuotone && nplanes == 2) )
+		 || (pb->imageMode == plugInModeGray16 && nplanes == 2)
+		 || (pb->imageMode == plugInModeGray32 && nplanes == 2)
+		 || (pb->imageMode == plugInModeDuotone && nplanes == 2)
+		 || (pb->imageMode == plugInModeDuotone16 && nplanes == 2) )
 		{
 			preview_pmask.next = NULL;
 	//		preview_pmask.maskData = preview_data+3;
@@ -132,12 +138,15 @@ void* memset_bgcolor(void* ptr, size_t num) {
 
 		color = GetSysColor(COLOR_APPWORKSPACE);
 
-		if (gpb->imageMode == plugInModeRGBColor) {
+		// Note: p[i] will be the output of the channels (RGB, CYMK, etc.), however for the preview image it is always 8-bit,
+		// so don't worry about 16bit and 32bit
+
+		if (gpb->imageMode == plugInModeRGBColor || gpb->imageMode == plugInModeRGB48 || gpb->imageMode == plugInModeRGB96) {
 			if (i%nplanes == 0) p[i] = GetRValue(color);
 			if (i%nplanes == 1) p[i] = GetGValue(color);
 			if (i%nplanes == 2) p[i] = GetBValue(color);
 			if (i%nplanes == 3) p[i] = 255; // alpha channel
-		} else if (gpb->imageMode == plugInModeGrayScale) {
+		} else if (gpb->imageMode == plugInModeGrayScale || gpb->imageMode == plugInModeGray16 || gpb->imageMode == plugInModeGray32) {
 			uint8_t r, g, b;
 
 			r = GetRValue(color);
@@ -146,7 +155,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 
 			if (i%nplanes == 0) p[i] = (uint8_t)(((299L*r)+(587L*g)+(114L*b))/1000);
 			if (i%nplanes == 1) p[i] = 255; // alpha channel
-		} else if (gpb->imageMode == plugInModeCMYKColor) {
+		} else if (gpb->imageMode == plugInModeCMYKColor || gpb->imageMode == plugInModeCMYK64) {
 			uint8_t r, g, b;
 			double dmax, dr, dg, db, k, c, m, y;
 
@@ -172,32 +181,17 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			if (i%nplanes == 2) p[i] = (uint8_t)(255 - y * 255);
 			if (i%nplanes == 3) p[i] = (uint8_t)(255 - k * 255);
 		} else {
+			// This case happens for:
+			// - Multichannel
+			// - Duotone
+			// - Lab
+			// - HSB, HSL (these color modes do not exist in PS?)
+			// - Bitmap, IndexedColor (no filter gets enabled, even if 'mode' and 'enbl' says so)
+
 			// FIXME: If we are in such a non supported color mode, then
 			//        these color codes would be all wrong!
 			//        Just to be safe use (what is probably) white
 			p[i] = 0xFF;
-
-			/*
-			#define plugInModeBitmap			0
-			#define plugInModeGrayScale			1 supported
-			#define plugInModeIndexedColor		2
-			#define plugInModeRGBColor			3 supported
-			#define plugInModeCMYKColor			4 supported
-			#define plugInModeHSLColor			5
-			#define plugInModeHSBColor			6
-			#define plugInModeMultichannel		7
-			#define plugInModeDuotone			8
-			#define plugInModeLabColor			9
-			#define plugInModeGray16			10
-			#define plugInModeRGB48				11
-			#define plugInModeLab48				12
-			#define plugInModeCMYK64			13
-			#define plugInModeDeepMultichannel	14
-			#define plugInModeDuotone16			15
-			#define plugInModeRGB96   			16
-			#define plugInModeGray32   			17
-			*/
-
 		}
 		#else
 		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)
@@ -348,6 +342,8 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 	int j, n, imgw, imgh;
 	VRect r, outRect;
 	Ptr outrow;
+	int bakBytesPerPixelChannelOut;
+	value_type bakMaxChannelValueOut;
 
 	preview_complete = false;
 
@@ -414,12 +410,23 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
 
+			// The output is always 8-bit depth, even if the input canvas is 16-bits */
+			bakBytesPerPixelChannelOut = bytesPerPixelChannelOut;
+			bakMaxChannelValueOut = maxChannelValueOut;
+			bytesPerPixelChannelOut = 1;
+			maxChannelValueOut = 255;
+
 			evalinit();
 
 			SETRECT(outRect, 0, 0, imgw, imgh);
 
 			e = process_scaled_bigdoc(pb, false, r, outRect,
 				outptr + pmrb * blankrows + nplanes * blankcols, pmrb, zoomfactor);
+
+			// Restore the original values
+			bytesPerPixelChannelOut = bakBytesPerPixelChannelOut;
+			maxChannelValueOut = bakMaxChannelValueOut;
+
 			if (blankrows) {
 				// blank rows on top of preview:
 				memset_bgcolor(outptr, pmrb * blankrows);

@@ -114,6 +114,12 @@ extern value_type cell[NUM_CELLS];
 extern int tokpos,tokstart,varused[];
 extern TCHAR *errstr;
 
+extern int bytesPerPixelChannelIn;
+extern int bytesPerPixelChannelOut;
+extern value_type maxChannelValueIn;
+extern value_type maxChannelValueOut;
+extern int valueFactorOut;
+
 #define LOADING_OK 0
 /**
 FFLoadingResult = 0 : Success
