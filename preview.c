@@ -213,9 +213,10 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			Y = (Y > 0.008856) ? pow(Y, 1.0 / 3.0) : (7.787 * Y) + (16.0 / 116.0);
 			Z = (Z > 0.008856) ? pow(Z, 1.0 / 3.0) : (7.787 * Z) + (16.0 / 116.0);
 
-			if (i % nplanes == 0) p[i] = (unsigned char)(((116.0 * Y) - 16.0) * 255.0);    // L is 0..255
-			if (i % nplanes == 1) p[i] = (unsigned char)((500.0 * (X - Y)) * 255.0) + 128; // a is -128..127
-			if (i % nplanes == 2) p[i] = (unsigned char)((200.0 * (Y - Z)) * 255.0) + 128; // b is -128..127
+			// Calculate L*a*b* values
+			if (i % nplanes == 0) p[i] = (unsigned char)(((116.0 * Y) - 16.0) * 255.0);    // L is 0..255 (0..32768 for 16-bit)
+			if (i % nplanes == 1) p[i] = (unsigned char)((500.0 * (X - Y)) * 255.0) + 128; // a is -128..127 (-16384..16383 for 16-bit)
+			if (i % nplanes == 2) p[i] = (unsigned char)((200.0 * (Y - Z)) * 255.0) + 128; // b is -128..127 (-16384..16383 for 16-bit)
 			if (i % nplanes == 3) p[i] = 255; // alpha channel
 		} else {
 			// This case happens for:
@@ -223,7 +224,7 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			// - Duotone
 			// - HSB, HSL (these color modes do not exist in PS?)
 			// - Bitmap, IndexedColor (no filter gets enabled, even if 'mode' and 'enbl' says so)
-			p[i] = 0x80; // choose "middle" color which is hopefully grayish
+			p[i] = 0x80; // choose "middle" tone which is hopefully a grayish color
 		}
 		#else
 		// This is the behavior of FilterFoundry <1.7 was this (filled with 0xFF)

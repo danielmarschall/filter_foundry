@@ -222,14 +222,24 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		switch (bytesPerPixelChannelIn) {
 		case 1:
 			var['r'] = inp[0];
-			var['g'] = nplanes > 1 ? inp[1] : 0;
-			var['b'] = nplanes > 2 ? inp[2] : 0;
+			if (gpb->imageMode == plugInModeLabColor) {
+				var['g'] = nplanes > 1 ? inp[1] - 128 : 0;
+				var['b'] = nplanes > 2 ? inp[2] - 128 : 0;
+			} else {
+				var['g'] = nplanes > 1 ? inp[1] : 0;
+				var['b'] = nplanes > 2 ? inp[2] : 0;
+			}
 			var['a'] = nplanes > 3 ? inp[3] : 0;
 			break;
 		case 2:
 			var['r'] = (nplanes > 0) ? *((uint16_t*)(inp)) : 0;
-			var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) : 0;
-			var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) : 0;
+			if (gpb->imageMode == plugInModeLab48) {
+				var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) - 16384 : 0;
+				var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) - 16384 : 0;
+			} else {
+				var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) : 0;
+				var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) : 0;
+			}
 			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 6)) : 0;
 			break;
 		case 4:
@@ -268,10 +278,18 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		if (needinput) {
 			switch (bytesPerPixelChannelIn) {
 			case 1:
-				var['c'] = inp[k];
+				if (gpb->imageMode == plugInModeLabColor && (k == 1 || k == 2)) {
+					var['c'] = (nplanes > k) ? inp[k] - 128 : 0;
+				} else {
+					var['c'] = (nplanes > k) ? inp[k] : 0;
+				}
 				break;
 			case 2:
-				var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
+				if (gpb->imageMode == plugInModeLab48 && (k == 1 || k == 2)) {
+					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) - 16384 : 0;
+				} else {
+					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
+				}			
 				break;
 			case 4:
 				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) : 0;
@@ -290,8 +308,17 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		}
 
 		if (outp) {
+			if (k == 1 || k == 2) {
+				// In Lab color space, a and b are -128..127 for 8-bit and -16384..16383 for 16-bit.
+				if (gpb->imageMode == plugInModeLabColor) {
+					f += 128;
+				} else if (gpb->imageMode == plugInModeLab48) {
+					f += 16384;
+				}
+			}
 			if (maxChannelValueOut != maxChannelValueIn) {
-				f = f * maxChannelValueOut / maxChannelValueIn; // if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
+				// if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
+				f = f * maxChannelValueOut / maxChannelValueIn;				
 			}
 			switch (bytesPerPixelChannelOut) {
 			case 1:

@@ -7,13 +7,14 @@ ToDo for the next release
 
 * VERY carefully test all the save-file and load-file procedures, because the code has been changed
 
-* Regarding 16-bit and 32-bit color mode support:
+* Regarding extended color mode support:
 
 	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
 	- Fix compiler warnings (float convert)
-	- Lab: a and b are -128..127! we need to handle things differently at in/out and change documentation
-	- In non-RGB modes, the variables iuv make no sense, as they use rgb, which is not RGB! (Mentioned in the documentation at 2 places)
-	- Plugin authors should be able to mark their plugins as compatible or incompatible with specific color models or bit depths (but this is a lot of work...!)
+	- Currently known problems with Lab color mode (maybe mention it in the documentation):
+         * gmin and bmin are 0 instead of -128
+         * gmax and bmax are 255 instead of 127
+         * It is unknown if G, B, C should stay 255 (B=bmax-bmin) or 127 (B=bmax)?
 
 
 Known problems
@@ -94,10 +95,14 @@ Minor priority stuff or ideas
 * Implement MonitorScalingAware ('pmsa')? What is 'cmpt'? Do we fully support 'flly'?
 
 
-Big ideas
----------
+Big ideas and complicated stuff
+-------------------------------
 
 * How about implementing the "Filters Unlimited" (FFX) language?
+
+* Plugin authors should be able to mark their plugins as compatible or incompatible with specific color models or bit depths (but this is a lot of work...!)
+
+* In non-RGB modes, the variables iuv make no sense, as they use rgb, which is not RGB! (Mentioned in the documentation at 2 places). YUV should be correctly calculated.
 
 
 Questions
