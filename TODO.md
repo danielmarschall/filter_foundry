@@ -11,10 +11,10 @@ ToDo for the next release
 
 	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
 	- Fix compiler warnings (float convert)
-	- Gray and Duotone: It would be great if alpha could be channel 4 ("a") instead of channel 2 ("g")! If done, change documentation.
 	- Duotone: The preview background is white
 	- Lab: The preview background is red
 	- In non-RGB modes, the variables iuv make no sense, as they use rgb, which is not RGB! (Mentioned in the documentation at 2 places)
+	- Plugin authors should be able to mark their plugins as compatible or incompatible with specific color models or bit depths (but this is a lot of work...!)
 
 
 Known problems

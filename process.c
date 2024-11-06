@@ -33,6 +33,7 @@ int bytesPerPixelChannelIn;
 int bytesPerPixelChannelOut;
 value_type maxChannelValueIn;
 value_type maxChannelValueOut;
+boolean requireAlphaSwap;
 
 /**
 points to first row, first column of selection image data
@@ -178,6 +179,17 @@ Boolean setup(FilterRecordPtr pb){
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
 
 	/*
+	 * In Gray and Duotone, it would be good is 'a' is alpha, even if alpha is technically the second channel('g').
+	 * So we make a temporary swap!
+	 */
+	requireAlphaSwap =
+		(gpb->imageMode == plugInModeGrayScale && nplanes == 2)
+		|| (gpb->imageMode == plugInModeGray16 && nplanes == 2)
+		|| (gpb->imageMode == plugInModeGray32 && nplanes == 2)
+		|| (gpb->imageMode == plugInModeDuotone && nplanes == 2)
+		|| (gpb->imageMode == plugInModeDuotone16 && nplanes == 2);
+
+	/*
 	 * Workaround for PSPI for GIMP:
 	 * Filters will only fill the bottom of the picture, not the whole canvas.
 	 * The reason is that OnContinue/main.c:RequestNext() processes the image in chunks,
@@ -228,6 +240,13 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 			break;
 		}
 
+		if (requireAlphaSwap) {
+			// make   r (color), g (alpha),  b (unused), a (unused)
+			// into   r (color), g (unused), b (unused), a (alpha)
+			var['a'] = var['g'];
+			var['g'] = 0;
+		}
+
 		// For Y, the definition is Y := 0.299R + 0.587G + 0.114B
 		if(varused['i']) var['i'] = ff_i();
 
@@ -261,7 +280,15 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		}
 		var['z'] = k;
 		var['p'] = k; // undocumented alias of z
+
 		f = eval(tree[k]);
+
+		if (needinput && requireAlphaSwap) {
+			// and revert it
+			var['g'] = var['a'];
+			var['a'] = 0;
+		}
+
 		if (outp) {
 			if (maxChannelValueOut != maxChannelValueIn) {
 				f = f * maxChannelValueOut / maxChannelValueIn; // if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
