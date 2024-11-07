@@ -35,12 +35,6 @@ value_type maxChannelValueIn;
 value_type maxChannelValueOut;
 boolean requireAlphaSwap;
 
-// In Lab color space, a and b are -128..127 for 8-bit and -16384..16383 for 16-bit.
-// These variables are set in setup() and help making evalpixel() faster
-value_type valueoffset_channel[4];
-value_type min_channel_val[4];
-value_type max_channel_val[4];
-
 /**
 points to first row, first column of selection image data
 this is used by src() and cnv() functions to access pixels
@@ -199,6 +193,14 @@ Boolean setup(FilterRecordPtr pb){
 	var['V'] = max_val_v - min_val_v;
 #endif
 
+	var['R'] = max_channel_val[0];
+	var['G'] = max_channel_val[1];
+	var['B'] = max_channel_val[2];
+	var['A'] = max_channel_val[3];
+	// min_val_c will be set in evalpixel()
+	// max_val_c will be set in evalpixel()
+	// var['C'] will be set in evalpixel()
+
 	/* initialise flags for tracking special variable usage */
 	for(i = 0; i < 0x100; i++)
 		varused[i] = 0;
@@ -215,38 +217,6 @@ Boolean setup(FilterRecordPtr pb){
 	needinput = ( cnvused || needall
 		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
-
-	/* Lab channel special case */
-
-	min_val_r = 0;
-	max_val_r = maxChannelValueOut;
-	if (gpb->imageMode == plugInModeLabColor) {
-		// In Lab color space, a and b are -128..127 for 8-bit.
-		min_val_g = -128;
-		max_val_g = 127;
-		min_val_b = -128;
-		max_val_b = 127;
-	} else if (gpb->imageMode == plugInModeLab48) {
-		// In Lab color space, a and b are -16384..16383 for 16-bit.
-		min_val_g = -16384;
-		max_val_g = 16383;
-		min_val_b = -16384;
-		max_val_b = 16383;
-	} else {
-		min_val_g = 0;
-		max_val_g = maxChannelValueOut;
-		min_val_b = 0;
-		max_val_b = maxChannelValueOut;
-	}
-	min_val_a = 0;
-	max_val_a = maxChannelValueOut;
-	var['R'] = max_val_r;
-	var['G'] = max_val_g;
-	var['B'] = max_val_b;
-	var['A'] = max_val_a;
-	// min_val_c will be set in evalpixel()
-	// max_val_c will be set in evalpixel()
-	// var['C'] will be set in evalpixel()
 
 	/*
 	 * In Gray and Duotone, it would be good is 'a' is alpha, even if alpha is technically the second channel('g').

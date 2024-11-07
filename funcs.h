@@ -126,7 +126,6 @@ value_type ff_rst(value_type seed);
 value_type ff_i(void);
 value_type ff_u(void);
 value_type ff_v(void);
-value_type ff_D(void);
 value_type ff_d(void);
 value_type ff_M(void);
 value_type ff_m(void);
@@ -141,16 +140,10 @@ extern value_type max_val_v;
 extern value_type min_val_d;
 extern value_type max_val_d;
 
-extern value_type min_val_r;
-extern value_type min_val_g;
-extern value_type min_val_b;
-extern value_type min_val_a;
+extern value_type valueoffset_channel[4];
+extern value_type min_channel_val[4];
 extern value_type min_val_c;
-
-extern value_type max_val_r;
-extern value_type max_val_g;
-extern value_type max_val_b;
-extern value_type max_val_a;
+extern value_type max_channel_val[4];
 extern value_type max_val_c;
 
 #endif
