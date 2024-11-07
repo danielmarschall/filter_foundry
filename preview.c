@@ -101,7 +101,6 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		 || (pb->imageMode == plugInModeDuotone && nplanes == 2)
 		 || (pb->imageMode == plugInModeDuotone16 && nplanes == 2) )
 		{
-			// TODO: Implement masks (preview_pmap.masks ?) so that the preview data outside the user's selection is showed as checkerboard
 
 			preview_pmask.next = NULL;
 	//		preview_pmask.maskData = preview_data+(gpb->planes-1); // will be set at drawpreview()
@@ -109,6 +108,42 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 			preview_pmask.colBytes = nplanes;
 			preview_pmask.maskDescription = kSimplePSMask;
 			preview_pmap.masks = &preview_pmask;
+
+
+
+			if (gpb->haveMask) {
+				// TODO: Implement masks (preview_pmap.masks ?) so that the preview data outside the user's selection is showed as checkerboard
+				// but gpb->maskData is always NULL???!!!
+			}
+
+
+			// Taken from mfcplugin example
+			/*
+			PSPixelMask mask;
+			if (gpb->isFloating)
+			{
+				mask.next = NULL;
+				mask.maskData = gpb->maskData;
+				mask.rowBytes = gpb->maskRowBytes;
+				mask.colBytes = 1;
+				mask.maskDescription = kSimplePSMask;
+			}
+			else if ((gpb->inLayerPlanes != 0) && (gpb->inTransparencyMask != 0))
+			{
+				mask.next = NULL;
+				mask.maskData = gpb->maskData;
+				mask.rowBytes = gpb->outRowBytes;
+				mask.colBytes = gpb->outHiPlane - gpb->outLoPlane + 1;
+				mask.maskDescription = kSimplePSMask;
+				preview_pmap.masks = &mask;
+			}
+			*/
+
+
+
+
+
+
 		} else {
 			// CMYK and Multichannel do not have transparency
 			preview_pmap.masks = NULL;
@@ -124,6 +159,11 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 	//---------------------------------------------------------------------------
 //	preview_pmap.pixelOverlays;
 //	preview_pmap.colorManagementOptions;
+
+	//---------------------------------------------------------------------------
+	// Fields new in version 3:
+	//---------------------------------------------------------------------------
+//	preview_pmap.depth = gpb->depth;
 }
 
 void dispose_preview(void){
@@ -572,7 +612,7 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 			gpb->propertyProcs->getPropertyProc(kPhotoshopSignature,propWatchSuspension,0,&watchsusp,NULL);
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp+1,NULL);
 		}
-
+		
 		e = gpb->displayPixels(&preview_pmap,&srcRect,imagebounds.top,imagebounds.left,hdc);
 
 		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc)
