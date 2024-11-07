@@ -137,7 +137,20 @@ extern value_type min_val_u;
 extern value_type max_val_u;
 extern value_type min_val_v;
 extern value_type max_val_v;
+
 extern value_type min_val_d;
 extern value_type max_val_d;
+
+extern value_type min_val_r;
+extern value_type min_val_g;
+extern value_type min_val_b;
+extern value_type min_val_a;
+extern value_type min_val_c;
+
+extern value_type max_val_r;
+extern value_type max_val_g;
+extern value_type max_val_b;
+extern value_type max_val_a;
+extern value_type max_val_c;
 
 #endif

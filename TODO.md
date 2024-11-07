@@ -11,10 +11,6 @@ ToDo for the next release
 
 	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
 	- Fix compiler warnings (float convert)
-	- Currently known problems with Lab color mode (maybe mention it in the documentation):
-         * gmin and bmin are 0 instead of -128
-         * gmax and bmax are 255 instead of 127
-         * It is unknown if G, B, C should stay 255 (B=bmax-bmin) or 127 (B=bmax)?
 
 
 Known problems

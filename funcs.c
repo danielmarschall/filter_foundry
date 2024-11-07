@@ -1615,6 +1615,18 @@ value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 value_type zero_val = 0;
 value_type one_val = 1;
 
+value_type min_val_r; // will be set by process.c (setup)
+value_type min_val_g; // will be set by process.c (setup)
+value_type min_val_b; // will be set by process.c (setup)
+value_type min_val_a; // will be set by process.c (setup)
+value_type min_val_c; // will be set by process.c (evalpixel)
+
+value_type max_val_r; // will be set by process.c (setup)
+value_type max_val_g; // will be set by process.c (setup)
+value_type max_val_b; // will be set by process.c (setup)
+value_type max_val_a; // will be set by process.c (setup)
+value_type max_val_c; // will be set by process.c (evalpixel)
+
 value_type min_val_i; // will be set by process.c (setup)
 value_type max_val_i; // will be set by process.c (setup)
 
@@ -1672,11 +1684,11 @@ struct sym_rec predefs[] = {
 	/* The predefined variables with 1 character are defined in lexer.l and process.c */
 	/* In this table, you must not add TOK_VAR with only 1 character (since this case is not defined in parser.y) */
 
-	{0,TOK_VAR,"rmax",0, &var['R']}, // alias of R (defined in lexer.l and set by process.c)
-	{0,TOK_VAR,"gmax",0, &var['G']}, // alias of G (defined in lexer.l and set by process.c)
-	{0,TOK_VAR,"bmax",0, &var['B']}, // alias of B (defined in lexer.l and set by process.c)
-	{0,TOK_VAR,"amax",0, &var['A']}, // alias of A (defined in lexer.l and set by process.c)
-	{0,TOK_VAR,"cmax",0, &var['C']}, // alias of C (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"rmax",0, &max_val_r}, // alias of R (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"gmax",0, &max_val_g}, // alias of G (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"bmax",0, &max_val_b}, // alias of B (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"amax",0, &max_val_a}, // alias of A (defined in lexer.l and set by process.c)
+	{0,TOK_VAR,"cmax",0, &max_val_c}, // alias of C (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"imax",0, &max_val_i},
 
 #ifdef use_filterfactory_implementation_u_minmax
@@ -1703,11 +1715,11 @@ struct sym_rec predefs[] = {
 	{0,TOK_VAR,"ymax",0, &var['Y']}, // alias of Y (defined in lexer.l and set by process.c)
 	{0,TOK_VAR,"zmax",0, &var['Z']}, // alias of Z (defined in lexer.l and set by process.c)
 
-	{0,TOK_VAR,"rmin",0, &zero_val},
-	{0,TOK_VAR,"gmin",0, &zero_val},
-	{0,TOK_VAR,"bmin",0, &zero_val},
-	{0,TOK_VAR,"amin",0, &zero_val},
-	{0,TOK_VAR,"cmin",0, &zero_val},
+	{0,TOK_VAR,"rmin",0, &min_val_r},
+	{0,TOK_VAR,"gmin",0, &min_val_g},
+	{0,TOK_VAR,"bmin",0, &min_val_b},
+	{0,TOK_VAR,"amin",0, &min_val_a},
+	{0,TOK_VAR,"cmin",0, &min_val_c},
 	{0,TOK_VAR,"imin",0, &min_val_i},
 
 #ifdef use_filterfactory_implementation_u_minmax

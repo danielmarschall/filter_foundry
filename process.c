@@ -141,8 +141,6 @@ Boolean setup(FilterRecordPtr pb){
 
 	var['M'] = ff_M();
 
-	var['R'] = var['G'] = var['B'] = var['A'] = var['C'] = maxChannelValueOut;
-
 #ifdef use_filterfactory_implementation_I
 	var['I'] = 255;
 #else
@@ -177,6 +175,38 @@ Boolean setup(FilterRecordPtr pb){
 	needinput = ( cnvused || needall
 		|| varused['r'] || varused['g'] || varused['b'] || varused['a']
 		|| varused['i'] || varused['u'] || varused['v'] || varused['c'] );
+
+	/* Lab channel special case */
+
+	min_val_r = 0;
+	max_val_r = maxChannelValueOut;
+	if (gpb->imageMode == plugInModeLabColor) {
+		// In Lab color space, a and b are -128..127 for 8-bit.
+		min_val_g = -128;
+		max_val_g = 127;
+		min_val_b = -128;
+		max_val_b = 127;
+	} else if (gpb->imageMode == plugInModeLab48) {
+		// In Lab color space, a and b are -16384..16383 for 16-bit.
+		min_val_g = -16384;
+		max_val_g = 16383;
+		min_val_b = -16384;
+		max_val_b = 16383;
+	} else {
+		min_val_g = 0;
+		max_val_g = maxChannelValueOut;
+		min_val_b = 0;
+		max_val_b = maxChannelValueOut;
+	}
+	min_val_a = 0;
+	max_val_a = maxChannelValueOut;
+	var['R'] = max_val_r;
+	var['G'] = max_val_g;
+	var['B'] = max_val_b;
+	var['A'] = max_val_a;
+	// min_val_c will be set in evalpixel()
+	// max_val_c will be set in evalpixel()
+	// var['C'] will be set in evalpixel()
 
 	/*
 	 * In Gray and Duotone, it would be good is 'a' is alpha, even if alpha is technically the second channel('g').
@@ -275,17 +305,37 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 	if(varused['m']) var['m'] = ff_m();
 
 	for (k = 0; k < nplanes; ++k) {
+
+		switch (k) {
+		case 0:
+			min_val_c = min_val_r;
+			var['C'] = max_val_c = max_val_r;
+			break;
+		case 1:
+			min_val_c = min_val_g;
+			var['C'] = max_val_c = max_val_g;
+			break;
+		case 2:
+			min_val_c = min_val_b;
+			var['C'] = max_val_c = max_val_b;
+			break;
+		case 3:
+			min_val_c = min_val_a;
+			var['C'] = max_val_c = max_val_a;
+			break;
+		}
+
 		if (needinput) {
 			switch (bytesPerPixelChannelIn) {
 			case 1:
-				if (gpb->imageMode == plugInModeLabColor && (k == 1 || k == 2)) {
+				if ((k == 1 || k == 2) && gpb->imageMode == plugInModeLabColor) {
 					var['c'] = (nplanes > k) ? inp[k] - 128 : 0;
 				} else {
 					var['c'] = (nplanes > k) ? inp[k] : 0;
 				}
 				break;
 			case 2:
-				if (gpb->imageMode == plugInModeLab48 && (k == 1 || k == 2)) {
+				if ((k == 1 || k == 2) && gpb->imageMode == plugInModeLab48) {
 					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) - 16384 : 0;
 				} else {
 					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
