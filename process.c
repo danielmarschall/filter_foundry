@@ -35,6 +35,12 @@ value_type maxChannelValueIn;
 value_type maxChannelValueOut;
 boolean requireAlphaSwap;
 
+// In Lab color space, a and b are -128..127 for 8-bit and -16384..16383 for 16-bit.
+// These variables are set in setup() and help making evalpixel() faster
+value_type valueoffset_channel[4];
+value_type min_channel_val[4];
+value_type max_channel_val[4];
+
 /**
 points to first row, first column of selection image data
 this is used by src() and cnv() functions to access pixels
@@ -87,6 +93,21 @@ Boolean setup(FilterRecordPtr pb){
 		max_val_u = 55;
 		min_val_v = -78;
 		max_val_v = 78;
+		if (pb->imageMode == plugInModeLabColor) {
+			// L and alpha have normal 8-bit
+			valueoffset_channel[0] = valueoffset_channel[3] = 0;
+			min_channel_val[0] = min_channel_val[3] = 0;
+			max_channel_val[0] = max_channel_val[3] = 255;
+			// a* and b* have -128 ... 127
+			valueoffset_channel[1] = valueoffset_channel[2] = 128;
+			min_channel_val[1] = min_channel_val[2] = -128;
+			max_channel_val[1] = max_channel_val[2] = 127;
+		} else {
+			// Normal 8-bit range for all other modes
+			valueoffset_channel[0] = valueoffset_channel[1] = valueoffset_channel[2] = valueoffset_channel[3] = 0;
+			min_channel_val[0] = min_channel_val[1] = min_channel_val[2] = min_channel_val[3] = 0;
+			max_channel_val[0] = max_channel_val[1] = max_channel_val[2] = max_channel_val[3] = 255;
+		}
 		break;
 	case 16:
 		// 16 bits
@@ -101,6 +122,21 @@ Boolean setup(FilterRecordPtr pb){
 		max_val_u = 7156;
 		min_val_v = -10072;
 		max_val_v = 10072;
+		if (pb->imageMode == plugInModeLab48) {
+			// L and alpha have normal 16-bit
+			valueoffset_channel[0] = valueoffset_channel[3] = 0;
+			min_channel_val[0] = min_channel_val[3] = 0;
+			max_channel_val[0] = max_channel_val[3] = 32768;
+			// a* and b* have -16384 ... 16383
+			valueoffset_channel[1] = valueoffset_channel[2] = 16384; 
+			min_channel_val[1] = min_channel_val[2] = -16384;
+			max_channel_val[1] = max_channel_val[2] = 16383;
+		} else {
+			// Normal 16-bit range for all other modes
+			valueoffset_channel[0] = valueoffset_channel[1] = valueoffset_channel[2] = valueoffset_channel[3] = 0;
+			min_channel_val[0] = min_channel_val[1] = min_channel_val[2] = min_channel_val[3] = 0;
+			max_channel_val[0] = max_channel_val[1] = max_channel_val[2] = max_channel_val[3] = 32768;
+		}
 		break;
 	case 32:
 		// 32 bits
@@ -120,6 +156,10 @@ Boolean setup(FilterRecordPtr pb){
 		max_val_u = 14312;
 		min_val_v = -20144;
 		max_val_v = 20144;
+		// Normal 32-bit range for all modes (there is no 32-bit Lab mode)
+		valueoffset_channel[0] = valueoffset_channel[1] = valueoffset_channel[2] = valueoffset_channel[3] = 0;
+		min_channel_val[0] = min_channel_val[1] = min_channel_val[2] = min_channel_val[3] = 0;
+		max_channel_val[0] = max_channel_val[1] = max_channel_val[2] = max_channel_val[3] = 65535;
 		break;
 	}
 
@@ -251,32 +291,22 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 	if(needinput){
 		switch (bytesPerPixelChannelIn) {
 		case 1:
-			var['r'] = inp[0];
-			if (gpb->imageMode == plugInModeLabColor) {
-				var['g'] = nplanes > 1 ? inp[1] - 128 : 0;
-				var['b'] = nplanes > 2 ? inp[2] - 128 : 0;
-			} else {
-				var['g'] = nplanes > 1 ? inp[1] : 0;
-				var['b'] = nplanes > 2 ? inp[2] : 0;
-			}
-			var['a'] = nplanes > 3 ? inp[3] : 0;
+			var['r'] = inp[0] - valueoffset_channel[0];
+			var['g'] = nplanes > 1 ? inp[1] - valueoffset_channel[1] : 0;
+			var['b'] = nplanes > 2 ? inp[2] - valueoffset_channel[2] : 0;
+			var['a'] = nplanes > 3 ? inp[3] - valueoffset_channel[3] : 0;
 			break;
 		case 2:
-			var['r'] = (nplanes > 0) ? *((uint16_t*)(inp)) : 0;
-			if (gpb->imageMode == plugInModeLab48) {
-				var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) - 16384 : 0;
-				var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) - 16384 : 0;
-			} else {
-				var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 2)) : 0;
-				var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 4)) : 0;
-			}
-			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 6)) : 0;
+			var['r'] = (nplanes > 0) ? *((uint16_t*)(inp)) - valueoffset_channel[0] : 0;
+			var['g'] = (nplanes > 1) ? *((uint16_t*)(inp + 1*2)) - valueoffset_channel[1] : 0;
+			var['b'] = (nplanes > 2) ? *((uint16_t*)(inp + 2*2)) - valueoffset_channel[2] : 0;
+			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 3*2)) - valueoffset_channel[3] : 0;
 			break;
 		case 4:
-			var['r'] = (nplanes > 0) ? (float)maxChannelValueIn * *((float*)(inp)) : 0;
-			var['g'] = (nplanes > 1) ? (float)maxChannelValueIn * *((float*)(inp + 4)) : 0;
-			var['b'] = (nplanes > 2) ? (float)maxChannelValueIn * *((float*)(inp + 8)) : 0;
-			var['a'] = (nplanes > 3) ? (float)maxChannelValueIn * *((float*)(inp + 12)) : 0;
+			var['r'] = (nplanes > 0) ? (float)maxChannelValueIn * *((float*)(inp)) - valueoffset_channel[0] : 0;
+			var['g'] = (nplanes > 1) ? (float)maxChannelValueIn * *((float*)(inp + 1*4)) - valueoffset_channel[1] : 0;
+			var['b'] = (nplanes > 2) ? (float)maxChannelValueIn * *((float*)(inp + 2*4)) - valueoffset_channel[2] : 0;
+			var['a'] = (nplanes > 3) ? (float)maxChannelValueIn * *((float*)(inp + 3*4)) - valueoffset_channel[3] : 0;
 			break;
 		}
 
@@ -305,44 +335,17 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 	if(varused['m']) var['m'] = ff_m();
 
 	for (k = 0; k < nplanes; ++k) {
-
-		switch (k) {
-		case 0:
-			min_val_c = min_val_r;
-			var['C'] = max_val_c = max_val_r;
-			break;
-		case 1:
-			min_val_c = min_val_g;
-			var['C'] = max_val_c = max_val_g;
-			break;
-		case 2:
-			min_val_c = min_val_b;
-			var['C'] = max_val_c = max_val_b;
-			break;
-		case 3:
-			min_val_c = min_val_a;
-			var['C'] = max_val_c = max_val_a;
-			break;
-		}
-
+		var['C'] = max_val_c = max_channel_val[k];
 		if (needinput) {
 			switch (bytesPerPixelChannelIn) {
 			case 1:
-				if ((k == 1 || k == 2) && gpb->imageMode == plugInModeLabColor) {
-					var['c'] = (nplanes > k) ? inp[k] - 128 : 0;
-				} else {
-					var['c'] = (nplanes > k) ? inp[k] : 0;
-				}
+				var['c'] = (nplanes > k) ? inp[k] - valueoffset_channel[k] : 0;
 				break;
 			case 2:
-				if ((k == 1 || k == 2) && gpb->imageMode == plugInModeLab48) {
-					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) - 16384 : 0;
-				} else {
-					var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) : 0;
-				}			
+				var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) - valueoffset_channel[k] : 0;
 				break;
 			case 4:
-				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) : 0;
+				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) - valueoffset_channel[k] : 0;
 				break;
 			}
 		}
@@ -358,17 +361,10 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 		}
 
 		if (outp) {
-			if (k == 1 || k == 2) {
-				// In Lab color space, a and b are -128..127 for 8-bit and -16384..16383 for 16-bit.
-				if (gpb->imageMode == plugInModeLabColor) {
-					f += 128;
-				} else if (gpb->imageMode == plugInModeLab48) {
-					f += 16384;
-				}
-			}
+			f = (nplanes > k) ? f + valueoffset_channel[k] : 0;
 			if (maxChannelValueOut != maxChannelValueIn) {
 				// if input canvas is 16bit, we must divide by 128 in order to get 8bit preview output
-				f = f * maxChannelValueOut / maxChannelValueIn;				
+				f = f * maxChannelValueOut / maxChannelValueIn;
 			}
 			switch (bytesPerPixelChannelOut) {
 			case 1:
