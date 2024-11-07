@@ -9,7 +9,6 @@ ToDo for the next release
 
 * Regarding extended color mode support:
 
-	- Check this code: `preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!`
 	- Fix compiler warnings (float convert)
 
 

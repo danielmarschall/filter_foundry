@@ -82,7 +82,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		preview_pmap.rowBytes = nplanes*preview_w;
 		preview_pmap.colBytes = nplanes;
 		preview_pmap.planeBytes = 1; /*interleaved*/
-	//	preview_pmap.baseAddr = preview_data;
+	//	preview_pmap.baseAddr = preview_data; // will be set at drawpreview()
 	/* baseAddr must be set before using pixelmap */
 
 		//---------------------------------------------------------------------------
@@ -101,14 +101,18 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		 || (pb->imageMode == plugInModeDuotone && nplanes == 2)
 		 || (pb->imageMode == plugInModeDuotone16 && nplanes == 2) )
 		{
+			// TODO: Implement masks (preview_pmap.masks ?) so that the preview data outside the user's selection is showed as checkerboard
+
 			preview_pmask.next = NULL;
-	//		preview_pmask.maskData = preview_data+3;
+	//		preview_pmask.maskData = preview_data+(gpb->planes-1); // will be set at drawpreview()
 			preview_pmask.rowBytes = preview_pmap.rowBytes;
 			preview_pmask.colBytes = nplanes;
 			preview_pmask.maskDescription = kSimplePSMask;
 			preview_pmap.masks = &preview_pmask;
-		}else
+		} else {
+			// CMYK and Multichannel do not have transparency
 			preview_pmap.masks = NULL;
+		}
 
 		newBuffer(&preview_handle, (long)preview_h * preview_pmap.rowBytes);
 	}else
@@ -218,10 +222,12 @@ void* memset_bgcolor(void* ptr, size_t num) {
 			if (i % nplanes == 1) p[i] = (unsigned char)((500.0 * (X - Y)) * 255.0) + 128; // a is -128..127 (-16384..16383 for 16-bit)
 			if (i % nplanes == 2) p[i] = (unsigned char)((200.0 * (Y - Z)) * 255.0) + 128; // b is -128..127 (-16384..16383 for 16-bit)
 			if (i % nplanes == 3) p[i] = 255; // alpha channel
+		} else if (gpb->imageMode == plugInModeDuotone || gpb->imageMode == plugInModeDuotone16) {
+			if (i % nplanes == 0) p[i] = 0x80; // choose "middle" tone
+			if (i % nplanes == 1) p[i] = 255; // alpha channel
 		} else {
 			// This case happens for:
-			// - Multichannel
-			// - Duotone
+			// - Multichannel (note that there is no transparency; double clicking background layer does nothing)
 			// - HSB, HSL (these color modes do not exist in PS?)
 			// - Bitmap, IndexedColor (no filter gets enabled, even if 'mode' and 'enbl' says so)
 			p[i] = 0x80; // choose "middle" tone which is hopefully a grayish color
@@ -552,8 +558,15 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 		imagebounds.right = imagebounds.left + preview_w;
 		imagebounds.bottom = imagebounds.top + preview_h;
 
+		// imageptr is the pointer to the preview canvas (8-bit, color channels like the picture).
+		// Note that the gray border is also included in that canvas
 		preview_pmap.baseAddr = imageptr;
-		preview_pmask.maskData = imageptr+3; // FIXME: is this offset correct for all modes?!
+
+		if (preview_pmap.masks != NULL) {
+			// maskData should point to the alpha channel
+			// However, if the current picture has no channel enabled, then it is ok if it points to a wrong channel
+			preview_pmask.maskData = imageptr + (gpb->planes - 1);
+		}
 
 		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc){
 			gpb->propertyProcs->getPropertyProc(kPhotoshopSignature,propWatchSuspension,0,&watchsusp,NULL);
