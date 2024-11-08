@@ -74,11 +74,26 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		}
 		fitzoom = zh > zv ? zh : zv;
 
+		// Note that the preview is always 8-bit
 		preview_pmap.version = 1;
 		preview_pmap.bounds.left = preview_pmap.bounds.top = 0;
 		preview_pmap.bounds.right = preview_w;
 		preview_pmap.bounds.bottom = preview_h;
-		preview_pmap.imageMode = pb->imageMode;
+		if (pb->imageMode == plugInModeRGB48 || pb->imageMode == plugInModeRGB96) {
+			preview_pmap.imageMode = plugInModeRGBColor;
+		} else if (pb->imageMode == plugInModeCMYK64) {
+			preview_pmap.imageMode = plugInModeCMYKColor;
+		} else if (pb->imageMode == plugInModeGray16 || pb->imageMode == plugInModeGray32) {
+			preview_pmap.imageMode = plugInModeCMYKColor;
+		} else if (pb->imageMode == plugInModeDeepMultichannel) {
+			preview_pmap.imageMode = plugInModeMultichannel;
+		} else if (pb->imageMode == plugInModeDuotone16) {
+			preview_pmap.imageMode = plugInModeDuotone;
+		} else if (pb->imageMode == plugInModeLab48) {
+			preview_pmap.imageMode = plugInModeLabColor;
+		} else {
+			preview_pmap.imageMode = pb->imageMode;
+		}
 		preview_pmap.rowBytes = nplanes*preview_w;
 		preview_pmap.colBytes = nplanes;
 		preview_pmap.planeBytes = 1; /*interleaved*/
@@ -164,7 +179,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 	//---------------------------------------------------------------------------
 	// Fields new in version 3:
 	//---------------------------------------------------------------------------
-//	preview_pmap.depth = gpb->depth;
+//	preview_pmap.depth = 8;
 }
 
 void dispose_preview(void){
@@ -627,7 +642,6 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp+1,NULL);
 		}
 		
-		// TODO: Photoshop 7.0 does not draw anything at 16-bit color mode. Why? Error in Photoshop or FilterFoundry?
 		e = gpb->displayPixels(&preview_pmap,&srcRect,imagebounds.top,imagebounds.left,hdc);
 
 		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc)

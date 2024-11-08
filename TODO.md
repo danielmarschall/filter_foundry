@@ -10,7 +10,6 @@ ToDo for the next release
 * Regarding extended color mode support:
 
 	- Fix compiler warnings (float convert)
-	- preview.c: Photoshop 7.0 does not draw any preview at 16-bit color mode. Why? Error in Photoshop or FilterFoundry?
 
 
 Known problems
