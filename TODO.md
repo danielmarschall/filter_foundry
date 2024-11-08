@@ -10,6 +10,7 @@ ToDo for the next release
 * Regarding extended color mode support:
 
 	- Fix compiler warnings (float convert)
+	- preview.c: Photoshop 7.0 does not draw any preview at 16-bit color mode. Why? Error in Photoshop or FilterFoundry?
 
 
 Known problems
@@ -17,6 +18,7 @@ Known problems
 
 * The preview will show the manipulation on the whole rectangle. It does not accurately exclude areas which aren't in a polygon selection area! (Do we need something with `maskData`?)
 	see wishlist\bug_rectangle.png
+	need help here https://community.adobe.com/t5/photoshop-ecosystem-discussions/filter-sdk-quot-maskdata-quot-is-always-null/m-p/14968276#M837856
 
 * When you receive the error "Could not build preview at chosen zoom level..." because you zoomed out too far, you cannot recover from it, even if you zoom in again!
 

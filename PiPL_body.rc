@@ -44,14 +44,14 @@ VENDORID, LC(m,o,d,e), NULLID, 4L, /* 1st & 2nd byte: */ noBitmap| /* Even if do
                                                          doesSupportMultichannel|
                                                          doesSupportDuotone|
                                                          doesSupportLABColor|
-                                                         doesSupportGray16|
-                                                         doesSupportRGB48|
-                                                         doesSupportLab48|
-                                                         doesSupportCMYK64|
-                                                         doesSupportDeepMultichannel|
-                                                         doesSupportDuotone16,
-                                   /* 3rd & 4th byte: */ doesSupportRGB96|
-                                                         doesSupportGray32,
+                                                         doesSupportGray16|           /* undocumented! */
+                                                         doesSupportRGB48|            /* undocumented! */
+                                                         doesSupportLab48|            /* undocumented! */
+                                                         doesSupportCMYK64|           /* undocumented! */
+                                                         doesSupportDeepMultichannel| /* undocumented! */
+                                                         doesSupportDuotone16,        /* undocumented! */
+                                   /* 3rd & 4th byte: */ doesSupportRGB96|            /* undocumented! */
+                                                         doesSupportGray32,           /* undocumented! */
 
 /* We need this to enable the plugin for BigDocuments */
 VENDORID, LC(m,s,3,2), NULLID, 8L, 2000000L, 2000000L,

@@ -403,7 +403,7 @@ OSErr process_scaled_bigdoc(FilterRecordPtr pb, Boolean progress,
 	// find base pointer to selection image data
 	image_ptr = (unsigned char*)pb->inData
 				+ (long)pb->inRowBytes*(filterRect.top - inRect.top)
-				+ (long)nplanes*(filterRect.left - inRect.left) * bytesPerPixelChannelIn;
+				+ (long)nplanes*(filterRect.left - inRect.left) * (long)bytesPerPixelChannelIn;
 
 	if (state_changing_funcs_used) {
 		// Fill gap between selection/filter top border and top preview zoomed border

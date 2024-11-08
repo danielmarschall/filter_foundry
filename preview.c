@@ -114,6 +114,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 			if (gpb->haveMask) {
 				// TODO: Implement masks (preview_pmap.masks ?) so that the preview data outside the user's selection is showed as checkerboard
 				// but gpb->maskData is always NULL???!!!
+				// need help here https://community.adobe.com/t5/photoshop-ecosystem-discussions/filter-sdk-quot-maskdata-quot-is-always-null/m-p/14968276#M837856
 			}
 
 
@@ -287,6 +288,8 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 	int j, n, imgw, imgh;
 	Rect r, outRect;
 	Ptr outrow;
+	int bakBytesPerPixelChannelOut;
+	value_type bakMaxChannelValueOut;
 
 	preview_complete = false;
 
@@ -353,12 +356,23 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 			    blankcols = (preview_w - imgw) / 2,
 			    pmrb = preview_pmap.rowBytes;
 
+			// The output is always 8-bit depth, even if the input canvas is 16-bits */
+			bakBytesPerPixelChannelOut = bytesPerPixelChannelOut;
+			bakMaxChannelValueOut = maxChannelValueOut;
+			bytesPerPixelChannelOut = 1;
+			maxChannelValueOut = 255;
+
 			evalinit();
 
 			SETRECT(outRect, 0, 0, imgw, imgh);
 
 			e = process_scaled_olddoc(pb, false, r, outRect,
 				outptr + pmrb * blankrows + nplanes * blankcols, pmrb, zoomfactor);
+
+			// Restore the original values
+			bytesPerPixelChannelOut = bakBytesPerPixelChannelOut;
+			maxChannelValueOut = bakMaxChannelValueOut;
+
 			if (blankrows) {
 				// blank rows on top of preview:
 				memset_bgcolor(outptr, pmrb * blankrows);
@@ -604,7 +618,7 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 
 		if (preview_pmap.masks != NULL) {
 			// maskData should point to the alpha channel
-			// However, if the current picture has no channel enabled, then it is ok if it points to a wrong channel
+			// setup_preview() did set preview_pmap.masks to NULL if the picture has no alpha channel
 			preview_pmask.maskData = imageptr + (gpb->planes - 1);
 		}
 
@@ -613,6 +627,7 @@ OSErr drawpreview(DIALOGREF dp,void *hdc,Ptr imageptr){
 			gpb->propertyProcs->setPropertyProc(kPhotoshopSignature,propWatchSuspension,0,watchsusp+1,NULL);
 		}
 		
+		// TODO: Photoshop 7.0 does not draw anything at 16-bit color mode. Why? Error in Photoshop or FilterFoundry?
 		e = gpb->displayPixels(&preview_pmap,&srcRect,imagebounds.top,imagebounds.left,hdc);
 
 		if((gpb->propertyProcs != NULL) && gpb->propertyProcs->getPropertyProc)
