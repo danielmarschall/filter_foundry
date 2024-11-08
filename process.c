@@ -107,8 +107,8 @@ Boolean setup(FilterRecordPtr pb){
 		// 16 bits
 		bytesPerPixelChannelIn = 2;
 		bytesPerPixelChannelOut = 2;
-		maxChannelValueIn = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
-		maxChannelValueOut = 32768; // sic: Photoshop says 0..32768 in the "Info" panel. Not 32767
+		maxChannelValueIn = 32768; // sic: The range is 0..32768 (15 bit+1), because that gives an integer midpoint.
+		maxChannelValueOut = 32768;
 		// Smallest and largest possible values of ff_i(), ff_u(), ff_v()
 		min_val_i = 0;
 		max_val_i = 32768;
@@ -122,7 +122,7 @@ Boolean setup(FilterRecordPtr pb){
 			min_channel_val[0] = min_channel_val[3] = 0;
 			max_channel_val[0] = max_channel_val[3] = 32768;
 			// a* and b* have -16384 ... 16383
-			valueoffset_channel[1] = valueoffset_channel[2] = 16384; 
+			valueoffset_channel[1] = valueoffset_channel[2] = 16384;
 			min_channel_val[1] = min_channel_val[2] = -16384;
 			max_channel_val[1] = max_channel_val[2] = 16383;
 		} else {
@@ -136,24 +136,33 @@ Boolean setup(FilterRecordPtr pb){
 		// 32 bits
 		bytesPerPixelChannelIn = 4;
 		bytesPerPixelChannelOut = 4;
-		/*
-		maxChannelValueIn = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
-		maxChannelValueOut = INT_MAX; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
-		*/
-		// TODO: For some reason, we can only use approx. 16 bit as max channel value, otherwise we get wrong canvas input?!
-		maxChannelValueIn = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
-		maxChannelValueOut = 65535; // It is actually "float", but internally we need to use integers. We convert from/to float at evalpixel().
+		
+		// For 32-bit, the output range is actually a float value, but internally internally we need to use integers
+		// with an output range described below. We convert from/to float at evalpixel().
+
+		// We must not use a value that is too big, because:
+		// 1. evalpixel(): The output convertion from 32-bit to 8-bit (for the preview) calculates "X * maxChannelValueOut / maxChannelValueIn"
+		//                 Hence, there might be an integer overflow at multiplication if X is too large.
+		// 2. To make 8-bit filters look equal with all bit depths, plugin authors should do the following trick:
+		//    `d` in 8-bit look equal to `max(0,min(255,d))*C/255` in 8/16/32-bit
+		// Since max(0,min(255,d)) has an output range between 0..255, the max channel value multiplied with 255
+		// must not cause a signed 32-bit integer overflow. Calculation: 0x7FFFFFFF / 0xFF = 0x808080 (so 0x800000 = 23 bit+1 works).
+		// We use "23bit+1", because this gives an integer midpoint.
+		maxChannelValueIn = 0x800000;
+		maxChannelValueOut = 0x800000;
+
 		// Smallest and largest possible values of ff_i(), ff_u(), ff_v()
 		min_val_i = 0;
-		max_val_i = 65535;
-		min_val_u = -14312;
-		max_val_u = 14312;
-		min_val_v = -20144;
-		max_val_v = 20144;
+		max_val_i = 8388608;
+		min_val_u = -1832063;
+		max_val_u = 1832063;
+		min_val_v = -2578561;
+		max_val_v = 2578561;
+
 		// Normal 32-bit range for all modes (there is no 32-bit Lab mode)
 		valueoffset_channel[0] = valueoffset_channel[1] = valueoffset_channel[2] = valueoffset_channel[3] = 0;
 		min_channel_val[0] = min_channel_val[1] = min_channel_val[2] = min_channel_val[3] = 0;
-		max_channel_val[0] = max_channel_val[1] = max_channel_val[2] = max_channel_val[3] = 65535;
+		max_channel_val[0] = max_channel_val[1] = max_channel_val[2] = max_channel_val[3] = 0x800000;
 		break;
 	}
 
@@ -255,7 +264,7 @@ Boolean setup(FilterRecordPtr pb){
 }
 
 void evalpixel(unsigned char *outp,unsigned char *inp){
-	value_type f;
+	int64_t f; // int64 due to avoid overflow at the calculation "f * maxChannelValueOut / maxChannelValueIn"
 	int k;
 
 	if(needinput){
