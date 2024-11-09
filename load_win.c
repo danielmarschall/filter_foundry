@@ -91,7 +91,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 		if (LOADING_OK == (res = readfile_afs_pff(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, false, true, false);
-			return 0;
+			return res;
 		}
 		if (!fileHasExtension(sfr, TEXT(".afs")) && !fileHasExtension(sfr, TEXT(".pff"))) {
 			// If .afs and .pff files have an invalid signature, then it is a hard error.
@@ -106,7 +106,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 		if (LOADING_OK == (res = readfile_ffl(sfr))) {
 			gdata->obfusc = false;
 			parm_reset(true, true, true, true);
-			return 0;
+			return res;
 		}
 		if (!fileHasExtension(sfr, TEXT(".ffl"))) {
 			// If .ffl files have an invalid signature, then it is a hard error.
@@ -119,7 +119,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (LOADING_OK == (res = readfile_ffx(sfr))) {
-			return 0;
+			return res;
 		}
 		if (!fileHasExtension(sfr, TEXT(".ffx"))) {
 			// If .ffx files have an invalid signature, then it is a hard error.
@@ -140,7 +140,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 				}
 				else {
 					FreeLibrary(hm);
-					return 0;
+					return res;
 				}
 			}
 			FreeLibrary(hm);
@@ -151,7 +151,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".txt"))) {
 			if (LOADING_OK == (res = readfile_picotxt_or_ffdecomp(sfr))) {
-				return 0;
+				return res;
 			}
 		}
 	}
@@ -160,7 +160,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".guf"))) {
 			if (LOADING_OK == (res = readfile_guf(sfr))) {
-				return 0;
+				return res;
 			}
 		}
 	}
@@ -176,7 +176,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 				res = MSG_FILTER_PROTECTED_ID;
 			}
 			else {
-				return 0;
+				return res;
 			}
 		}
 	}

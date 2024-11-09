@@ -27,8 +27,6 @@
 
 #define CHOPLINES 63
 
-OSErr putstr(Handle h,char *s);
-
 OSErr putstr(Handle h,char *s){
 	Ptr p;
 	OSErr e;
@@ -47,7 +45,7 @@ OSErr putstr(Handle h,char *s){
 	return e;
 }
 
-OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder){
+FFSavingResult saveparams_afs_pff(Handle h, Boolean premiereOrder){
 	char outbuf[CHOPLINES * 2 + 2] = "";
 	char *q, * p, * r, * start;
 	size_t n, chunk, j;
@@ -56,7 +54,7 @@ OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder){
 	size_t est;
 	static char afs_sig[] = "%RGB-1.0\r";
 
-	if (!h) return nilHandleErr;
+	//if (!h) return nilHandleErr;
 
 	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -113,16 +111,16 @@ OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder){
 		e = PISETHANDLESIZE(h,(int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return e;
+	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
 }
 
-OSErr saveparams_picotxt(Handle h) {
+FFSavingResult saveparams_picotxt(Handle h) {
 	char * p, *start;
 	int i;
 	OSErr e;
 	size_t est;
 
-	if (!h) return nilHandleErr;
+	//if (!h) return nilHandleErr;
 
 	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -176,16 +174,16 @@ OSErr saveparams_picotxt(Handle h) {
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return e;
+	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
 }
 
-OSErr saveparams_guf(Handle h) {
+FFSavingResult saveparams_guf(Handle h) {
 	char* p, * start;
 	int i;
 	OSErr e;
 	size_t est;
 
-	if (!h) return nilHandleErr;
+	//if (!h) return nilHandleErr;
 
 	est = strlen(gdata->parm.szFormula[0]) + strlen(gdata->parm.szFormula[1]) + strlen(gdata->parm.szFormula[2]) + strlen(gdata->parm.szFormula[3]);
 	// do not be tempted to combine into one expression: 'est' is referenced below
@@ -253,7 +251,7 @@ OSErr saveparams_guf(Handle h) {
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return e;
+	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
 }
 
 OSErr savehandleintofile(Handle h,FILEREF r){
@@ -282,7 +280,7 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = !(saveparams_picotxt(h) || savehandleintofile(h, r));
+					bres = (SAVING_OK == saveparams_picotxt(h)) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}
@@ -291,7 +289,7 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			else if (fileHasExtension(sfr, TEXT(".guf"))) {
 				// GIMP UserFilter file
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = !(saveparams_guf(h) || savehandleintofile(h, r));
+					bres = (SAVING_OK == saveparams_guf(h)) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}
@@ -299,7 +297,7 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			}
 			else if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = !(saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff"))) || savehandleintofile(h, r));
+					bres = (SAVING_OK == saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff")))) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
 					PIDISPOSEHANDLE(h);
 				}

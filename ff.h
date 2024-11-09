@@ -168,8 +168,9 @@ FFLoadingResult readPARM(PARM_T* parm,Ptr h);
 
 // from save.c:
 
-OSErr saveparams_afs_pff(Handle h, Boolean premiereOrder);
-OSErr saveparams_picotxt(Handle h);
+FFSavingResult saveparams_afs_pff(Handle h, Boolean premiereOrder);
+FFSavingResult saveparams_picotxt(Handle h);
+FFSavingResult saveparams_guf(Handle h);
 OSErr savehandleintofile(Handle h,FILEREF r);
 FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr);
 

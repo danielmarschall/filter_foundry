@@ -478,7 +478,7 @@ FFLoadingResult readPARM(PARM_T* pparm, Ptr p){
 			pparm->val[i] = EndianS32_LtoN(pparm->val[i]);
 	}
 
-	return 0;
+	return LOADING_OK;
 }
 
 Handle readfileintohandle(FILEREF r){
