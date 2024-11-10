@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -94,8 +94,7 @@ OSType getAeteKey(char c, PARM_T* parm) {
 		hash = printablehash(djb2(data));
 		free(data);
 		return hash;
-	}
-	else {
+	} else {
 		// char* debug = (char*)malloc(2000);
 		// sprintf(debug, "getAeteKey %c in MAIN PLUGIN", c);
 		// simplealert(debug);
@@ -132,23 +131,19 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 					char *tmp = get_cstring(token);
 					strcpy(gdata->parm.szFormula[0], tmp);
 					free(tmp);
-				}
-				else if (key == getAeteKey('G', gdata->parm.standalone ? &gdata->parm : NULL)) {
+				} else if (key == getAeteKey('G', gdata->parm.standalone ? &gdata->parm : NULL)) {
 					char* tmp = get_cstring(token);
 					strcpy(gdata->parm.szFormula[1], tmp);
 					free(tmp);
-				}
-				else if (key == getAeteKey('B', gdata->parm.standalone ? &gdata->parm : NULL)) {
+				} else if (key == getAeteKey('B', gdata->parm.standalone ? &gdata->parm : NULL)) {
 					char* tmp = get_cstring(token);
 					strcpy(gdata->parm.szFormula[2], tmp);
 					free(tmp);
-				}
-				else if (key == getAeteKey('A', gdata->parm.standalone ? &gdata->parm : NULL)) {
+				} else if (key == getAeteKey('A', gdata->parm.standalone ? &gdata->parm : NULL)) {
 					char* tmp = get_cstring(token);
 					strcpy(gdata->parm.szFormula[3], tmp);
 					free(tmp);
-				}
-				else {
+				} else {
 					int i;
 					for (i = 0; i <= 7; ++i) {
 						if (key == getAeteKey((char)('0'+i), gdata->parm.standalone ? &gdata->parm : NULL)) {
@@ -168,8 +163,7 @@ enum ScriptingShowDialog ReadScriptParamsOnRead(void)
 		}
 
 		return gpb->descriptorParameters->playInfo == plugInDialogDisplay ? SCR_SHOW_DIALOG : SCR_HIDE_DIALOG;
-	}
-	else {
+	} else {
 		return SCR_NO_SCRIPT;
 	}
 }

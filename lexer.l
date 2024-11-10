@@ -3,7 +3,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2019 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -108,9 +108,9 @@ HEXDIGIT	[0-9A-Fa-f]
 [!~+\-*/%<>&^|?] { OP(yytext[0]); } /* an operator; make new tree node */
 
 ,	{ /* comma is special; sometimes it's an operator, and sometimes a function argument separator */
-		if(inarglist[arglistptr])
+		if(inarglist[arglistptr]) {
 			return TOK_ARGSEP;
-		else{
+		} else {
 			OP(yytext[0]);
 		}
 	}
@@ -123,8 +123,9 @@ HEXDIGIT	[0-9A-Fa-f]
 			yylval = newnode(s->token);
 			yylval->v.sym = s;
 			return s->token;
-		}else
+		} else {
 			return TOK_UNKNOWN; 
+		}
 	}
 
 [t] {

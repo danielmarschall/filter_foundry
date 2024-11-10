@@ -44,8 +44,7 @@ Boolean Implements3264ResourceAPI(void) {
 		// Windows NT 3.51 does implement GetVersionExA() and UpdateResourceA(), but it doesn't know about 64 bit images.
 		// Windows NT 4.0 does implement UpdateResourceA(), and it can handle 64 bit images
 		return res && osv.dwMajorVersion >= 4 && osv.dwPlatformId == VER_PLATFORM_WIN32_NT;
-	}
-	else {
+	} else {
 		// Windows NT 3.1 doesn't have GetVersionExA(), doesn't implement UpdateResourceA(), and doesn't know about 64 bit images
 		// Therefore, we conclude that if GetVersionExA() is missing, then we are on a system that requires manual resource processing
 		FreeLibrary(hLib);
@@ -142,8 +141,7 @@ void _GetNativeSystemInfo(LPSYSTEM_INFO lpSystemInfo) {
 	if (fGetNativeSystemInfo != 0) {
 		fGetNativeSystemInfo(lpSystemInfo);
 		FreeLibrary(hLib);
-	}
-	else {
+	} else {
 		GetSystemInfo(lpSystemInfo);
 	}
 }
@@ -167,8 +165,7 @@ BOOL _ImageRemoveCertificate(HANDLE FileHandle, DWORD Index) {
 				// File does not exist
 				free(dllfile);
 				return true;
-			}
-			else {
+			} else {
 				free(dllfile);
 			}
 		}

@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -38,8 +38,7 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
 		hdl->handle = pSHandleSuite2->New((int32)nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
-	}
-	else if ((gpb->sSPBasic != 0) &&
+	} else if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
 		(pSHandleSuite1 != NULL) &&
 		(pSHandleSuite1 != (PSHandleSuite1*)gpb->handleProcs /* Just to be sure (although no bug is known) */)
@@ -50,8 +49,7 @@ void newHandle(FFHandle* hdl, size_t nBytes) {
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
 		hdl->handle = pSHandleSuite1->New((int32)nBytes);
 		gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
-	}
-	else {
+	} else {
 		// Standard Handle Suite (deprecated)
 		hdl->signature = HDLVERSION_STANDARD;
 		if (gdata) gdata->lastKnownHandleVersion = hdl->signature;
@@ -72,8 +70,7 @@ void disposeHandle(FFHandle* hdl) {
 			pSHandleSuite2->Dispose(hdl->handle);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 		}
-	}
-	else if (hdl->signature == HDLVERSION_SUITE1) {
+	} else if (hdl->signature == HDLVERSION_SUITE1) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
@@ -85,8 +82,7 @@ void disposeHandle(FFHandle* hdl) {
 			pSHandleSuite1->Dispose(hdl->handle);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 		}
-	}
-	else if (hdl->signature == HDLVERSION_STANDARD) {
+	} else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
 		gpb->handleProcs->disposeProc(hdl->handle);
 	}
@@ -107,8 +103,7 @@ size_t getHandleSize(FFHandle* hdl) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 			return (size_t)size;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_SUITE1) {
+	} else if (hdl->signature == HDLVERSION_SUITE1) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
@@ -121,8 +116,7 @@ size_t getHandleSize(FFHandle* hdl) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 			return (size_t)size;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_STANDARD) {
+	} else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
 		return gpb->handleProcs->getSizeProc(hdl->handle);
 	}
@@ -143,8 +137,7 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 			return ret;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_SUITE1) {
+	} else if (hdl->signature == HDLVERSION_SUITE1) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
@@ -157,8 +150,7 @@ OSErr setHandleSize(FFHandle* hdl, size_t nBytes) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 			return ret;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_STANDARD) {
+	} else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
 		return gpb->handleProcs->setSizeProc(hdl->handle, (int32)nBytes);
 	}
@@ -181,8 +173,7 @@ Ptr lockHandle(FFHandle* hdl) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 			return address;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_SUITE1) {
+	} else if (hdl->signature == HDLVERSION_SUITE1) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
@@ -197,8 +188,7 @@ Ptr lockHandle(FFHandle* hdl) {
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 			return address;
 		}
-	}
-	else if (hdl->signature == HDLVERSION_STANDARD) {
+	} else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
 		return gpb->handleProcs->lockProc(hdl->handle, true);
 	}
@@ -220,8 +210,7 @@ void unlockHandle(FFHandle* hdl) {
 			pSHandleSuite2->SetLock(hdl->handle, false, &address, &oldLock);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion2);
 		}
-	}
-	else if (hdl->signature == HDLVERSION_SUITE1) {
+	} else if (hdl->signature == HDLVERSION_SUITE1) {
 		PSHandleSuite1* pSHandleSuite1 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPIHandleSuite, kPSHandleSuiteVersion1, (const void**)&pSHandleSuite1) == noErr) &&
@@ -235,8 +224,7 @@ void unlockHandle(FFHandle* hdl) {
 			pSHandleSuite1->SetLock(hdl->handle, false, &address, &oldLock);
 			gpb->sSPBasic->ReleaseSuite(kPIHandleSuite, kPSHandleSuiteVersion1);
 		}
-	}
-	else if (hdl->signature == HDLVERSION_STANDARD) {
+	} else if (hdl->signature == HDLVERSION_STANDARD) {
 		// Standard Handle Suite (deprecated)
 		gpb->handleProcs->unlockProc(hdl->handle);
 	}
@@ -322,8 +310,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 			buf->suite = NULL;
 		}
 		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
-	}
-	else if ((gpb->sSPBasic != 0) &&
+	} else if ((gpb->sSPBasic != 0) &&
 		(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
 		(pSBufferSuite32 != NULL) &&
 		(pSBufferSuite32 != (PSBufferSuite1*)gpb->bufferProcs /* Just to be sure (although no bug is known) */)
@@ -339,9 +326,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 			buf->suite = NULL;
 		}
 		gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
-	}
-	else if (gpb->bufferProcs->numBufferProcs >= 8)
-	{
+	} else if (gpb->bufferProcs->numBufferProcs >= 8) {
 		// Standard Buffer Suite 64 bit (deprecated)
 		buf->signature = BUFVERSION_STD64;
 		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
@@ -349,9 +334,7 @@ void newBuffer(FFBuffer* buf, size_t nBytes) {
 			buf->signature = BUFVERSION_NULL;
 			buf->standard = NULL;
 		}
-	}
-	else
-	{
+	} else {
 		// Standard Buffer Suite 32 bit (deprecated)
 		buf->signature = BUFVERSION_STD32;
 		if (gdata) gdata->lastKnownBufferVersion = buf->signature;
@@ -367,17 +350,13 @@ Ptr lockBuffer(FFBuffer* buf) {
 	                                // to the high end of memory to avoid fragmentation. The moveHigh flag has no effect with Windows
 	if (buf->signature == BUFVERSION_SUITE64) {
 		return buf->suite;
-	}
-	else if (buf->signature == BUFVERSION_SUITE32) {
+	} else if (buf->signature == BUFVERSION_SUITE32) {
 		return buf->suite;
-	}
-	else if (buf->signature == BUFVERSION_STD64) {
+	} else if (buf->signature == BUFVERSION_STD64) {
 		return gpb->bufferProcs->lockProc(buf->standard, moveHigh);
-	}
-	else if (buf->signature == BUFVERSION_STD32) {
+	} else if (buf->signature == BUFVERSION_STD32) {
 		return gpb->bufferProcs->lockProc(buf->standard, moveHigh);
-	}
-	else {
+	} else {
 		return NULL;
 	}
 }
@@ -385,8 +364,7 @@ Ptr lockBuffer(FFBuffer* buf) {
 void unlockBuffer(FFBuffer* buf) {
 	if (buf->signature == BUFVERSION_STD64) {
 		gpb->bufferProcs->unlockProc(buf->standard);
-	}
-	else if (buf->signature == BUFVERSION_STD32) {
+	} else if (buf->signature == BUFVERSION_STD32) {
 		gpb->bufferProcs->unlockProc(buf->standard);
 	}
 }
@@ -404,8 +382,7 @@ void disposeBuffer(FFBuffer* buf) {
 			pSBufferSuite64->Dispose(&buf->suite);
 			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion2);
 		}
-	}
-	else if (buf->signature == BUFVERSION_SUITE32) {
+	} else if (buf->signature == BUFVERSION_SUITE32) {
 		PSBufferSuite1* pSBufferSuite32 = NULL;
 		if ((gpb->sSPBasic != 0) &&
 			(gpb->sSPBasic->AcquireSuite(kPSBufferSuite, kPSBufferSuiteVersion1, (const void**)&pSBufferSuite32) == noErr) &&
@@ -415,11 +392,9 @@ void disposeBuffer(FFBuffer* buf) {
 			pSBufferSuite32->Dispose(&buf->suite);
 			gpb->sSPBasic->ReleaseSuite(kPSBufferSuite, kPSBufferSuiteVersion1);
 		}
-	}
-	else if (buf->signature == BUFVERSION_STD64) {
+	} else if (buf->signature == BUFVERSION_STD64) {
 		gpb->bufferProcs->freeProc(buf->standard);
-	}
-	else if (buf->signature == BUFVERSION_STD32) {
+	} else if (buf->signature == BUFVERSION_STD32) {
 		gpb->bufferProcs->freeProc(buf->standard);
 	}
 	buf->signature = BUFVERSION_NULL;

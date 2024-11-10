@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -129,8 +129,7 @@ Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uin
 			found1++;
 			done = (found1 == maxamount1) && (found2 == maxamount2);
 			if (done) break;
-		}
-		else if (srecord == search2) {
+		} else if (srecord == search2) {
 			srecord = replace2;
 			SetFPos(fptr, fsFromMark, -1 * (long)sizeof(srecord));
 			cnt = (int)sizeof(srecord);
@@ -139,8 +138,7 @@ Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uin
 			found2++;
 			done = (found1 == maxamount1) && (found2 == maxamount2);
 			if (done) break;
-		}
-		else {
+		} else {
 			SetFPos(fptr, fsFromMark, -1 * (long)(sizeof(srecord) - 1));
 		}
 	}
@@ -336,21 +334,17 @@ int obfuscation_version(PARM_T* pparm) {
 	if (obfusc_info == 0x00000001) { // 01 00 00 00
 		// Photoshop FilterFactory default initialization of field "unknown2" (no obfuscation)
 		return 0;
-	}
-	else if (obfusc_info == 0x00000000) { // 00 00 00 00
+	} else if (obfusc_info == 0x00000000) { // 00 00 00 00
 		// Premiere FilterFactory default initialization of field "unknown1" (no obfuscation)
 		// (Premiere Field "unknown1" has the offset of Photoshop's "unknown2" field)
 		return 0;
-	}
-	else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
+	} else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
 		// Version 1 obfuscation (Filter Foundry 1.4b8,9,10)
 		return 1;
-	}
-	else if (obfusc_info == 0xE2CFCA34) { // 34 CA CF E2
+	} else if (obfusc_info == 0xE2CFCA34) { // 34 CA CF E2
 		// Version 2 obfuscation (Filter Foundry 1.7b1)
 		return 2;
-	}
-	else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
+	} else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
 		// Version 4 obfuscation (Filter Foundry 1.7.0.7)
 		// Version 5 obfuscation (Filter Foundry 1.7.0.8)
 		// Version 6 obfuscation (Filter Foundry 1.7.0.10)
@@ -358,8 +352,7 @@ int obfuscation_version(PARM_T* pparm) {
 		// Version 8 obfuscation (Filter Foundry 1.7.0.22)
 		// Future: Version 9, 10, ..., 255
 		return obfusc_info;
-	}
-	else {
+	} else {
 		// Version 3 obfuscation (Filter Foundry 1.7.0.5)
 		// obfusc_info is the srand() seed and is equal to the time(0) build timestamp
 		return 3;

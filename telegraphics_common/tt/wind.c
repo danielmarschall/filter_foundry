@@ -66,7 +66,8 @@ void get_struc_bbox(WindowPtr w,Rect*r){ enum{K=0x4000};
 	if(MacIsWindowVisible(w)){ //((WindowPeek)w)->visible)
 		GetWindowRegion(w,kWindowStructureRgn,rgn);
 		GetRegionBounds(rgn,r); //*r = (*((WindowPeek)w)->strucRgn)->rgnBBox;
-	}else{ Rect s;
+	} else {
+		Rect s;
 		global_wind_rect(w,&s);
 		MoveWindow(w,s.left,s.top+K,false);
 		ShowHide(w,true);
@@ -169,7 +170,7 @@ Rect dominant_device_rect(WindowPtr w){
 		if(d == GetMainDevice())
 			r.top += GetMBarHeight();
 		return r;
-	}else{
+	} else {
 		GetRegionBounds(GetGrayRgn(),&r);
 		return r;
 	}
@@ -193,13 +194,14 @@ Rect largest_device_rect(void){
 			dr = (*dev)->gdRect;
 			if(dev == GetMainDevice())
 				dr.top += GetMBarHeight();
-		}else{
+		} else {
 			BitMap bm;
 			GetQDGlobalsScreenBits(&bm);
 			dr = bm.bounds; //SAFE_QD(screenBits).bounds; // there are no devices
 		}
-	}else
+	} else {
 		GetRegionBounds(GetGrayRgn(),&dr);
+	}
 	return dr;
 }
 

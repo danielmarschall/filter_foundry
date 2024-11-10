@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,22 +86,20 @@ FFSavingResult saveparams_afs_pff(Handle h, Boolean premiereOrder){
 							*q++ = '\\';
 							*q++ = 'r';
 							++r;
-						}
-						else if (*r == LF) {
-
+						} else if (*r == LF) {
 							// This can only happen with Windows or Linux.
 							// Native Linux is not supported, and Windows always combines LF with CR. So we can ignore LF.
 							++r;
-						}
-						else
+						} else {
 							*q++ = *r++;
+						}
 					*q++ = CR;
 					*q = 0;
 					p = cat(p, outbuf);
 				}
-			}
-			else
+			} else {
 				p = cat(p,(char*)("(null expr)\r")); // this shouldn't happen
+			}
 			*p++ = CR;
 		}
 
@@ -283,35 +281,37 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 					bres = (SAVING_OK == saveparams_picotxt(h).msgid) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
+				} else {
+					res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 				}
-				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
-			}
-			else if (fileHasExtension(sfr, TEXT(".guf"))) {
+			} else if (fileHasExtension(sfr, TEXT(".guf"))) {
 				// GIMP UserFilter file
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 					bres = (SAVING_OK == saveparams_guf(h).msgid) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
+				} else {
+					res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 				}
-				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
-			}
-			else if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
+			} else if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
 					bres = (SAVING_OK == saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff"))).msgid) && (noErr == savehandleintofile(h, r));
 					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
+				} else {
+					res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 				}
-				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
-			}
-			else {
+			} else {
 				res = (FFSavingResult){ MSG_UNSUPPORTED_FILE_FORMAT_ID };
 			}
 
 			FSClose(r);
+		} else {
+			res = (FFSavingResult){ MSG_CANNOT_OPEN_FILE_ID };
 		}
-		else res = (FFSavingResult){ MSG_CANNOT_OPEN_FILE_ID };
+	} else {
+		res = (FFSavingResult){ MSG_CANNOT_CREATE_FILE_ID };
 	}
-	else res = (FFSavingResult){ MSG_CANNOT_CREATE_FILE_ID };
 
 	return res;
 }

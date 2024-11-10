@@ -60,33 +60,33 @@ void calc_std_state(WindowPtr w,Boolean force_default,Boolean stagger,Rect *s){
 		*s = d;
 		new_left = (force_default || wr.left<s->left ? s->left : wr.left) + h_offset;
 		new_top = (force_default || wr.top<s->top ? s->top : wr.top) + v_offset;
-		if(too_wide = (i=new_left+size.h)>s->right)
-			if((i=s->right-size.h)>s->left)
+		if(too_wide = (i=new_left+size.h)>s->right) {
+			if((i=s->right-size.h)>s->left) {
 				s->left = i; // move window left to expose entire content
-			else{ // natural size is wider than screen
+			} else{ // natural size is wider than screen
 				short new_width = width_filter(w,i = s->right - s->left);
 				new_width>i ? (s->right=s->left+new_width) : (s->left=s->right-new_width);
 			}
-		else{
+		} else {
 			s->left = new_left;
 			s->right = i;
 		}
-		if(too_high = (i=new_top+size.v)>s->bottom)
-			if((i=s->bottom-size.v)>s->top)
+		if(too_high = (i=new_top+size.v)>s->bottom) {
+			if((i=s->bottom-size.v)>s->top) {
 				s->top = i; // move window up to expose entire content
-			else{ // natural size is higher than screen
+			} else { // natural size is higher than screen
 				short new_height = height_filter(w,i = s->bottom - s->top);
 				new_height>i ? (s->bottom=s->top+new_height) : (s->top=s->bottom-new_height);
 			}
-		else{
+		} else {
 			s->top = new_top;
 			s->bottom = i;
 		}
 
 		spot_taken = false;
-		if(stagger && !(too_wide||too_high))
-			for(peek = (WindowPeek)FrontWindow(); peek; peek = peek->nextWindow)
-				if(peek->visible){
+		if(stagger && !(too_wide||too_high)) {
+			for(peek = (WindowPeek)FrontWindow(); peek; peek = peek->nextWindow) {
+				if(peek->visible) {
 					global_wind_rect((WindowPtr)peek,&r);
 					if( abs(s->left-r.left) + abs(s->top-r.top) < STAGGER_SLOP ){
 						spot_taken = true;
@@ -95,6 +95,8 @@ void calc_std_state(WindowPtr w,Boolean force_default,Boolean stagger,Rect *s){
 						break;
 					}
 				}
+			}
+		}
 	}while(spot_taken);
 }
 
@@ -104,7 +106,7 @@ void zoom_to_std_state(WindowPtr w,Boolean force_default,Boolean stagger){ Rect 
 		set_std_state(w,&r);
 		SetPort(w);
 		ZoomWindow(w,inZoomOut,false);
-	}else{
+	} else {
 		MoveWindow(w,r.left,r.top,false);
 		SizeWindow(w,r.right-r.left,r.bottom-r.top,true/*???*/);
 	}

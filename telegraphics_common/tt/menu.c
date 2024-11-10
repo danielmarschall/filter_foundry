@@ -70,14 +70,16 @@ void adjust_popup(DialogPtr d,short i,MenuHandle m,short mItem,short max,unsigne
 
 	#if ! TARGET_API_MAC_CARBON
 	{
-	SysEnvRec w;
+		SysEnvRec w;
 
-	SysEnvirons(curSysEnvVers,&w);
-	if(w.systemVersion < 0x700)
-		for(t = s + (j = *s); j && StringWidth(s) > max; *s = j--, t--)
-			*t = 'É';
-	else
-		TruncString(max,s,smTruncEnd);
+		SysEnvirons(curSysEnvVers,&w);
+		if(w.systemVersion < 0x700) {
+			for(t = s + (j = *s); j && StringWidth(s) > max; *s = j--, t--) {
+				*t = 'É';
+			}
+		} else {
+			TruncString(max,s,smTruncEnd);
+		}
 	}
 	#else
 	TruncString(max,s,smTruncEnd);

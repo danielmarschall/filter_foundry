@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,7 +61,9 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 			e = ResError();
 			CloseResFile(srcrn);
 		}
-	}else e = ResError();
+	} else {
+		e = ResError();
+	}
 	#endif
 
 	if(!e){
@@ -124,7 +126,7 @@ static OSErr doresources(FSSpec *srcplug, FSSpec *rsrccopy){
 								HUnlock(h);
 								parm_type = OBFUSCDATA_TYPE_NEW;
 								parm_id = OBFUSCDATA_ID_NEW;
-							}else{
+							} else {
 								parm_type = PARM_TYPE;
 								parm_id = PARM_ID_NEW;
 							}
@@ -201,7 +203,9 @@ static OSErr copyplist(FSSpec *fss, short dstvol, long dstdir){
 							e = FSWrite(dstrn,&count,buf);
 
 							free(save);
-						}else e = paramErr; // not found?? shouldn't happen
+						} else {
+							e = paramErr; // not found?? shouldn't happen
+						}
 					}
 					free(buf);
 				}
@@ -263,10 +267,11 @@ static OSErr make_bundle(StandardFileReply *sfr, short plugvol,
 		if(e) FSpDelete(&sfr->sfFile);
 	}else why = "Can't create new bundle directory.";
 
-	if(e)
+	if (e) {
 		sprintf(reason, "%s (%d)", why, e);
-	else
+	} else {
 		reason[0] = 0;
+	}
 
 	return e;
 }

@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -89,9 +89,9 @@ struct node *updateexpr(DIALOGREF dp,int item){
 	tree[i] = parseexpr(gdata->parm.szFormula[i]);
 
 	if(!gdata->parm.standalone){
-		if(tree[i])
+		if(tree[i]) {
 			HideDialogItem(dp,FIRSTICONITEM+i);
-		else{
+		} else {
 			err[i] = errstr;
 			errstart[i] = tokstart;
 			errpos[i] = tokpos;
@@ -105,14 +105,16 @@ void updatezoom(DIALOGREF dp){
 	char s[10];
 	sprintf(s, "%d%%", (int)(100./zoomfactor));
 	SETCTLTEXT(dp,ZOOMLEVELITEM,s);
-	if (zoomfactor > 1.)
+	if (zoomfactor > 1.) {
 		ENABLEDLGITEM(dp, ZOOMINITEM);   // ShowDialogItem(dp,ZOOMINITEM);
-	else
+	} else {
 		DISABLEDLGITEM(dp, ZOOMINITEM);  // HideDialogItem(dp, ZOOMINITEM);
-	if(zoomfactor < fitzoom)
+	}
+	if(zoomfactor < fitzoom) {
 		ENABLEDLGITEM(dp, ZOOMOUTITEM);  // ShowDialogItem(dp,ZOOMOUTITEM);
-	else
+	} else {
 		DISABLEDLGITEM(dp, ZOOMOUTITEM); // HideDialogItem(dp,ZOOMOUTITEM);
+	}
 }
 
 /**
@@ -129,18 +131,20 @@ static int _checksl(struct node*p,bool32_t ctlflags[], bool32_t mapflags[]){
 				s = p->child[0]->v.value;
 				if(s>=0 && s<=7)
 					ctlflags[s] = 1;
-			}else
+			} else {
 				result |= CHECKSLIDERS_CTL_AMBIGUOUS; /* can't determine which ctl() */
-		}else if(p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map){
+			}
+		} else if(p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_map) {
 			if(p->child[0]->kind == TOK_NUM){
 				s = p->child[0]->v.value;
 				if(s>=0 && s<=3){
 					mapflags[s] = 1;
 					ctlflags[s*2] = ctlflags[s*2+1] = 1;
 				}
-			}else
+			} else {
 				result |= CHECKSLIDERS_MAP_AMBIGUOUS; /* can't determine which map() */
-		 }
+			}
+		}
 
 		for( i = 0 ; i < MAXCHILDREN ; ++i )
 			result |= _checksl(p->child[i],ctlflags,mapflags);
@@ -194,7 +198,7 @@ void maindlgupdate(DIALOGREF dp){
 			REPAINTCTL(dp, FIRSTCTLITEM+i); // required for PLUGIN.DLL sliders
 			ENABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
 			ShowDialogItem(dp,FIRSTCTLTEXTITEM+i); /* FIXME: this changes keyboard focus */
-		}else{
+		} else {
 			DISABLEDLGITEM(dp,FIRSTCTLITEM+i);
 			REPAINTCTL(dp,FIRSTCTLITEM+i); // required for PLUGIN.DLL sliders
 			DISABLEDLGITEM(dp,FIRSTCTLLABELITEM+i);
@@ -209,7 +213,7 @@ void maindlgupdate(DIALOGREF dp){
 				// TODO: But before this happens, we get filterBadParameters in filterSelectorStart, since setup() failed
 				//       so, do we need this message here at all?
 				simplealert_id(MSG_SAVED_EXPR_ERR_ID);
-			}else{
+			} else {
 				DISABLEDLGITEM(dp,SAVEITEM);
 				DISABLEDLGITEM(dp,MAKEITEM);
 			}
@@ -293,7 +297,7 @@ void maindlginit(DIALOGREF dp) {
 			HideDialogItem(dp,FIRSTICONITEM+i);
 			HideDialogItem(dp,FIRSTEXPRITEM+i);
 			HideDialogItem(dp,FIRSTLABELITEM+i);
-		}else{
+		} else {
 			s[0] = channelsuffixes[gpb->imageMode][i];
 			SETCTLTEXT(dp,FIRSTLABELITEM+i,s);
 		}
@@ -322,7 +326,7 @@ void maindlginit(DIALOGREF dp) {
 		}
 
 		updatezoom(dp);
-	}else{
+	} else {
 		DISABLEDLGITEM(dp, ZOOMINITEM);    // HideDialogItem(dp,ZOOMINITEM);
 		DISABLEDLGITEM(dp, ZOOMOUTITEM);   // HideDialogItem(dp,ZOOMOUTITEM);
 		DISABLEDLGITEM(dp, ZOOMLEVELITEM); // HideDialogItem(dp,ZOOMLEVELITEM);
@@ -440,8 +444,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			if (LOADING_OK == (res = loadfile(&sfr)).msgid) {
 				updatedialog(dp);
 				maindlgupdate(dp);
-			}
-			else {
+			} else {
 				// Restore
 				restoreInternalState(bakState);
 
@@ -449,8 +452,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 					showmessage_id(res.msgid);
 					//return maindlgitem(dp, item); // call open Dialog again
 					goto showDialogAgain;
-				}
-				else {
+				} else {
 					TCHAR* reason = FF_GetMsg_Cpy(res.msgid);
 					alertuser_id(MSG_CANNOT_LOAD_SETTINGS_ID, reason);
 					FF_GetMsg_Free(reason);
@@ -524,8 +526,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				TCHAR* reason = FF_GetMsg_Cpy(saveres.msgid);
 				alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
 				FF_GetMsg_Free(reason);
-			}
-			else {
+			} else {
 				completesave(&reply);
 
 				if (fileHasExtension(&sfr, TEXT(".txt"))) {
@@ -583,8 +584,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 		if (hShellRes == (HINSTANCE)ERROR_FILE_NOT_FOUND) {
 			// On Win98 we get ERROR_FILE_NOT_FOUND, but the browser still opens!
 			// So we ignore it for now...
-		}
-		else if (hShellRes <= (HINSTANCE)32) {
+		} else if (hShellRes <= (HINSTANCE)32) {
 			// MSDN states: "If the function succeeds, it returns a value greater than 32."
 
 			TCHAR s[0x300];

@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,10 +45,11 @@ void builddlginit(DIALOGREF dp){
 	checksliders_result = checksliders(4);
 	for(i = 4; i--;){
 		DISABLEDLGITEM(dp,FIRSTMAPCHECKITEM+i);
-		if(gdata->parm.map_used[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
+		if(gdata->parm.map_used[i] || (checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS)) {
 			CHECKDLGBUTTON(dp,FIRSTMAPCHECKITEM+i,true);
-		else
+		} else {
 			HideDialogItem(dp,FIRSTMAPNAMEITEM+i);
+		}
 	}
 	for(i = 8; i--;){
 		DISABLEDLGITEM(dp,FIRSTCTLCHECKITEM+i);
@@ -58,9 +59,11 @@ void builddlginit(DIALOGREF dp){
 		   !gdata->parm.map_used[i/2] &&
 		   (!(checksliders_result & CHECKSLIDERS_MAP_AMBIGUOUS))
 		   )
+		{
 			CHECKDLGBUTTON(dp,FIRSTCTLCHECKITEM+i,true);
-		else
+		} else {
 			HideDialogItem(dp,FIRSTCTLNAMEITEM+i);
+		}
 	}
 
 	CHECKDLGBUTTON(dp, PROTECTITEM, 0); // TODO: should we remember the last setting?
@@ -170,8 +173,7 @@ Boolean builddlgitem(DIALOGREF dp,int item){
 			// "unicode" means that there are characters that will be converted to "?" when converting wchar_t* => char*
 			// Note that this is might be not true if your the characters are mapped in your current default Ansi Charset (e.g. German Umlauts on a German computer)
 			simplewarning_id(MSG_UNICODE_DATA_WARNING_ID);
-		}
-		else
+		} else
 		#endif
 		if (extCharset) {
 			simplewarning_id(MSG_EXTCHARSET_DATA_WARNING_ID);

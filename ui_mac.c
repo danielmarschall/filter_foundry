@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,8 +46,9 @@ void DoAbout(AboutRecordPtr prec){
 	if(gdata && gdata->parm.standalone){
 		ParamText(myc2pstr(_strdup(gdata->parm.szTitle)), myc2pstr(_strdup(gdata->parm.szAuthor)), myc2pstr(_strdup(gdata->parm.szCopyright)), NULL);
 		Alert(ID_ABOUTSTANDALONEDLG,filterproc_UPP);
-	}else
+	} else {
 		Alert(ID_ABOUTDLG,filterproc_UPP);
+	}
 
 	DisposeModalFilterUPP(filterproc_UPP);
 }
@@ -134,11 +135,10 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 
 	if( !event->what || (event->what == updateEvt
 						 && (WindowRef)event->message != GetDialogWindow(dialog)) )
-	{	// pass null events and update events to Photoshop
+	{
+		// pass null events and update events to Photoshop
 		gpb->processEvent(event);
-	}
-	else if(event->what == mouseDown){
-
+	} else if(event->what == mouseDown) {
 		pt = event->where;
 		GlobalToLocal(&pt);
 
@@ -150,7 +150,7 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 				&& TrackControl(c,pt,action_UPP) ){
 			*item = i;
 			result = true;
-		}else if(i == PREVIEWITEM){
+		} else if(i == PREVIEWITEM) {
 			SetCursor(*handcursor);
 			origscroll = preview_scroll;
 			do{
@@ -167,16 +167,17 @@ pascal Boolean sliderfilter(DialogRef dialog,EventRecord *event,short *item){
 			result = true;
 		}
 
-	}
-	else{
+	} else {
 		GetKeyboardFocus(GetDialogWindow(dialog),&focus);
 		/* handle return keypresses */
 		if( event->what == keyDown && (char)event->message == CR
 				&& ( focus==exprctls[0] || focus==exprctls[1]
 				  || focus==exprctls[2] || focus==exprctls[3] ) )
+		{
 			result = false;
-		else
+		} else {
 			result = StdFilterProc(dialog,event,item);
+		}
 	}
 
 	SetPort(oldport);

@@ -78,10 +78,11 @@ pascal StringPtr  PLstrcpy(StringPtr str1, StringPtr str2) {
 pascal StringPtr PLstrcat(StringPtr str1, StringPtr str2) {
 	long copyLen;
 
-	if (str1[0] + 1 + str2[0]>255)
+	if (str1[0] + 1 + str2[0]>255) {
 		copyLen = 255 - str1[0];
-	else
+	} else {
 		copyLen = str2[0];
+	}
 
 	BlockMove(&str2[1], str1 + 1 + str1[0], copyLen);
 	str1[0] += copyLen;

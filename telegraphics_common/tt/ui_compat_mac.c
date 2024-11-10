@@ -160,7 +160,7 @@ pascal Boolean standardfilter(DialogRef dialog, EventRecord *event, short *item)
 		if(ch == kEnterCharCode){
 			*item = ok;
 			result = true;
-		}else if( ch == kEscapeCharCode || (ch=='.' && (event->modifiers & cmdKey)) ){
+		} else if( ch == kEscapeCharCode || (ch=='.' && (event->modifiers & cmdKey)) ) {
 			*item = cancel;
 			result = true;
 		}
@@ -206,8 +206,11 @@ long setctltext(DIALOGREF d,int i,char *s){
 
 	Boolean res = !( GetDialogItemAsControl(d,i,&c)
 		|| SetControlData(c,kControlEditTextPart,kControlEditTextTextTag,strlen(s),s) );
-	if(res) Draw1Control(c);
-	else dbg("setctltext failed");
+	if(res) {
+		Draw1Control(c);
+	} else {
+		dbg("setctltext failed");
+	}
 	return res;
 }
 

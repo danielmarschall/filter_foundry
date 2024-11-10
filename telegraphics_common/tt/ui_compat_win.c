@@ -42,8 +42,7 @@ HBITMAP _CreateDIBSection(HDC hdc, CONST BITMAPINFO* pbmi, UINT usage, VOID** pp
 		res = fCreateDIBSection(hdc, pbmi, usage, ppvBits, hSection, offset);
 		FreeLibrary(hLib);
 		return res;
-	}
-	else {
+	} else {
 		return NULL;
 	}
 }
@@ -85,8 +84,9 @@ Boolean newbitmap(BITMAPREF *ppb,int depth,UIRECT *bounds){
 			p[i] = -( (i^j)&1 ) ;*/
 
 			return true;
-		}else
+		} else {
 			dbg((TCHAR*)TEXT("CreateDIBSection FAILED"));
+		}
 	}
 	return false;
 }
@@ -122,8 +122,7 @@ BOOL _GetMonitorInfoA(_HMONITOR hMonitor, _LPMONITORINFO lpmi) {
 		res = fGetMonitorInfoA(hMonitor, lpmi);
 		FreeLibrary(hLib);
 		return res;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -142,8 +141,7 @@ _HMONITOR _MonitorFromRect(LPCRECT lprc, DWORD dwFlags) {
 		res = fMonitorFromRect(lprc, dwFlags);
 		FreeLibrary(hLib);
 		return res;
-	}
-	else {
+	} else {
 		return NULL;
 	}
 }
@@ -172,11 +170,9 @@ void _doMonitorAdjustments(LPRECT rcPlugin) {
 		// Window larger than screen width. Decrease the width!
 		rcPlugin->left = rcMonitorWork.left;
 		rcPlugin->right = rcMonitorWork.right;
-	}
-	else if (rcPlugin->left < rcMonitorWork.left) {
+	} else if (rcPlugin->left < rcMonitorWork.left) {
 		nXAdjust = rcMonitorWork.left - rcPlugin->left;
-	}
-	else if (rcPlugin->right > rcMonitorWork.right) {
+	} else if (rcPlugin->right > rcMonitorWork.right) {
 		nXAdjust = rcMonitorWork.right  - rcPlugin->right;
 	}
 
@@ -187,11 +183,9 @@ void _doMonitorAdjustments(LPRECT rcPlugin) {
 		// Window larger than screen height. Decrease the height!
 		rcPlugin->top = rcMonitorWork.top;
 		rcPlugin->bottom = rcMonitorWork.bottom;
-	}
-	else if (rcPlugin->top < rcMonitorWork.top) {
+	} else if (rcPlugin->top < rcMonitorWork.top) {
 		nYAdjust = rcMonitorWork.top - rcPlugin->top;
-	}
-	else if (rcPlugin->bottom > rcMonitorWork.bottom) {
+	} else if (rcPlugin->bottom > rcMonitorWork.bottom) {
 		nYAdjust = rcMonitorWork.bottom - rcPlugin->bottom;
 	}
 

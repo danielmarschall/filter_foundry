@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -282,8 +282,7 @@ void init_trigtab(void) {
 				if (i >= TANTABSIZE / 2) {
 					/* the last '-1' in the expression '512-i-1' is for FilterFactory compatibility, and to avoid the undefined pi/2 area */
 					gdata->tantab[i] = -gdata->tantab[TANTABSIZE - i - 1];
-				}
-				else {
+				} else {
 					gdata->tantab[i] = tan(FFANGLE(i));
 				}
 			}
@@ -436,8 +435,7 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 	ecx = ((var['X'] - xmin) >> 1) + eax;
 	if (ecx < 0) {
 		ecx = 0;
-	}
-	else {
+	} else {
 		eax = var['X'];
 		if (ecx >= eax) {
 			ecx = eax - 1;
@@ -449,8 +447,7 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 	ebx = ((var['Y'] - ymin) >> 1) + eax;
 	if (ebx < 0) {
 		ebx = 0;
-	}
-	else {
+	} else {
 		eax = var['Y'];
 		if (ebx >= eax) {
 			ebx = eax - 1;
@@ -1206,8 +1203,7 @@ value_type factory_c2m(value_type x, value_type y) {
 	eax = x < 0 ? -x : x;
 	if (eax == ebx) {
 		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
-	}
-	else {
+	} else {
 		if (eax > ebx) {
 			int tmp = eax;
 			eax = ebx;
@@ -1347,8 +1343,7 @@ value_type factory_M(void) {
 	ebx = (var['Y'] - ymin) >> 1;
 	if (eax == ebx) {
 		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
-	}
-	else {
+	} else {
 		if (eax > ebx) {
 			int tmp = eax;
 			eax = ebx;
@@ -1401,8 +1396,7 @@ value_type factory_m(void) {
 
 	if (eax == ebx) {
 		eax = 27146; // 27146/65536 == sqrt(2)-1 == 0.41421356237
-	}
-	else {
+	} else {
 		if (eax > ebx) {
 			int tmp = eax;
 			eax = ebx;

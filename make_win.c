@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -67,20 +67,17 @@ int WriteXmlEscaped(char* description, char c) {
 		description[idescription++] = 'm';
 		description[idescription++] = 'p';
 		description[idescription++] = ';';
-	}
-	else if (c == '<') {
+	} else if (c == '<') {
 		description[idescription++] = '&';
 		description[idescription++] = 'l';
 		description[idescription++] = 't';
 		description[idescription++] = ';';
-	}
-	else if (c == '>') {
+	} else if (c == '>') {
 		description[idescription++] = '&';
 		description[idescription++] = 'g';
 		description[idescription++] = 't';
 		description[idescription++] = ';';
-	}
-	else {
+	} else {
 		description[idescription++] = c;
 	}
 	return idescription;
@@ -132,8 +129,7 @@ int domanifest(char *newmanifest, char *manifestp, PARM_T* pparm, int bits) {
 
 	if (bits == 64) {
 		res = sprintf(newmanifest, manifestp, (char*)name, "amd64", VERSION_STR, (char*)description);
-	}
-	else {
+	} else {
 		res = sprintf(newmanifest, manifestp, (char*)name, "x86", VERSION_STR, (char*)description);
 	}
 
@@ -155,8 +151,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 
 	if (soleFilename = xstrrchr(&dst->szName[0], '\\')) {
 		++soleFilename;
-	}
-	else {
+	} else {
 		soleFilename = &dst->szName[0];
 	}
 
@@ -179,8 +174,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	tmp++;
 	if (strlen(pparm->szAuthor) > 0) {
 		tmp += mbstowcs(tmp, pparm->szAuthor, 100);
-	}
-	else {
+	} else {
 		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
 	}
 	tmp++;
@@ -189,8 +183,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	tmp++;
 	if (strlen(pparm->szCopyright) > 0) {
 		tmp += mbstowcs(tmp, pparm->szCopyright, 100);
-	}
-	else {
+	} else {
 		tmp += mbstowcs(tmp, "\b", 100); // \b = remove
 	}
 	tmp++;
@@ -199,8 +192,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 	tmp++;
 	if (strlen(pparm->szTitle) > 0) {
 		tmp += mbstowcs(tmp, pparm->szTitle, 100);
-	}
-	else {
+	} else {
 		tmp += mbstowcs(tmp, "Untitled filter", 100);
 	}
 	tmp++;
@@ -235,8 +227,7 @@ ULONG changeVersionInfo(FSSpec* dst, HANDLE hUpdate, PARM_T* pparm, int bits) {
 						if (_UpdateResource(hUpdate, RT_VERSION, MAKEINTRESOURCE(1), MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), pv, size))
 						{
 							//fDiscard = FALSE;
-						}
-						else {
+						} else {
 							//dwError = GetLastError();
 						}
 					}
@@ -471,7 +462,7 @@ Boolean doresources(FSSpec* dst, int bits){
 
 					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
 					obfusc(pparm, &obfuscseed, &obfuscseed2);
-				}else{
+				} else {
 					parm_type = PARM_TYPE;
 					parm_id = PARM_ID_NEW;
 				}
@@ -532,15 +523,19 @@ Boolean doresources(FSSpec* dst, int bits){
 				if (!discard && !repair_pe_checksum(dst)) {
 					simplewarning((TCHAR*)TEXT("repair_pe_checksum failed")); // TODO (Not so important): TRANSLATE
 				}
-			}else showLastError((TCHAR*)TEXT("EndUpdateResource"));
-
-		}else showLastError((TCHAR*)TEXT("Find-, Load- or LockResource"));
+			} else {
+				showLastError((TCHAR*)TEXT("EndUpdateResource"));
+			}
+		} else {
+			showLastError((TCHAR*)TEXT("Find-, Load- or LockResource"));
+		}
 
 		if(pparm) free(pparm);
 		if(newpipl) free(newpipl);
 		if(newaete) free(newaete);
-	}else
-	showLastError((TCHAR*)TEXT("BeginUpdateResource"));
+	} else {
+		showLastError((TCHAR*)TEXT("BeginUpdateResource"));
+	}
 	return !discard;
 }
 
@@ -609,8 +604,7 @@ Boolean extract_file(LPCTSTR lpType, LPCTSTR lpName, FSSpec* dst) {
 		FSClose(fptr);
 
 		return res == noErr;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -645,8 +639,7 @@ OSErr do_make_standalone(FSSpec* dst, int bits) {
 			DeleteFile(&dst->szName[0]);
 			alertuser_id(bits == 32 ? MSG_CANNOT_CREATE_32BIT_FILTER_ID : MSG_CANNOT_CREATE_64BIT_FILTER_ID, (TCHAR*)TEXT("doresources failed"));
 		}
-	}
-	else {
+	} else {
 		// If you see this error, please make sure that you have called foundry_3264_mixer to include the 32/64 plugins as resource!
 		res = false;
 		//DeleteFile(dstname);
@@ -668,10 +661,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 	xstrcpy(dst.szName, sfr->sfFile.szName);
 	remove_64_filename_prefix(&dst.szName[0]);
 	tmpErr = do_make_standalone(&dst, 32);
-	if (tmpErr != noErr)
+	if (tmpErr != noErr) {
 		outErr = tmpErr;
-	else
+	} else {
 		showmessage_id(MSG_BUILT32_ID);
+	}
 
 	// Make 64 bit:
 	// Destfile = no64_or_32(chosenname) + 64
@@ -679,10 +673,11 @@ OSErr make_standalone(StandardFileReply *sfr){
 	remove_64_filename_prefix(&dst.szName[0]);
 	add_64_filename_prefix(&dst.szName[0]);
 	tmpErr = do_make_standalone(&dst, 64);
-	if (tmpErr != noErr)
+	if (tmpErr != noErr) {
 		outErr = tmpErr;
-	else
+	} else {
 		showmessage_id(MSG_BUILT64_ID);
+	}
 
 	return outErr;
 }

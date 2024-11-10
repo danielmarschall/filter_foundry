@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -133,8 +133,7 @@ void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max) {
 		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETRANGE, TRUE, MAKELONG(min, max));
 		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETTICFREQ, SLIDERPAGE, 0);
 		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETPAGESIZE, 0, SLIDERPAGE);
-	}
-	else {
+	} else {
 		// PLUGIN.DLL sliders
 		#ifdef use_plugin_dll_sliders
 		PluginDll_SetSliderRange(GetDlgItem(hDlg, nIDDlgItem), min, max);
@@ -146,11 +145,9 @@ void FF_SetSliderRange(HWND hDlg, int nIDDlgItem, int min, int max) {
 int FF_GetSliderPos(HWND hDlg, int nIDDlgItem) {
 	if (gdata->pluginDllSliderInfo.initialized) {
 		return PluginDll_GetSliderPos(GetDlgItem(hDlg, nIDDlgItem), false);
-	}
-	else if (gdata->comctlSliderInfo.initialized) {
+	} else if (gdata->comctlSliderInfo.initialized) {
 		return (int)SendDlgItemMessage(hDlg, nIDDlgItem, TBM_GETPOS, 0, 0);
-	}
-	else {
+	} else {
 		return 0;
 	}
 }
@@ -158,8 +155,7 @@ int FF_GetSliderPos(HWND hDlg, int nIDDlgItem) {
 void FF_SetSliderPos(HWND hDlg, int nIDDlgItem, int pos) {
 	if (gdata->pluginDllSliderInfo.initialized) {
 		PluginDll_SetSliderPos(GetDlgItem(hDlg, nIDDlgItem), pos, true);
-	}
-	else if (gdata->comctlSliderInfo.initialized) {
+	} else if (gdata->comctlSliderInfo.initialized) {
 		SendDlgItemMessage(hDlg, nIDDlgItem, TBM_SETPOS, TRUE, pos);
 	}
 }
@@ -201,12 +197,10 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 			simplealert(&s[0]);
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
-	}
-	else {
+	} else {
 		if ((xstrcmp(sourceClass, WC_BUTTON) == 0) || (xstrcmp(sourceClass, WC_STATIC) == 0)) {
 			// GetClassInfo(WC_STATIC) and GetClassInfo(WC_BUTTON) fail on Win32s (Windows 3.11)
 			// So we create a fake-class now. It will be replaced with the real Button/Static WndProc later!
@@ -227,12 +221,10 @@ Boolean MakeSimpleSubclass(LPCTSTR targetClass, LPCTSTR sourceClass) {
 				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, s + xstrlen(s), 0x300 - (DWORD)xstrlen(s), NULL);
 				simplealert(&s[0]);
 				return false;
-			}
-			else {
+			} else {
 				return true;
 			}
-		}
-		else {
+		} else {
 			simplealert((TCHAR*)TEXT("GetClassInfo failed")); // TODO (Not so important): TRANSLATE
 		}
 		return false;
@@ -258,12 +250,10 @@ Boolean Slider_Init_PluginDll(LPCTSTR targetClass) {
 		if (MakeSimpleSubclass(targetClass, TEXT("Slider"))) {
 			gdata->pluginDllSliderInfo.initialized = true;
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
-	}
-	else {
+	} else {
 		// This can happen if PLUGIN.DLL is not existing
 		// It will also happen if a previous uninitialization failed (or was forgotten)
 		return false; // Fall back to Windows sliders
@@ -311,8 +301,7 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 			icce.dwSize = sizeof(INITCOMMONCONTROLSEX);
 			icce.dwICC = ICC_BAR_CLASSES;
 			fInitCommonControlsEx(&icce);
-		}
-		else {
+		} else {
 			fInitCommonControls = (f_InitCommonControls)(void*)GetProcAddress(gdata->comctlSliderInfo.hLib, "InitCommonControls");
 			if (fInitCommonControls != 0) {
 				fInitCommonControls();
@@ -323,12 +312,10 @@ Boolean Slider_Init_MsTrackbar(LPCTSTR targetClass) {
 		if (MakeSimpleSubclass(targetClass, TEXT("msctls_trackbar32"))) {
 			gdata->comctlSliderInfo.initialized = true;
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -354,8 +341,7 @@ Boolean Slider_Init_None(LPCTSTR targetClass) {
 	if (MakeSimpleSubclass(targetClass, WC_STATIC)) {
 		gdata->noneSliderInfo.initialized = true;
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }

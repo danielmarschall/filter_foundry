@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -143,8 +143,7 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 				mask.rowBytes = gpb->maskRowBytes;
 				mask.colBytes = 1;
 				mask.maskDescription = kSimplePSMask;
-			}
-			else if ((gpb->inLayerPlanes != 0) && (gpb->inTransparencyMask != 0))
+			} else if ((gpb->inLayerPlanes != 0) && (gpb->inTransparencyMask != 0))
 			{
 				mask.next = NULL;
 				mask.maskData = gpb->maskData;
@@ -166,8 +165,9 @@ Boolean setup_preview(FilterRecordPtr pb, int nplanes){
 		}
 
 		newBuffer(&preview_handle, (long)preview_h * preview_pmap.rowBytes);
-	}else
+	} else {
 		preview_handle.signature = BUFVERSION_NULL;
+	}
 	return preview_handle.signature != BUFVERSION_NULL;
 
 	//---------------------------------------------------------------------------
@@ -333,8 +333,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (r.left < FILTER_RECT(pb).left) {
 			preview_scroll.h += FILTER_RECT(pb).left - r.left;
 			r.left = FILTER_RECT(pb).left;
-		}
-		else if ((double)r.left + scaledw > FILTER_RECT(pb).right) {
+		} else if ((double)r.left + scaledw > FILTER_RECT(pb).right) {
 			preview_scroll.h += (int16)((double)FILTER_RECT(pb).right - ((double)r.left + scaledw));
 			r.left = (int16)((double)FILTER_RECT(pb).right - scaledw);
 		}
@@ -346,8 +345,7 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (r.top < FILTER_RECT(pb).top) {
 			preview_scroll.v += FILTER_RECT(pb).top - r.top;
 			r.top = FILTER_RECT(pb).top;
-		}
-		else if ((double)r.top + scaledh > FILTER_RECT(pb).bottom) {
+		} else if ((double)r.top + scaledh > FILTER_RECT(pb).bottom) {
 			preview_scroll.v += (int16)(FILTER_RECT(pb).bottom - ((double)r.top + scaledh));
 			r.top = (int16)((double)FILTER_RECT(pb).bottom - scaledh);
 		}
@@ -355,10 +353,11 @@ void recalc_preview_olddoc(FilterRecordPtr pb, DIALOGREF dp) {
 		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v) / zoomfactor); // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
-		if (needall)
+		if (needall) {
 			SETRECT(IN_RECT(pb), 0, 0, IMAGE_SIZE(pb).h, IMAGE_SIZE(pb).v);
-		else
+		} else {
 			IN_RECT(pb) = r;
+		}
 
 		OUT_RECT(pb) = IN_RECT(pb);
 		SETRECT(MASK_RECT(pb), 0, 0, 0, 0);
@@ -480,8 +479,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (r.left < BIGDOC_FILTER_RECT(pb).left) {
 			preview_scroll.h += BIGDOC_FILTER_RECT(pb).left - r.left;
 			r.left = BIGDOC_FILTER_RECT(pb).left;
-		}
-		else if ((double)r.left + scaledw > BIGDOC_FILTER_RECT(pb).right) {
+		} else if ((double)r.left + scaledw > BIGDOC_FILTER_RECT(pb).right) {
 			preview_scroll.h += (int32)((double)BIGDOC_FILTER_RECT(pb).right - ((double)r.left + scaledw));
 			r.left = (int32)((double)BIGDOC_FILTER_RECT(pb).right - scaledw);
 		}
@@ -493,8 +491,7 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		if (r.top < BIGDOC_FILTER_RECT(pb).top) {
 			preview_scroll.v += BIGDOC_FILTER_RECT(pb).top - r.top;
 			r.top = BIGDOC_FILTER_RECT(pb).top;
-		}
-		else if ((double)r.top + scaledh > BIGDOC_FILTER_RECT(pb).bottom) {
+		} else if ((double)r.top + scaledh > BIGDOC_FILTER_RECT(pb).bottom) {
 			preview_scroll.v += (int32)(BIGDOC_FILTER_RECT(pb).bottom - ((double)r.top + scaledh));
 			r.top = (int32)((double)BIGDOC_FILTER_RECT(pb).bottom - scaledh);
 		}
@@ -502,10 +499,11 @@ void recalc_preview_bigdoc(FilterRecordPtr pb, DIALOGREF dp) {
 		preview_pmap.maskPhaseRow = (int32)((preview_scroll.v) / zoomfactor); // phase of the checkerboard
 
 		/* if formulae need random access to image - src(), rad() - we must request entire area: */
-		if (needall)
+		if (needall) {
 			SETRECT(BIGDOC_IN_RECT(pb), 0, 0, BIGDOC_IMAGE_SIZE(pb).h, BIGDOC_IMAGE_SIZE(pb).v);
-		else
+		} else {
 			BIGDOC_IN_RECT(pb) = r;
+		}
 
 		BIGDOC_OUT_RECT(pb) = BIGDOC_IN_RECT(pb);
 		SETRECT(BIGDOC_MASK_RECT(pb), 0, 0, 0, 0);
@@ -604,8 +602,7 @@ void recalc_preview(FilterRecordPtr pb, DIALOGREF dp) {
 
 	if (HAS_BIG_DOC(pb)) {
 		recalc_preview_bigdoc(pb, dp);
-	}
-	else {
+	} else {
 		recalc_preview_olddoc(pb, dp);
 	}
 }

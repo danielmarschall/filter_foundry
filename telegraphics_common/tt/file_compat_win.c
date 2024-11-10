@@ -69,9 +69,9 @@ OSErr FSpCreate(const FSSpec *spec, OSType creator, OSType fileType, ScriptCode 
 
 	h = CreateFile(spec->szName,0,0,0,CREATE_NEW,0,0);
 //	sprintf(s,"FSpCreate(\"%s\"):%#x",spec->name,h); dbg(s);
-	if( h == INVALID_HANDLE_VALUE )
+	if( h == INVALID_HANDLE_VALUE ) {
 		return ioErr;
-	else{
+	} else {
 		CloseHandle(h);
 		return noErr;
 	}

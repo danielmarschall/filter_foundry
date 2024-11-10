@@ -171,7 +171,7 @@ pascal void grey_item_dldp(short depth, short deviceFlags, GDHandle targetDevice
 
 	if( f = GetGray(targetDevice, &bg, &fg) ){
 		RGBForeColor(&fg);
-	}else{
+	} else {
 		GetPenState(&ps);
 		GetQDGlobalsGray(&pat);
 		PenPat(&pat);
@@ -247,8 +247,9 @@ char unmodified_key(EventRecord*e){ short keycode; long state=0,c; char c1; void
 		keycode = (e->modifiers & (0xff00 & ~cmdKey)) | ((e->message & keyCodeMask) >> 8);
 		c = KeyTrans(transData,keycode,&state);
 		return (c1 = c>>16) ? c1 : c;
-	}else
+	} else {
 		return e->message;
+	}
 }
 
 /*
@@ -326,11 +327,11 @@ FILTER(filter_buttons){ int i=0,j; char c; Str255 s; WindowPtr w; Boolean f = fa
 		break;
 	case keyDown:
 		c = theEvent->message;
-		if( (c==3 || c==13) && is_a_button(theDialog,GetDialogDefaultItem(theDialog)) )
+		if( (c==3 || c==13) && is_a_button(theDialog,GetDialogDefaultItem(theDialog)) ) {
 			i = GetDialogDefaultItem(theDialog);
-		else if(is_cancel(theEvent) && is_a_button(theDialog,cancel))
+		} else if(is_cancel(theEvent) && is_a_button(theDialog,cancel)) {
 			i = cancel;
-		else if(GetDialogKeyboardFocusItem(theDialog) == -1 /*|| theEvent->modifiers & cmdKey*/
+		} else if(GetDialogKeyboardFocusItem(theDialog) == -1 /*|| theEvent->modifiers & cmdKey*/
 				&& gestalt_attr(gestaltDITLExtAttr,gestaltDITLExtPresent)){
 			c = tolower(c);
 			for(j=CountDITL(theDialog);j;j--){ KIND_ITEM_BOX
@@ -341,8 +342,9 @@ FILTER(filter_buttons){ int i=0,j; char c; Str255 s; WindowPtr w; Boolean f = fa
 						if(i){ // two buttons' titles begin with the same character
 							i = 0;
 							break;
-						}else
+						} else {
 							i = j;
+						}
 				}
 			}
 		}

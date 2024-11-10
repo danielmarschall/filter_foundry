@@ -1,7 +1,7 @@
 /*
 	This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
 	Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-	Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+	Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -34,8 +34,9 @@ static BOOL CALLBACK enum_find_resname(HMODULE hModule, LPCTSTR lpszType,
 		UINT16* pparm_id = (UINT16*)lParam;
 		*pparm_id = (UINT16)((intptr_t)lpszName & 0xFFFF);
 		return false; // we only want the first one
+	} else {
+		return true;
 	}
-	else return true;
 }
 
 FFLoadingResult readPARMresource(HMODULE hm) {
@@ -53,10 +54,10 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 			gdata->obfusc = false;
 			return res;
 		}
-	}
-	else if (
+	} else if (
 		((resinfo = FindResource(hm, OBFUSCDATA_ID_NEW, OBFUSCDATA_TYPE_NEW)) ||
-			(resinfo = FindResource(hm, OBFUSCDATA_ID_OLD, OBFUSCDATA_TYPE_OLD)))) {
+		 (resinfo = FindResource(hm, OBFUSCDATA_ID_OLD, OBFUSCDATA_TYPE_OLD))))
+	{
 		if ((h = LoadResource(hm, resinfo)) && (pparm = (Ptr)LockResource(h))) {
 			// Fix by DM, 18 Dec 2018:
 			// We need to copy the information, because the resource data is read-only
@@ -71,8 +72,7 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 				free(copy);
 				gdata->obfusc = true;
 				return res;
-			}
-			else {
+			} else {
 				// Obfuscationed PARM has wrong size. It is probably a file with different RCDATA
 				gdata->obfusc = false;
 				return (FFLoadingResult){ MSG_INVALID_PARAMETER_DATA_ID };
@@ -137,8 +137,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
 					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
-				}
-				else {
+				} else {
 					FreeLibrary(hm);
 					return res;
 				}
@@ -174,8 +173,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);
 				res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
-			}
-			else {
+			} else {
 				return res;
 			}
 		}

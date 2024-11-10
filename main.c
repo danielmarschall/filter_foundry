@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -179,8 +179,7 @@ void CreateDataPointer(intptr_t* data) {
 	BufferID tempId;
 	if (gpb->bufferProcs->allocateProc(sizeof(globals_t), &tempId) != noErr) {
 		*data = NULL;
-	}
-	else {
+	} else {
 		*data = (void*)gpb->bufferProcs->lockProc(tempId, true);
 		if (*data) memset((void*)*data, 0, sizeof(globals_t));
 	}
@@ -353,12 +352,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 				parm_reset(true, true, true, true);
 				if (gdata->obfusc) {
 					simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
-				}
-				else {
+				} else {
 					simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 				}
-			}
-			else {
+			} else {
 				DoAbout((AboutRecordPtr)pb);
 			}
 			free(gdata);
@@ -390,9 +387,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 		if (!pb->parameters) {
 			*result = memFullErr;
-		}
-		else
-		{
+		} else {
 			wantdialog |= checkandinitparams(pb->parameters);
 
 			/* wantdialog = false means that we never got a Parameters call, so we're not supposed to ask user */
@@ -443,15 +438,14 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 							FF_GetMsg_Free(reason);
 							*result = filterBadParameters;
 						}
-					}
-					else {
+					} else {
 						/* update stored parameters from new user settings */
 						if (pb->parameters)
 							saveparams_afs_pff(pb->parameters, false);
 					}
-				}
-				else
+				} else {
 					*result = userCanceledErr;
+				}
 			}
 			wantdialog = false;
 		}
@@ -459,7 +453,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		if(*result == noErr){
 			if(setup(pb)){
 				DoStart(pb);
-			}else{
+			} else {
 				simplealert_id(MSG_SAVED_EXPR_ERR_ID);
 				*result = filterBadParameters;
 			}
@@ -516,8 +510,7 @@ void parm_reset(Boolean resetMetadata, Boolean resetSliderValues, Boolean resetS
 			strcpy(gdata->parm.szFormula[1], "g");
 			strcpy(gdata->parm.szFormula[2], "b");
 			strcpy(gdata->parm.szFormula[3], "a");
-		}
-		else {
+		} else {
 			strcpy(gdata->parm.szFormula[0], "c");
 			strcpy(gdata->parm.szFormula[1], "c");
 			strcpy(gdata->parm.szFormula[2], "c");
@@ -597,8 +590,7 @@ int checkandinitparams(Handle params){
 			parm_reset(true, true, true, true);
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
-			}
-			else {
+			} else {
 				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
 			return false;
@@ -646,8 +638,7 @@ int checkandinitparams(Handle params){
 			parm_reset(true, true, true, true);
 			if (gdata->obfusc) {
 				simplealert_id(MSG_INCOMPATIBLE_OBFUSCATION_ID);
-			}
-			else {
+			} else {
 				simplealert_id(MSG_INVALID_PARAMETER_DATA_ID);
 			}
 			return false;
@@ -808,8 +799,7 @@ void RequestNext(FilterRecordPtr pb){
 		// ask for the entire image
 		if (needall) {
 			SETRECT(IN_RECT(pb), 0, 0, IMAGE_SIZE(pb).h, IMAGE_SIZE(pb).v);
-		}
-		else {
+		} else {
 			// TODO: This does not work with GIMP. So, if we are using GIMP, we should
 			//       somehow always use "needall=true", and/or find out why this doesn't work
 			//       with GIMP.
@@ -882,9 +872,9 @@ OSErr DoContinue(FilterRecordPtr pb){
 			(Ptr)pb->outData + outoffset, pb->outRowBytes, 1.)))
 		{
 			toprow += chunksize;
-			if (toprow < BIGDOC_FILTER_RECT(pb).bottom)
+			if (toprow < BIGDOC_FILTER_RECT(pb).bottom) {
 				RequestNext(pb);
-			else {
+			} else {
 				SETRECT(BIGDOC_IN_RECT(pb), 0, 0, 0, 0);
 				BIGDOC_OUT_RECT(pb) = BIGDOC_MASK_RECT(pb) = BIGDOC_IN_RECT(pb);
 			}
@@ -912,9 +902,9 @@ OSErr DoContinue(FilterRecordPtr pb){
 			(Ptr)pb->outData+outoffset, pb->outRowBytes, 1.)))
 		{
 			toprow += chunksize;
-			if(toprow < FILTER_RECT(pb).bottom)
+			if(toprow < FILTER_RECT(pb).bottom) {
 				RequestNext(pb);
-			else{
+			} else {
 				SETRECT(IN_RECT(pb),0,0,0,0);
 				OUT_RECT(pb) = MASK_RECT(pb) = IN_RECT(pb);
 			}

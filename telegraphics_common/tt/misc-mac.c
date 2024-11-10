@@ -94,9 +94,9 @@ OSErr read_line(short rn,Handle l){
 
 Boolean starts_with(Handle l,char *key){
 	short n = strlen(key);
-	if(GetHandleSize(l)<n)
+	if(GetHandleSize(l)<n) {
 		return false;
-	else{ // calling strncmp may move memory if it is not in the caller's segment!
+	} else { // calling strncmp may move memory if it is not in the caller's segment!
 		Boolean f;
 		char hs = HGetState(l);
 		HLock(l);
@@ -152,12 +152,12 @@ OSErr remove1resource(ResType t,short id){ OSErr e; Handle h;
 #if 0 // OBSOLETE
 void open_app_files(void){ AppFile f; short c,m; FSSpec fss;
 	CountAppFiles(&m,&c);
-	if(c)
+	if(c) {
 		do{
 			GetAppFiles(c,&f);
-			if(gestalt_attr(gestaltFSAttr,gestaltHasFSSpecCalls))
+			if(gestalt_attr(gestaltFSAttr,gestaltHasFSSpecCalls)) {
 				FSMakeFSSpec(f.vRefNum,0,f.fName,&fss);
-			else{ // construct a fake FSSpec for open_doc
+			} else { // construct a fake FSSpec for open_doc
 				fss.vRefNum = f.vRefNum;
 				fss.parID = 0;
 				PLstrcpy(fss.name,f.fName);
@@ -168,8 +168,9 @@ void open_app_files(void){ AppFile f; short c,m; FSSpec fss;
 			}
 			ClrAppFiles(c);
 		}while(--c);
-	else
+	} else {
 		open_app();
+	}
 }
 #endif
 
@@ -205,9 +206,9 @@ OSErr open_driver(StringPtr driver_name,short *rn){
 	Str255 name;
 	OSErr e;
 
-	if((id = find_slot()) == -1)
+	if((id = find_slot()) == -1) {
 		e = unitTblFullErr;
-	else{
+	} else {
 		if(h = GetNamedResource('DRVR',driver_name)){
 			// change the resource ID so that the driver is loaded in the slot we want
 			GetResInfo(h,&theID,&theType,name);
@@ -217,7 +218,9 @@ OSErr open_driver(StringPtr driver_name,short *rn){
 			// with the desired ID, then open the driver...)
 			e = OpenDriver(driver_name,rn);
 			SetResInfo(h,theID,0);
-		}else e = ResError();
+		} else {
+			e = ResError();
+		}
 	}
 	return e;
 }

@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,13 +70,13 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 					res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
 					break;
 				}
-			}else if(linecnt<=8){
+			} else if(linecnt<=8) {
 				int v;
 				v = atoi(linebuf);
 				if (v < 0) v = 0;
 				else if (v > 255) v = 255;
 				gdata->parm.val[linecnt-1] = (uint8_t)v;
-			}else{
+			} else {
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
 					if( (q-curexpr) + lineptr >= MAXEXPR) {
@@ -84,7 +84,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 						break;
 					}
 					q = cat(q,linebuf);
-				}else{
+				} else {
 					/* it's an empty line: we've completed the expr string */
 					*q = '\0';
 					if (premiereOrder) {
@@ -92,8 +92,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 						if (exprcnt == 0) strcpy(gdata->parm.szFormula[2], curexpr);
 						else if (exprcnt == 2) strcpy(gdata->parm.szFormula[0], curexpr);
 						else strcpy(gdata->parm.szFormula[exprcnt], curexpr);
-					}
-					else {
+					} else {
 						strcpy(gdata->parm.szFormula[exprcnt], curexpr);
 					}
 
@@ -108,7 +107,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 
 			++linecnt;
 			lineptr = 0;
-		}else{
+		} else {
 			/* store character */
 			if(c=='\\'){ /* escape sequence */
 				if(p < dataend){
@@ -265,8 +264,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 									free(val2);
 									val = combined;
 								}
-							}
-							else {
+							} else {
 								free(val);
 								val = val2;
 							}
@@ -274,14 +272,11 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 						if (strlen(val) >= sizeof(gdata->parm.szFormula[i])) {
 							if (i == 0) {
 								simplealert_id(MSG_FORMULA_IR_1023_TRUNCATED_ID);
-							}
-							else if (i == 1) {
+							} else if (i == 1) {
 								simplealert_id(MSG_FORMULA_G_1023_TRUNCATED_ID);
-							}
-							else if (i == 2) {
+							} else if (i == 2) {
 								simplealert_id(MSG_FORMULA_B_1023_TRUNCATED_ID);
-							}
-							else if (i == 3) {
+							} else if (i == 3) {
 								simplealert_id(MSG_FORMULA_A_1023_TRUNCATED_ID);
 							}
 							// C++ wrong warning: Buffer overflow (C6386)
@@ -364,8 +359,9 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 			}
 		} // else no point in proceeding
 		FSClose(refnum);
-	}else
+	} else {
 		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+	}
 
 	if (res.msgid == LOADING_OK) gdata->obfusc = false;
 	return res;
@@ -527,12 +523,10 @@ void _ffdcomp_removebrackets(char* x, char* maxptr) {
 		if ((!openingBracketFound) && (x[0] == '[')) {
 			openingBracketFound = true;
 			x[0] = ' ';
-		}
-		else if (openingBracketFound) {
+		} else if (openingBracketFound) {
 			if (x[0] == ']') {
 				closingBracketPos = x;
-			}
-			else if ((x[0] == CR) || (x[0] == LF)) {
+			} else if ((x[0] == CR) || (x[0] == LF)) {
 				if (closingBracketPos) closingBracketPos[0] = ' '; // last closing pos before CR/LF
 				break;
 			}
@@ -663,8 +657,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 				outputwork[0] = '\0';
 				free(inputworkinitial);
 				return true;
-			}
-			else {
+			} else {
 				memcpy(outputwork, svalue, strlen(svalue));
 				outputwork += strlen(svalue);
 				if (isFormula) {
@@ -672,8 +665,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 					outputwork[0] = CR;
 					outputwork[1] = LF;
 					outputwork += 2;
-				}
-				else {
+				} else {
 					// Everything else: TXT line breaks becomes single whitespace
 					outputwork[0] = ' ';
 					outputwork++;
@@ -867,11 +859,9 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 
 			if (!_gufReadProperty(q, count, "GUF", "Protocol", protocol, sizeof(protocol))) {
 				res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
-			}
-			else if (strcmp(protocol, "1") != 0) {
+			} else if (strcmp(protocol, "1") != 0) {
 				res = (FFLoadingResult){ MSG_INCOMPATIBLE_GUF_FILE_ID };
-			}
-			else {
+			} else {
 				int i;
 				char tmp[256];
 				char* tmp2;
@@ -954,9 +944,9 @@ FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 			PIDISPOSEHANDLE(h);
 		}
 		FSClose(r);
-	}
-	else
+	} else {
 		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+	}
 
 	return res;
 }
@@ -981,21 +971,18 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 
 			if (count < 6) {
 				res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
-			}
-			else {
+			} else {
 				char testsig[7];
 				memcpy(testsig, q, 6); // only read 6 chars. Avoid reading the whole file yet
 				testsig[6] = '\0';
 				if (strcmp(testsig, "FFL1.0") != 0) {
 					res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
-				}
-				else {
+				} else {
 					// This is required to make strtok work, because q is not zero-terminated...
 					q2 = (char*)malloc(count + 1/*NUL byte*/);
 					if (q2 == NULL) {
 						res = (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
-					}
-					else {
+					} else {
 						memcpy(q2, q, count);
 						q2[count] = '\0';
 
@@ -1014,15 +1001,12 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 									break;
 								}
 								*/
-							}
-							else if (lineNumber == 1) {
+							} else if (lineNumber == 1) {
 								// We don't check that. We just stop at every 28th line of each filter
 								/*
 								countFilters = atoi(token2);
 								*/
-							}
-							else
-							{
+							} else {
 								/*
 								* 0 filter_file1.8bf
 								* 1 Category 1 here
@@ -1150,13 +1134,16 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 												}
 												savehandleintofile(hTmp, rTmp);
 												PIDISPOSEHANDLE(hTmp);
+											} else {
+												res = (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
 											}
-											else res = (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
 											FSClose(rTmp);
+										} else {
+											res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
 										}
-										else res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+									} else {
+										res = (FFLoadingResult){ MSG_CANNOT_CREATE_FILE_ID };
 									}
-									else res = (FFLoadingResult){ MSG_CANNOT_CREATE_FILE_ID };
 
 									free(curFileNameOrig);
 									for (i = 0; i < 29; i++) {

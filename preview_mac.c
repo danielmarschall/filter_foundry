@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -62,10 +62,10 @@ pascal Boolean previewfilter(DialogRef dialog,EventRecord *event,short *item){
 
 	if( !event->what || (event->what == updateEvt
 						 && (WindowRef)event->message != GetDialogWindow(dialog)) )
-	{	// pass null events and update events to Photoshop
+	{
+		// pass null events and update events to Photoshop
 		gpb->processEvent(event);
-	}
-	else if(event->what == mouseDown){
+	} else if(event->what == mouseDown){
 		pt = event->where;
 		GlobalToLocal(&pt);
 
@@ -86,9 +86,9 @@ pascal Boolean previewfilter(DialogRef dialog,EventRecord *event,short *item){
 			*item = i;
 			result = true;
 		}
-	}
-	else
+	} else {
 		result = StdFilterProc(dialog,event,item);
+	}
 
 	SetPort(oldport);
 

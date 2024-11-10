@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,9 +42,8 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			ReleaseResource(h);
 			return (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
 		}
-	}
-	else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
-	          (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) )
+	} else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
+	           (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) )
 	{
 		HLock(h);
 		if(GetHandleSize(h) == sizeof(PARM_T)) {
@@ -72,9 +71,9 @@ FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
 	if(rrn != -1){
 		res = readPARMresource(NULL);
 		CloseResFile(rrn);
-	}
-	else
+	} else {
 		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+	}
 	return res;
 }
 

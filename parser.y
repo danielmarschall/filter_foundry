@@ -3,7 +3,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2022 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by  
@@ -64,9 +64,9 @@ TCHAR *errstr;
 int inarglist[PARENSTACK],arglistptr; // keep track of whether a comma is an function argument separator, or operator
 
 int pushflag(int x){
-	if(arglistptr < (PARENSTACK-1))
+	if(arglistptr < (PARENSTACK-1)) {
 		inarglist[++arglistptr] = x;
-	else{
+	} else {
 		yyerror((TCHAR*)TEXT("too many nested parentheses or function calls")); // TODO: translate
 		return true;
 	}
@@ -181,12 +181,14 @@ struct node *parseexpr(char *s){
 		node_list = 0;
 		yy_scan_string(s);
 	
-		if(!yyparse())
+		if(!yyparse()) {
 			return parsetree;
-		else /* ensure we don't leak memory, on an unsuccessful parse */
+		} else { /* ensure we don't leak memory, on an unsuccessful parse */
 			freeallnodes();
-	}else
+		}
+	} else {
 		yyerror((TCHAR*)TEXT("null string???"));// TODO: translate
+	}
 	return 0;
 }
 

@@ -75,9 +75,9 @@ OSErr FSpCreate(const FSSpec *spec, OSType creator, OSType fileType, ScriptCode 
 	h = CreateFile((char*)spec->name,0,0,0,CREATE_NEW,0,0);
 //	sprintf(s,"FSpCreate(\"%s\"):%#x",spec->name,h); dbg(s);
 	myc2pstr((char*)spec->name);
-	if( h == INVALID_HANDLE_VALUE )
+	if( h == INVALID_HANDLE_VALUE ) {
 		return ioErr;
-	else{
+	} else {
 		CloseHandle(h);
 		return noErr ;
 	}

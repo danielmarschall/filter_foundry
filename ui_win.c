@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -97,8 +97,7 @@ Boolean simplealert(TCHAR* s){
 		#else
 		strcpy(&title[0], gdata->parm.szTitle);
 		#endif
-	}
-	else {
+	} else {
 		xstrcpy(&title[0], (TCHAR*)TEXT("Filter Foundry"));
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
@@ -130,8 +129,7 @@ Boolean showmessage(TCHAR *s) {
 		#else
 		strcpy(&title[0], gdata->parm.szTitle);
 		#endif
-	}
-	else {
+	} else {
 		xstrcpy(&title[0], (TCHAR*)TEXT("Filter Foundry"));
 	}
 	hwnd = gdata ? gdata->hWndMainDlg : NULL;
@@ -372,8 +370,9 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			default:
 				return false;
 			}
-		}else
+		} else {
 			return false; // we couldn't handle the message
+		}
 		break;
 	case WM_COMMAND:
 		item = LOWORD(wParam);

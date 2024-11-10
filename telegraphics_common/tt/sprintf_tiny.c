@@ -30,10 +30,11 @@
 // and http://www.uvsc.edu/profpages/merrinst/exponentiation_and_java.html
 long int_exp(long b,int n){
 	long temp;
-	if(n&1)
+	if(n&1) {
 		return b*int_exp(b,n^1);
-	else
+	} else {
 		return n ? ( temp = int_exp(b,n>>1),temp*temp ) : 1;
+	}
 }
 
 // format a signed integer as a decimal string
@@ -100,7 +101,7 @@ char *float_str(char *dst,double x,int places){
 int vsprintf_tiny(char *s,char *fmt,va_list v){
 	char *p,*q;
 
-	for(p=fmt,q=s;*p;)
+	for(p=fmt,q=s;*p;) {
 		if(*p == '%'){
 			int lflag = 0;
 			++p; // eat '%'
@@ -122,8 +123,10 @@ int vsprintf_tiny(char *s,char *fmt,va_list v){
 			default: *q++ = *p;
 			}
 			++p; // eat format character
-		}else
+		} else {
 			*q++ = *p++;
+		}
+	}
 
 	*q = 0;
 	return q - s;

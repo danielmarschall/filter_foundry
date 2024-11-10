@@ -65,7 +65,7 @@ Boolean choosefile(PString prompt,StandardFileReply *sfr,NavReplyRecord *reply,O
 		xstrcpy(sfr->sfFile.szName, file);
 		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
-	}else{
+	} else {
 		#ifdef DEBUG
 		char s[100];
 		sprintf(s,"GetOpenFileName(): error %d",CommDlgExtendedError());
@@ -105,7 +105,7 @@ Boolean putfile(PString prompt, PString fname,OSType fileType,OSType fileCreator
 		xstrcpy(sfr->sfFile.szName, file);
 		sfr->nFileExtension = ofn.nFileExtension;
 		return sfr->sfGood = true;
-	}else{
+	} else {
 		#ifdef DEBUG
 		char s[100];
 		sprintf(s,"GetSaveFileName(): error %d",CommDlgExtendedError());

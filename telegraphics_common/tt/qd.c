@@ -44,9 +44,9 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 	l1 = list1;
 	l2 = list2;
 	HLock((Handle)temp_rgn);
-	if(GetHandleSize((Handle)temp_rgn) == sizeof(Region))
+	if(GetHandleSize((Handle)temp_rgn) == sizeof(Region)) {
 		(*func)(&(*temp_rgn)->rgnBBox);
-	else
+	} else {
 		for(p=(short*)((char*)*temp_rgn+sizeof(Region));*p != FLAG;){
 			cur_top = *p++;
 			if(f){
@@ -54,7 +54,8 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 				q = l1;
 				while((*q++ = *p++)!=FLAG)
 					;
-			}else{ Rect rct;
+			} else {
+				Rect rct;
 				rct.top = last_top;
 				rct.bottom = cur_top;
 				for(q = l1;*q != FLAG;q += 2){
@@ -65,15 +66,18 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 
 				q = l1;
 				r = l2;
-				for(;;)
-					if(*q<*p)
+				for(;;) {
+					if(*q<*p) {
 						*r++ = *q++;
-					else if(*q>*p)
+					} else if(*q>*p) {
 						*r++ = *p++;
-					else if(*p++ == FLAG){
+					} else if(*p++ == FLAG) {
 						*r = FLAG;
 						break;
-					}else q++;
+					} else {
+						q++;
+					}
+				}
 
 				t = l1;
 				l1 = l2;
@@ -81,6 +85,7 @@ void decompose_region(RgnHandle rgn,void (*func)(Rect*)){
 			}
 			last_top = cur_top;
 		}
+	}
 	DisposeRgn(temp_rgn);
 }
 #endif

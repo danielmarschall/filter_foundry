@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2021 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -91,9 +91,9 @@ pretty-print the tree
 void dumptree(struct node *root,int level){
 	int i;
 
-	if(level>20)
+	if(level>20) {
 		puts("## dumptree: sorry, not going deeper than this.");
-	else
+	} else {
 		if(root){
 			for(i=level;i--;)
 				putchar('\t');
@@ -128,7 +128,7 @@ void dumptree(struct node *root,int level){
 			for( i = 0 ; i < MAXCHILDREN ; ++i )
 				dumptree(root->child[i],level);
 		}
-
+	}
 }
 
 /**
@@ -229,19 +229,22 @@ void checkvars(struct node*p,int f[],int *cnv,int *srcrad /* ,int *mapused */, i
 	int i;
 
 	if(p){
-		if(p->kind==TOK_SPECIALVAR)
+		if(p->kind==TOK_SPECIALVAR) {
 			f[p->v.specialvar] = 1;
-		else if(p->kind==TOK_FN3 && (p->v.sym->fn == (pfunc_type)ff_src || p->v.sym->fn == (pfunc_type)ff_rad))
+		} else if(p->kind==TOK_FN3 && (p->v.sym->fn == (pfunc_type)ff_src || p->v.sym->fn == (pfunc_type)ff_rad)) {
 			*srcrad = 1;
-		else if(p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv)
+		} else if(p->kind==TOK_FN10 && p->v.sym->fn == (pfunc_type)ff_cnv) {
 			*cnv = 1;
-//		else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map))
+//	} else if(p->kind==TOK_FN2 && (p->v.sym->fn == (pfunc_type)ff_map)) {
 //			*mapused = 1;
-		else if ((p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_put) ||
+		} else if ((p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_put) ||
 		         (p->kind==TOK_FN2 && p->v.sym->fn == (pfunc_type)ff_rnd) ||
 		         (p->kind==TOK_FN1 && p->v.sym->fn == (pfunc_type)ff_rst))
+		{
 			*state_changing_funcs_used = 1;
-		for( i = 0 ; i < MAXCHILDREN ; ++i )
-			checkvars(p->child[i],f,cnv,srcrad/*,mapused*/,state_changing_funcs_used);
+			for( i = 0 ; i < MAXCHILDREN ; ++i ) {
+				checkvars(p->child[i],f,cnv,srcrad/*,mapused*/,state_changing_funcs_used);
+			}
+		}
 	}
 }
