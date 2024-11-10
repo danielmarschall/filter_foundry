@@ -25,7 +25,7 @@
 #include "file_compat.h"
 
 FFLoadingResult readPARMresource(HMODULE hm){
-	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 	Handle h;
 
 	if( (h = Get1Resource(PARM_TYPE,PARM_ID_NEW)) ||
@@ -40,7 +40,7 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			// PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return MSG_INVALID_FILE_SIGNATURE_ID;
+			return (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
 		}
 	}
 	else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
@@ -56,17 +56,17 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			// Obfuscated PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return MSG_INCOMPATIBLE_OBFUSCATION_ID;
+			return (FFLoadingResult){ MSG_INCOMPATIBLE_OBFUSCATION_ID };
 		}
 	}
-	if (res != LOADING_OK) {
+	if (res.msgid != LOADING_OK) {
 		gdata->obfusc = false;
 	}
 	return res;
 }
 
 FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
-	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 
 	if(rrn != -1){
@@ -74,68 +74,68 @@ FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
 		CloseResFile(rrn);
 	}
 	else
-		res = MSG_CANNOT_OPEN_FILE_ID;
+		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
 	return res;
 }
 
 FFLoadingResult loadfile(StandardFileReply *sfr){
 	Boolean readok = false;
 	FInfo fndrInfo;
-	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = readfile_afs_pff(sfr))) {
+			if (LOADING_OK == (res = readfile_afs_pff(sfr)).msgid) {
 				parm_reset(true, false, true, false);
 				gdata->obfusc = false;
-				return LOADING_OK;
+				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 
 		// Try to read the file as FFL file
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readfile_ffl(sfr)))) {
+			if (LOADING_OK == (res = (readfile_ffl(sfr))).msgid) {
 				parm_reset(true, true, true, true);
 				gdata->obfusc = false;
-				return LOADING_OK;
+				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 
 		// then try "Filters Unlimited" file (FFX)
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readfile_ffx(sfr)))) {
+			if (LOADING_OK == (res = (readfile_ffx(sfr))).msgid) {
 				gdata->obfusc = false;
-				return LOADING_OK;
+				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 
 		// then try "PluginCommander TXT" file (TXT)
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readfile_picotxt(sfr)))) {
+			if (LOADING_OK == (res = (readfile_picotxt(sfr))).msgid) {
 				gdata->obfusc = false;
-				return LOADING_OK;
+				return res;
 			}
 		}
 
 		// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readfile_guf(sfr)))) {
-				return LOADING_OK;
+			if (LOADING_OK == (res = (readfile_guf(sfr))).msgid) {
+				return res;
 			}
 		}
 
 		// Try Mac plugin resource
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readmacplugin(sfr)))) {
+			if (LOADING_OK == (res = (readmacplugin(sfr))).msgid) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = MSG_FILTER_PROTECTED_ID;
+					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
 				} else {
-					return LOADING_OK;
+					return res;
 				}
 			}
 		}
@@ -143,18 +143,18 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 		// Try Windows resources (we need to do a binary scan)
 		// Note that we cannot detect obfuscated filters here!
 		if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-			if (LOADING_OK == (res = (readfile_8bf(sfr)))) {
+			if (LOADING_OK == (res = (readfile_8bf(sfr))).msgid) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = MSG_FILTER_PROTECTED_ID;
+					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
 				} else {
-					return LOADING_OK;
+					return res;
 				}
 			}
 		}
 
 		return res;
 	} else {
-		return MSG_CANNOT_OPEN_FILE_ID;
+		return (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
 	}
 }

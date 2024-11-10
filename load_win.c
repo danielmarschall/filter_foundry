@@ -64,7 +64,7 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 			if (resSize == sizeof(PARM_T)) {
 				FFLoadingResult res;
 				PARM_T* copy = (PARM_T*)malloc(resSize);
-				if (!copy) return MSG_OUT_OF_MEMORY_ID;
+				if (!copy) return (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
 				memcpy(copy, pparm, resSize);
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
@@ -75,20 +75,20 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 			else {
 				// Obfuscationed PARM has wrong size. It is probably a file with different RCDATA
 				gdata->obfusc = false;
-				return MSG_INVALID_PARAMETER_DATA_ID;
+				return (FFLoadingResult){ MSG_INVALID_PARAMETER_DATA_ID };
 			}
 		}
 	}
-	return MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+	return (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 }
 
 FFLoadingResult loadfile(StandardFileReply* sfr) {
 	HMODULE hm;
-	FFLoadingResult res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 
 	// First, try to read the file as AFS/PFF/TXT file
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (LOADING_OK == (res = readfile_afs_pff(sfr))) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (LOADING_OK == (res = readfile_afs_pff(sfr)).msgid) {
 			gdata->obfusc = false;
 			parm_reset(true, false, true, false);
 			return res;
@@ -97,13 +97,13 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			// If .afs and .pff files have an invalid signature, then it is a hard error.
 			// If any other file has no "%RGB1.0" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 	}
 
 	// Try to read the file as FFL file
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (LOADING_OK == (res = readfile_ffl(sfr))) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (LOADING_OK == (res = readfile_ffl(sfr)).msgid) {
 			gdata->obfusc = false;
 			parm_reset(true, true, true, true);
 			return res;
@@ -112,31 +112,31 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			// If .ffl files have an invalid signature, then it is a hard error.
 			// If any other file has no "FFL1.0" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 	}
 
 	// Is it a "Filters Unlimited" FFX filter? (Only partially compatible with Filter Factory!!!)
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (LOADING_OK == (res = readfile_ffx(sfr))) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (LOADING_OK == (res = readfile_ffx(sfr)).msgid) {
 			return res;
 		}
 		if (!fileHasExtension(sfr, TEXT(".ffx"))) {
 			// If .ffx files have an invalid signature, then it is a hard error.
 			// If any other file has no "FFX1.0", "FFX1.1", or "FFX1.2" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = MSG_LOADFILE_UNKNOWN_FORMAT_ID;
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
 		}
 	}
 
 	// If that didn't work, try to load as Windows image file (Resource API for 8BF/PRM files)
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (hm = LoadLibraryEx(sfr->sfFile.szName, NULL, LOAD_LIBRARY_AS_DATAFILE)) {
-			if (LOADING_OK == (res = readPARMresource(hm))) {
+			if (LOADING_OK == (res = readPARMresource(hm)).msgid) {
 				gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = MSG_FILTER_PROTECTED_ID;
+					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
 				}
 				else {
 					FreeLibrary(hm);
@@ -148,18 +148,18 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 	}
 
 	// Is it a "Filters Unlimited" TXT filter? (Only partially compatible with Filter Factory!!!)
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".txt"))) {
-			if (LOADING_OK == (res = readfile_picotxt_or_ffdecomp(sfr))) {
+			if (LOADING_OK == (res = readfile_picotxt_or_ffdecomp(sfr)).msgid) {
 				return res;
 			}
 		}
 	}
 
 	// Is it a "GIMP UserFilter (GUF)" file? (Only partially compatible with Filter Factory!!!)
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
 		if (fileHasExtension(sfr, TEXT(".guf"))) {
-			if (LOADING_OK == (res = readfile_guf(sfr))) {
+			if (LOADING_OK == (res = readfile_guf(sfr)).msgid) {
 				return res;
 			}
 		}
@@ -167,13 +167,13 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 
 	// If nothing worked, we will try to find a PARM resource (MacOS plugin, or 64 bit 8BF on Win32 OS)
 	// Note that we cannot detect obfuscated filters here!
-	if (res == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
-		if (LOADING_OK == (res = readfile_8bf(sfr))) {
+	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
+		if (LOADING_OK == (res = readfile_8bf(sfr)).msgid) {
 			gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);
-				res = MSG_FILTER_PROTECTED_ID;
+				res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
 			}
 			else {
 				return res;

@@ -124,14 +124,18 @@ extern value_type maxChannelValueOut;
 FFLoadingResult = 0 : Success
 FFLoadingResult > 0 : Error, message ID as described in language.h
 */
-typedef int FFLoadingResult;
+typedef struct {
+	int msgid;
+} FFLoadingResult;
 
 #define SAVING_OK 0
 /**
 FFSavingResult = 0 : Success
 FFSavingResult > 0 : Error, message ID as described in language.h
 */
-typedef int FFSavingResult;
+typedef struct {
+	int msgid;
+} FFSavingResult;
 
 //#define DEBUG
 

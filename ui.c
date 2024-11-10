@@ -437,7 +437,7 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 			// Backup everything, otherwise we might lose parameter data if the loading fails
 			bakState = saveInternalState();
 
-			if (LOADING_OK == (res = loadfile(&sfr))) {
+			if (LOADING_OK == (res = loadfile(&sfr)).msgid) {
 				updatedialog(dp);
 				maindlgupdate(dp);
 			}
@@ -445,13 +445,13 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 				// Restore
 				restoreInternalState(bakState);
 
-				if (res == MSG_FFL_CONVERTED_ID) {
-					showmessage_id(res);
+				if (res.msgid == MSG_FFL_CONVERTED_ID) {
+					showmessage_id(res.msgid);
 					//return maindlgitem(dp, item); // call open Dialog again
 					goto showDialogAgain;
 				}
 				else {
-					TCHAR* reason = FF_GetMsg_Cpy(res);
+					TCHAR* reason = FF_GetMsg_Cpy(res.msgid);
 					alertuser_id(MSG_CANNOT_LOAD_SETTINGS_ID, reason);
 					FF_GetMsg_Free(reason);
 				}
@@ -520,8 +520,8 @@ Boolean maindlgitem(DIALOGREF dp,int item){
 
 		if (saveDlgRet) {
 			FFSavingResult saveres = savefile_afs_pff_picotxt_guf(&sfr);
-			if (saveres != SAVING_OK) {
-				TCHAR* reason = FF_GetMsg_Cpy(saveres);
+			if (saveres.msgid != SAVING_OK) {
+				TCHAR* reason = FF_GetMsg_Cpy(saveres.msgid);
 				alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
 				FF_GetMsg_Free(reason);
 			}

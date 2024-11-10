@@ -284,48 +284,59 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	// will be changed if an error happens
 	*result = noErr;
 
-	#ifdef SHOW_HOST_DEBUG
-	tmp = (char*)malloc(512);
-	sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs == 0 ? -999/*About has no BufferProcs*/ : pb->bufferProcs->numBufferProcs);
-	simplealert(tmp);
-	free(tmp);
-	#endif
+	if (selector != filterSelectorAbout) {
+		#ifdef SHOW_HOST_DEBUG
+		tmp = (char*)malloc(512);
+		sprintf(tmp, "Host signature: '%c%c%c%c' (%d)\nMaxSpace32 = %d\nMaxSpace64 = %lld\nNum buffer procs: %d", (pb->hostSig >> 24) & 0xFF, (pb->hostSig >> 16) & 0xFF, (pb->hostSig >> 8) & 0xFF, pb->hostSig & 0xFF, pb->hostSig, pb->maxSpace, pb->maxSpace64, pb->bufferProcs == 0 ? -999/*About has no BufferProcs*/ : pb->bufferProcs->numBufferProcs);
+		simplealert(tmp);
+		free(tmp);
+		#endif
 
-	if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
-		// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 + Win98
-		// (yes, that's possible, and there is even a FilterFactory for Premiere!),
-		// but it crashes in evalpixel() where there is write-access to the "outp".
-		// DM 24.04.2022 : On Adobe Premiere 6 + Win10, the filter opens sometimes (and sometimes crashes inside DialogBoxParam),
-		// but the filter is not applied when you click "OK" (because it crashes internally; only the debugger sees it)...
-		// Maybe the canvas structure is different (maybe it contains frames to achieve transitions?)
-		// TODO: make Filter Foundry compatible with Premiere!
-		if (!premiereWarnedOnce) {
-			simplealert_id(MSG_PREMIERE_COMPAT_ID);
-		}
-		premiereWarnedOnce = true;
-		*result = errPlugInHostInsufficient;
-		goto endmain;
-	}
-
-	#ifdef DEBUG_SIMULATE_GIMP
-	*data = 0;
-	pb->parameters = pb->handleProcs->newProc(1);
-	#endif
-
-	gpb = pb; // required for CreateDataPointer()
-
-	if (selector != filterSelectorAbout && !*data) {
-		// The filter was never called before. We allocate (zeroed) memory now.
-		CreateDataPointer(data);
-		if (!*data) {
-			*result = memFullErr;
+		if (pb->hostSig == HOSTSIG_ADOBE_PREMIERE) {
+			// DM 19.07.2021 : Tried running the 8BF file in Adobe Premiere 5 + Win98
+			// (yes, that's possible, and there is even a FilterFactory for Premiere!),
+			// but it crashes in evalpixel() where there is write-access to the "outp".
+			// DM 24.04.2022 : On Adobe Premiere 6 + Win10, the filter opens sometimes (and sometimes crashes inside DialogBoxParam),
+			// but the filter is not applied when you click "OK" (because it crashes internally; only the debugger sees it)...
+			// Maybe the canvas structure is different (maybe it contains frames to achieve transitions?)
+			// TODO: make Filter Foundry compatible with Premiere, like Filter Factory was!
+			if (!premiereWarnedOnce) {
+				simplealert_id(MSG_PREMIERE_COMPAT_ID);
+			}
+			premiereWarnedOnce = true;
+			*result = errPlugInHostInsufficient;
 			goto endmain;
 		}
+
+		#ifdef DEBUG_SIMULATE_GIMP
+		*data = 0;
+		pb->parameters = pb->handleProcs->newProc(1);
+		#endif
+
+		// Mode <0 is invalid
+		// Modes Bitmap (0) and IndexedColor (2) should already be disabled by PiPL, but we just make sure that they get rejected
+		// Mode 17 is our last known image mode which we do support
+		if (pb->imageMode < 0 || pb->imageMode == plugInModeBitmap || pb->imageMode == plugInModeIndexedColor || pb->imageMode > plugInModeGray32) {
+			*result = filterBadMode;
+			goto endmain;
+		}
+
+		// required for CreateDataPointer()
+		gpb = pb; 
+
+		// The filter was never called before. We allocate (zeroed) memory now.
+		if (!*data) {
+			CreateDataPointer(data);
+			if (!*data) {
+				*result = memFullErr;
+				goto endmain;
+			}
+		}
+
+		gdata = (globals_t*)*data;
+
+		nplanes = MIN(pb->planes, 4); // 4 is the max supported channels for Filter Foundry. Sorry, transparent CMYK not possible
 	}
-
-	gdata = (globals_t*)*data;
-
-	nplanes = MIN(pb->planes,4);
 
 	switch (selector){
 	case filterSelectorAbout:
@@ -336,7 +347,7 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
-			parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance));
+			parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance).msgid);
 			if (!parmReadOk) gdata->parm.standalone = false;
 			if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 				parm_reset(true, true, true, true);
@@ -426,8 +437,8 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 							restoreInternalState(tmpState);
 						}
 
-						if (saveres != SAVING_OK) {
-							TCHAR* reason = FF_GetMsg_Cpy(saveres);
+						if (saveres.msgid != SAVING_OK) {
+							TCHAR* reason = FF_GetMsg_Cpy(saveres.msgid);
 							alertuser_id(MSG_CANNOT_SAVE_SETTINGS_ID, reason);
 							FF_GetMsg_Free(reason);
 							*result = filterBadParameters;
@@ -580,7 +591,7 @@ int checkandinitparams(Handle params){
 		sfr.sfReplacing = true;
 		sfr.sfType = PS_FILTER_FILETYPE;
 
-		parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance));
+		parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance).msgid);
 		if (!parmReadOk) gdata->parm.standalone = false;
 		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			parm_reset(true, true, true, true);
@@ -605,7 +616,7 @@ int checkandinitparams(Handle params){
 			tmpState = saveInternalState();
 		}
 
-		if (LOADING_OK == loadfile(&sfr)) {
+		if (LOADING_OK == loadfile(&sfr).msgid) {
 			if (parmReadOk) {
 				// In the standalone filter, we only want the parameters (ctl,map) in the temporary .afs file, not the formulas
 				// We do not need to care about the metadata, because the AFS does not touch the metadata anyway
@@ -622,14 +633,14 @@ int checkandinitparams(Handle params){
 		}
 	}
 
-	if( (bUninitializedParams = !(params && (LOADING_OK == readparams_afs_pff(params, false)))) ){
+	if( (bUninitializedParams = !(params && (LOADING_OK == readparams_afs_pff(params, false).msgid))) ){
 		/* either the parameter handle was uninitialised,
 		   or the parameter data couldn't be read; set default values */
 
 		Boolean parmReadOk;
 
 		// see if saved parameters exist
-		parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance));
+		parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance).msgid);
 		if (!parmReadOk) gdata->parm.standalone = false;
 		if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
 			parm_reset(true, true, true, true);

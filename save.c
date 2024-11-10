@@ -111,7 +111,7 @@ FFSavingResult saveparams_afs_pff(Handle h, Boolean premiereOrder){
 		e = PISETHANDLESIZE(h,(int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
+	return (FFSavingResult){ e == noErr ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID };
 }
 
 FFSavingResult saveparams_picotxt(Handle h) {
@@ -174,7 +174,7 @@ FFSavingResult saveparams_picotxt(Handle h) {
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
+	return (FFSavingResult){ e == noErr ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID };
 }
 
 FFSavingResult saveparams_guf(Handle h) {
@@ -251,7 +251,7 @@ FFSavingResult saveparams_guf(Handle h) {
 		e = PISETHANDLESIZE(h, (int32)(p - start)); // could ignore this error, maybe
 	}
 
-	return (e == noErr) ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID;
+	return (FFSavingResult){ e == noErr ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID };
 }
 
 OSErr savehandleintofile(Handle h,FILEREF r){
@@ -271,7 +271,7 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
 	Boolean bres = false;
-	FFSavingResult res = SAVING_OK;
+	FFSavingResult res = (FFSavingResult){ SAVING_OK };
 
 	FSpDelete(&sfr->sfFile);
 	if (FSpCreate(&sfr->sfFile, SIG_SIMPLETEXT, TEXT_FILETYPE, sfr->sfScript) == noErr) {
@@ -280,38 +280,38 @@ FFSavingResult savefile_afs_pff_picotxt_guf(StandardFileReply *sfr){
 			if (fileHasExtension(sfr, TEXT(".txt"))) {
 				// PluginCommander .txt
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = (SAVING_OK == saveparams_picotxt(h)) && (noErr == savehandleintofile(h, r));
-					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
+					bres = (SAVING_OK == saveparams_picotxt(h).msgid) && (noErr == savehandleintofile(h, r));
+					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
 				}
-				else res = MSG_OUT_OF_MEMORY_ID;
+				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 			}
 			else if (fileHasExtension(sfr, TEXT(".guf"))) {
 				// GIMP UserFilter file
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = (SAVING_OK == saveparams_guf(h)) && (noErr == savehandleintofile(h, r));
-					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
+					bres = (SAVING_OK == saveparams_guf(h).msgid) && (noErr == savehandleintofile(h, r));
+					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
 				}
-				else res = MSG_OUT_OF_MEMORY_ID;
+				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 			}
 			else if ((fileHasExtension(sfr, TEXT(".afs"))) || (fileHasExtension(sfr, TEXT(".pff")))) {
 				if ((h = PINEWHANDLE(1))) { // don't set initial size to 0, since some hosts (e.g. GIMP/PSPI) are incompatible with that.
-					bres = (SAVING_OK == saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff")))) && (noErr == savehandleintofile(h, r));
-					if (!bres) res = MSG_ERROR_GENERATING_DATA_ID;
+					bres = (SAVING_OK == saveparams_afs_pff(h, fileHasExtension(sfr, TEXT(".pff"))).msgid) && (noErr == savehandleintofile(h, r));
+					if (!bres) res = (FFSavingResult){ MSG_ERROR_GENERATING_DATA_ID };
 					PIDISPOSEHANDLE(h);
 				}
-				else res = MSG_OUT_OF_MEMORY_ID;
+				else res = (FFSavingResult){ MSG_OUT_OF_MEMORY_ID };
 			}
 			else {
-				res = MSG_UNSUPPORTED_FILE_FORMAT_ID;
+				res = (FFSavingResult){ MSG_UNSUPPORTED_FILE_FORMAT_ID };
 			}
 
 			FSClose(r);
 		}
-		else res = MSG_CANNOT_OPEN_FILE_ID;
+		else res = (FFSavingResult){ MSG_CANNOT_OPEN_FILE_ID };
 	}
-	else res = MSG_CANNOT_CREATE_FILE_ID;
+	else res = (FFSavingResult){ MSG_CANNOT_CREATE_FILE_ID };
 
 	return res;
 }
