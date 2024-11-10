@@ -5,7 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-Testing, ...
+Nothing
 
 
 Known problems

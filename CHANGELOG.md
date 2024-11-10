@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.22 [??-Oct-2024]
+## 1.7.0.22 [10-Nov-2024]
 - Added support for 16-bit and 32-bit color spaces!
 - Introduced obfuscation version 8, which is faster.
 - Simplified source code: Expressions, slider names, etc. are now loaded directly in the PARM resource).
