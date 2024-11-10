@@ -283,10 +283,10 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 			var['a'] = (nplanes > 3) ? *((uint16_t*)(inp + 3*2)) - valueoffset_channel[3] : 0;
 			break;
 		case 4:
-			var['r'] = (nplanes > 0) ? (float)maxChannelValueIn * *((float*)(inp)) - valueoffset_channel[0] : 0;
-			var['g'] = (nplanes > 1) ? (float)maxChannelValueIn * *((float*)(inp + 1*4)) - valueoffset_channel[1] : 0;
-			var['b'] = (nplanes > 2) ? (float)maxChannelValueIn * *((float*)(inp + 2*4)) - valueoffset_channel[2] : 0;
-			var['a'] = (nplanes > 3) ? (float)maxChannelValueIn * *((float*)(inp + 3*4)) - valueoffset_channel[3] : 0;
+			var['r'] = (nplanes > 0) ? (value_type)((float)maxChannelValueIn * *((float*)(inp)) - valueoffset_channel[0]) : 0;
+			var['g'] = (nplanes > 1) ? (value_type)((float)maxChannelValueIn * *((float*)(inp + 1*4)) - valueoffset_channel[1]) : 0;
+			var['b'] = (nplanes > 2) ? (value_type)((float)maxChannelValueIn * *((float*)(inp + 2*4)) - valueoffset_channel[2]) : 0;
+			var['a'] = (nplanes > 3) ? (value_type)((float)maxChannelValueIn * *((float*)(inp + 3*4)) - valueoffset_channel[3]) : 0;
 			break;
 		}
 
@@ -325,7 +325,7 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 				var['c'] = (nplanes > k) ? *((uint16_t*)(inp + k * 2)) - valueoffset_channel[k] : 0;
 				break;
 			case 4:
-				var['c'] = (nplanes > k) ? (float)maxChannelValueIn * *((float*)(inp + k * 4)) - valueoffset_channel[k] : 0;
+				var['c'] = (nplanes > k) ? (value_type)((float)maxChannelValueIn * *((float*)(inp + k * 4)) - valueoffset_channel[k]) : 0;
 				break;
 			}
 		}
@@ -348,13 +348,13 @@ void evalpixel(unsigned char *outp,unsigned char *inp){
 			}
 			switch (bytesPerPixelChannelOut) {
 			case 1:
-				outp[k] = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
+				outp[k] = (unsigned char)(f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f)); // clamp channel value
 				break;
 			case 2:
-				*((uint16_t*)(outp + k * 2)) = f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f); // clamp channel value
+				*((uint16_t*)(outp + k * 2)) = (uint16_t)(f < 0 ? 0 : (f > maxChannelValueOut ? maxChannelValueOut : f)); // clamp channel value
 				break;
 			case 4:
-				*((float*)(outp + k * 4)) = f < 0 ? 0.0 : (f > maxChannelValueOut ? 1.0 : (float)f / maxChannelValueOut); // clamp channel value
+				*((float*)(outp + k * 4)) = f < 0 ? 0.0f : (f > maxChannelValueOut ? 1.0f : (float)f / maxChannelValueOut); // clamp channel value
 				break;
 			}
 		}

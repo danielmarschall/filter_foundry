@@ -5,11 +5,7 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* VERY carefully test all the save-file and load-file procedures, because the code has been changed
-
-* Regarding extended color mode support:
-
-	- Fix compiler warnings (float convert)
+Testing, ...
 
 
 Known problems

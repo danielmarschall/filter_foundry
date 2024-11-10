@@ -25,7 +25,7 @@
 #include "file_compat.h"
 
 FFLoadingResult readPARMresource(HMODULE hm){
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	Handle h;
 
 	if( (h = Get1Resource(PARM_TYPE,PARM_ID_NEW)) ||
@@ -40,7 +40,7 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			// PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+			return FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 		}
 	} else if( ((h = Get1Resource(OBFUSCDATA_TYPE_NEW,OBFUSCDATA_ID_NEW)) ||
 	           (h = Get1Resource(OBFUSCDATA_TYPE_OLD,OBFUSCDATA_ID_OLD))) )
@@ -55,7 +55,7 @@ FFLoadingResult readPARMresource(HMODULE hm){
 			// Obfuscated PARM has wrong size. Should not happen
 			gdata->obfusc = false;
 			ReleaseResource(h);
-			return (FFLoadingResult){ MSG_INCOMPATIBLE_OBFUSCATION_ID };
+			return FF_LOADING_RESULT(MSG_INCOMPATIBLE_OBFUSCATION_ID);
 		}
 	}
 	if (res.msgid != LOADING_OK) {
@@ -65,14 +65,14 @@ FFLoadingResult readPARMresource(HMODULE hm){
 }
 
 FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	short rrn = FSpOpenResFile(&sfr->sfFile,fsRdPerm);
 
 	if(rrn != -1){
 		res = readPARMresource(NULL);
 		CloseResFile(rrn);
 	} else {
-		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+		res = FF_LOADING_RESULT(MSG_CANNOT_OPEN_FILE_ID);
 	}
 	return res;
 }
@@ -80,7 +80,7 @@ FFLoadingResult Boolean readmacplugin(StandardFileReply *sfr){
 FFLoadingResult loadfile(StandardFileReply *sfr){
 	Boolean readok = false;
 	FInfo fndrInfo;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 
 	if(FSpGetFInfo(&sfr->sfFile,&fndrInfo) == noErr){
 		// first try to read text parameters (AFS, TXT, PFF)
@@ -90,7 +90,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 
 		// Try to read the file as FFL file
@@ -100,7 +100,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 
 		// then try "Filters Unlimited" file (FFX)
@@ -109,7 +109,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 				gdata->obfusc = false;
 				return res;
 			}
-			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 
 		// then try "PluginCommander TXT" file (TXT)
@@ -132,7 +132,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 			if (LOADING_OK == (res = (readmacplugin(sfr))).msgid) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
+					res = FF_LOADING_RESULT(MSG_FILTER_PROTECTED_ID);
 				} else {
 					return res;
 				}
@@ -145,7 +145,7 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 			if (LOADING_OK == (res = (readfile_8bf(sfr))).msgid) {
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
+					res = FF_LOADING_RESULT(MSG_FILTER_PROTECTED_ID);
 				} else {
 					return res;
 				}
@@ -154,6 +154,6 @@ FFLoadingResult loadfile(StandardFileReply *sfr){
 
 		return res;
 	} else {
-		return (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+		return FF_LOADING_RESULT(MSG_CANNOT_OPEN_FILE_ID);
 	}
 }

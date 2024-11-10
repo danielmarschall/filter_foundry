@@ -37,7 +37,7 @@ int EndianS32_LtoN(int num) {
 #define MAXLINE 0x200
 
 FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	char linebuf[MAXLINE] = { 0 };
 	char curexpr[MAXEXPR] = { 0 };
 	char *p, *dataend, *q;
@@ -67,7 +67,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 			/* process complete line */
 			if(linecnt==0){
 				if(strcmp(linebuf,"%RGB-1.0") != 0){
-					res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+					res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 					break;
 				}
 			} else if(linecnt<=8) {
@@ -80,7 +80,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 				if(lineptr){
 					/* it's not an empty line; append it to current expr string */
 					if( (q-curexpr) + lineptr >= MAXEXPR) {
-						res = (FFLoadingResult){ MSG_EXPRESSION1024_FOUND_ID };
+						res = FF_LOADING_RESULT(MSG_EXPRESSION1024_FOUND_ID);
 						break;
 					}
 					q = cat(q,linebuf);
@@ -97,7 +97,7 @@ FFLoadingResult readparams_afs_pff(Handle h, Boolean premiereOrder){
 					}
 
 					if(++exprcnt == 4){
-						res = (FFLoadingResult){ LOADING_OK };
+						res = FF_LOADING_RESULT(LOADING_OK);
 						break; /* got everything we want */
 					}
 
@@ -195,7 +195,7 @@ char* _ffx_read_str(char** q) {
 
 FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 	Handle h;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	FILEREF refnum;
 	uint32_t len;
 	char* val;
@@ -208,7 +208,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 
 			len = *((uint32_t*)q);
 			if (len != 6) {
-				res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+				res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 			} else {
 				val = _ffx_read_str(&q);
 				if (strcmp(val, "FFX1.0") == 0) format_version = 10;
@@ -216,7 +216,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 				else if (strcmp(val, "FFX1.2") == 0) format_version = 12;
 				free(val);
 				if (format_version < 0) {
-					res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+					res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 				} else {
 					simplewarning_id(MSG_FILTERS_UNLIMITED_WARNING_ID);
 
@@ -319,7 +319,7 @@ FFLoadingResult readfile_ffx(StandardFileReply* sfr) {
 					strcpy(gdata->parm.szMap[2], "Map 2:");
 					strcpy(gdata->parm.szMap[3], "Map 3:");
 
-					res = (FFLoadingResult){ LOADING_OK };
+					res = FF_LOADING_RESULT(LOADING_OK);
 				}
 			}
 			PIDISPOSEHANDLE(h);
@@ -335,7 +335,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 	unsigned char magic[2];
 	FILECOUNT count;
 	Handle h;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	FILEREF refnum;
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&refnum) == noErr){
@@ -360,7 +360,7 @@ FFLoadingResult readfile_8bf(StandardFileReply *sfr){
 		} // else no point in proceeding
 		FSClose(refnum);
 	} else {
-		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+		res = FF_LOADING_RESULT(MSG_CANNOT_OPEN_FILE_ID);
 	}
 
 	if (res.msgid == LOADING_OK) gdata->obfusc = false;
@@ -396,7 +396,7 @@ FFLoadingResult readPARM(PARM_T* pparm, Ptr p){
 	// Is it a valid signature?
 	if (!fromwin && !frommac) {
 		// No valid signature found
-		return (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+		return FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 	}
 
 	// Does it come from Premiere or Photoshop?
@@ -474,7 +474,7 @@ FFLoadingResult readPARM(PARM_T* pparm, Ptr p){
 			pparm->val[i] = EndianS32_LtoN(pparm->val[i]);
 	}
 
-	return (FFLoadingResult){ LOADING_OK };
+	return FF_LOADING_RESULT(LOADING_OK);
 }
 
 Handle readfileintohandle(FILEREF r){
@@ -692,7 +692,7 @@ Boolean _picoReadProperty(char* inputFile, size_t maxInput, const char* property
 
 FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr) {
 	Handle h;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	FILEREF refnum;
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
@@ -754,7 +754,7 @@ FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr) {
 					}
 				}
 
-				res = (FFLoadingResult){ LOADING_OK };
+				res = FF_LOADING_RESULT(LOADING_OK);
 			}
 
 			PIUNLOCKHANDLE(h);
@@ -846,7 +846,7 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 
 FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 	Handle h;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	FILEREF refnum;
 
 	// TODO: Decode UTF-8 to ANSI (or "?" for unknown characters)
@@ -858,9 +858,9 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 			char protocol[256];
 
 			if (!_gufReadProperty(q, count, "GUF", "Protocol", protocol, sizeof(protocol))) {
-				res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+				res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 			} else if (strcmp(protocol, "1") != 0) {
-				res = (FFLoadingResult){ MSG_INCOMPATIBLE_GUF_FILE_ID };
+				res = FF_LOADING_RESULT(MSG_INCOMPATIBLE_GUF_FILE_ID);
 			} else {
 				int i;
 				char tmp[256];
@@ -918,7 +918,7 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 					}
 				}
 
-				res = (FFLoadingResult){ LOADING_OK };
+				res = FF_LOADING_RESULT(LOADING_OK);
 			}
 
 			PIUNLOCKHANDLE(h);
@@ -933,7 +933,7 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 	FILEREF r;
 	Handle h;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 
 	if(FSpOpenDF(&sfr->sfFile,fsRdPerm,&r) == noErr){
 		if( (h = readfileintohandle(r)) ){
@@ -945,7 +945,7 @@ FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 		}
 		FSClose(r);
 	} else {
-		res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+		res = FF_LOADING_RESULT(MSG_CANNOT_OPEN_FILE_ID);
 	}
 
 	return res;
@@ -954,7 +954,7 @@ FFLoadingResult readfile_afs_pff(StandardFileReply *sfr){
 FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 	FILEREF rTmp, refnum;
 	Handle h, hTmp;
-	FFLoadingResult res = (FFLoadingResult){ LOADING_OK };
+	FFLoadingResult res = FF_LOADING_RESULT(LOADING_OK);
 	StandardFileReply sfrTmp;
 	OSErr e;
 	char* p, * start;
@@ -970,18 +970,18 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 			int lineNumber = 0;
 
 			if (count < 6) {
-				res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+				res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 			} else {
 				char testsig[7];
 				memcpy(testsig, q, 6); // only read 6 chars. Avoid reading the whole file yet
 				testsig[6] = '\0';
 				if (strcmp(testsig, "FFL1.0") != 0) {
-					res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+					res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 				} else {
 					// This is required to make strtok work, because q is not zero-terminated...
 					q2 = (char*)malloc(count + 1/*NUL byte*/);
 					if (q2 == NULL) {
-						res = (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
+						res = FF_LOADING_RESULT(MSG_OUT_OF_MEMORY_ID);
 					} else {
 						memcpy(q2, q, count);
 						q2[count] = '\0';
@@ -997,7 +997,7 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 								// We already checked it above (in order to avoid an unnecessary memory copy)
 								/*
 								if (strcmp(token2, "FFL1.0") != 0) {
-									res = (FFLoadingResult){ MSG_INVALID_FILE_SIGNATURE_ID };
+									res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
 									break;
 								}
 								*/
@@ -1135,14 +1135,14 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 												savehandleintofile(hTmp, rTmp);
 												PIDISPOSEHANDLE(hTmp);
 											} else {
-												res = (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
+												res = FF_LOADING_RESULT(MSG_OUT_OF_MEMORY_ID);
 											}
 											FSClose(rTmp);
 										} else {
-											res = (FFLoadingResult){ MSG_CANNOT_OPEN_FILE_ID };
+											res = FF_LOADING_RESULT(MSG_CANNOT_OPEN_FILE_ID);
 										}
 									} else {
-										res = (FFLoadingResult){ MSG_CANNOT_CREATE_FILE_ID };
+										res = FF_LOADING_RESULT(MSG_CANNOT_CREATE_FILE_ID);
 									}
 
 									free(curFileNameOrig);
@@ -1167,7 +1167,7 @@ FFLoadingResult readfile_ffl(StandardFileReply* sfr) {
 	}
 
 	if (res.msgid == LOADING_OK) {
-		res = (FFLoadingResult){ foundFilters == 0 ? MSG_FFL_NO_FILTERS_DETECTED_ID : MSG_FFL_CONVERTED_ID };
+		res = FF_LOADING_RESULT( foundFilters == 0 ? MSG_FFL_NO_FILTERS_DETECTED_ID : MSG_FFL_CONVERTED_ID );
 	}
 	return res;
 }

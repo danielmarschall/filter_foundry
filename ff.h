@@ -119,23 +119,39 @@ extern int bytesPerPixelChannelOut;
 extern value_type maxChannelValueIn;
 extern value_type maxChannelValueOut;
 
-#define LOADING_OK 0
-/**
-FFLoadingResult = 0 : Success
-FFLoadingResult > 0 : Error, message ID as described in language.h
-*/
-typedef struct {
-	int msgid;
-} FFLoadingResult;
+#ifndef LOADING_OK
+	#define LOADING_OK 0
+	typedef struct {
+		int msgid; // 0: success, >0: Error, message ID as described in language.h
+	} FFLoadingResult;
+	#ifdef __WATCOMC__
+		static inline FFLoadingResult createFFLoadingResult(int msg_id) {
+			FFLoadingResult result;
+			result.msgid = msg_id;
+			return result;
+		}
+		#define FF_LOADING_RESULT(msg_id) createFFLoadingResult(msg_id)
+	#else
+		#define FF_LOADING_RESULT(msg_id) ((FFLoadingResult){(msg_id)})
+	#endif
+#endif
 
-#define SAVING_OK 0
-/**
-FFSavingResult = 0 : Success
-FFSavingResult > 0 : Error, message ID as described in language.h
-*/
-typedef struct {
-	int msgid;
-} FFSavingResult;
+#ifndef SAVING_OK
+	#define SAVING_OK 0
+	typedef struct {
+		int msgid; // 0: success, >0: Error, message ID as described in language.h
+	} FFSavingResult;
+	#ifdef __WATCOMC__
+		static inline FFSavingResult createFFSavingResult(int msg_id) {
+			FFSavingResult result;
+			result.msgid = msg_id;
+			return result;
+		}
+		#define FF_SAVING_RESULT(msg_id) createFFSavingResult(msg_id)
+	#else
+		#define FF_SAVING_RESULT(msg_id) ((FFSavingResult){(msg_id)})
+	#endif
+#endif
 
 //#define DEBUG
 

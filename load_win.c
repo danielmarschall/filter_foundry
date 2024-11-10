@@ -65,7 +65,7 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 			if (resSize == sizeof(PARM_T)) {
 				FFLoadingResult res;
 				PARM_T* copy = (PARM_T*)malloc(resSize);
-				if (!copy) return (FFLoadingResult){ MSG_OUT_OF_MEMORY_ID };
+				if (!copy) return FF_LOADING_RESULT(MSG_OUT_OF_MEMORY_ID);
 				memcpy(copy, pparm, resSize);
 				deobfusc(copy);
 				res = readPARM(&gdata->parm, (Ptr)copy);
@@ -75,16 +75,16 @@ FFLoadingResult readPARMresource(HMODULE hm) {
 			} else {
 				// Obfuscationed PARM has wrong size. It is probably a file with different RCDATA
 				gdata->obfusc = false;
-				return (FFLoadingResult){ MSG_INVALID_PARAMETER_DATA_ID };
+				return FF_LOADING_RESULT(MSG_INVALID_PARAMETER_DATA_ID);
 			}
 		}
 	}
-	return (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	return FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 }
 
 FFLoadingResult loadfile(StandardFileReply* sfr) {
 	HMODULE hm;
-	FFLoadingResult res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 
 	// First, try to read the file as AFS/PFF/TXT file
 	if (res.msgid == MSG_LOADFILE_UNKNOWN_FORMAT_ID) {
@@ -97,7 +97,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			// If .afs and .pff files have an invalid signature, then it is a hard error.
 			// If any other file has no "%RGB1.0" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 	}
 
@@ -112,7 +112,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			// If .ffl files have an invalid signature, then it is a hard error.
 			// If any other file has no "FFL1.0" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 	}
 
@@ -125,7 +125,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			// If .ffx files have an invalid signature, then it is a hard error.
 			// If any other file has no "FFX1.0", "FFX1.1", or "FFX1.2" signature, then it is OK and
 			// we will return MSG_LOADFILE_UNKNOWN_FORMAT_ID and continue with trying other formats
-			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = (FFLoadingResult){ MSG_LOADFILE_UNKNOWN_FORMAT_ID };
+			if (res.msgid == MSG_INVALID_FILE_SIGNATURE_ID) res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 		}
 	}
 
@@ -136,7 +136,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 				gdata->parm.standalone = false; // just because the loaded file is standalone, does not mean that WE are standalone
 				if (gdata->parm.iProtected) {
 					parm_reset(true, true, true, true);
-					res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
+					res = FF_LOADING_RESULT(MSG_FILTER_PROTECTED_ID);
 				} else {
 					FreeLibrary(hm);
 					return res;
@@ -172,7 +172,7 @@ FFLoadingResult loadfile(StandardFileReply* sfr) {
 			if (gdata->parm.iProtected) {
 				// This is for purely protected filters before the time when obfuscation and protection was merged
 				parm_reset(true, true, true, true);
-				res = (FFLoadingResult){ MSG_FILTER_PROTECTED_ID };
+				res = FF_LOADING_RESULT(MSG_FILTER_PROTECTED_ID);
 			} else {
 				return res;
 			}
