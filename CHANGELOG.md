@@ -2,6 +2,7 @@
 
 ## 1.7.0.23 [??-Nov-2024]
 - `src()`, `rad()`, and `cnv()` are now compatible with 16-bit and 32-bit color spaces
+- Changed upper limit of Lab a-axis and b-axis to from 16383 to 16256
 
 ## 1.7.0.22 [10-Nov-2024]
 - Added support for 16-bit and 32-bit color spaces!

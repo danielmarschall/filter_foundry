@@ -1655,7 +1655,7 @@ value_type ff_cnv(value_type m11, value_type m12, value_type m13,
 value_type zero_val = 0;
 value_type one_val = 1;
 
-// In Lab color space, a and b are -128..127 for 8-bit and -16384..16383 for 16-bit.
+// In Lab color space, a and b are -128..127 for 8-bit and -16384..16256 for 16-bit.
 // These variables are set in setup() and help making evalpixel() faster
 value_type valueoffset_channel[4]; // will be set by process.c (setup)
 value_type min_channel_val[4]; // will be set by process.c (setup)
