@@ -266,6 +266,8 @@ void init_trigtab(void) {
 
 	if (gdata == NULL) return; // should not happen
 
+	// Note: costab and tantab will not be freed, because we don't know if the user will call the plugin again
+
 	if (gdata->costab == NULL) {
 		gdata->costab = (double*)malloc(sizeof(double) * COSTABSIZE);
 		if (gdata->costab) {
@@ -301,28 +303,45 @@ static value_type rawsrc(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
+	long tmp;
+
 	if (HAS_BIG_DOC(gpb)) {
-		if (x < BIGDOC_IN_RECT(gpb).left)
+		if (x < BIGDOC_IN_RECT(gpb).left) {
 			x = BIGDOC_IN_RECT(gpb).left;
-		else if (x >= BIGDOC_IN_RECT(gpb).right)
+		} else if (x >= BIGDOC_IN_RECT(gpb).right) {
 			x = BIGDOC_IN_RECT(gpb).right - 1;
-		if (y < BIGDOC_IN_RECT(gpb).top)
+		}
+		if (y < BIGDOC_IN_RECT(gpb).top) {
 			y = BIGDOC_IN_RECT(gpb).top;
-		else if (y >= BIGDOC_IN_RECT(gpb).bottom)
+		} else if (y >= BIGDOC_IN_RECT(gpb).bottom) {
 			y = BIGDOC_IN_RECT(gpb).bottom - 1;
-		return ((unsigned char*)gpb->inData)[(long)gpb->inRowBytes * (y - BIGDOC_IN_RECT(gpb).top)
-			+ (long)nplanes * (x - BIGDOC_IN_RECT(gpb).left) + z];
+		}
+		tmp = (long)gpb->inRowBytes * (y - BIGDOC_IN_RECT(gpb).top) + (long)nplanes * (x - BIGDOC_IN_RECT(gpb).left) + z;
 	} else {
-		if (x < IN_RECT(gpb).left)
+		if (x < IN_RECT(gpb).left) {
 			x = IN_RECT(gpb).left;
-		else if (x >= IN_RECT(gpb).right)
+		} else if (x >= IN_RECT(gpb).right) {
 			x = IN_RECT(gpb).right - 1;
-		if (y < IN_RECT(gpb).top)
+		}
+		if (y < IN_RECT(gpb).top) {
 			y = IN_RECT(gpb).top;
-		else if (y >= IN_RECT(gpb).bottom)
+		} else if (y >= IN_RECT(gpb).bottom) {
 			y = IN_RECT(gpb).bottom - 1;
-		return ((unsigned char*)gpb->inData)[(long)gpb->inRowBytes * (y - IN_RECT(gpb).top)
-			+ (long)nplanes * (x - IN_RECT(gpb).left) + z];
+		}
+		tmp = (long)gpb->inRowBytes * (y - IN_RECT(gpb).top) + (long)nplanes * (x - IN_RECT(gpb).left) + z;
+	}
+
+	if (z < 0 || z >= var['Z']) return 0;
+
+	switch (bytesPerPixelChannelIn) {
+	case 1:
+		return ((unsigned char*)gpb->inData)[tmp] - valueoffset_channel[z];
+	case 2:
+		return *((uint16_t*)(((unsigned char*)gpb->inData) + tmp * 2)) - valueoffset_channel[z];
+	case 4:
+		return (value_type)((float)maxChannelValueIn * *((float*)(((unsigned char*)gpb->inData) + tmp * 4)) - valueoffset_channel[z]);
+	default:
+		return 0;
 	}
 #endif
 }
@@ -337,16 +356,30 @@ value_type ff_src(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	if (z < 0 || z >= var['Z']) return 0;
-	if (x < 0)
+	if (x < 0) {
 		x = 0;
-	else if (x >= var['X'])
+	} else if (x >= var['X']) {
 		x = var['X'] - 1;
-	if (y < 0)
+	}
+
+	if (y < 0) {
 		y = 0;
-	else if (y >= var['Y'])
+	} else if (y >= var['Y']) {
 		y = var['Y'] - 1;
-	return image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z];
+	}
+
+	if (z < 0 || z >= var['Z']) return 0;
+
+	switch (bytesPerPixelChannelIn) {
+	case 1:
+		return image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z] - valueoffset_channel[z];
+	case 2:
+		return *((uint16_t*)(image_ptr + ((long)gpb->inRowBytes * y + (long)nplanes * x + z) * 2)) - valueoffset_channel[z];
+	case 4:
+		return (value_type)((float)maxChannelValueIn * *((float*)(image_ptr + ((long)gpb->inRowBytes * y + (long)nplanes * x + z) * 4)) - valueoffset_channel[z]);
+	default:
+		return 0;
+	}
 #endif
 }
 
@@ -456,9 +489,22 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 
 	// Now return pixel [x=ecx,y=ebx,z=esi] from the source image!
 	//return ff_src(ecx, ebx, z);
-	ebx *= gpb->inRowBytes;
-	ecx *= var['Z'] - zmin;
-	return image_ptr[z + ebx + ecx];
+	//ebx *= gpb->inRowBytes;
+	//ecx *= var['Z'] - zmin;
+	//return image_ptr[z + ebx + ecx];
+
+	if (z < 0 || z >= var['Z']) return 0;
+
+	switch (bytesPerPixelChannelIn) {
+	case 1:
+		return image_ptr[ebx*gpb->inRowBytes + ecx*nplanes + z] - valueoffset_channel[z];
+	case 2:
+		return *((uint16_t*)(image_ptr + ebx*gpb->inRowBytes + (ecx*nplanes+z)*2)) - valueoffset_channel[z];
+	case 4:
+		return (value_type)((float)maxChannelValueIn * *((float*)(image_ptr + ebx*gpb->inRowBytes + (ecx*nplanes+z)*4)) - valueoffset_channel[z]);
+	default:
+		return 0;
+	}
 #endif
 }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0.23 [??-Nov-2024]
+- `src()`, `rad()`, and `cnv()` are now compatible with 16-bit and 32-bit color spaces
+
 ## 1.7.0.22 [10-Nov-2024]
 - Added support for 16-bit and 32-bit color spaces!
 - Introduced obfuscation version 8, which is faster.

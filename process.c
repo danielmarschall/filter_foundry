@@ -121,10 +121,10 @@ Boolean setup(FilterRecordPtr pb){
 			valueoffset_channel[0] = valueoffset_channel[3] = 0;
 			min_channel_val[0] = min_channel_val[3] = 0;
 			max_channel_val[0] = max_channel_val[3] = 32768;
-			// a* and b* have -16384 ... 16383
+			// a* and b* have -16384 ... 16384
 			valueoffset_channel[1] = valueoffset_channel[2] = 16384;
 			min_channel_val[1] = min_channel_val[2] = -16384;
-			max_channel_val[1] = max_channel_val[2] = 16383;
+			max_channel_val[1] = max_channel_val[2] = 16384;
 		} else {
 			// Normal 16-bit range for all other modes
 			valueoffset_channel[0] = valueoffset_channel[1] = valueoffset_channel[2] = valueoffset_channel[3] = 0;
