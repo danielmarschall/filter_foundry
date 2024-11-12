@@ -303,7 +303,7 @@ static value_type rawsrc(value_type x, value_type y, value_type z) {
 #ifdef PARSERTEST
 	return 0;
 #else
-	long tmp;
+	long tmp1, tmp2;
 
 	if (HAS_BIG_DOC(gpb)) {
 		if (x < BIGDOC_IN_RECT(gpb).left) {
@@ -316,7 +316,8 @@ static value_type rawsrc(value_type x, value_type y, value_type z) {
 		} else if (y >= BIGDOC_IN_RECT(gpb).bottom) {
 			y = BIGDOC_IN_RECT(gpb).bottom - 1;
 		}
-		tmp = (long)gpb->inRowBytes * (y - BIGDOC_IN_RECT(gpb).top) + (long)nplanes * (x - BIGDOC_IN_RECT(gpb).left) + z;
+		tmp1 = (long)gpb->inRowBytes * (y - BIGDOC_IN_RECT(gpb).top);
+		tmp2 = (long)nplanes * (x - BIGDOC_IN_RECT(gpb).left) + z;
 	} else {
 		if (x < IN_RECT(gpb).left) {
 			x = IN_RECT(gpb).left;
@@ -328,18 +329,19 @@ static value_type rawsrc(value_type x, value_type y, value_type z) {
 		} else if (y >= IN_RECT(gpb).bottom) {
 			y = IN_RECT(gpb).bottom - 1;
 		}
-		tmp = (long)gpb->inRowBytes * (y - IN_RECT(gpb).top) + (long)nplanes * (x - IN_RECT(gpb).left) + z;
+		tmp1 = (long)gpb->inRowBytes * (y - IN_RECT(gpb).top);
+		tmp2 = (long)nplanes* (x - IN_RECT(gpb).left) + z;
 	}
 
 	if (z < 0 || z >= var['Z']) return 0;
 
 	switch (bytesPerPixelChannelIn) {
 	case 1:
-		return ((unsigned char*)gpb->inData)[tmp] - valueoffset_channel[z];
+		return ((unsigned char*)gpb->inData)[tmp1+tmp2] - valueoffset_channel[z];
 	case 2:
-		return *((uint16_t*)(((unsigned char*)gpb->inData) + tmp * 2)) - valueoffset_channel[z];
+		return *((uint16_t*)(((unsigned char*)gpb->inData) + tmp1 + tmp2 * 2)) - valueoffset_channel[z];
 	case 4:
-		return (value_type)((float)maxChannelValueIn * *((float*)(((unsigned char*)gpb->inData) + tmp * 4)) - valueoffset_channel[z]);
+		return (value_type)((float)maxChannelValueIn * *((float*)(((unsigned char*)gpb->inData) + tmp1 + tmp2 * 4)) - valueoffset_channel[z]);
 	default:
 		return 0;
 	}
@@ -374,9 +376,9 @@ value_type ff_src(value_type x, value_type y, value_type z) {
 	case 1:
 		return image_ptr[(long)gpb->inRowBytes * y + (long)nplanes * x + z] - valueoffset_channel[z];
 	case 2:
-		return *((uint16_t*)(image_ptr + ((long)gpb->inRowBytes * y + (long)nplanes * x + z) * 2)) - valueoffset_channel[z];
+		return *((uint16_t*)(image_ptr + (long)gpb->inRowBytes * y + ((long)nplanes * x + z) * 2)) - valueoffset_channel[z];
 	case 4:
-		return (value_type)((float)maxChannelValueIn * *((float*)(image_ptr + ((long)gpb->inRowBytes * y + (long)nplanes * x + z) * 4)) - valueoffset_channel[z]);
+		return (value_type)((float)maxChannelValueIn * *((float*)(image_ptr + (long)gpb->inRowBytes * y + ((long)nplanes * x + z) * 4)) - valueoffset_channel[z]);
 	default:
 		return 0;
 	}
