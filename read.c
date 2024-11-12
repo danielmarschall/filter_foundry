@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// TODO: Change Windows1252 methods to the current codepage of the system. Note that we should stay compatible with Windows 3.11 if possible
+
 #include "ff.h"
 
 #include "file_compat.h"
@@ -844,18 +846,83 @@ Boolean _gufReadProperty(char* fileContents, size_t argMaxInputLength, const cha
 	return true;
 }
 
+// Funktion zur Konvertierung von UTF-8 nach Windows-1252 in-place
+void _utf8_to_windows1252(unsigned char* utf8, unsigned char* ansi, FILECOUNT* count) {
+	int togo = *count;
+	while (togo > 0) {
+		unsigned char byte = *utf8;
+
+		if (byte <= 0x7F) {
+			// Ein einzelnes Byte für ASCII-Zeichen
+			*ansi = byte;
+			ansi++;
+			utf8++; // Gehe zum nächsten Zeichen
+			togo -= 1;
+		} else if ((byte >= 0xC2 && byte <= 0xDF) && (*(utf8 + 1) >= 0x80 && *(utf8 + 1) <= 0xBF)) {
+			// Zwei-Byte UTF-8-Zeichen
+			unsigned char byte2 = *(utf8 + 1);
+			unsigned int codepoint = ((byte & 0x1F) << 6) | (byte2 & 0x3F);
+
+			if (codepoint <= 0xFF) {
+				// Wenn der Codepoint im Bereich von Windows-1252 liegt, füge ihn hinzu
+				*ansi = (char)codepoint;
+				ansi++;
+				utf8 += 2;
+				togo -= 2;
+				*count -= 1;
+			} else {
+				// Andernfalls ersetze es durch '?'
+				*ansi = '?';
+				ansi++;
+				utf8++;
+				togo -= 1;
+			}
+		}
+		else if ((byte >= 0xE0 && byte <= 0xEF) && (*(utf8 + 1) >= 0x80 && *(utf8 + 1) <= 0xBF) && (*(utf8 + 2) >= 0x80 && *(utf8 + 2) <= 0xBF)) {
+			// Drei-Byte UTF-8-Zeichen
+			unsigned char byte2 = *(utf8 + 1);
+			unsigned char byte3 = *(utf8 + 2);
+			unsigned int codepoint = ((byte & 0x0F) << 12) | ((byte2 & 0x3F) << 6) | (byte3 & 0x3F);
+
+			if (codepoint <= 0xFF) {
+				// Wenn der Codepoint im Bereich von Windows-1252 liegt, füge ihn hinzu
+				*ansi = (char)codepoint;
+				ansi++;
+				utf8 += 3;
+				togo -= 3;
+				*count -= 2;
+			} else {
+				// Andernfalls ersetze es durch '?'
+				*ansi = '?';
+				ansi++;
+				utf8++;
+				togo -= 1;
+			}
+		} else {
+			// Ungültige UTF-8-Zeichen oder Zeichen, die nicht konvertiert werden können, ersetzen
+			*ansi = '?';
+			ansi++;
+			utf8++;
+			togo -= 1;
+		}
+	}
+}
+
 FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 	Handle h;
 	FFLoadingResult res = FF_LOADING_RESULT(MSG_LOADFILE_UNKNOWN_FORMAT_ID);
 	FILEREF refnum;
-
-	// TODO: Decode UTF-8 to ANSI (or "?" for unknown characters)
 
 	if (FSpOpenDF(&sfr->sfFile, fsRdPerm, &refnum) == noErr) {
 		if ((h = readfileintohandle(refnum))) {
 			FILECOUNT count = (FILECOUNT)PIGETHANDLESIZE(h);
 			char* q = PILOCKHANDLE(h, false);
 			char protocol[256];
+
+			unsigned char* ansiFileContents = (unsigned char*)malloc(count);
+			_utf8_to_windows1252((unsigned char*)q, ansiFileContents, &count);
+			memcpy(q, ansiFileContents, count);
+			free(ansiFileContents);
 
 			if (!_gufReadProperty(q, count, "GUF", "Protocol", protocol, sizeof(protocol))) {
 				res = FF_LOADING_RESULT(MSG_INVALID_FILE_SIGNATURE_ID);
