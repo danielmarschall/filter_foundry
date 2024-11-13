@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.23 [??-Nov-2024]
+## 1.7.0.23 [12-Nov-2024]
 - `src()`, `rad()`, and `cnv()` are now compatible with 16-bit and 32-bit color spaces
 - Changed upper limit of Lab a-axis and b-axis to from 16383 to 16256
 - GUF and PicoTXT files now contain the 8BF filename

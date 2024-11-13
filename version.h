@@ -1,7 +1,7 @@
 /*
     This file is part of "Filter Foundry", a filter plugin for Adobe Photoshop
     Copyright (C) 2003-2009 Toby Thain, toby@telegraphics.net
-    Copyright (C) 2018-2023 Daniel Marschall, ViaThinkSoft
+    Copyright (C) 2018-2024 Daniel Marschall, ViaThinkSoft
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ For a NEW VERSION, please change:
 
 #define plugInName "FilterFoundry"
 
-#define VERSION_STR "1.7.0.22"
-#define VERSION_NUM 1,7,0,22
+#define VERSION_STR "1.7.0.23"
+#define VERSION_NUM 1,7,0,23
 
 #define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 
@@ -45,7 +45,7 @@ For a NEW VERSION, please change:
 #define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
 /* For the 'cmpt' PIPL attribute */
-#define MainComponentVersion 0x01070016L // 1.7.0.22
+#define MainComponentVersion 0x01070017L // 1.7.0.23
 
 /* formatted for Win32 VERSIONINFO resource */
 #define VI_VERS_NUM	1,7,0,22

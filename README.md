@@ -11,7 +11,7 @@ Initially written by Toby Thain ([Telegraphics](https://www.telegraphics.net/sw/
 ![A simple filter](screenshots/MainDialog.png)
 
 
-### Windows version 1.7.0.22
+### Windows version 1.7.0.23
 
 Filter Foundry 1.7 comes with a 32-Bit Windows plugin (FilterFoundry.8bf) and a 64-Bit Windows plugin (FilterFoundry64.8bf) which can both be downloaded at [ViaThinkSoft](https://www.viathinksoft.com/download/249/FilterFoundry.zip) or from the [Releases folder](https://github.com/danielmarschall/filter_foundry/tree/master/releases).
 
