@@ -291,7 +291,7 @@ uint32_t calculate_checksum(FSSpec* dst) {
 
 	//Calculate PE checksum
 	SetFPos(fptr, fsFromStart, 0);
-	top = 0xFFFFFFFF;
+	top = 0xFFFFFFFFull;
 	top++;
 
 	//"CheckSum" field position in optional PE headers - it's always 64 for PE and PE+
@@ -315,9 +315,9 @@ uint32_t calculate_checksum(FSSpec* dst) {
 			continue;
 
 		//Calculate checksum
-		checksum = (checksum & 0xffffffff) + dw + (checksum >> 32);
+		checksum = (checksum & 0xffffffffull) + dw + (checksum >> 32);
 		if (checksum > top)
-			checksum = (checksum & 0xffffffff) + (checksum >> 32);
+			checksum = (checksum & 0xffffffffull) + (checksum >> 32);
 	}
 
 	//Finish checksum

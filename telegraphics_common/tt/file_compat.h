@@ -79,7 +79,7 @@
 		typedef INT32 int32_t;
 
 		#ifndef INVALID_SET_FILE_POINTER
-			#define INVALID_SET_FILE_POINTER 0xffffffff
+			#define INVALID_SET_FILE_POINTER 0xfffffffful
 		#endif
 
 		typedef HANDLE FILEREF;

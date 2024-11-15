@@ -45,7 +45,7 @@ For a NEW VERSION, please change:
 #define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
 /* For the 'cmpt' PIPL attribute */
-#define MainComponentVersion 0x01070017L // 1.7.0.23
+#define MainComponentVersion 0x01070017ul // 1.7.0.23
 
 /* formatted for Win32 VERSIONINFO resource */
 #define VI_VERS_NUM	1,7,0,22

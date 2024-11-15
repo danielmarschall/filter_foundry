@@ -745,7 +745,7 @@ void DoPrepare(FilterRecordPtr pb){
 		if ((gpb->bufferProcs->numBufferProcs >= 8) && (gpb->maxSpace64 > 0)) {
 			pb->maxSpace64 = ninetyPercent;
 		}
-		if (ninetyPercent <= 0x7FFFFFFF) {
+		if (ninetyPercent <= 0x7FFFFFFFul) {
 			pb->maxSpace = (int32)ninetyPercent;
 		}
 	}

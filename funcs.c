@@ -1196,7 +1196,7 @@ value_type factory_c2d(value_type x, value_type y) {
 		eax = eax << 10;
 		eax /= ebx;
 		if (eax != 0) {
-			eax = (eax & 0xFFFF0000) | (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
+			eax = (eax & 0xFFFF0000ul) | (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
 			eax = eax << 9;
 			ebx = 205888; // 205888/65536 == pi == 3.14159265358979323846264338327
 			eax /= ebx;
@@ -1321,7 +1321,7 @@ value_type factory_d(void) {
 		eax = eax << 10;
 		eax /= ebx;
 		if (eax != 0) { // C2D_LOOKUP[-1] will never be called. Good!
-			eax = (eax & 0xFFFF0000) + (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
+			eax = (eax & 0xFFFF0000ul) + (FACTORY_C2D_LOOKUP[eax - 1] & 0xFFFF);
 			eax = eax << 9;
 			ebx = 205888; // 205888/65536 == pi == 3.14159265358979323846264338327
 			eax /= ebx;

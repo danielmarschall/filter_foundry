@@ -49,9 +49,9 @@ The 8BF file *MUST* only contain the seed A SINGLE TIME
 	// so we use __declspec(noinline)
 	__declspec(noinline) uint64_t GetObfuscSeed(void) {
 		// TODO: Not 4-byte aligned! (both variants)
-		//volatile uint64_t seed = 0x7416972a52830517ull;
+		//volatile uint64_t seed = 0x7416972A52830517ull;
 		//return seed;
-		return 0x7416972a52830517ull;
+		return 0x7416972A52830517ull;
 	}
 	#else
 	__declspec(noinline) uint64_t GetObfuscSeed(void) {
@@ -73,7 +73,7 @@ The 8BF file *MUST* only contain the seed A SINGLE TIME
 				_emit 0x74
 				/*
 				pop ss
-				add eax, 0x972a5283
+				add eax, 0x972A5283ul
 				push ss
 				jz seed
 				*/
@@ -86,7 +86,7 @@ The 8BF file *MUST* only contain the seed A SINGLE TIME
 	// Unfortunately, with this compiler, we don't know how to force the seed into the .code segment.
 	// So, we put it in the .data segment.
 	// Note: Due to "const volatile", this value will only exist a single time in the binary file.
-	const volatile uint64_t obfusc_seed = 0x7416972a52830517ull;
+	const volatile uint64_t obfusc_seed = 0x7416972A52830517ull;
 	uint64_t GetObfuscSeed(void) {
 		return obfusc_seed;
 	}
@@ -96,7 +96,7 @@ The 8BF file *MUST* only contain the seed A SINGLE TIME
 Random seed #2 for obfuscation "86 21 1f 3e f1 a2 87 ef"
 Lies in the data segment. Same rules like for the random seed #1.
 */
-const volatile uint64_t obfusc_seed2 = 0xef87a2f13e1f2186ull;
+const volatile uint64_t obfusc_seed2 = 0xEF87A2F13E1F2186ull;
 #ifdef _MSC_VER
 __declspec(noinline)
 #endif
@@ -150,13 +150,13 @@ Boolean obfusc_seed_replace(FSSpec* dst, uint64_t search1, uint64_t search2, uin
 
 int rand_msvcc(unsigned int* seed) {
 	*seed = *seed * 214013L + 2531011L;
-	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
+	return (*seed >> 16) & 0x7FFF; /* Scale between 0 and RAND_MAX */
 }
 
 int rand_openwatcom(unsigned int* seed) {
 	// https://github.com/open-watcom/open-watcom-v2/blob/master/bld/clib/math/c/rand.c
 	*seed = *seed * 1103515245L + 12345L;
-	return (*seed >> 16) & 0x7fff; /* Scale between 0 and RAND_MAX */
+	return (*seed >> 16) & 0x7FFF; /* Scale between 0 and RAND_MAX */
 }
 
 void xorshift32(unsigned char** p, uint32_t* x32, size_t num) {
@@ -209,14 +209,14 @@ uint32_t crc32b(char *data, int nLength) {
 	char byte;
 
 	i = 0;
-	crc = 0xFFFFFFFF;
+	crc = 0xFFFFFFFFul;
 
 	for(k=0;k<nLength;k++) {
 		byte = data[k];
 		crc = crc ^ byte;
 		for (j = 7; j >= 0; j--) {
 			mask = (-1) * (crc & 1);
-			crc = (crc >> 1) ^ (0xEDB88320 & mask);
+			crc = (crc >> 1) ^ (0xEDB88320ul & mask);
 		}
 		i++;
 	}
@@ -331,17 +331,17 @@ uint64_t crc64(const unsigned char* data, size_t len)
 int obfuscation_version(PARM_T* pparm) {
 	uint32_t obfusc_info = pparm->unknown2;
 
-	if (obfusc_info == 0x00000001) { // 01 00 00 00
+	if (obfusc_info == 0x00000001ul) { // 01 00 00 00
 		// Photoshop FilterFactory default initialization of field "unknown2" (no obfuscation)
 		return 0;
-	} else if (obfusc_info == 0x00000000) { // 00 00 00 00
+	} else if (obfusc_info == 0x00000000ul) { // 00 00 00 00
 		// Premiere FilterFactory default initialization of field "unknown1" (no obfuscation)
 		// (Premiere Field "unknown1" has the offset of Photoshop's "unknown2" field)
 		return 0;
-	} else if (obfusc_info == 0x90E364A3) { // A3 64 E3 90
+	} else if (obfusc_info == 0x90E364A3ul) { // A3 64 E3 90
 		// Version 1 obfuscation (Filter Foundry 1.4b8,9,10)
 		return 1;
-	} else if (obfusc_info == 0xE2CFCA34) { // 34 CA CF E2
+	} else if (obfusc_info == 0xE2CFCA34ul) { // 34 CA CF E2
 		// Version 2 obfuscation (Filter Foundry 1.7b1)
 		return 2;
 	} else if ((obfusc_info >= 4) && (obfusc_info <= 0xFF)) { // xx 00 00 00
@@ -395,7 +395,7 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	pparm->unknown3 = 0;
 	pparm->unknown1 = crc32b((char*)pparm, sizeof(PARM_T));
 
-	xorseed = initial_seed & 0xFFFFFFFF;
+	xorseed = initial_seed & 0xFFFFFFFFul;
 	xorseed ^= 0x43884215ul;
 	p = (unsigned char*)pparm;
 	xorshift32(&p, &xorseed, sizeof(PARM_T));
@@ -408,7 +408,7 @@ void obfusc(PARM_T* pparm, uint64_t* out_initial_seed, uint64_t* out_initial_see
 	rand_iters = 0x2FF - (initial_seed & 0xFF) + (initial_seed2 & 0xFF);
 	if (rand_iters < 0) rand_iters = 0;
 	for (j = rand_iters; j >= 0; j--) {
-		uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+		uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFFul;
 		rand_seed ^= 0x53814591ul;
 		p = (unsigned char*)pparm;
 		for (i = 0; i < 10; i++) {
@@ -451,7 +451,7 @@ void deobfusc(PARM_T* pparm) {
 			size_t i;
 			uint32_t seed;
 
-			seed = 0xdc43df3c;
+			seed = 0xDC43DF3Cul;
 
 			for (i = size, p = (unsigned char*)pparm; i--;) {
 				*p++ ^= rand_msvcc(&seed);
@@ -466,7 +466,7 @@ void deobfusc(PARM_T* pparm) {
 			size_t i;
 			uint32_t seed;
 
-			seed = 0x95d4a68f;
+			seed = 0x95D4A68Ful;
 
 			for (i = size, p = (unsigned char*)pparm; i--;) {
 				seed ^= seed << 13;
@@ -521,14 +521,14 @@ void deobfusc(PARM_T* pparm) {
 			size_t version_position;
 			uint32_t seed, initial_seed;
 
-			initial_seed = GetObfuscSeed() & 0xFFFFFFFF; // this value will be manipulated during the building of each individual filter (see make_win.c)
+			initial_seed = GetObfuscSeed() & 0xFFFFFFFFul; // this value will be manipulated during the building of each individual filter (see make_win.c)
 
 			seed = initial_seed;
 			version_position = offsetof(PARM_T, unknown2); // = offsetof(PARM_T_PREMIERE, unknown1)
 
 			if (obfusc_version == 5) {
 				// make v4 and v5 intentionally incompatible to avoid a downgrade-attack
-				seed ^= 0xFFFFFFFF;
+				seed ^= 0xFFFFFFFFul;
 			}
 
 			p = (unsigned char*)pparm;
@@ -569,7 +569,7 @@ void deobfusc(PARM_T* pparm) {
 
 				initial_seed2 = GetObfuscSeed2(); // this value will be manipulated during the building of each individual filter (see make_win.c)
 				xorseed2 = initial_seed2;
-				if (obfusc_version >= 8) xorseed2 ^= 0xF3DAB64ED52F97D0ul;
+				if (obfusc_version >= 8) xorseed2 ^= 0xF3DAB64ED52F97D0ull;
 				p = (unsigned char*)pparm;
 				xorshift64(&p, &xorseed2, sizeof(PARM_T));
 
@@ -582,7 +582,7 @@ void deobfusc(PARM_T* pparm) {
 				}
 				if (rand_iters < 0) rand_iters = 0;
 				for (j = 0; j <= rand_iters; j++) {
-					uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFF;
+					uint32_t rand_seed = (initial_seed + initial_seed2 + j) & 0xFFFFFFFFul;
 					if (obfusc_version >= 8) rand_seed ^= 0x53814591ul;
 					p = (unsigned char*)pparm;
 					for (i = 0; i < 10; i++) {
@@ -599,7 +599,7 @@ void deobfusc(PARM_T* pparm) {
 			p = (unsigned char*)pparm;
 			rolshift64(&p, &rolseed, sizeof(PARM_T));
 
-			xorseed = initial_seed & 0xFFFFFFFF;
+			xorseed = initial_seed & 0xFFFFFFFFul;
 			if (obfusc_version >= 8) xorseed ^= 0x43884215ul;
 			p = (unsigned char*)pparm;
 			xorshift32(&p, &xorseed, sizeof(PARM_T));

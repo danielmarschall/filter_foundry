@@ -135,12 +135,12 @@ unsigned long printablehash(unsigned long hash) {
 		key |= res << (8*(i+(4-length-1))); // 2nd, 3rd, 4th char are either upper-case or any printable char
 	}
 	if (length == 1) {
-		key &= 0xFFFF0000;
+		key &= 0xFFFF0000ul;
 		key |= ' ' << 8;
 		key |= ' ';
 	}
 	if (length == 2) {
-		key &= 0xFFFFFF00;
+		key &= 0xFFFFFF00ul;
 		key |= ' ';
 	}
 	return key;

@@ -73,7 +73,7 @@ int PluginDll_SetSliderRange(HWND hWnd, int nMin, int nMax) {
 #endif
 
 #ifdef use_plugin_dll_sliders
-#define FLAG_AUTOSNAP 0x40000000
+#define FLAG_AUTOSNAP 0x40000000ul
 typedef enum BitMode_ {
 	UnsetBits = -1,
 	SetExplicit = 0,
