@@ -273,7 +273,7 @@ FFSavingResult saveparams_picotxt(Handle h, TCHAR* filename) {
 	return FF_SAVING_RESULT( e == noErr ? SAVING_OK : MSG_ERROR_GENERATING_DATA_ID );
 }
 
-int _windows1252_to_utf8(unsigned char ansi_char, char* utf8_output) {
+size_t _windows1252_to_utf8(unsigned char ansi_char, char* utf8_output) {
 	if (ansi_char < 0x80) {
 		utf8_output[0] = ansi_char;
 		return 1;
@@ -319,9 +319,9 @@ void _convert_windows1252_to_utf8(const char* ansi_str, char* utf8_str, size_t u
 	size_t remaining_size = utf8_size;
 
 	while (*ansi_str && remaining_size > 0) {
-		int i;
+		size_t i;
 		char utf8_char[3];
-		int len = _windows1252_to_utf8(*ansi_str++, utf8_char);
+		size_t len = _windows1252_to_utf8(*ansi_str++, utf8_char);
 
 		if (remaining_size < len) break;
 
@@ -341,8 +341,8 @@ void _convert_unicode_to_utf8(const wchar_t* unicode_str, char* utf8_str, size_t
 	while (*unicode_str && remaining_size > 0) {
 		unsigned int codepoint = *unicode_str++;
 		char utf8_char[4];
-		int len = 0;
-		int i;
+		size_t len = 0;
+		size_t i;
 
 		if (codepoint < 0x80) {
 			utf8_char[0] = codepoint;

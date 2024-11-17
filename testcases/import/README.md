@@ -34,6 +34,7 @@ This directory contains various standalone plugins to test if the current Filter
 | Import FF Prot+Obfsc "V5" 1.7 for Windows x86  | .8bf   | n/a      | foundry17_32_op5.8bf     | Locked OK       |
 | Import FF Prot+Obfsc "V6" 1.7 for Windows x86  | .8bf   | n/a      | foundry17_32_op6.8bf     | Locked OK       |
 | Import FF Prot+Obfsc "V7" 1.7 for Windows x86  | .8bf   | n/a      | foundry17_32_op7.8bf     | Locked OK       |
+| Import FF Prot+Obfsc "V8" 1.7 for Windows x86  | .8bf   | n/a      | foundry17_32_op8.8bf     | Locked OK       |
 | Import FilterFoundry      1.7 for Windows x64  | .8bf   | 0x2086   | foundry17_64.8bf         | Works           |
 | Import FF Obfuscated "V2" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_o.8bf       | Works           |
 | Import FF Protected       1.7 for Windows x64  | .8bf   | 0x2086   | foundry17_64_p.8bf       | Locked OK       |
@@ -43,6 +44,7 @@ This directory contains various standalone plugins to test if the current Filter
 | Import FF Prot+Obfsc "V5" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op5.8bf     | Locked OK       |
 | Import FF Prot+Obfsc "V6" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op6.8bf     | Locked OK       |
 | Import FF Prot+Obfsc "V7" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op7.8bf     | Locked OK       |
+| Import FF Prot+Obfsc "V8" 1.7 for Windows x64  | .8bf   | n/a      | foundry17_64_op8.8bf     | Locked OK       |
 
 ### Third party formats
 

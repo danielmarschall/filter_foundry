@@ -84,7 +84,7 @@ Minor priority stuff or ideas
 
 * Should the compiler flags in `funcs.h` as well as settings like `use_plugin_dll_sliders` be placed as resource (binary bits), so that the behavior can be changed if required?
 
-* Implement MonitorScalingAware ('pmsa')? What is 'cmpt'? Do we fully support 'flly'?
+* Implement MonitorScalingAware ('pmsa')? Do we fully support 'flly'?
 
 
 Big ideas and complicated stuff
