@@ -460,7 +460,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					parm_type = OBFUSCDATA_TYPE_NEW;
 					parm_id = OBFUSCDATA_ID_NEW;
 
-					// Note: After we have finished updating the resources, we will write <obfuscseed> into the binary code of the 8BF file
+					// Note: After we have finished updating the resources, we will write obfuscseed and obfuscseed2 into the binary code of the 8BF file
 					obfusc(pparm, &obfuscseed, &obfuscseed2);
 				} else {
 					parm_type = PARM_TYPE;
@@ -482,7 +482,7 @@ Boolean doresources(FSSpec* dst, int bits){
 					&& _UpdateResource(hupdate, RT_GROUP_ICON, TEXT("CAUTION_ICO"), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 //					&& _UpdateResource(hupdate, RT_ICON, MAKEINTRESOURCE(1)/*Caution*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, RT_GROUP_CURSOR, TEXT("HAND_QUESTION"), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
-					// TODO: Removing the single resources don't work correctly. Sometimes the cursors are numbered 4,5,6 and sometimes 1,2,3 . Probably conflicts with icons
+					// TODO: Removing the groups (RT_GROUP_ICON, RT_GROUP_ICON) works, but removing RT_ICON and RT_CURSOR don't work correctly. Sometimes the cursors are numbered 4,5,6 and sometimes 1,2,3 . Probably conflicts with icons
 //					&& _UpdateResource(hupdate, RT_CURSOR, MAKEINTRESOURCE(3)/*QuestionHand*/, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), NULL, 0) // clean up things we don't need in the standalone plugin
 					&& _UpdateResource(hupdate, TEXT("PIPL") /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),newpipl,(DWORD)piplsize)
 					&& _UpdateResource(hupdate, TEXT("AETE") /* note: caps!! */, MAKEINTRESOURCE(16000), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), newaete, (DWORD)aetesize)
