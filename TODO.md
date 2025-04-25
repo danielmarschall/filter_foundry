@@ -5,12 +5,8 @@ Wishlist/ToDo-List
 ToDo for the next release
 -------------------------
 
-* 1.7.0.23 Obfuscation V8 (without ul/ull change) was tested with Photoshop (32/64-bit-cross). It needs to be repeated with the ul/ull fix.
+Nothing
 
-		- 32 bit built with 32 bit, executed on 32 bit
-		- 64 bit built with 32 bit, executed on 64 bit
-		- 32 bit built with 64 bit, executed on 32 bit
-		- 64 bit built with 64 bit, executed on 64 bit
 
 Known problems
 --------------
