@@ -743,7 +743,7 @@ FFLoadingResult readfile_picotxt_or_ffdecomp(StandardFileReply* sfr) {
 						v = atoi(tmp);
 						if (v < 0) v = 0;
 						else if (v > 255) v = 255;
-						gdata->parm.val[i] = gdata->parm.val[i] = (uint8_t)v;
+						gdata->parm.val[i] = (uint8_t)v;
 					}
 				}
 
@@ -972,7 +972,7 @@ FFLoadingResult readfile_guf(StandardFileReply* sfr) {
 						v = atoi(tmp);
 						if (v < 0) v = 0;
 						else if (v > 255) v = 255;
-						gdata->parm.val[i] = gdata->parm.val[i] = (uint8_t)v;
+						gdata->parm.val[i] = (uint8_t)v;
 					}
 				}
 

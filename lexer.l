@@ -40,7 +40,7 @@
 
 // DM 03.05.2025: Changed definition from "nothing" to this to get rid off OpenWatcom warning "symbol not referenced"
 //#define YY_FATAL_ERROR(msg)
-#define YY_FATAL_ERROR(msg) if (msg == "dummy") {yy_fatal_error(msg);}
+#define YY_FATAL_ERROR(msg) if ((void*)msg == (void*)1234) {yy_fatal_error(msg);}
 
 // DM 03.05.2025: (In lexer.l) Changed definition from YY_INPUT from "nothing" to "result = YY_NULL". Is this correct???
 //#define YY_INPUT
