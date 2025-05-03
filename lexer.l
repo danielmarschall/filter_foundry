@@ -38,11 +38,20 @@
 	#define stderr 0
 #endif 
 
-#define YY_FATAL_ERROR(msg)
-#define YY_INPUT
+// DM 03.05.2025: Changed definition from "nothing" to this to get rid off OpenWatcom warning "symbol not referenced"
+//#define YY_FATAL_ERROR(msg)
+#define YY_FATAL_ERROR(msg) if (msg == "dummy") {yy_fatal_error(msg);}
+
+// DM 03.05.2025: (In lexer.l) Changed definition from YY_INPUT from "nothing" to "result = YY_NULL". Is this correct???
+//#define YY_INPUT
+#define YY_INPUT(buf,result,max_size) result = YY_NULL
+
 #define YYDECL int yylex(void)
 #define ECHO
 #define YY_NEVER_INTERACTIVE 1
+
+// DM 03.05.2025: Added to avoid OpenWatcom warning
+#define YY_NO_UNPUT
 
 YYDECL;
 

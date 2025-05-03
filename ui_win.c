@@ -48,6 +48,8 @@ void DoAbout(AboutRecordPtr pb){
 	memset(filters, 0, 4096);
 	tmp1 = filters;
 
+	UNREFERENCED_PARAMETER(pb);
+
 	if (gdata && gdata->parm.standalone) {
 		// strcpy(gdata->parm.szTitle, "TestTitle");
 		// strcpy(gdata->parm.szAuthor, "TestAuthor");

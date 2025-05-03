@@ -28,8 +28,22 @@ wmake -f project.mk
 cd /d "%~dp0"
 rem dir *.8bf
 
-echo.
-echo.
+if exist *.err (
+    echo.
+    echo.
+    echo.
+    echo.
+    echo "!!!!!!!! ATTENTION: .err file(s) exist !!!!!!!!"
+    rem Warnings are saved in an err file
+    dir /b *.err
+    echo.
+    echo.
+    echo.
+    echo.
+) else (
+    echo No .err files found
+)
+
 echo.
 echo Finished compiling 32bit using WATCOM. Please check the console output.
 pause.

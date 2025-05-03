@@ -461,7 +461,7 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 
 	const int xmin = 0;
 	const int ymin = 0;
-	const int zmin = 0;
+	//const int zmin = 0;
 
 	int eax, ebx, ecx;
 
@@ -492,7 +492,7 @@ value_type factory_rad(value_type d, value_type m, value_type z) {
 	// Now return pixel [x=ecx,y=ebx,z=esi] from the source image!
 	//return ff_src(ecx, ebx, z);
 	//ebx *= gpb->inRowBytes;
-	//ecx *= var['Z'] - zmin;
+	//ecx *= var['Z'] - zmin; // Z-zmin == nplanes
 	//return image_ptr[z + ebx + ecx];
 
 	if (z < 0 || z >= var['Z']) return 0;

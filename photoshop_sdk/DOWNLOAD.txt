@@ -6,7 +6,7 @@ How to download the latest version of the SDK:
 2. You need to create a Adobe developer account now,
    or log in if you already have an account.
 
-3. At the section "C++ SDK", click "Plug-in and Connection SDK"
+3. At the section "C++ SDK", click the link "Connection SDK"
    which will lead to the following URL:
    https://developer.adobe.com/console/servicesandapis/ps
 
