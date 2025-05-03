@@ -316,8 +316,10 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 		// Modes Bitmap (0) and IndexedColor (2) should already be disabled by PiPL, but we just make sure that they get rejected
 		// Mode 17 is our last known image mode which we do support
 		if (pb->imageMode < 0 || pb->imageMode == plugInModeBitmap || pb->imageMode == plugInModeIndexedColor || pb->imageMode > plugInModeGray32) {
-			*result = filterBadMode;
-			goto endmain;
+			if (selector != filterSelectorParameters) { // Serif PhotoPlus X8 has imageMode=0 for selector=filterSelectorParameters, so we exclude this case
+				*result = filterBadMode;
+				goto endmain;
+			}
 		}
 
 		// required for CreateDataPointer()
@@ -471,7 +473,6 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 
 endmain:
 
-	// TODO: Question: Is that OK to call this at every invocation, or should it be only around UI stuff?
 	#ifdef WIN_ENV
 	if (activationContextUsed) DeactivateManifest(&manifestVars);
 	#endif
@@ -671,12 +672,21 @@ int checkandinitparams(Handle params){
 }
 
 Boolean host_preserves_parameters(void) {
+	char exename[MAX_PATH];
+
 	#ifdef DEBUG_SIMULATE_GIMP
 	return false;
 	#endif
 
 	if (gpb->hostSig == HOSTSIG_GIMP) return false;
 	if (gpb->hostSig == HOSTSIG_IRFANVIEW) return false;
+
+	if ((GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoplus") || stristr(exename, "photopls"))) {
+		// Serif PhotoPlus uses the Photoshop signature '8BIM', so we need to look for the EXE file name
+		// Serif PhotoPlus X8 x64/x86 does not preserve parameters (verified 2025); pb->parameters is NULL on each filter start
+		// Serif PhotoPlus 6 did??? (I noted that, but I would need to verify that again)
+		return false;
+	}
 
 	// We just assume the other hosts preserve the parameters
 	return true;
@@ -696,10 +706,16 @@ int64_t maxspace(void){
 	} else {
 		// Note: If maxSpace gets converted from Int32 to unsigned int, we can reach up to 4 GB RAM. However, after this, there will be a wrap to 0 GB again.
 		unsigned int maxSpace32 = (unsigned int) gpb->maxSpace;
+		char exename[MAX_PATH];
 		uint64_t maxSpace64 = maxSpace32;
 
 		if (gpb->hostSig == HOSTSIG_IRFANVIEW) maxSpace64 *= 1024; // IrfanView is giving Kilobytes instead of Bytes
-		//if (gpb->hostSig == HOSTSIG_SERIF_PHOTOPLUS) maxSpace64 *= 1024; // TODO: Serif PhotoPlus also gives Kilobytes instead of bytes. But since it uses not a unique host signature, there is nothing we can do???
+
+		if ((GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoplus") || stristr(exename, "photopls"))) {
+			// Serif PhotoPlus 6 also gives Kilobytes instead of bytes. But it does not use an unique host signature (tested with Photoplus 6)
+			// Not sure what PhotoPlus X8 gives. 0x4FC4B3C on a system with 16GB RAM.
+			maxSpace64 *= 1024; 
+		}
 
 		return maxSpace64;
 	}

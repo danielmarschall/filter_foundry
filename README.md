@@ -40,7 +40,7 @@ The following hosts and/or code emulators have been tested with Filter Foundry 1
 -   IrfanView 4.53 (32/64 bit)
 -   JASC PSP 9, Corel's Paint Shop Pro XI
 -   The Gimp 2.2 with [PSPI.exe](https://www.chip.de/downloads/PSPI-fuer-GIMP_37803068.html) extension to run Photoshop .8bf files
--   Serif PhotoPlus 6
+-   Serif PhotoPlus 6, X8
 -   PluginCommander 1.62 (Revision 2)
 -   Paint.Net using [PSFilterPdn](https://github.com/0xC0000054/PSFilterPdn)
 -   [pdn-filter-factory](https://github.com/0xC0000054/pdn-filter-factory) (code emulator)

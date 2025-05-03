@@ -5,18 +5,18 @@ cd /d "%~dp0"
 set PATHBAK=%PATH%
 
 rem Download "Online installer here"
-rem https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download
+rem https://github.com/niXman/mingw-builds-binaries/releases
 
 rem 64 Bit
 rem Please adjust this path!
-set PATH=D:\mingw-w64\x86_64-8.1.0-win32-seh-rt_v6-rev0\mingw64\bin;%PATHBAK%
+set PATH=D:\mingw\x86_64-15.1.0-release-win32-seh-msvcrt-rt_v12-rev0\mingw64\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry64.tmp
 
 rem 32 Bit
 rem Please adjust this path!
-set PATH=D:\mingw-w64\i686-8.1.0-win32-dwarf-rt_v6-rev0\mingw32\bin;%PATHBAK%
+set PATH=D:\mingw\i686-15.1.0-release-win32-dwarf-msvcrt-rt_v12-rev0\mingw32\bin;%PATHBAK%
 mingw32-make -f Makefile.win clean
 mingw32-make -f Makefile.win
 move FilterFoundry.8bf FilterFoundry32.tmp

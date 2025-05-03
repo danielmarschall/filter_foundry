@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0.24 [WIP]
+- Serif PhotoPlus X8 is now compatible.
+- Code signed by Certum OpenSource Code Signing for ViaThinkSoft.
+
 ## 1.7.0.23 [12-Nov-2024]
 - `src()`, `rad()`, and `cnv()` are now compatible with 16-bit and 32-bit color spaces
 - Changed upper limit of Lab a-axis and b-axis to from 16383 to 16256
