@@ -684,7 +684,7 @@ Boolean host_preserves_parameters(void) {
 	if ((GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoplus") || stristr(exename, "photopls"))) {
 		// Serif PhotoPlus uses the Photoshop signature '8BIM', so we need to look for the EXE file name
 		// Serif PhotoPlus X8 x64/x86 does not preserve parameters (verified 2025); pb->parameters is NULL on each filter start
-		// Serif PhotoPlus 6 did??? (I noted that, but I would need to verify that again)
+		// Serif PhotoPlus 6 did! (I have verified this twice)
 		return false;
 	}
 
@@ -713,7 +713,7 @@ int64_t maxspace(void){
 
 		if ((GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoplus") || stristr(exename, "photopls"))) {
 			// Serif PhotoPlus 6 also gives Kilobytes instead of bytes. But it does not use an unique host signature (tested with Photoplus 6)
-			// Not sure what PhotoPlus X8 gives. 0x4FC4B3C on a system with 16GB RAM.
+			// Not sure what PhotoPlus 6 and X8 (x86/x64) gives. All three give 0x4FC4B3C on a system with 16GB RAM. But 79 MB is too small and 79 GB is too big
 			maxSpace64 *= 1024; 
 		}
 
