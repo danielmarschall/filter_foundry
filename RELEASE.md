@@ -31,3 +31,4 @@ ViaThinkSoft release procedure
 8. Sync SVN with GitHub
 9. Release release.zip to [GitHub](https://github.com/danielmarschall/filter_foundry/releases/)
 10. Release release.zip to [ViaThinkSoft](https://www.viathinksoft.com/projects/filter_foundry)
+11. Sync with Telegraphics SVN Repository, also change dist/README.html there
