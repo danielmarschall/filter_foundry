@@ -35,21 +35,21 @@ For a NEW VERSION, please change:
 
 #define plugInName "FilterFoundry"
 
-#define VERSION_STR "1.7.0.23"
-#define VERSION_NUM 1,7,0,23
+#define VERSION_STR "1.7.0.24"
+#define VERSION_NUM 1,7,0,24
 
 #define VERS_RSRC VERSION_NUM,verUS,VERSION_STR,"Filter Foundry " VERSION_STR
 
-#define RELEASE_YEAR "2024"
+#define RELEASE_YEAR "2025"
 
 #define PROJECT_URL "https://github.com/danielmarschall/filter_foundry"
 
 /* For the 'cmpt' PIPL attribute */
 /* For the resource compiler (PiPL.rc) it is very important to use "L" to have 4 bytes. "ul" will generate 2 bytes for some reason. */
-#define MainComponentVersion 0x01070017L // 1.7.0.23
+#define MainComponentVersion 0x01070018L // 1.7.0.24
 
 /* formatted for Win32 VERSIONINFO resource */
-#define VI_VERS_NUM	1,7,0,22
+#define VI_VERS_NUM	1,7,0,24
 #define VI_FLAGS	0 /* 0 for final, or any of VS_FF_DEBUG,VS_FF_PATCHED,VS_FF_PRERELEASE,VS_FF_PRIVATEBUILD,VS_FF_SPECIALBUILD */
 #define VI_COMMENTS	"Download the latest version here: " PROJECT_URL "\0"	/* null terminated Comments field */
 #define VI_COMPANY_NAME	"ViaThinkSoft, Telegraphics Pty Ltd\0"

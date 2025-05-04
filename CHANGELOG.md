@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.0.24 [WIP]
+## 1.7.0.24 [04-May-2025]
 - Serif PhotoPlus X8 is now compatible.
 - Code signed by Certum OpenSource Code Signing for ViaThinkSoft.
 
