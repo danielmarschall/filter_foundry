@@ -3,7 +3,7 @@
 Building FilterFoundry with Visual Studio
 =========================================
 
-Most recently tested with Visual Studio 2022 and Adobe Photoshop SDK 2023.
+Most recently tested with Visual Studio 2026 and Adobe Photoshop SDK v2-Dec-2025 (Windows).
 
 
 Prerequisites

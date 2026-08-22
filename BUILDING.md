@@ -90,7 +90,7 @@ BUILDING WITH VISUAL STUDIO
 * Download: https://visualstudio.microsoft.com/de/vs/community/
 * To build in Windows with Visual Studio (IDE or command line), see the visual_studio
   subdirectory and notes (README.md).
-* Most recently tested with Visual C++ 2022 and Adobe Photoshop SDK 2023.
+* Most recently tested with Visual C++ 2026 and Adobe Photoshop SDK v2-Dec-2025 (Windows).
 
 BUILDING WITH OPEN WATCOM
 * OpenWatcom can be used, but only for 32 Bit, and it is officially not
@@ -99,7 +99,7 @@ BUILDING WITH OPEN WATCOM
   or https://github.com/open-watcom/open-watcom-v2/releases
 * To build in Windows with the OpenWatcom IDE, see the wpj
   subdirectory and notes (README.md), kindly provided by Peter Heckert and Daniel Marschall.
-* Most recently tested with Open Watcom 1.9, Open Watcom 2.0 (Pre-Release), and Adobe Photoshop SDK 2023.
+* Most recently tested with Open Watcom 1.9, Open Watcom 2.0 (Pre-Release), and Adobe Photoshop SDK v2-Dec-2025 (Windows).
 
 BUILDING WITH MINGW32/64
 * IMPORTANT: Building with MINGW32/64 is currently NOT possible
