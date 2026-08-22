@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP [22-Aug-2026]
+## 1.7.0.25 [22-Aug-2026]
 - Fixed problem in Photoshop 2026 that caused the filter window not being centered.
 
 ## 1.7.0.24 [04-May-2025]
