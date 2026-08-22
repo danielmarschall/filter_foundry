@@ -118,21 +118,6 @@ size_t get_temp_afs(TCHAR* outfilename, Boolean isStandalone, PARM_T *parm) {
 	return xstrlen(out);
 }
 
-char* stristr(const char* str, const char* strSearch) {
-	// Source: https://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
-	char *sors, *subs, *res = NULL;
-	if ((sors = _strdup(str)) != NULL) {
-		if ((subs = _strdup(strSearch)) != NULL) {
-			res = strstr(_strlwr(sors), _strlwr(subs));
-			if (res != NULL)
-				res = (char*)str + (res - sors);
-			free(subs);
-		}
-		free(sors);
-	}
-	return res;
-}
-
 #ifdef WIN_ENV
 BOOL CalledFromRunDLL32(HINSTANCE hinst) {
 	char exename[MAX_PATH];
@@ -226,6 +211,7 @@ DLLEXPORT MACPASCAL
 void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *result){
 	static Boolean wantdialog = false;
 	static Boolean premiereWarnedOnce = false;
+	char exename[MAX_PATH];
 
 	#ifdef SHOW_HOST_DEBUG
 	char* tmp;
@@ -343,11 +329,20 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 	case filterSelectorAbout:
 		if (!gdata) {
 			Boolean parmReadOk;
+
 			// This is a temporary gdata structure just for the About dialog!
 			// Not to be confused with the "real" gdata during the filter invocation (containing more data).
 			gdata = (globals_t*)malloc(sizeof(globals_t));
 			if (!gdata) break;
+
 			gdata->hWndMainDlg = (HWND)((PlatformData*)((AboutRecordPtr)pb)->platformData)->hwnd; // so that simplealert() works
+			if (gdata->hWndMainDlg != NULL && /*gpb->hostSig == HOSTSIG_PHOTOSHOP &&*/ (GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoshop"))) {
+				HWND tmp;
+				tmp = get_photoshop_main_window(gdata->hWndMainDlg);
+				if (tmp != NULL)
+					gdata->hWndMainDlg = tmp;
+			}
+
 			parmReadOk = (LOADING_OK == readPARMresource((HMODULE)hDllInstance).msgid);
 			if (!parmReadOk) gdata->parm.standalone = false;
 			if (parmReadOk && (gdata->parm.cbSize != PARM_SIZE) && (gdata->parm.cbSize != PARM_SIZE_PREMIERE) && (gdata->parm.cbSize != PARM_SIG_MAC)) {
@@ -382,6 +377,24 @@ void ENTRYPOINT(short selector, FilterRecordPtr pb, intptr_t *data, short *resul
 			// By setting it to nonzero, we communicate to Photoshop that we support the BigDocument structure.
 			pb->bigDocumentData->PluginUsing32BitCoordinates = true;
 		}
+
+		gdata->hWndMainDlg = (HWND)((PlatformData*)((FilterRecordPtr)pb)->platformData)->hwnd;
+		if (gdata->hWndMainDlg != NULL && pb->hostSig == HOSTSIG_PHOTOSHOP && (GetModuleFileNameA(NULL/*get host process*/, exename, MAX_PATH) != 0) && (stristr(exename, "photoshop"))) {
+			// Photoshop 2026 p->hwnd is not the main application window. In recent Photoshop
+			// versions it points into the internal CPsView/OWL window hierarchy and may
+			// resolve to a small top-level "Static" window. GetParent() therefore does not
+			// lead to the actual Photoshop window (the Static window has no parent), causing
+			// modal dialogs to be positioned relative to that small window and to lose the
+			// expected modal behavior. We therefore find Photoshop's actual top-level
+			// window and use it as the dialog owner/centering target.
+			HWND tmp;
+			tmp = get_photoshop_main_window(gdata->hWndMainDlg);
+			if (tmp != NULL)
+				gdata->hWndMainDlg = tmp;
+		}
+
+
+
 
 		/* initialise the parameter handle that Photoshop keeps for us */
 		if(!pb->parameters)

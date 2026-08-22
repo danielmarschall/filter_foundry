@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP [22-Aug-2026]
+- Fixed problem in Photoshop 2026 that caused the filter window not being centered.
+
 ## 1.7.0.24 [04-May-2025]
 - Serif PhotoPlus X8 is now compatible.
 - Code signed by Certum OpenSource Code Signing for ViaThinkSoft.

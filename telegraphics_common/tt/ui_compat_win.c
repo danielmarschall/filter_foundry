@@ -192,6 +192,70 @@ void _doMonitorAdjustments(LPRECT rcPlugin) {
 	OffsetRect(rcPlugin, nXAdjust, nYAdjust);
 }
 
+typedef struct FindPhotoshopWindowData_
+{
+	DWORD processId;
+	HWND bestWindow;
+	LONGLONG bestArea;
+} FindPhotoshopWindowData;
+
+BOOL CALLBACK find_photoshop_window_proc(HWND hwnd, LPARAM lParam)
+{
+	RECT rc;
+	LONGLONG width, height, area;
+	DWORD processId = 0;
+	FindPhotoshopWindowData* data =
+		(FindPhotoshopWindowData*)lParam;
+
+	GetWindowThreadProcessId(hwnd, &processId);
+
+	if (processId != data->processId)
+		return TRUE;
+
+	if (!IsWindowVisible(hwnd))
+		return TRUE;
+
+	if (GetWindow(hwnd, GW_OWNER) != NULL)
+		return TRUE;
+
+	if (!GetWindowRect(hwnd, &rc))
+		return TRUE;
+
+	width = rc.right - rc.left;
+	height = rc.bottom - rc.top;
+	area = width * height;
+
+	if (area > data->bestArea)
+	{
+		data->bestArea = area;
+		data->bestWindow = hwnd;
+	}
+
+	return TRUE;
+}
+
+HWND get_photoshop_main_window(HWND pluginWindow)
+{
+	FindPhotoshopWindowData data;
+	DWORD processId = 0;
+
+	if (!pluginWindow)
+		return NULL;
+
+	if (GetWindowThreadProcessId(pluginWindow, &processId) == 0)
+		return NULL;
+
+	data.processId = processId;
+	data.bestWindow = NULL;
+	data.bestArea = 0;
+
+	EnumWindows(
+		find_photoshop_window_proc,
+		(LPARAM)&data);
+
+	return data.bestWindow;
+}
+
 /**
 Centers a window to the center of its parent form but avoids
 being spread across two screens.

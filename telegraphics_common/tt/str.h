@@ -71,4 +71,6 @@ char *my_strdup(char *s); // my_strdup() is like _strdup(), with the difference 
 
 void strcpy_win_replace_ampersand(char* dst, char* src);
 
+char* stristr(const char* str, const char* strSearch);
+
 #endif

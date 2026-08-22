@@ -96,9 +96,10 @@ BUILDING WITH OPEN WATCOM
 * OpenWatcom can be used, but only for 32 Bit, and it is officially not
   supported by Adobe.
 * Download: https://sourceforge.net/projects/openwatcom/files/
+  or https://github.com/open-watcom/open-watcom-v2/releases
 * To build in Windows with the OpenWatcom IDE, see the wpj
   subdirectory and notes (README.md), kindly provided by Peter Heckert and Daniel Marschall.
-* Most recently tested with Open Watcom 1.9 and Adobe Photoshop SDK 2023.
+* Most recently tested with Open Watcom 1.9, Open Watcom 2.0 (Pre-Release), and Adobe Photoshop SDK 2023.
 
 BUILDING WITH MINGW32/64
 * IMPORTANT: Building with MINGW32/64 is currently NOT possible

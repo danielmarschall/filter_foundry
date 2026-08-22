@@ -199,3 +199,18 @@ void strcpy_win_replace_ampersand(char* dst, char* src) {
 	}
 	*dst++ = '\0';
 }
+
+char* stristr(const char* str, const char* strSearch) {
+	// Source: https://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
+	char* sors, * subs, * res = NULL;
+	if ((sors = _strdup(str)) != NULL) {
+		if ((subs = _strdup(strSearch)) != NULL) {
+			res = strstr(_strlwr(sors), _strlwr(subs));
+			if (res != NULL)
+				res = (char*)str + (res - sors);
+			free(subs);
+		}
+		free(sors);
+	}
+	return res;
+}

@@ -203,6 +203,7 @@
 	#define INVALWINDOWRECT(dp,rp) RedrawWindow(dp,rp,NULL,RDW_ERASE|RDW_INVALIDATE)
 	#define SYSBEEP(x) MessageBeep(MB_ICONEXCLAMATION)
 
+	HWND get_photoshop_main_window(HWND pluginWindow);
 	void centre_window(HWND hwnd);
 #endif
 

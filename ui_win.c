@@ -426,7 +426,7 @@ INT_PTR CALLBACK maindlgproc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 }
 
 Boolean maindialog(FilterRecordPtr pb){
-	PlatformData *p;
+	PlatformData* p = (PlatformData*)pb->platformData;
 	INT_PTR res;
 	
 	// First try to use the sliders from PLUGIN.DLL (only Photoshop)
@@ -452,11 +452,9 @@ Boolean maindialog(FilterRecordPtr pb){
 	MakeSimpleSubclass(TEXT(OID_CAUTION_WNDCLASS), WC_BUTTON);
 
 	// Now show the dialog
-	p = (PlatformData*)pb->platformData;
-
 	// Note: "Invalid Cursor Handle" is the error when an unrecognized control class is detected
 	res = DialogBoxParam(hDllInstance,MAKEINTRESOURCE(gdata->parm.standalone ? ID_PARAMDLG : ID_MAINDLG),
-	                     (HWND)p->hwnd,maindlgproc,0);
+		gdata->hWndMainDlg ? gdata->hWndMainDlg : (HWND)p->hwnd,maindlgproc,0);
 	if (res == 0) {
 		simplealert((TCHAR*)TEXT("DialogBoxParam invalid parent window handle")); // TODO (Not so important): TRANSLATE
 	}
